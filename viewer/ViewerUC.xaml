@@ -1,0 +1,62 @@
+﻿<UserControl x:Class="scripthea.viewer.ViewerUC"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:scripthea.viewer"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition x:Name="colListWidth" Width="400" MinWidth="200" MaxWidth="1000"/>
+            <ColumnDefinition Width="129*"/>
+        </Grid.ColumnDefinitions>
+        <Grid Margin="0" >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="329*"/>
+                <RowDefinition Height="30"/>
+            </Grid.RowDefinitions>
+            <GroupBox Header="Image depot folder" Margin="0" >
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="112"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox x:Name="tbImageDepot" Background="#FFFBFBF4" TextChanged="tbImageDepot_TextChanged" >
+                    </TextBox>
+                    <Button x:Name="btnNewFolder" Grid.Column="1" Content="Browse" Click="btnNewFolder_Click" Foreground="#FF2963BE" HorizontalAlignment="Left" Width="50" FontWeight="Bold" Background="#FFF4F4F4" Margin="3,0,0,0"/>
+                    <Button x:Name="btnRefresh" Grid.Column="1" Content="Refresh" Click="btnNewFolder_Click" Foreground="#FF0F8001" HorizontalAlignment="Right" Width="55" FontWeight="Bold" Background="#FFF4F4F4"/>
+                </Grid>
+            </GroupBox>
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="69"/>
+                </Grid.ColumnDefinitions>
+                <Label Content="Find" HorizontalAlignment="Left"></Label>
+                <TextBox x:Name="tbFind" Margin="34,3,5,3"/>
+                <Image x:Name="btnFindUp" Grid.Column="1" Width="30" HorizontalAlignment="Left" Source="/Scripthea;component/Properties/find_up.png" Margin="3,0,0,0" Cursor="Hand" ToolTip="Find Up" MouseDown="btnFindUp_MouseDown"/>
+                <Image x:Name="btnFindDown"  Grid.Column="1" Width="30" HorizontalAlignment="Left" Source="/Scripthea;component/Properties/find_down.png" Margin="32,0,0,0" Cursor="Hand" ToolTip="Find Down" MouseDown="btnFindUp_MouseDown"/>
+            </Grid>
+            <TabControl x:Name="tabCtrlViews" Grid.Row="1" SelectedIndex="0" BorderBrush="{x:Null}">
+                <TabItem x:Name="tiTable" Header="Table view"  Height="25" >
+                    <Grid>
+                        <local:TableViewUC x:Name="tableViewUC"/>
+                    </Grid>
+                </TabItem>
+                <TabItem x:Name="tiGrid" Header="Grid view" Height="25">
+                    <Grid>
+                        <local:GridViewUC x:Name="gridViewUC"/>
+                     </Grid>
+                </TabItem>
+                
+
+            </TabControl>
+        </Grid>
+        <Grid Grid.Column="1" Margin="0" >
+        </Grid>
+        <GridSplitter x:Name="gridSplitter" HorizontalAlignment="Left" Grid.Column="1" Margin="0" Width="5"/>
+        <local:PicViewerUC x:Name="picViewerUC" Grid.Column="1" Margin="0" />
+    </Grid>
+</UserControl>

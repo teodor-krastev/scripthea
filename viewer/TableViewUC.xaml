@@ -1,0 +1,13 @@
+﻿<UserControl x:Class="scripthea.viewer.TableViewUC"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:scripthea.viewer"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="388.06">
+    <Grid>
+        <DataGrid x:Name="dGrid" Margin="0" SelectionChanged="dGrid_SelectionChanged" IsReadOnly="True" AutoGeneratingColumn="DataGrid_AutoGeneratingColumn" SelectionMode="Single" MaxColumnWidth="1000" CanUserReorderColumns="False">
+        </DataGrid>
+    </Grid>
+</UserControl>

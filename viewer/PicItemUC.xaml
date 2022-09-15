@@ -1,0 +1,19 @@
+﻿<UserControl x:Class="scripthea.viewer.PicItemUC"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:scripthea.viewer"
+             mc:Ignorable="d" 
+             d:DesignHeight="155.793" d:DesignWidth="169.387" Width="120" Height="200">
+    <Grid x:Name="grid" Margin="3">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="100" x:Name="CueRow"/>
+            <RowDefinition Height="1*" x:Name="ImageRow"/>
+            <RowDefinition Height="60" x:Name="FileRow"/>
+        </Grid.RowDefinitions>
+        <TextBox x:Name="tbCue" TextWrapping="Wrap" Text="" Background="{x:Null}" IsReadOnly="True" BorderThickness="1,1,0,0" BorderBrush="{x:Null}" />
+        <Label x:Name="lbFile" Grid.Row="2" Margin="0"></Label>
+        <Image x:Name="imgPic"  Margin="0" Grid.Row="1" MouseDown="imgPic_MouseDown_1"/>
+    </Grid>
+</UserControl>

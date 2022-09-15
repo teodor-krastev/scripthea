@@ -1,0 +1,45 @@
+﻿<UserControl x:Class="scripthea.viewer.GridViewUC"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:scripthea.viewer"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="370.896">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition  x:Name="rowTumbs" Height="1*"/>
+            <RowDefinition x:Name="rowTumbOpt" Height="1"/>
+            <RowDefinition Height="25"/>
+        </Grid.RowDefinitions>
+        <ScrollViewer x:Name="scroller" CanContentScroll="True" KeyDown="scroller_KeyDown">
+            <WrapPanel x:Name="wrapPics"  Focusable="True" KeyDown="scroller_KeyDown"></WrapPanel>
+        </ScrollViewer>
+        <StackPanel Margin="0,3,0,0" Grid.Row="1" Orientation="Horizontal" Background="#FFF9FEFC" >
+            <Label Content="Zoom"></Label>
+            <Button x:Name="btnZoomIn" FontSize="13" Content="in" Width="25" Background="{x:Null}" VerticalAlignment="Top" Margin="0,2,0,0" FontFamily="Microsoft Sans Serif" Click="btnZoomIn_Click"/>
+            <Label x:Name="lbZoom" Content="100%"></Label>
+            <Button x:Name="btnZoomOut" FontSize="13" Content="out" Width="28" Background="{x:Null}" VerticalAlignment="Top" Margin="0,2,0,0" FontFamily="Microsoft Sans Serif" Click="btnZoomIn_Click"/>
+            <Rectangle Fill="#FFB0CFC0" Margin="10,0,0,0" Width="3" />
+            <Label Content="Show" Margin="5,0,0,0"></Label>
+            <CheckBox x:Name="chkShowCue" VerticalAlignment="Center" Margin="2,0,0,0" Content="Cue" Checked="chkShowCue_Checked" Unchecked="chkShowCue_Checked"></CheckBox>
+            <CheckBox x:Name="chkShowFilename" VerticalAlignment="Center" Margin="5,0,0,0" Content="Filename"  Checked="chkShowCue_Checked" Unchecked="chkShowCue_Checked"></CheckBox>
+            <Rectangle Fill="#FFB0CFC0" Margin="10,0,0,0" Width="3" />
+        </StackPanel>
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="25"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+            <Image x:Name="ibtnTumbOpt" Source="/Scripthea;component/Properties/TripleBarTeal.bmp" MouseDown="ibtnTumbOpt_MouseDown" Margin="0,3,0,0"></Image>
+            <StackPanel Margin="0,3,0,0"  Orientation="Horizontal" HorizontalAlignment="Center" Grid.Column="1">
+                <Image x:Name="btnHome" Width="30" HorizontalAlignment="Left"  Margin="3,0,0,0" Cursor="Hand" Source="/Scripthea;component/Properties/home_arrow.png" MouseDown="btnHome_MouseDown" ToolTip="Home"/>
+                <Image x:Name="btnPageUp" Width="30" HorizontalAlignment="Left" Source="/Scripthea;component/Properties/left_dbl_arrow.png" Margin="3,0,0,0" Cursor="Hand" MouseDown="btnHome_MouseDown" ToolTip="Page Up"/>
+                <Image x:Name="btnItemUp" Width="30" HorizontalAlignment="Left" Source="/Scripthea;component/Properties/left_arrow.png" Margin="3,0,0,0" Cursor="Hand" MouseDown="btnItemUp_MouseDown" ToolTip="Previous"/>
+                <Image x:Name="btnItemDown" Width="30" HorizontalAlignment="Left" Source="/Scripthea;component/Properties/right_arrow.png" Margin="3,0,0,0" Cursor="Hand" MouseDown="btnItemUp_MouseDown" ToolTip="Next"/>
+                <Image x:Name="btnPageDown" Width="30" HorizontalAlignment="Left" Source="/Scripthea;component/Properties/right_dbl_arrow.png" Margin="3,0,0,0" Cursor="Hand" MouseDown="btnHome_MouseDown" ToolTip="Page Down"/>
+                <Image x:Name="btnEnd" Width="30" HorizontalAlignment="Left" Source="/Scripthea;component/Properties/end_arrow.png" Margin="3,0,0,0" Cursor="Hand" MouseDown="btnHome_MouseDown" ToolTip="End"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

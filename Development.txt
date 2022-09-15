@@ -1,0 +1,14 @@
+﻿Ideas for further development
+
+1. Another cues/prompt tab - "user" which is mutable and saved at exit
+
+2. Thumbnail view of image review table
+
+3. Evolve modifiers in two (or three) stages: 
+	- thumbnails images representing the style, material or artist
+	- keywords associated with each modifier, and then filter by keyword(s)
+	-? category specific views (presentation)
+
+ 4. In scan mode to have a two or three copies of modifiers panel so the scan can have more than one modifiers.
+
+
