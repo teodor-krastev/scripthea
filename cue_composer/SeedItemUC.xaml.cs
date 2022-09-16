@@ -39,7 +39,6 @@ namespace scripthea
             {
                 tbSeed.Text += line + (k.Equals(text.Count - 1) ? "": "\r"); k++;
             }
-
         }       
         public bool radioMode
         {

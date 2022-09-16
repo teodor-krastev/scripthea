@@ -25,7 +25,11 @@ All the options, external and internal sizes and position are saved on closing a
 The current key to access DeepAI API is temporary, if you need more regular access you need to open an account at http://deepai.org and contribute ($2 per 1000 queries). When you get your personal key you need to put it in DeepAI.key file in config folder. (I'm not affiliated to DeepAi in any way.)
 
 #### just run it
-If you are interested only in running the Scripthea application: download the whole project, unzip it somewhere and go to ...\Scripthea\bin\Debug\ and run Scripthea.exe from there. If you have concerns about viruses you can compile from the sources - I'm using .NET framework 4.8 and Visual studio 2019 as IDE.
+If you are interested only in running the Scripthea application: 
+ - download the whole project and unzip it somewhere renaming "scripthea-master" to "Scripthea"
+ - unzip binaries.zip (bin and obj folders) in the same (Scripthea) directory 
+ - go to ...\Scripthea\bin\Debug\ and run Scripthea.exe from there. 
+ If you have concerns about viruses, don't touch the binaries and compile from the sources - I'm using .NET framework 4.8 and Visual studio 2019 as IDE.
 
 #### contact 
 Keep in mind that the application is under active development and don't be too surprised if you see a bug (or two). Let me know at https://sicyon.com/survey/comment.html and I'll do my best to fix it asap. In the same way, you can communicate any ideas for improvement, experiences with the software or your willingness to help me with the project. I would especially appreciate more cue collections preferably organized by subject, see config folder for *.cues files.

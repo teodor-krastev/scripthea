@@ -361,3 +361,7 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/config/DeepAI.key
+/images/craiyon_1
+/images/craiyon_2
+/images/craiyon_3
