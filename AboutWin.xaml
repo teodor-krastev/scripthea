@@ -15,7 +15,7 @@
             <Label x:Name="lbDesc" Content="image cue composer ...and more" HorizontalAlignment="Center" FontSize="14" FontWeight="Bold"/>
             <StackPanel Orientation="Horizontal" Width="250">
                 <Label x:Name="lbPreAuthor" Content="written and copyright" FontSize="14"/>
-                <TextBlock x:Name="lbAuthor" Text="Teodor Krastev" Foreground="Blue" TextDecorations="Underline" FontSize="14" Cursor="Hand" Margin="0,5,0,0" MouseDown="lbAuthor_MouseDown"/>
+                <TextBlock x:Name="lbAuthor" Text="Teodor Krastev" Foreground="Blue" TextDecorations="Underline" FontSize="14" Cursor="Hand" Margin="0,5,0,0" MouseDown="lbAuthor_MouseDown" ToolTip="Contact the author"/>
             </StackPanel>
             <Label x:Name="lbLicense" Content="open source software - MIT license agreement" HorizontalAlignment="Center" FontSize="13"/>
             <Grid>

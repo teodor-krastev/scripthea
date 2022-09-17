@@ -23,7 +23,11 @@
                     <RowDefinition Height="20*"/>
                     <RowDefinition Height="10*"/>
                 </Grid.RowDefinitions>
-                <TextBox x:Name="tbCue" Margin="0" TextWrapping="Wrap" Text="" Background="#FFFFFFF8" BorderBrush="#FFF9DE34" FontSize="13" TextChanged="tbCue_TextChanged"/>
+                <TextBox x:Name="tbCue" Margin="0" TextWrapping="Wrap" Text="" Background="#FFFFFFF8" BorderBrush="#FFF9DE34" FontSize="13" TextChanged="tbCue_TextChanged" ContextMenuOpening="tbCue_ContextMenuOpening">
+                    <TextBox.ContextMenu>
+                        <ContextMenu x:Name="cmCue"/>
+                    </TextBox.ContextMenu>
+                </TextBox>
                 <GridSplitter x:Name="gridSplitInCue" HorizontalAlignment="Stretch" Height="3" Margin="0" Grid.Row="1" VerticalAlignment="Top"/>
                 <TextBox x:Name="tbModifier" Margin="0,3,0,0" TextWrapping="Wrap" Text="" Background="#FFF3FDEE" Grid.Row="1" FontSize="13" BorderBrush="#FFB1DE9E"/>
             </Grid>
@@ -75,7 +79,7 @@
             </TabControl>
             <Image x:Name="imgPreferences" Margin="0,0,30,0" VerticalAlignment="Top" HorizontalAlignment="Right"  Height="23" Width="29" ToolTip="Preferences dialog box" Cursor="Hand" Source="/Scripthea;component/Properties/TripleBarTeal.bmp" Visibility="Collapsed"/>
             <Image x:Name="imgCopy" Margin="0" VerticalAlignment="Top" HorizontalAlignment="Right" Height="23" Width="29" ToolTip="Copy to clipboard" Cursor="Hand" MouseDown="imgCopy_MouseDown_1" Source="/Scripthea;component/Properties/copy1a.png"/>
-            <GridSplitter x:Name="gridSplitCue" HorizontalAlignment="Stretch" Height="3" Margin="0" Grid.Row="2" VerticalAlignment="Top"/>
+            <GridSplitter x:Name="gridSplitCue" HorizontalAlignment="Stretch" Height="5" Margin="0" Grid.Row="2" VerticalAlignment="Top"/>
             <local:SeedListUC x:Name="seedListUC"  Margin="0,6,0,0" Grid.Row="3"/>
         </Grid>
 

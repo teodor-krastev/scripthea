@@ -118,6 +118,10 @@ namespace UtilsNS
         {
             System.Diagnostics.Process.Start(query);
         }
+        public static void AskGoogle(string query)
+        {
+            CallTheWeb("https://www.google.com/search?q=" + query.Replace(' ', '+'));
+        }
         public static void Sleep(int milisec)
         {
             Thread.Sleep(milisec);

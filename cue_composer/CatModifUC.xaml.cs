@@ -105,16 +105,14 @@ namespace scripthea
             if (Utils.isNull(chk)) return;
             string input = new InputBox("Ask Google about", (string)chk.Content, "").ShowDialog();
             if (input.Equals("")) return;
-            string query = "https://www.google.com/search?q=" + input.Replace(' ', '+');
-            System.Diagnostics.Process.Start(query);
+            Utils.AskGoogle(input);            
         }
 
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
             MenuItem mi = sender as MenuItem;
             string smi = Convert.ToString(mi.Header).Substring(8).TrimEnd('>');
-            string query = "https://www.google.com/search?q=" + smi.Replace(' ', '+');
-            System.Diagnostics.Process.Start(query);
+            Utils.AskGoogle(smi);
         }  
 
     }

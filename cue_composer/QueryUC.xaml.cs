@@ -303,7 +303,6 @@ namespace scripthea
         {
             Clipboard.SetText(fullCue);
         }
-
         private void tcQuery_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (Utils.isNull(tcQuery.SelectedItem)) return;
@@ -313,6 +312,42 @@ namespace scripthea
             seedListUC.radioMode = tcQuery.SelectedItem.Equals(tiSingle);
             ChangeModif(sender, e);
         }
+        private readonly string[] miTitles = { "Copy", "Cut", "Paste", "\"...\" synonyms", "\"...\" meaning" };
+        private void tbCue_ContextMenuOpening(object sender, ContextMenuEventArgs e)
+        {
+            cmCue.Items.Clear(); bool isSel = !tbCue.SelectedText.Trim().Equals("");
+            for (int i = 0; i < 3; i++)
+            {
+                MenuItem mi = new MenuItem(); mi.Header = miTitles[i];
+                if (i==0 || i==1) mi.IsEnabled = isSel; 
+                if (i == 2) mi.IsEnabled = Clipboard.ContainsText();
+                mi.Click += mi_Click;
+                cmCue.Items.Add(mi);
+            }
+            if (!isSel) return;
+            cmCue.Items.Add(new Separator());
+            for (int i = 3; i < 5; i++)
+            {
+                MenuItem mi = new MenuItem(); 
+                mi.Header = miTitles[i].Replace("...", tbCue.SelectedText.Trim()); 
+                mi.Click += mi_Click;
+                cmCue.Items.Add(mi);
+            }           
+        }
+        void mi_Click(object sender, RoutedEventArgs e)
+        {
+            bool isSel = !tbCue.SelectedText.Trim().Equals("");
+            MenuItem mi = sender as MenuItem; string header = Convert.ToString(mi.Header);
+            switch (header)
+            {
+                case "Copy": Clipboard.SetText(tbCue.SelectedText.Trim());
+                    return;
+                case "Cut": Clipboard.SetText(tbCue.SelectedText.Trim()); tbCue.SelectedText = "";
+                    return;
+                case "Paste": tbCue.SelectedText = Clipboard.GetText();
+                    return;
+            }
+            if (header.EndsWith("synonyms") || header.EndsWith("meaning")) Utils.AskGoogle(header);
+        }
     }
-
 }
