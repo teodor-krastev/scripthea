@@ -15,7 +15,7 @@ using System.Windows.Shapes;
 using UtilsNS;
 
 
-namespace scripthea
+namespace scripthea.external
 {
     /// <summary>
     /// Common interface to all APIs
@@ -39,6 +39,7 @@ namespace scripthea
             interfaceAPIs = new Dictionary<string, interfaceAPI>();
             visualControl("Simulation", new SimulatorUC());
             visualControl("DeepAI", new DeepAIUC());
+            visualControl("Craiyon", new CraiyonWebUC());
             _activeAPIname = "Simulation"; tabControl.SelectedIndex = 0;
 
             backgroundWorker1 = new BackgroundWorker();
@@ -55,7 +56,6 @@ namespace scripthea
         {
             if ((OnQueryComplete != null)) OnQueryComplete(imageFilePath, success);
         }
-
         private void visualControl(string APIname, UserControl uc)
         {
             uc.Name = APIname.ToLower() + "UC"; interfaceAPIs[APIname] = (interfaceAPI)uc;
@@ -83,15 +83,19 @@ namespace scripthea
         }
         private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-           if (File.Exists(imageFolder + imageName) && success)
-           {
+            if (activeAPIname.Equals("Craiyon"))
+            {
+                QueryComplete("", true); return;
+            }
+            if (File.Exists(imageFolder + imageName) && success)
+            {
                 using (StreamWriter sw = File.AppendText(imageFolder + "description.txt"))
                 {
                     sw.WriteLine(imageName + "=" + prompt);
                 }
                 QueryComplete(imageFolder + imageName, true); // hooray !
-           }          
-           else QueryComplete(imageName, false); // sadly...           
+            }          
+            else QueryComplete(imageName, false); // sadly...           
         }
         public void Query(string cue, string _imageDepoFolder) // fire event at the end
         {

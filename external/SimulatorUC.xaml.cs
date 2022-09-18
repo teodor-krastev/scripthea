@@ -16,7 +16,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using UtilsNS;
 
-namespace scripthea
+namespace scripthea.external
 {
     /// <summary>
     /// Interaction logic for SimulatorUC.xaml

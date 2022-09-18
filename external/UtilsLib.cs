@@ -118,9 +118,11 @@ namespace UtilsNS
         {
             System.Diagnostics.Process.Start(query);
         }
-        public static void AskGoogle(string query)
+        public enum SearchEngine { google, bing, duckduckgo }
+        public static SearchEngine searchEngine = SearchEngine.google;
+        public static void AskTheWeb(string query)
         {
-            CallTheWeb("https://www.google.com/search?q=" + query.Replace(' ', '+'));
+            CallTheWeb("https://www."+Convert.ToString(searchEngine)+".com/search?q=" + query.Trim().Replace(' ', '+'));
         }
         public static void Sleep(int milisec)
         {

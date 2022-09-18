@@ -105,14 +105,14 @@ namespace scripthea
             if (Utils.isNull(chk)) return;
             string input = new InputBox("Ask Google about", (string)chk.Content, "").ShowDialog();
             if (input.Equals("")) return;
-            Utils.AskGoogle(input);            
+            Utils.AskTheWeb(input);            
         }
 
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
             MenuItem mi = sender as MenuItem;
             string smi = Convert.ToString(mi.Header).Substring(8).TrimEnd('>');
-            Utils.AskGoogle(smi);
+            Utils.AskTheWeb(smi);
         }  
 
     }

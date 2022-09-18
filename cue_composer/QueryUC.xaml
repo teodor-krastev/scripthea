@@ -15,7 +15,7 @@
         <Grid Grid.Column="0" Margin="5,0,0,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="110"/>
-                <RowDefinition Height="100" x:Name="pnlCue" MinHeight="50" MaxHeight="400"/>
+                <RowDefinition Height="150" x:Name="pnlCue" MinHeight="50" MaxHeight="400"/>
                 <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
             <Grid Grid.Row="1">
@@ -23,13 +23,13 @@
                     <RowDefinition Height="20*"/>
                     <RowDefinition Height="10*"/>
                 </Grid.RowDefinitions>
-                <TextBox x:Name="tbCue" Margin="0" TextWrapping="Wrap" Text="" Background="#FFFFFFF8" BorderBrush="#FFF9DE34" FontSize="13" TextChanged="tbCue_TextChanged" ContextMenuOpening="tbCue_ContextMenuOpening">
+                <TextBox x:Name="tbCue" Margin="0" TextWrapping="Wrap" Text="" Background="#FFFFFFF8" BorderBrush="#FFF9DE34" FontSize="13" TextChanged="tbCue_TextChanged" ContextMenuOpening="tbCue_ContextMenuOpening" AcceptsReturn="True">
                     <TextBox.ContextMenu>
                         <ContextMenu x:Name="cmCue"/>
                     </TextBox.ContextMenu>
                 </TextBox>
                 <GridSplitter x:Name="gridSplitInCue" HorizontalAlignment="Stretch" Height="3" Margin="0" Grid.Row="1" VerticalAlignment="Top"/>
-                <TextBox x:Name="tbModifier" Margin="0,3,0,0" TextWrapping="Wrap" Text="" Background="#FFF3FDEE" Grid.Row="1" FontSize="13" BorderBrush="#FFB1DE9E"/>
+                <TextBox x:Name="tbModifier" Margin="0,3,0,0" TextWrapping="Wrap" Text="" Background="#FFF3FDEE" Grid.Row="1" FontSize="13" BorderBrush="#FFB1DE9E" AcceptsReturn="True"/>
             </Grid>
 
             <TabControl x:Name="tcQuery" Margin="0"  SelectedIndex="0" SelectionChanged="tcQuery_SelectionChanged" >
@@ -69,6 +69,7 @@
                             <ComboBox x:Name="cbActiveAPI" HorizontalAlignment="Left" VerticalAlignment="Top" SelectedIndex="0" Width="90" FontSize="12" Background="Transparent" Margin="3,1,0,0" SelectionChanged="cbActiveAPI_SelectionChanged">
                                 <ComboBoxItem Content="Simulation"/>
                                 <ComboBoxItem Content="DeepAI"/>
+                                <ComboBoxItem x:Name="cbiCraiyon" Content="Craiyon"/>
                             </ComboBox>
                             <Image x:Name="imgAPIdialog"  Width="25" Height="25" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="4,0,0,0" Cursor="Hand" MouseDown="imgAPIdialog_MouseDown" Source="/Scripthea;component/Properties/gears1.png"/>
                         </StackPanel>

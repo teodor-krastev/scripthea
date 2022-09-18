@@ -18,7 +18,7 @@ using DeepAI;
 using System.Drawing;
 using System.Drawing.Imaging;
 
-namespace scripthea
+namespace scripthea.external
 {
     /// <summary>
     /// Interaction logic for UserControl1.xaml

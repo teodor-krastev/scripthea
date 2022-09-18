@@ -110,6 +110,9 @@
     <Compile Include="external\CraiyonImportUC.xaml.cs">
       <DependentUpon>CraiyonImportUC.xaml</DependentUpon>
     </Compile>
+    <Compile Include="external\CraiyonWebUC.xaml.cs">
+      <DependentUpon>CraiyonWebUC.xaml</DependentUpon>
+    </Compile>
     <Compile Include="external\DeepAIUC.xaml.cs">
       <DependentUpon>DeepAIUC.xaml</DependentUpon>
     </Compile>
@@ -163,6 +166,10 @@
     <Page Include="external\CraiyonImportUC.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="external\CraiyonWebUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="external\DeepAIUC.xaml">
       <Generator>MSBuild:Compile</Generator>

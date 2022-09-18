@@ -1,0 +1,14 @@
+﻿<UserControl x:Class="scripthea.external.CraiyonWebUC"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:scripthea.external"
+             mc:Ignorable="d" Width="612.861" Height="231.873" FontSize="13">
+    <Grid Margin="0">
+        <Label VerticalAlignment="Top" HorizontalAlignment="Center" Content="CraiyonWeb " FontSize="15"></Label>
+        <TextBox Text="This is not functional API to Craiyon.com." HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,50" IsReadOnly="True"></TextBox>
+        <TextBox Text="This is only a helper with setting the prompt of Craiyon.com form." HorizontalAlignment="Center" VerticalAlignment="Center" IsReadOnly="True"></TextBox>
+        <TextBox Text="You need to press Generate button and if you're happy with the result Screenshot button." HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,50,0,0" IsReadOnly="True"></TextBox>
+    </Grid>
+</UserControl>

@@ -16,6 +16,7 @@ using System.Windows.Shapes;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using scripthea.external;
 using UtilsNS;
 
 namespace scripthea
@@ -46,7 +47,10 @@ namespace scripthea
             modifiersUC.Init(); modifiersUC.OnChange += new RoutedEventHandler(ChangeModif);
 
             API = new ControlAPI(); cbActiveAPI_SelectionChanged(null, null);
-            API.OnQueryComplete += new ControlAPI.APIEventHandler(QueryComplete);           
+            API.OnQueryComplete += new ControlAPI.APIEventHandler(QueryComplete);
+
+            if (Utils.TheosComputer()) cbiCraiyon.Visibility = Visibility.Visible;
+            else cbiCraiyon.Visibility = Visibility.Collapsed;
         }
         public void Finish()
         {
@@ -347,7 +351,7 @@ namespace scripthea
                 case "Paste": tbCue.SelectedText = Clipboard.GetText();
                     return;
             }
-            if (header.EndsWith("synonyms") || header.EndsWith("meaning")) Utils.AskGoogle(header);
+            if (header.EndsWith("synonyms") || header.EndsWith("meaning")) Utils.AskTheWeb(header);
         }
     }
 }
