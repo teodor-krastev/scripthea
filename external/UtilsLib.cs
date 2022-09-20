@@ -122,7 +122,7 @@ namespace UtilsNS
         public static SearchEngine searchEngine = SearchEngine.google;
         public static void AskTheWeb(string query)
         {
-            CallTheWeb("https://www."+Convert.ToString(searchEngine)+".com/search?q=" + query.Trim().Replace(' ', '+'));
+            CallTheWeb("https://www." + Convert.ToString(searchEngine) + ".com/search?q=" + query.Trim().Replace(' ', '+'));
         }
         public static void Sleep(int milisec)
         {
@@ -515,7 +515,7 @@ namespace UtilsNS
         /// <param name="dict"></param>
         /// <param name="bracket"> if bracket is space then brackets are included into the keys of the dict</param>
         /// <returns></returns>
-        public static string replaceFromDict(string src, Dictionary<string, string> dict, char bracket) 
+        public static string replaceFromDict(string src, Dictionary<string, string> dict, char bracket)
         {
             string rslt = src;
             foreach (var itm in dict)
@@ -529,7 +529,7 @@ namespace UtilsNS
         {
             List<string> rslt = new List<string>();
             foreach (string itm in src)
-                rslt.Add(replaceFromDict(itm, dict, bracket));            
+                rslt.Add(replaceFromDict(itm, dict, bracket));
             return rslt;
         }
 
@@ -538,9 +538,9 @@ namespace UtilsNS
             List<string> ls = readList(filename, skipRem);
             return readStructList(ls, skipRem);
         }
-        public static Dictionary<string,List<string>> readStructList(List<string> ls, bool skipRem = false)
+        public static Dictionary<string, List<string>> readStructList(List<string> ls, bool skipRem = false)
         {
-            int i, j; string section = "";   
+            int i, j; string section = "";
             Dictionary<string, List<string>> rslt = new Dictionary<string, List<string>>();
             foreach (string ss in ls)
             {
@@ -549,7 +549,7 @@ namespace UtilsNS
                 if ((i == 0) && (j > -1) && (i < j))
                 {
                     if (!section.Equals("") && !Utils.isNull(ls)) rslt[section] = ls;
-                    section = st.Substring(i+1, j-i-1); ls = new List<string>();
+                    section = st.Substring(i + 1, j - i - 1); ls = new List<string>();
                     continue;
                 }
                 if (!Utils.isNull(ls)) ls.Add(st);
@@ -724,13 +724,13 @@ namespace UtilsNS
         }
         public static string Convert2StringDef(string value, string defaultValue = "0")
         {
-            return String.IsNullOrEmpty(value) ? defaultValue : value ;
+            return String.IsNullOrEmpty(value) ? defaultValue : value;
         }
         /// <summary>
         /// Random normaly distributed (mean:0 stDev:1) value
         /// </summary>
         /// <returns>random value</returns>
-        public static double Gauss01()  
+        public static double Gauss01()
         {
             double u1 = 1.0 - rand.NextDouble(); //uniform(0,1] random doubles
             double u2 = 1.0 - rand.NextDouble();
@@ -740,7 +740,7 @@ namespace UtilsNS
         }
         public static double NextGaussian(double mu = 0, double sigma = 1)
         {
-            var u1 = rand.NextDouble();  var u2 = rand.NextDouble();
+            var u1 = rand.NextDouble(); var u2 = rand.NextDouble();
             var rand_std_normal = Math.Sqrt(-2.0 * Math.Log(u1)) *
                                   Math.Sin(2.0 * Math.PI * u2);
             var rand_normal = mu + sigma * rand_std_normal;
@@ -749,9 +749,9 @@ namespace UtilsNS
         public static List<double> GaussSeries(int nData, double mean, double sigma)
         {
             List<double> ls = new List<double>();
-            for (int i = 0; i<nData; i++)
+            for (int i = 0; i < nData; i++)
             {
-                ls.Add(Gauss01()*sigma+mean);
+                ls.Add(Gauss01() * sigma + mean);
             }
             return ls;
         }
@@ -824,7 +824,7 @@ namespace UtilsNS
         public static Dictionary<string, string> readINI(string filename)
         {
             Dictionary<string, string> dict = new Dictionary<string, string>();
-            if (!File.Exists(filename)) throw new Exception("File not found: " + filename);           
+            if (!File.Exists(filename)) throw new Exception("File not found: " + filename);
             List<string> ls = new List<string>();
             string line;
             foreach (string wline in File.ReadLines(filename))
@@ -836,7 +836,7 @@ namespace UtilsNS
                 if (sc > -1) line = wline.Remove(sc);
                 else line = wline;
                 if (line.Equals("")) continue;
-                
+
                 string[] sb = line.Split('=');
                 if (sb.Length != 2) break;
                 dict[sb[0]] = sb[1];
@@ -854,22 +854,47 @@ namespace UtilsNS
         /// <param name="milliseconds"></param>
         public static void TimedMessageBox(string text, string title = "Information", int milliseconds = 1500)
         {
-            int returnValue = MessageBoxTimeout(IntPtr.Zero, text, title, Convert.ToUInt32(0), 1, milliseconds); 
+            int returnValue = MessageBoxTimeout(IntPtr.Zero, text, title, Convert.ToUInt32(0), 1, milliseconds);
             //return (MessageBoxReturnStatus)returnValue;
         }
 
         /// <summary>
         /// Main directory of current app: System.Reflection.Assembly.GetEntryAssembly().Location <-> Environment.GetCommandLineArgs()[0]
         /// </summary>
-        public static string basePath = Directory.GetParent(Directory.GetParent(System.Reflection.Assembly.GetEntryAssembly().Location).Parent.FullName).FullName; 
-        public static string configPath { get { return basePath + "\\Config\\"; } }
+        public enum BaseLocation { oneUp, twoUp, appData, auto }
+        public static BaseLocation baseLocation = BaseLocation.auto;        
+        public static string basePath
+        { 
+            get 
+            {
+                BaseLocation bl = baseLocation;
+                if (bl == BaseLocation.auto)
+                {
+                    if (System.Reflection.Assembly.GetEntryAssembly().Location.IndexOf("Program") > -1) bl = BaseLocation.appData;
+                    else bl = BaseLocation.oneUp; // twoUp later !!!
+                }
+                switch (bl)
+                {               
+                    case BaseLocation.oneUp:
+                        return Directory.GetParent(System.Reflection.Assembly.GetEntryAssembly().Location).Parent.FullName;
+                    case BaseLocation.twoUp:
+                        return Directory.GetParent(Directory.GetParent(System.Reflection.Assembly.GetEntryAssembly().Location).Parent.FullName).FullName;
+                    case BaseLocation.appData:
+                        return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), System.Reflection.Assembly.GetEntryAssembly().GetName().Name);
+                    default:
+                        return "";
+                }
+            }           
+        }
+           
+        public static string configPath { get { return Path.Combine(basePath,"Config")+"\\"; } }
 
         public static bool extendedDataPath { get; set; } // defaults are: in AH - true / in MM2 - false
         public static string dataPath 
         { 
             get 
             { 
-                string rslt = basePath + "\\Data\\";
+                string rslt = Path.Combine(basePath,"Data")+"\\";
                 if (extendedDataPath)
                 {                     
                     rslt += DateTime.Now.Month.ToString("D2")+"\\";

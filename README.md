@@ -30,6 +30,9 @@ If you are interested only in running the Scripthea application:
  - unzip binaries.zip (bin and obj folders) in the same (Scripthea) directory 
  - go to ...\Scripthea\bin\Debug\ and run Scripthea.exe from there. 
  If you have concerns about viruses, don't touch the binaries and compile from the sources - I'm using C#, .NET framework 4.8 with WPF and Visual Studio 2019 as IDE.
+ 
+#### HELP
+Wherever you are within the application press F1 for online help.
 
 #### contact 
 Keep in mind that the application is under active development, so let me know about any bug at https://sicyon.com/survey/comment.html and I'll do my best to fix it asap. In the same way, you can communicate any ideas for improvement, experiences with the software or your willingness to help me with the project. I would especially appreciate more cue collections preferably organized by subject, see config folder for *.cues files.
