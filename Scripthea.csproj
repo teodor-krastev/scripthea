@@ -289,5 +289,8 @@
   <ItemGroup>
     <Resource Include="Properties\random.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Properties\v3line-6.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

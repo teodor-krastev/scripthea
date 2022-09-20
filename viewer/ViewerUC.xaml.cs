@@ -78,7 +78,7 @@ namespace scripthea.viewer
             if (OnLog != null) OnLog(txt, clr);
         }
         
-        private bool checkImageDepot(string imageDepot = "")
+        private bool checkImageDepot(string imageDepot = "", bool checkDesc = false)
         {
             string idepot = imageDepot == "" ? imageFolder : imageDepot;
             idepot = idepot.EndsWith("\\") ? idepot : idepot + "\\";
@@ -86,16 +86,16 @@ namespace scripthea.viewer
             {
                 Log("Err: Directory <" + idepot + "> does not exist. "); return false;
             }
-            /* if (!File.Exists(idepot + "description.txt")) // probably no need
+            if (!File.Exists(idepot + "description.txt") && checkDesc) // probably no need
             {
                 Log("Err: File <" + idepot + "description.txt" + "> does not exist."); return false;
-            }*/
+            }
             return true;
         }
         List<iPicList> views;
         private List<Tuple<int, string, string>> DecompImageDepot(string imageDepot, bool checkFileAndOut)
         {
-            if (!checkImageDepot("")) return null;
+            if (!checkImageDepot("", true)) return null;
             List<Tuple<int, string, string>> lt = new List<Tuple<int, string, string>>();
             List<string> ls = new List<string>(File.ReadAllLines(imageDepot + "description.txt")); int k = 1;
             foreach (string ss in ls)

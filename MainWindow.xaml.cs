@@ -27,8 +27,10 @@ namespace scripthea
         public int Height;
         public int Width;
         public int LogColWidth;
+        public bool LogColWaveSplit;
         public int QueryColWidth;
         public int ViewColWidth;
+       
 
         public bool SingleAuto;
         public bool OneLineCue;
@@ -81,6 +83,7 @@ namespace scripthea
             Height = opts.Height;
             Width = opts.Width;
             pnlLog.Width = new GridLength(opts.LogColWidth);
+            gridSplitLeft_MouseDoubleClick(null, null);
             pnlLogImage.Height = new GridLength(opts.LogColWidth); 
 
             oldTab = tiCue;
@@ -179,6 +182,26 @@ namespace scripthea
         {
             if (Utils.isNull(aboutWin)) aboutWin = new AboutWin();
             aboutWin.ShowDialog();            
+        }
+        private void gridSplitLeft_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (!Utils.isNull(sender)) opts.LogColWaveSplit = !opts.LogColWaveSplit;
+            if (opts.LogColWaveSplit)
+            {
+                gridSplitLeft.Visibility = Visibility.Visible;
+                gridSplitLeft2.Visibility = Visibility.Collapsed;
+                tabControl.Margin = new Thickness(17, 0, 0, 0);
+            }
+            else
+            {
+                gridSplitLeft.Visibility = Visibility.Collapsed;
+                gridSplitLeft2.Visibility = Visibility.Visible;
+                tabControl.Margin = new Thickness(5, 0, 0, 0);
+            }
+        }
+        private void MainWindow1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key.Equals(Key.F1)) Utils.CallTheWeb("https://scripthea.sicyon.com");
         }
     }
 }
