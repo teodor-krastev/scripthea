@@ -870,7 +870,7 @@ namespace UtilsNS
                 BaseLocation bl = baseLocation;
                 if (bl == BaseLocation.auto)
                 {
-                    if (System.Reflection.Assembly.GetEntryAssembly().Location.IndexOf("Program") > -1) bl = BaseLocation.appData;
+                    if (System.Reflection.Assembly.GetEntryAssembly().Location.IndexOf(":\\Program") > -1) bl = BaseLocation.appData;
                     else bl = BaseLocation.oneUp; // twoUp later !!!
                 }
                 switch (bl)

@@ -24,15 +24,9 @@ The description.txt file is a text file where on the left you have the image fil
 All the options, external and internal sizes and position are saved on closing and retrieved. 
 The current key to access DeepAI API is temporary, if you need more regular access you need to open an account at http://deepai.org and contribute ($2 per 1000 queries). When you get your personal key you need to put it in DeepAI.key file in config folder. (I'm not affiliated to DeepAI in any way.)
 
-#### just run it
-If you are interested only in running the Scripthea application: 
- - download the whole project and unzip it somewhere renaming "scripthea-master" to "Scripthea"
- - unzip binaries.zip (bin and obj folders) in the same (Scripthea) directory 
- - go to ...\Scripthea\bin\Debug\ and run Scripthea.exe from there. 
- If you have concerns about viruses, don't touch the binaries and compile from the sources - I'm using C#, .NET framework 4.8 with WPF and Visual Studio 2019 as IDE.
- 
-#### HELP
-Wherever you are within the application press F1 for online help.
+#### need HELP or just run it
+Wherever you are within the application press F1 for online help (https://scripthea.sicyon.com)
+If you have concerns about viruses, compile from the sources - I'm using C#, .NET framework 4.8 with WPF and Visual Studio 2019 as IDE.
 
 #### contact 
 Keep in mind that the application is under active development, so let me know about any bug at https://sicyon.com/survey/comment.html and I'll do my best to fix it asap. In the same way, you can communicate any ideas for improvement, experiences with the software or your willingness to help me with the project. I would especially appreciate more cue collections preferably organized by subject, see config folder for *.cues files.

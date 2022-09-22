@@ -30,7 +30,7 @@ namespace scripthea
     /// </summary>
     public partial class QueryUC : UserControl
     {
-        string defaultImageFolder = Utils.basePath + "\\images\\";
+        public string defaultImageFolder = Utils.basePath + "\\images\\";
         public ControlAPI API;
         public Options opts;
         public QueryUC()

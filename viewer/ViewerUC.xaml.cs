@@ -17,8 +17,7 @@ using System.Windows.Shapes;
 using UtilsNS;
 
 namespace scripthea.viewer
-{
-    
+{   
     interface iPicList
     {
         void Init(ref Options _opts);

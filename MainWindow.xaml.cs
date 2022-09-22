@@ -29,8 +29,7 @@ namespace scripthea
         public int LogColWidth;
         public bool LogColWaveSplit;
         public int QueryColWidth;
-        public int ViewColWidth;
-       
+        public int ViewColWidth;       
 
         public bool SingleAuto;
         public bool OneLineCue;
@@ -67,6 +66,7 @@ namespace scripthea
             {
                 string json = System.IO.File.ReadAllText(optionsFile);
                 opts = JsonConvert.DeserializeObject<Options>(json);
+                if (opts.ImageDepotFolder.Equals("<default.image.depot>")) opts.ImageDepotFolder = queryUC.defaultImageFolder;
             }
             else opts = new Options();
 
