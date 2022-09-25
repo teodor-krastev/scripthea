@@ -86,7 +86,7 @@ namespace scripthea
             gridSplitLeft_MouseDoubleClick(null, null);
             pnlLogImage.Height = new GridLength(opts.LogColWidth); 
 
-            oldTab = tiCue;
+            oldTab = tiComposer;
             Title = "Scripthea - image cues composer v" + Utils.getAppFileVersion + "  ";  
             Log("> Welcome to Scrpithea"); Log("");
             if (opts.SingleAuto) queryUC.btnCompose_Click(null, null);
@@ -170,9 +170,9 @@ namespace scripthea
         private void tabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (sender != tabControl) return;
-            if (tabControl.SelectedItem.Equals(tiReview))
+            if (tabControl.SelectedItem.Equals(tiViewer))
             {
-                if (oldTab.Equals(tiCue)) viewerUC.tbImageDepot.Text = queryUC.tbImageDepot.Text;
+                if (oldTab.Equals(tiComposer)) viewerUC.tbImageDepot.Text = queryUC.tbImageDepot.Text;
                 if (oldTab.Equals(tiUtils)) viewerUC.tbImageDepot.Text = craiyonImportUC.imageFolder;
             }
             oldTab = (TabItem)tabControl.SelectedItem;

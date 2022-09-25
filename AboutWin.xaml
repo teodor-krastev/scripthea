@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:scripthea"
         mc:Ignorable="d"
-        Title="About Scripthea" Height="298.359" Width="369.595" MouseDown="aboutWin_MouseDown" Icon="Properties/penzy4.png" WindowStyle="ToolWindow" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Topmost="True">
+        Title="About Scripthea" Height="298.359" Width="402.405" MouseDown="aboutWin_MouseDown" Icon="Properties/penzy4.png" WindowStyle="ToolWindow" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Topmost="True">
     <Grid Margin="0">
         <Grid.RowDefinitions>
             <RowDefinition Height="136.101"/>
@@ -17,20 +17,14 @@
                 <Label x:Name="lbPreAuthor" Content="written and copyright" FontSize="14"/>
                 <TextBlock x:Name="lbAuthor" Text="Teodor Krastev" Foreground="Blue" TextDecorations="Underline" FontSize="14" Cursor="Hand" Margin="0,5,0,0" MouseDown="lbAuthor_MouseDown" ToolTip="Contact the author"/>
             </StackPanel>
-            <Label x:Name="lbLicense" Content="open source software - MIT license agreement" HorizontalAlignment="Center" FontSize="13"/>
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="21*"/>
-                    <ColumnDefinition Width="64*"/>
-                </Grid.ColumnDefinitions>
-                <Label x:Name="lbWebsite" HorizontalAlignment="Right"  Margin="0,0,10,0" >
-                    <TextBlock FontSize="13" Foreground="Blue" TextDecorations="Underline" Cursor="Hand" Visibility="Hidden">installation file</TextBlock>
-                </Label>
-                <StackPanel Grid.Column="1" Orientation="Horizontal">
-                    <Label x:Name="lbGithub" HorizontalAlignment="Left" Margin="0" Content="sources at: " FontSize="13"></Label>
-                    <TextBlock x:Name="tbSources" FontSize="13" Foreground="Blue" TextDecorations="Underline" Cursor="Hand" MouseDown="tbSources_MouseDown" Margin="0,5,0,0">Scripthea GitHub repository</TextBlock>
-                </StackPanel>
-            </Grid>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Label x:Name="lbLicense" Content="open source project (MIT license)" HorizontalAlignment="Center" FontSize="13"/>
+                <TextBlock x:Name="tbSources" FontSize="13" Foreground="Blue" TextDecorations="Underline" Cursor="Hand" MouseDown="tbSources_MouseDown" Margin="0,5,0,0">Scripthea GitHub repository</TextBlock>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Label x:Name="lbGithub" HorizontalAlignment="Left" Margin="0" Content="For online help and app.setup visit " FontSize="13"></Label>
+                <TextBlock x:Name="tbkWebsite" FontSize="15" Foreground="Blue" TextDecorations="Underline" Cursor="Hand" Text="Scripthea.com" Padding="0,2,0,0" MouseDown="tbkWebsite_MouseDown"/>
+            </StackPanel>
         </StackPanel>
         <Image x:Name="imgLogo" Margin="18,25,17.975,13.101" Source="Properties/ScriptheaLogo2.png" Stretch="None" HorizontalAlignment="Center" VerticalAlignment="Center" Height="118" Width="314"/>
     </Grid>

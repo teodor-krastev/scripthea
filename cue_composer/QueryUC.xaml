@@ -23,31 +23,31 @@
                     <RowDefinition Height="20*"/>
                     <RowDefinition Height="10*"/>
                 </Grid.RowDefinitions>
-                <TextBox x:Name="tbCue" Margin="0" TextWrapping="Wrap" Text="" Background="#FFFFFFF8" BorderBrush="#FFF9DE34" FontSize="13" TextChanged="tbCue_TextChanged" ContextMenuOpening="tbCue_ContextMenuOpening" AcceptsReturn="True">
+                <TextBox x:Name="tbCue" Margin="0" TextWrapping="Wrap" Background="#FFFFFFF8" BorderBrush="#FFF9DE34" Text="" FontSize="13" TextChanged="tbCue_TextChanged" ContextMenuOpening="tbCue_ContextMenuOpening" AcceptsReturn="True">
                     <TextBox.ContextMenu>
                         <ContextMenu x:Name="cmCue"/>
                     </TextBox.ContextMenu>
                 </TextBox>
                 <GridSplitter x:Name="gridSplitInCue" HorizontalAlignment="Stretch" Height="3" Margin="0" Grid.Row="1" VerticalAlignment="Top"/>
-                <TextBox x:Name="tbModifier" Margin="0,3,0,0" TextWrapping="Wrap" Text="" Background="#FFF3FDEE" Grid.Row="1" FontSize="13" BorderBrush="#FFB1DE9E" AcceptsReturn="True"/>
+                <TextBox x:Name="tbModifier" Margin="0,3,0,0" TextWrapping="Wrap" Text=""  Background="MintCream" BorderBrush="#FFB1DE9E" Grid.Row="1" FontSize="13" AcceptsReturn="True"/>
             </Grid>
 
             <TabControl x:Name="tcQuery" Margin="0"  SelectedIndex="0" SelectionChanged="tcQuery_SelectionChanged" >
-                <TabItem x:Name="tiSingle" Header="Single" Width="70" Height="23">
+                <TabItem x:Name="tiSingle" Header="Single" Width="70" Height="23" Background="#FFECECEC" Padding="6,1" HorizontalAlignment="Left">
                     <Grid>
                         <Button x:Name="btnCompose" Content="Compose a cue" Height="30" Width="103" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0" Click="btnCompose_Click" Background="#FFFAFAEB" FontSize="13"/>
-                        <Button x:Name="btnQuery" Content="Query API" Height="30" Width="103" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="125,10,0,0" Background="#FFECFAEB" FontSize="13" Click="btnQuery_Click"/>
+                        <Button x:Name="btnQuery" Content="Query API" Height="30" Width="103" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="125,10,0,0" Background="#FFEBF3FA" FontSize="13" Click="btnQuery_Click"/>
                         <CheckBox x:Name="chkAutoSingle" Content="Auto-refresh" Width="85" Margin="10,50,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Checked="chkAutoSingle_Checked" Unchecked="UpdateToOptions"/>
                         <CheckBox x:Name="chkOneLineCue" Content="One line cue" Width="87" Margin="105,50,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Checked="UpdateToOptions" Unchecked="UpdateToOptions" IsChecked="True" Visibility="Collapsed" />
                     </Grid>
                 </TabItem>
-                <TabItem x:Name="tiScan" Header="Scan" Width="70" Height="23">
+                <TabItem x:Name="tiScan" Header="Scan" Height="23" Background="#FFECECEC" Margin="1.7,0,-2.253,0.089" HorizontalAlignment="Left" Width="69" >
                     <Grid>
-                        <Button x:Name="btnScan" Content="S c a n" Height="30" Width="77" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0" FontWeight="Bold" Background="MintCream" Click="btnScan_Click" FontSize="13"/>
+                        <Button x:Name="btnScan" Content="S c a n" Height="30" Width="77" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0" FontWeight="Bold" Background="#FFEBF3FA" Click="btnScan_Click" FontSize="13"/>
                         <TextBox HorizontalAlignment="Right" Text="Combine all checked cues with one from the checked modifiers." Width="162" Margin="0,0,-0.228,0" TextWrapping="Wrap" Background="{x:Null}" BorderBrush="{x:Null}"/>
                     </Grid>
                 </TabItem>
-                <TabItem x:Name="tiOptions" Header="Options" Width="70" Height="23">
+                <TabItem x:Name="tiOptions" Header="Options" Height="23" Background="#FFECECEC" Margin="5.861,0,-9.063,0.089" HorizontalAlignment="Left" Width="70">
                     <Grid >
                         <GroupBox VerticalAlignment="Bottom" Header="Image depot folder" Height="47">
                             <Grid>

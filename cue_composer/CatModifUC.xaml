@@ -11,12 +11,12 @@
             <MenuItem Header="Menu item 1" StaysOpenOnClick="True" Click="MenuItem_Click"/>
         </ContextMenu>
     </UserControl.Resources>
-    <Grid>
+    <Grid Background="MintCream">
         <Grid.RowDefinitions>
             <RowDefinition Height="29"/>
             <RowDefinition Height="206*"/>
         </Grid.RowDefinitions>
-        <CheckBox x:Name="chkCategory" Content="Category" HorizontalAlignment="Center" Margin="0" VerticalAlignment="Center" FontSize="13" MouseRightButtonDown="chkCategory_MouseRightButtonDown"/>
+        <CheckBox x:Name="chkCategory" Content="Category" HorizontalAlignment="Center" Margin="0" VerticalAlignment="Center" FontSize="13" MouseRightButtonDown="chkCategory_MouseRightButtonDown" Foreground="Black" Background="{x:Null}"/>
         <ListBox x:Name="modifListBox" Margin="0" Grid.Row="1" MouseRightButtonDown="chkCategory_MouseRightButtonDown">
         </ListBox>
     </Grid>

@@ -40,7 +40,8 @@ namespace scripthea
                 TabItem newTabItem = new TabItem
                 {
                     Header = se,
-                    Name = "ti"+se
+                    Name = "ti"+se,
+                    Background = Utils.ToSolidColorBrush("#FFFFFFF8")
                 };
                 tabControl.Items.Add(newTabItem); List<SeedItemUC> ocl = new List<SeedItemUC>(); localSeeds.Add(ocl);
                 ScrollViewer sv = new ScrollViewer(); sv.CanContentScroll = true; newTabItem.Content = sv;

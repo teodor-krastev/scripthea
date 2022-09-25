@@ -40,12 +40,12 @@
                 <Image x:Name="btnFindDown"  Grid.Column="1" Width="30" HorizontalAlignment="Left" Source="/Scripthea;component/Properties/find_down.png" Margin="32,0,0,0" Cursor="Hand" ToolTip="Find Down" MouseDown="btnFindUp_MouseDown"/>
             </Grid>
             <TabControl x:Name="tabCtrlViews" Grid.Row="1" SelectedIndex="0" BorderBrush="{x:Null}">
-                <TabItem x:Name="tiTable" Header="Table view"  Height="25" >
+                <TabItem x:Name="tiTable" Header="Table view"  Height="25" Background="#FFECECEC" >
                     <Grid>
                         <local:TableViewUC x:Name="tableViewUC"/>
                     </Grid>
                 </TabItem>
-                <TabItem x:Name="tiGrid" Header="Grid view" Height="25">
+                <TabItem x:Name="tiGrid" Header="Grid view" Height="25" Background="#FFECECEC" Margin="2.38,-1,-10.835,0.911">
                     <Grid>
                         <local:GridViewUC x:Name="gridViewUC"/>
                      </Grid>

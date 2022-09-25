@@ -13,15 +13,15 @@
             <RowDefinition Height="42"/>
         </Grid.RowDefinitions>
         <StackPanel Margin="0" Orientation="Horizontal" HorizontalAlignment="Left">
-            <Image x:Name="imgCopy" Margin="20,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Right" Height="23" Width="29" ToolTip="Copy image to clipboard" Cursor="Hand" MouseDown="imgCopy_MouseDown_1" Source="/Scripthea;component/Properties/copy1a.png"/>
+            <Image x:Name="imgCopy" Margin="5,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Right" Height="23" Width="29" ToolTip="Copy image to clipboard" Cursor="Hand" MouseDown="imgCopy_MouseDown_1" Source="/Scripthea;component/Properties/copy1a.png"/>
+            <Image x:Name="imgZoomIn" Margin="20,0,3,0" Source="/Scripthea;component/Properties/zoom-in.png" MouseDown="imgZoomIn_MouseDown" Cursor="Hand"/>
+            <Image x:Name="imgZoomFit" Margin="3,0" Source="/Scripthea;component/Properties/fit2.png" MouseDown="imgZoomFit_MouseDown" Cursor="Hand" />
+            <Image x:Name="imgZoomOut" Margin="3,0" Source="/Scripthea;component/Properties/zoom-out.png" MouseDown="imgZoomIn_MouseDown" Cursor="Hand"/>
+        </StackPanel>
+        <StackPanel Margin="0" Orientation="Horizontal" HorizontalAlignment="Right">
             <Label x:Name="lbIndex" Content="" Margin="7,0,5,0" FontWeight="Bold"/>
             <TextBlock x:Name="tbPath" VerticalAlignment="Center" HorizontalAlignment="Left"></TextBlock>
             <TextBox x:Name="tbName" Margin="2,0,10,0" FontWeight="Bold" VerticalAlignment="Center" IsReadOnly="True" HorizontalAlignment="Left" Background="{x:Null}" BorderThickness="0,0,0,1"/>
-        </StackPanel>
-        <StackPanel Margin="0" Orientation="Horizontal" HorizontalAlignment="Center">
-            <Image x:Name="imgZoomIn" Margin="5,0" Source="/Scripthea;component/Properties/zoom-in.png" MouseDown="imgZoomIn_MouseDown" Cursor="Hand"/>
-            <Image x:Name="imgZoomFit" Margin="8,0" Source="/Scripthea;component/Properties/fit2.png" MouseDown="imgZoomFit_MouseDown" Cursor="Hand" />
-            <Image x:Name="imgZoomOut" Margin="5,0" Source="/Scripthea;component/Properties/zoom-out.png" MouseDown="imgZoomIn_MouseDown" Cursor="Hand"/>
         </StackPanel>
         <ScrollViewer x:Name="scrollViewer" Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Visibility="Collapsed">
         </ScrollViewer>

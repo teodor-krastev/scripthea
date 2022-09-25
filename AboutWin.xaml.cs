@@ -40,5 +40,10 @@ namespace scripthea
         {
             Utils.CallTheWeb(@"https://sicyon.com/survey/comment.html?sj=scripthea");
         }
+
+        private void tbkWebsite_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Utils.CallTheWeb(@"http://scripthea.com");
+        }
     }
 }
