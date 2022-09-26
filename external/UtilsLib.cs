@@ -861,6 +861,10 @@ namespace UtilsNS
         /// <summary>
         /// Main directory of current app: System.Reflection.Assembly.GetEntryAssembly().Location <-> Environment.GetCommandLineArgs()[0]
         /// </summary>
+        public static string appFullPath = System.Reflection.Assembly.GetEntryAssembly().Location;
+        public static string appName = System.Reflection.Assembly.GetEntryAssembly().GetName().Name;
+        public static bool localConfig = File.Exists(Path.ChangeExtension(System.Reflection.Assembly.GetEntryAssembly().Location, ".PDB"));
+        //public bool 
         public enum BaseLocation { oneUp, twoUp, appData, auto }
         public static BaseLocation baseLocation = BaseLocation.auto;        
         public static string basePath
@@ -869,18 +873,18 @@ namespace UtilsNS
             {
                 BaseLocation bl = baseLocation;
                 if (bl == BaseLocation.auto)
-                {
-                    if (System.Reflection.Assembly.GetEntryAssembly().Location.IndexOf(":\\Program") > -1) bl = BaseLocation.appData;
-                    else bl = BaseLocation.oneUp; // twoUp later !!!
+                {                    
+                    if (localConfig) bl = BaseLocation.oneUp; // twoUp later !!!
+                    else bl = BaseLocation.appData; 
                 }
                 switch (bl)
                 {               
                     case BaseLocation.oneUp:
-                        return Directory.GetParent(System.Reflection.Assembly.GetEntryAssembly().Location).Parent.FullName;
+                        return Directory.GetParent(appFullPath).Parent.FullName;
                     case BaseLocation.twoUp:
-                        return Directory.GetParent(Directory.GetParent(System.Reflection.Assembly.GetEntryAssembly().Location).Parent.FullName).FullName;
+                        return Directory.GetParent(Directory.GetParent(appFullPath).Parent.FullName).FullName;
                     case BaseLocation.appData:
-                        return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), System.Reflection.Assembly.GetEntryAssembly().GetName().Name);
+                        return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), appName);
                     default:
                         return "";
                 }

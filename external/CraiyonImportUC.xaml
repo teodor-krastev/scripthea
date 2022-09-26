@@ -9,7 +9,8 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
-            <RowDefinition Height="196*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="300"/>
         </Grid.RowDefinitions>
         <GroupBox Header="Craiyon image folder to convert" Margin="0" >
             <Grid>
@@ -26,14 +27,16 @@
                 </Button>
             </Grid>
         </GroupBox>
-        <TabControl x:Name="tcMain" Grid.Row="1" BorderBrush="{x:Null}">
+        <TabControl x:Name="tcMain" Grid.Row="1" BorderBrush="{x:Null}" SelectedIndex="1" >
             <TabItem x:Name="tiList" Visibility="Collapsed">
                 <ListBox x:Name="lstFiles"></ListBox>
             </TabItem>
             <TabItem x:Name="tiGrid" Visibility="Collapsed">
-                <DataGrid x:Name="dGrid" Margin="0" IsReadOnly="True" AutoGeneratingColumn="dGrid_AutoGeneratingColumn"/>
+                <DataGrid x:Name="dGrid" Margin="0" SelectionMode="Single" CanUserAddRows="False" SelectionChanged="dGrid_SelectionChanged" HorizontalScrollBarVisibility="Disabled" />
             </TabItem>
         </TabControl>
-        
+        <GridSplitter Grid.Row="2" VerticalAlignment="Top" HorizontalAlignment="Stretch" Height="3"></GridSplitter>
+        <Image x:Name="image" Margin="0,5,0,0" Grid.Row="2" />
+
     </Grid>
 </UserControl>

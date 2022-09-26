@@ -72,6 +72,7 @@ namespace scripthea
 
             queryUC.OnLog += new QueryUC.LogHandler(Log);
             viewerUC.OnLog += new ViewerUC.LogHandler(Log);
+            craiyonImportUC.OnLog += new CraiyonImportUC.LogHandler(Log);
 
             queryUC.Init(ref opts);
             viewerUC.Init(ref opts);
@@ -135,8 +136,7 @@ namespace scripthea
                             string fn = msg.Substring(9);
                             if (File.Exists(fn)) // success
                             {
-                                var bitmap = new BitmapImage(new Uri(fn));
-                                imgLast.Source = bitmap;
+                                imgLast.Source = (new BitmapImage(new Uri(fn))).Clone();
                             } return;
                         case "@WorkDir":
                             if (Directory.Exists(opts.ImageDepotFolder))
@@ -165,7 +165,6 @@ namespace scripthea
             dti++;
             lbProcessing.Content = ch;
         }
-
         TabItem oldTab;
         private void tabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
