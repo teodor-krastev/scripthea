@@ -53,7 +53,16 @@ namespace scripthea
         public event RoutedEventHandler OnChange;
         protected void Change(object sender, RoutedEventArgs e)
         {
-            if ((OnChange != null)) OnChange(this, e);
+            if (radioMode)
+            {
+                if ((OnChange != null)) OnChange(this, e); 
+            }
+            else lbSelCount.Content = "#"+selectedSeeds().Count.ToString();
+            for (int i = 0; i < tabControl.Items.Count; i++)
+            {
+                if (selectedSeeds(i).Count > 0 && !radioMode) ((TabItem)tabControl.Items[i]).Background = Utils.ToSolidColorBrush("#FFFFF3DE");
+                else ((TabItem)tabControl.Items[i]).Background = Utils.ToSolidColorBrush("#FFFFFFF8");
+            }
         }
 
         protected void AddSeeds(StackPanel sp, ref List<SeedItemUC> ocl, string fn)
@@ -75,6 +84,7 @@ namespace scripthea
                 {
                     SeedItemUC seed = new SeedItemUC(ls);
                     seed.rbChecked.Checked += new RoutedEventHandler(Change); //seed.rbChecked.Unchecked += new RoutedEventHandler(Change);
+                    seed.checkBox.Checked += new RoutedEventHandler(Change); seed.checkBox.Unchecked += new RoutedEventHandler(Change);
                     allSeeds.Add(seed); ocl.Add(seed);
                     sp.Children.Add(seed); ls.Clear();
                 }
@@ -84,27 +94,26 @@ namespace scripthea
                 }
             }
         }
-        public List<SeedItemUC> selectedSeeds 
+        public List<SeedItemUC> selectedSeeds(int tabIdx = -1) // -1 -> allSeeds in non-radio
         {
-            get 
+            List<SeedItemUC> ssd = new List<SeedItemUC>();
+            if (radioMode)
             {
-                List<SeedItemUC> ssd = new List<SeedItemUC>();
-                if (radioMode)
-                {
-                    foreach (SeedItemUC os in localSeeds[tabControl.SelectedIndex])
-                        if (os.radioChecked)
-                        {
-                            ssd.Add(os); return ssd;
-                        }
-                }
-                else
-                {
-                    foreach (SeedItemUC os in allSeeds)
-                        if (os.boxChecked) ssd.Add(os);
-                    return ssd;
-                }
-                return null;
+                foreach (SeedItemUC os in localSeeds[tabControl.SelectedIndex])
+                    if (os.radioChecked)
+                    {
+                        ssd.Add(os); return ssd;
+                    }
             }
+            else
+            {
+                List<SeedItemUC> ssf;
+                if (Utils.InRange(tabIdx, 0, tabControl.Items.Count - 1)) ssf = localSeeds[tabIdx];
+                else ssf = allSeeds;
+                foreach (SeedItemUC os in ssf)
+                    if (os.boxChecked) ssd.Add(os);                
+            }
+            return ssd;            
         }
 
         public int allSeedIdx
@@ -155,8 +164,16 @@ namespace scripthea
                 if (Utils.isNull(allSeeds)) return;
                 foreach (SeedItemUC os in allSeeds)
                     os.radioMode = value;
-                if (value) imgRandom.Visibility = Visibility.Visible;
-                else imgRandom.Visibility = Visibility.Collapsed;
+                if (value)
+                {
+                    imgRandom.Visibility = Visibility.Visible; lbSelCount.Visibility = Visibility.Collapsed;
+                    tabControl_SelectionChanged(null, null);
+                }
+                else
+                {
+                    imgRandom.Visibility = Visibility.Collapsed; lbSelCount.Visibility = Visibility.Visible;                    
+                }
+                Change(null, null); 
             }
         }
         Random rand = new Random();

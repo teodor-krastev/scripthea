@@ -13,6 +13,6 @@
         </Grid.ColumnDefinitions>
         <RadioButton x:Name="rbChecked" Content="" Margin="0" VerticalAlignment="Center" HorizontalAlignment="Center" GroupName="RadioSeeds"/>
         <CheckBox x:Name="checkBox" Content="" Margin="0" VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="Collapsed"/>
-        <TextBox x:Name="tbSeed" Grid.Column="1" Margin="0" TextWrapping="Wrap" Text="" IsReadOnly="True" />
+        <TextBox x:Name="tbSeed" Grid.Column="1" Margin="0" TextWrapping="Wrap" Text="" IsReadOnly="True" Background="White" />
     </Grid>
 </UserControl>

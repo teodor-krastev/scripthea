@@ -11,5 +11,6 @@
 
         </TabControl>
         <Image x:Name="imgRandom" HorizontalAlignment="Right" Margin="0,0,5,0" VerticalAlignment="Top" Width="30" Source="/Scripthea;component/Properties/random.png" ToolTip="Random select" Cursor="Hand" MouseDown="imgRandom_MouseDown"/>
+        <Label x:Name="lbSelCount" FontWeight="Bold" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,-3,17,0" Visibility="Collapsed"></Label>
     </Grid>
 </UserControl>

@@ -180,7 +180,7 @@ namespace scripthea
         {
             if (Utils.isNull(seedListUC) || Utils.isNull(modifiersUC)) return;
             if (Utils.isNull(seedListUC.allSeeds) || Utils.isNull(modifiersUC.catModifs)) return;
-            List<SeedItemUC> selectedSeed = seedListUC.selectedSeeds;
+            List<SeedItemUC> selectedSeed = seedListUC.selectedSeeds();
             if (Utils.isNull(selectedSeed)) { Log("Err: no cue is selected"); return; }
             if (selectedSeed.Count.Equals(0)) { Log("Err: no cue is selected"); return; }
             Compose(sender, selectedSeed[0], modifiersUC.Composite());
@@ -221,7 +221,7 @@ namespace scripthea
         private int scanCuesIdx;
         private void btnScan_Click(object sender, RoutedEventArgs e)
         {
-            List<SeedItemUC> selectedSeeds = seedListUC.selectedSeeds;
+            List<SeedItemUC> selectedSeeds = seedListUC.selectedSeeds();
             if (Convert.ToString(btnScan.Content).Equals("S c a n"))
             {
                 if (Utils.isNull(selectedSeeds)) { Log("Err: no cue is selected"); return; }
@@ -295,7 +295,7 @@ namespace scripthea
                 Utils.TimedMessageBox("API is busy, try again later...", "Warning"); return;
             }            
             btnCompose_Click(null, null); status = Status.SingeQuery;
-            QueryAPI(Compose(null, seedListUC.selectedSeeds[0], modifiersUC.Composite()));
+            QueryAPI(Compose(null, seedListUC.selectedSeeds()[0], modifiersUC.Composite()));
         }
 
         private void tbCue_TextChanged(object sender, TextChangedEventArgs e)
