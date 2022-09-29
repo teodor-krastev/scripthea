@@ -120,9 +120,10 @@ namespace UtilsNS
         }
         public enum SearchEngine { google, bing, duckduckgo }
         public static SearchEngine searchEngine = SearchEngine.google;
-        public static void AskTheWeb(string query)
+        public static void AskTheWeb(string query, bool imagesTab = false)
         {
-            CallTheWeb("https://www." + Convert.ToString(searchEngine) + ".com/search?q=" + query.Trim().Replace(' ', '+'));
+            string imageSwitch = imagesTab ? "&tbm=isch" : ""; 
+            CallTheWeb("https://www." + Convert.ToString(searchEngine) + ".com/search?q=" + query.Trim().Replace(' ', '+')+imageSwitch);
         }
         public static void Sleep(int milisec)
         {
@@ -408,6 +409,9 @@ namespace UtilsNS
             return bitmap;
         }
         /* PROBLEMS ??? 
+         * https://www.csharp-examples.net/download-files/#:~:text=The%20simply%20way%20how%20to,want%20to%20save%20the%20file
+         * https://stackoverflow.com/questions/525364/how-to-download-a-file-from-a-website-in-c-sharp
+         * https://jonathancrozier.com/blog/how-to-download-files-using-c-sharp
         public static List<string> GetText(string textUrl) 
         {
             WebClient client = new WebClient();           

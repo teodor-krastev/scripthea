@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:scripthea" xmlns:viewer="clr-namespace:scripthea.viewer"
         mc:Ignorable="d"
-        Title="Scripthea - image cues composer" Height="450" Width="800" Loaded="MainWindow1_Loaded" Closing="MainWindow1_Closing" Icon="Properties/penzy4.png" FontSize="12" KeyDown="MainWindow1_KeyDown">
+        Title="Scripthea - text-to-image prompt composer" Height="450" Width="800" Loaded="MainWindow1_Loaded" Closing="MainWindow1_Closing" Icon="Properties/penzy4.png" FontSize="12" KeyDown="MainWindow1_KeyDown">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="200" x:Name="pnlLog" MinWidth="100" MaxWidth="600"/>
@@ -39,7 +39,7 @@
             </Grid>
         </Grid>
         <TabControl x:Name="tabControl" Margin="17,0" Grid.Column="1" SelectionChanged="tabControl_SelectionChanged" BorderBrush="{x:Null}" >
-            <TabItem x:Name="tiComposer"  Header=" Cue composer " Width="120" Height="25" Background="#FFECECEC" HorizontalAlignment="Left" >
+            <TabItem x:Name="tiComposer"  Header=" Prompt composer " Width="120" Height="25" Background="#FFECECEC" HorizontalAlignment="Left" >
                 <Grid>
                     <local:QueryUC x:Name="queryUC" Margin="0" />
                 </Grid>

@@ -109,9 +109,9 @@ namespace scripthea
                     string efn = Convert.ToString(row["file"]); 
                     string ffn = System.IO.Path.Combine(imageFolder, System.IO.Path.ChangeExtension(efn, ".png")); 
                     if (!(efn.Substring(0, 7)).Equals("craiyon")) continue;                    
-                    string cue = System.IO.Path.ChangeExtension(efn.Substring(15), null);
+                    string prompt = System.IO.Path.ChangeExtension(efn.Substring(15), null);
                     for (int j = 0; j < 4; j++)
-                        if (cue.EndsWith("_br_")) cue = cue.Substring(0, cue.Length - 4);
+                        if (prompt.EndsWith("_br_")) prompt = prompt.Substring(0, prompt.Length - 4);
                     string numFile = System.IO.Path.Combine(imageFolder, System.IO.Path.ChangeExtension("c_" + efn.Substring(8, 6), ".png"));
                     if (File.Exists(numFile)) 
                     { 
@@ -128,7 +128,7 @@ namespace scripthea
                     catch (System.IO.IOException IOe) { Log("Error: ("+System.IO.Path.GetFileName(ffn)+") " + IOe.Message); continue; }                               
                     using (StreamWriter sw = File.AppendText(imageFolder + "description.txt"))
                     {
-                        sw.WriteLine(System.IO.Path.GetFileName(numFile) + "=" + cue);
+                        sw.WriteLine(System.IO.Path.GetFileName(numFile) + "=" + prompt);
                     }
                     k++;
                 }

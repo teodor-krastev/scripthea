@@ -27,7 +27,7 @@ namespace scripthea.viewer
         {
             dTable = new DataTable();
             dTable.Columns.Add(new DataColumn("#", typeof(int)));
-            dTable.Columns.Add(new DataColumn("Cue", typeof(string)));
+            dTable.Columns.Add(new DataColumn("Prompt", typeof(string)));
             dTable.Columns.Add(new DataColumn("File", typeof(string)));
 
             InitializeComponent();
@@ -76,11 +76,11 @@ namespace scripthea.viewer
                 return itm;
             } 
         }
-        public delegate void PicViewerHandler(int idx, string filePath, string cue);
+        public delegate void PicViewerHandler(int idx, string filePath, string prompt);
         public event PicViewerHandler SelectEvent;
-        protected void OnSelect(int idx, string filePath, string cue)
+        protected void OnSelect(int idx, string filePath, string prompt)
         {
-            if (SelectEvent != null) SelectEvent(idx, filePath, cue);
+            if (SelectEvent != null) SelectEvent(idx, filePath, prompt);
         }
         private void DataGrid_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
         {   
@@ -90,7 +90,7 @@ namespace scripthea.viewer
                 case ("#"): case ("File"):
                     col.Width = new DataGridLength(1, DataGridLengthUnitType.Auto);
                     break;
-                case ("Cue"):
+                case ("Prompt"):
                     var style = new Style(typeof(TextBlock));
                     style.Setters.Add(new Setter(TextBlock.TextWrappingProperty, TextWrapping.Wrap));
                     style.Setters.Add(new Setter(TextBlock.VerticalAlignmentProperty, VerticalAlignment.Center));

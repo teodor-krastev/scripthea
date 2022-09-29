@@ -29,7 +29,7 @@ namespace scripthea.external
 
         public Dictionary<string, string> opts { get; set; }
 
-        public void ShowAccess(string cue) // updsate visual from opts
+        public void ShowAccess(string prompt) // updsate visual from opts
         {
 
         }
@@ -37,9 +37,9 @@ namespace scripthea.external
         {
             get { return true; }
         }
-        public bool GenerateImage(string cue, string imageDepotFolder, out string filename)
+        public bool GenerateImage(string prompt, string imageDepotFolder, out string filename)
         {
-            Utils.CallTheWeb("https://craiyon.com/?prompt=" + cue.Trim().Replace(' ', '+'));
+            Utils.CallTheWeb("https://craiyon.com/?prompt=" + prompt.Trim().Replace(' ', '+'));
             filename = "";
             return true;
         }

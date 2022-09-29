@@ -26,7 +26,7 @@ namespace scripthea.viewer
         {
             InitializeComponent();
         }
-        public void loadPic(int idx, string filePath, string cue)
+        public void loadPic(int idx, string filePath, string prompt)
         {
             lbIndex.Content = "[" + idx.ToString() + "]";
             tbPath.Text = System.IO.Path.GetDirectoryName(filePath)+"\\";
@@ -41,7 +41,7 @@ namespace scripthea.viewer
             var uri = new Uri(filePath);
             var bitmap = new BitmapImage(uri);
             image.Source = bitmap;
-            tbCue.Text = cue;           
+            tbCue.Text = prompt;           
         }
 
         private void imageMove(double h, double v) // ?

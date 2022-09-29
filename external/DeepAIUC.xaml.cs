@@ -31,15 +31,15 @@ namespace scripthea.external
             opts = new Dictionary<string, string>();
         }
         public Dictionary<string, string> opts { get; set; }
-        public void ShowAccess(string cue)
+        public void ShowAccess(string prompt)
         {
             lbStatus.Content = "Status";
             if (!opts.ContainsKey("folder")) opts["folder"] = Utils.basePath + "\\images\\";
             if (!Directory.Exists(opts["folder"])) opts["folder"] = Utils.basePath + "\\images\\";
-            tbIn.Text = cue;
+            tbIn.Text = prompt;
         }
         public bool isEnabled { get; }
-        public bool GenerateImage(string cue, string imageDepotFolder, out string filename) // returns image filename or error message if failed
+        public bool GenerateImage(string prompt, string imageDepotFolder, out string filename) // returns image filename or error message if failed
         {
             string DeepAI_key = File.Exists(Utils.configPath + "DeepAI.key") ? File.ReadAllText(Utils.configPath + "DeepAI.key").Trim() : "quickstart-QUdJIGlzIGNvbWluZy4uLi4K";            
             DeepAI_API api = new DeepAI_API(apiKey: DeepAI_key); string imgName = ""; filename = "";
@@ -48,7 +48,7 @@ namespace scripthea.external
             {
                 StandardApiResponse resp = api.callStandardApi("text2img", new
                 {
-                    text = cue,
+                    text = prompt,
                 });
                 imgName = resp.output_url;
             }

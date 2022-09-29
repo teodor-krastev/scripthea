@@ -63,7 +63,7 @@ namespace scripthea.viewer
                     if (itm.Item1 == 1)
                     {
                         piUC.selected = true;
-                        OnSelect(itm.Item1, piUC.imageFolder + piUC.filename, piUC.cue);
+                        OnSelect(itm.Item1, piUC.imageFolder + piUC.filename, piUC.prompt);
                     }
                 }
                 if (picItems.Count > 0) picItems[0].selected = true;
@@ -85,7 +85,7 @@ namespace scripthea.viewer
                     if (piUC.selected) piUC.selected = false;
                 PicItemUC piUC2 = picItems[value - 1];
                 piUC2.selected = true;
-                OnSelect(piUC2.idx, piUC2.imageFolder + piUC2.filename, piUC2.cue);
+                OnSelect(piUC2.idx, piUC2.imageFolder + piUC2.filename, piUC2.prompt);
             }
         }
         public int Count { get { return picItems.Count; } }
@@ -95,16 +95,16 @@ namespace scripthea.viewer
             {
                 List<Tuple<int, string, string>> itm = new List<Tuple<int, string, string>>();
                 foreach (PicItemUC piUC in picItems)               
-                    itm.Add(new Tuple<int, string, string>(piUC.idx, piUC.filename, piUC.cue));
+                    itm.Add(new Tuple<int, string, string>(piUC.idx, piUC.filename, piUC.prompt));
                 return itm;
             }
         }
         
-        public delegate void PicViewerHandler(int idx, string filePath, string cue);
+        public delegate void PicViewerHandler(int idx, string filePath, string prompt);
         public event PicViewerHandler SelectEvent;
-        protected void OnSelect(int idx, string filePath, string cue)
+        protected void OnSelect(int idx, string filePath, string prompt)
         {
-            if (SelectEvent != null) SelectEvent(idx, filePath, cue);
+            if (SelectEvent != null) SelectEvent(idx, filePath, prompt);
         }
         protected void SelectTumb(object sender, RoutedEventArgs e)
         {
@@ -117,7 +117,7 @@ namespace scripthea.viewer
                 if (piUC.Equals(sender))
                 {
                     piUC.selected = true;
-                    OnSelect(piUC.idx, piUC.imageFolder + piUC.filename, piUC.cue);
+                    OnSelect(piUC.idx, piUC.imageFolder + piUC.filename, piUC.prompt);
                 }
                 k++;
             }

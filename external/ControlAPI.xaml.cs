@@ -23,9 +23,9 @@ namespace scripthea.external
     public interface interfaceAPI
     {
         Dictionary<string, string> opts { get; set; } // visual adjustable options to that particular API, keep it in synchro with the visuals 
-        void ShowAccess(string cue); // update visuals from opts
+        void ShowAccess(string prompt); // update visuals from opts
         bool isEnabled { get; } // connected and working (depends on the API)
-        bool GenerateImage(string cue, string imageDepotFolder, out string filename); // returns the filename of saved in _ImageDepoFolder image 
+        bool GenerateImage(string prompt, string imageDepotFolder, out string filename); // returns the filename of saved in _ImageDepoFolder image 
     }
     /// <summary>
     /// Interaction logic for controlAPI.xaml
@@ -75,11 +75,11 @@ namespace scripthea.external
         }
         public interfaceAPI activeAPI { get { return interfaceAPIs[activeAPIname]; } }
 
-        private string prompt, imageFolder, imageName;  bool success = false;      
+        private string prompt2api, imageFolder, imageName;  bool success = false;      
 
         private void backgroundWorker1_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
-            success = activeAPI.GenerateImage(prompt, imageFolder, out imageName);// calling API
+            success = activeAPI.GenerateImage(prompt2api, imageFolder, out imageName);// calling API
         }
         private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
@@ -91,24 +91,24 @@ namespace scripthea.external
             {
                 using (StreamWriter sw = File.AppendText(imageFolder + "description.txt"))
                 {
-                    sw.WriteLine(imageName + "=" + prompt);
+                    sw.WriteLine(imageName + "=" + prompt2api);
                 }
                 QueryComplete(imageFolder + imageName, true); // hooray !
             }          
             else QueryComplete(imageName, false); // sadly...           
         }
-        public void Query(string cue, string _imageDepoFolder) // fire event at the end
+        public void Query(string prompt, string _imageDepoFolder) // fire event at the end
         {
             if (IsBusy) return;
             if (Directory.Exists(_imageDepoFolder)) imageFolder = _imageDepoFolder.EndsWith("\\") ? _imageDepoFolder : _imageDepoFolder + "\\";
             else Utils.TimedMessageBox("No directory: " + _imageDepoFolder);
-            prompt = cue;
+            prompt2api = prompt;
             backgroundWorker1.RunWorkerAsync();
          }
-        public void about2Show(string cue)
+        public void about2Show(string prompt)
         {
             Dictionary<string, string> tempOpts = new Dictionary<string, string>(activeAPI.opts);
-            activeAPI.ShowAccess(cue); // update visuals from opts
+            activeAPI.ShowAccess(prompt); // update visuals from opts
             foreach (TabItem ti in tabControl.Items)
             {               
                 if (ti.Header.Equals(activeAPIname))

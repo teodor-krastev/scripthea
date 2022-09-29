@@ -35,8 +35,8 @@
             <TabControl x:Name="tcQuery" Margin="0"  SelectedIndex="0" SelectionChanged="tcQuery_SelectionChanged" >
                 <TabItem x:Name="tiSingle" Header="Single" Width="70" Height="23" Background="#FFECECEC" Padding="6,1" HorizontalAlignment="Left">
                     <Grid>
-                        <Button x:Name="btnCompose" Content="Compose a cue" Height="30" Width="103" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0" Click="btnCompose_Click" Background="#FFFAFAEB" FontSize="13"/>
-                        <Button x:Name="btnQuery" Content="Query API" Height="30" Width="103" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="125,10,0,0" Background="#FFEBF3FA" FontSize="13" Click="btnQuery_Click"/>
+                        <Button x:Name="btnCompose" Content="Compose a prompt" Height="30" Width="130" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0" Click="btnCompose_Click" Background="#FFFAFAEB" FontSize="13"/>
+                        <Button x:Name="btnQuery" Content="Query API" Height="30" Width="103" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="150,10,0,0" Background="#FFEBF3FA" FontSize="13" Click="btnQuery_Click"/>
                         <CheckBox x:Name="chkAutoSingle" Content="Auto-refresh" Width="85" Margin="10,50,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Checked="chkAutoSingle_Checked" Unchecked="UpdateToOptions"/>
                         <CheckBox x:Name="chkOneLineCue" Content="One line cue" Width="87" Margin="105,50,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Checked="UpdateToOptions" Unchecked="UpdateToOptions" IsChecked="True" Visibility="Collapsed" />
                     </Grid>

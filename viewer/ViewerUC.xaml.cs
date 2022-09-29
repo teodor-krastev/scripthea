@@ -23,7 +23,7 @@ namespace scripthea.viewer
         void Init(ref Options _opts);
         void Finish();
         string imageFolder { get; }
-        void FeedList(List<Tuple<int, string, string>> theList, string imageDepot);  // index, filename, cue     
+        void FeedList(List<Tuple<int, string, string>> theList, string imageDepot);  // index, filename, prompt     
         int selectedIndex { get; set; } // one based index
         int Count { get; }
         List<Tuple<int, string, string>> items { get; }
@@ -137,8 +137,8 @@ namespace scripthea.viewer
             List<Tuple<int, string, string>> items = activeView.items;
             while (idx > -1 && idx < items.Count)
             {
-                string cue = Convert.ToString(items[idx].Item3);
-                if ((cue.IndexOf(tbFind.Text) > -1) || tbFind.Text.Equals(""))
+                string prompt = Convert.ToString(items[idx].Item3);
+                if ((prompt.IndexOf(tbFind.Text) > -1) || tbFind.Text.Equals(""))
                 {
                     activeView.selectedIndex = idx+1; break;
                 }

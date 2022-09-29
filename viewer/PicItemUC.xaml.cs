@@ -61,12 +61,12 @@ namespace scripthea.viewer
             if (OnSelect != null) OnSelect(this, e);
         }
 
-        public string imageFolder, filename, cue; 
+        public string imageFolder, filename, prompt; 
         public void Log(string msg)
         {
             Utils.TimedMessageBox(msg);
         }
-        public void ContentUpdate(int index, string filePath, string _cue)
+        public void ContentUpdate(int index, string filePath, string _prompt)
         {
             _idx = index;
             filename = System.IO.Path.GetFileName(filePath);
@@ -76,8 +76,8 @@ namespace scripthea.viewer
                 imgPic.Source = new BitmapImage(new Uri(filePath));
             }
             else lbFile.Foreground = Brushes.Tomato;
-            lbFile.Content = filename;             
-            cue = _cue; tbCue.Text = cue;            
+            lbFile.Content = filename;
+            prompt = _prompt; tbCue.Text = prompt;            
             selected = false;
         }
         private void imgPic_MouseDown_1(object sender, MouseButtonEventArgs e)

@@ -94,18 +94,18 @@ namespace scripthea
                 _ctg.content.Add(new Tuple<string, string, bool>(Convert.ToString(mdf.Content), Convert.ToString(mdf.ToolTip), mdf.IsChecked.Value));
             }
         }
-
         private void chkCategory_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
-            CheckBox chk = null;
+            CheckBox chk = null; bool imagesTab = true;
             if (sender is CheckBox)
             {
-                chk = sender as CheckBox;                    
+                chk = sender as CheckBox;
+                imagesTab = !chk.Name.Equals("chkCategory");
             }
             if (Utils.isNull(chk)) return;
             string input = new InputBox("Ask Google about", (string)chk.Content, "").ShowDialog();
             if (input.Equals("")) return;
-            Utils.AskTheWeb(input);            
+            Utils.AskTheWeb(input, imagesTab);            
         }
 
         private void MenuItem_Click(object sender, RoutedEventArgs e)

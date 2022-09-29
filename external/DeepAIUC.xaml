@@ -12,7 +12,7 @@
             <RowDefinition Height="404*"/>
         </Grid.RowDefinitions>
         <StackPanel Margin="0" Orientation="Horizontal">
-            <Label HorizontalAlignment="Left" VerticalAlignment="Center" Content="Test run cue:"></Label>
+            <Label HorizontalAlignment="Left" VerticalAlignment="Center" Content="Test run prompt:"></Label>
             <TextBox x:Name="tbIn" Width="366" Text="Sunset over the bay" Margin="0,5" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
             <Button x:Name="btnQuery" HorizontalAlignment="Left" VerticalAlignment="Center" Content="Query DeepAI" Width="100" Background="#FFF0F3F9" Margin="15,10,0,9.823" Click="btnQuery_Click" Height="30" ></Button>
             <Label x:Name="lbStatus" Content="Status" VerticalAlignment="Center" Margin="10,0,0,0"></Label>

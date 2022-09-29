@@ -185,10 +185,10 @@ namespace scripthea
             if (selectedSeed.Count.Equals(0)) { Log("Err: no cue is selected"); return; }
             Compose(sender, selectedSeed[0], modifiersUC.Composite());
         }
-        private void QueryAPI(string cue)
+        private void QueryAPI(string prompt)
         {   
-            Log("query -> "+cue, Brushes.DarkGreen); Log("@StartProc");
-            API.Query(cue, opts.ImageDepotFolder);
+            Log("query -> "+ prompt, Brushes.DarkGreen); Log("@StartProc");
+            API.Query(prompt, opts.ImageDepotFolder);
         }
         protected void QueryComplete(string imageFilePath, bool success)
         {

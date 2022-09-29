@@ -8,7 +8,7 @@ using System.Windows;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Scripthea")]
-[assembly: AssemblyDescription("image cue composer for text-to-image AI generators")]
+[assembly: AssemblyDescription("prompt composer for text-to-image AI generators")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Teodor Krastev")]
 [assembly: AssemblyProduct("Scripthea")]
@@ -51,5 +51,5 @@ using System.Windows;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("0.9.1.23")]
-[assembly: AssemblyFileVersion("0.9.1.23")]
+[assembly: AssemblyVersion("0.9.2.24")]
+[assembly: AssemblyFileVersion("0.9.2.24")]

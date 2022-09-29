@@ -38,7 +38,7 @@ namespace scripthea.external
 
         public Dictionary<string, string> opts { get; set; } 
 
-        public void ShowAccess(string cue) // updsate visual from opts
+        public void ShowAccess(string prompt) // updsate visual from opts
         {
                       
         }
@@ -46,7 +46,7 @@ namespace scripthea.external
         {
             get { return true; }
         }
-        public bool GenerateImage(string cue, string imageDepotFolder, out string filename)
+        public bool GenerateImage(string prompt, string imageDepotFolder, out string filename)
         {
             opts["folder"] = imageDepotFolder; Utils.Sleep(4000);
             List<string> orgFiles = new List<string>(Directory.GetFiles(imageSimulFolder, "c*.png"));

@@ -44,7 +44,7 @@ namespace scripthea
     }
 
     /// <summary>
-    /// Scripthea is an image cue(prompt) composer as utility for text-to-image AI generators
+    /// Scripthea is a prompt composer as utility for text-to-image AI generators
     /// </summary>
     public partial class MainWindow : Window
     {
@@ -88,7 +88,7 @@ namespace scripthea
             pnlLogImage.Height = new GridLength(opts.LogColWidth); 
 
             oldTab = tiComposer;
-            Title = "Scripthea - image cues composer v" + Utils.getAppFileVersion + "  ";  
+            Title = "Scripthea - text-to-image prompt composer v" + Utils.getAppFileVersion + "  ";  
             Log("> Welcome to Scrpithea"); Log("");
             if (opts.SingleAuto) queryUC.btnCompose_Click(null, null);
 
