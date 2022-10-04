@@ -1,0 +1,104 @@
+﻿<UserControl x:Class="scripthea.composer.QueryUC"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:scripthea.composer"
+             mc:Ignorable="d" d:DesignHeight="450" FontSize="13" >
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition x:Name="colQuery" Width="285" MinWidth="150" MaxWidth="700"/>
+            <ColumnDefinition Width="3*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Column="0" Margin="5,0,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="120"/>
+                <RowDefinition Height="150" x:Name="pnlCue" MaxHeight="400"/>
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="20*"/>
+                    <RowDefinition Height="10*"/>
+                </Grid.RowDefinitions>
+                <TextBox x:Name="tbCue" Margin="0" TextWrapping="Wrap" Background="#FFFFFFF8" BorderBrush="#FFF9DE34" Text="" FontSize="13" TextChanged="tbCue_TextChanged" ContextMenuOpening="tbCue_ContextMenuOpening" AcceptsReturn="True">
+                    <TextBox.ContextMenu>
+                        <ContextMenu x:Name="cmCue"/>
+                    </TextBox.ContextMenu>
+                </TextBox>
+                <GridSplitter x:Name="gridSplitInCue" HorizontalAlignment="Stretch" Height="3" Margin="0" Grid.Row="1" VerticalAlignment="Top"/>
+                <TextBox x:Name="tbModifier" Margin="0,3,0,0" TextWrapping="Wrap" Text=""  Background="MintCream" BorderBrush="#FFB1DE9E" Grid.Row="1" FontSize="13" AcceptsReturn="True"/>
+            </Grid>
+
+            <TabControl x:Name="tcQuery" Margin="0"  SelectedIndex="0" SelectionChanged="tcQuery_SelectionChanged" >
+                <TabItem x:Name="tiSingle" Header="Single" Width="70" Height="25" Background="#FFECECEC" Margin="2,0,-9.063,0.089" HorizontalAlignment="Left">
+                    <Grid>
+                        <Button x:Name="btnCompose" Content="Compose a prompt" Height="30" Width="130" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,7,0,0" Click="btnCompose_Click" Background="#FFFAFAEB" FontSize="13"/>
+                        <Button x:Name="btnQuery" Content="Query API" Height="30" Width="103" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="150,7,0,0" Background="#FFEBF3FA" FontSize="13" Click="btnQuery_Click"/>
+                        <CheckBox x:Name="chkAutoSingle" Content="Auto-refresh" Width="95" Margin="10,0,0,15" HorizontalAlignment="Left" VerticalAlignment="Bottom" Checked="chkAutoSingle_Checked" Unchecked="UpdateToOptions"/>
+                        <CheckBox x:Name="chkOneLineCue" Content="One line cue" Width="87" Margin="105,50,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Checked="UpdateToOptions" Unchecked="UpdateToOptions" IsChecked="True" Visibility="Collapsed" />
+                    </Grid>
+                </TabItem>
+                <TabItem x:Name="tiScan" Header="Scan" Height="25" Background="#FFECECEC" Margin="4,0,-9.063,0.089" HorizontalAlignment="Left" Width="69" >
+                    <Grid>
+                        <Button x:Name="btnScan" Content="S c a n" Height="30" Width="77" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,7,0,0" FontWeight="Bold" Background="#FFFAFAEB" Click="btnScan_Click" FontSize="13"/>
+                        <TextBox HorizontalAlignment="Right" Text="Combine all checked cues with one from the checked modifiers." Width="162" Margin="0,0,-0.228,0" TextWrapping="Wrap" Background="{x:Null}" BorderBrush="{x:Null}" VerticalAlignment="Top" FontSize="12"/>
+                        <Button x:Name="btnScanPreview" Content="Scan Preview" Height="30" Width="98" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10,0,0,7" Background="MintCream" FontSize="13" Click="btnScanPreview_Click"/>
+                    </Grid>
+                </TabItem>
+                <TabItem x:Name="tiOptions" Header="Options" Height="25" Background="#FFECECEC" Margin="6,0,-9.063,0.089" HorizontalAlignment="Left" Width="70">
+                    <Grid >
+                        <GroupBox VerticalAlignment="Bottom" Header="Image depot folder" Height="47">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="62"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox x:Name="tbImageDepot" Background="#FFFBFBF4" TextChanged="tbImageDepo_TextChanged">
+                                </TextBox>
+                                <Button x:Name="btnNewFolder" Grid.Column="1" Content=" Browse " Click="btnNewFolder_Click" Foreground="#FF0F8001" FontWeight="Bold" Background="#FFF4F4F4" Margin="3,0,0,0">
+
+                                </Button>
+                            </Grid>
+                        </GroupBox>
+                        <Label x:Name="lbModifPrefix" Content="Modif.prefix" Width="80" Margin="0,7,29.772,0" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+                        <TextBox x:Name="tbModifPrefix" HorizontalAlignment="Right" Height="23" Margin="0,7,0,0" TextWrapping="Wrap" Text=";" VerticalAlignment="Top" Width="30" TextChanged="tbModifSepar_TextChanged" FontWeight="Bold" FontSize="13"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                            <Label x:Name="lbAPI" Content="API" Width="32" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                            <ComboBox x:Name="cbActiveAPI" HorizontalAlignment="Left" VerticalAlignment="Top" SelectedIndex="0" Width="90" FontSize="12" Background="Transparent" Margin="3,1,0,0" SelectionChanged="cbActiveAPI_SelectionChanged">
+                                <ComboBoxItem Content="Simulation"/>
+                                <ComboBoxItem Content="DeepAI"/>
+                                <ComboBoxItem x:Name="cbiCraiyon" Content="Craiyon"/>
+                            </ComboBox>
+                            <Image x:Name="imgAPIdialog"  Width="25" Height="25" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="4,0,0,0" Cursor="Hand" MouseDown="imgAPIdialog_MouseDown" Source="/Scripthea;component/Properties/gears1.png"/>
+                        </StackPanel>
+                    </Grid>
+                </TabItem>
+
+
+            </TabControl>
+            <Image x:Name="imgPreferences" Margin="0,0,30,0" VerticalAlignment="Top" HorizontalAlignment="Right"  Height="23" Width="29" ToolTip="Preferences dialog box" Cursor="Hand" Source="/Scripthea;component/Properties/TripleBarTeal.bmp" Visibility="Collapsed"/>
+            <Image x:Name="imgCopy" Margin="0" VerticalAlignment="Top" HorizontalAlignment="Right" Height="23" Width="29" ToolTip="Copy to clipboard" Cursor="Hand" MouseDown="imgCopy_MouseDown_1" Source="/Scripthea;component/Properties/copy1a.png"/>
+            <GridSplitter x:Name="gridSplitCue" HorizontalAlignment="Stretch" Height="5" Margin="0" Grid.Row="2" VerticalAlignment="Top"/>
+            <local:CueListUC x:Name="cueListUC"  Margin="0,6,0,0" Grid.Row="3"/>
+        </Grid>
+
+        <GridSplitter x:Name="gridSplitRight" Grid.Column="1" HorizontalAlignment="Left" Margin="0" Width="5" Background="#FFF4FAFF"/>
+        <TabControl x:Name="tcModScanPre" Grid.Column="1" Margin="5,0,0,0" BorderBrush="{x:Null}" >
+            <TabItem x:Name="tiMiodifiers" Header="Modifiers">
+                <Grid>
+                    <ScrollViewer Margin="0" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto">
+                        <local:ModifiersUC x:Name="modifiersUC"/>
+                    </ScrollViewer>
+                </Grid>
+            </TabItem>
+            <TabItem x:Name="tiScanPreview" Header="Scan Preview">
+                <Grid>
+                    <local:ScanPreviewUC x:Name="scanPreviewUC" Margin="0"/>
+                </Grid>
+            </TabItem>
+
+        </TabControl>
+    </Grid>
+</UserControl>

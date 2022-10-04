@@ -21,12 +21,12 @@
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="1*"/>
-                        <ColumnDefinition Width="112"/>
+                        <ColumnDefinition Width="126"/>
                     </Grid.ColumnDefinitions>
                     <TextBox x:Name="tbImageDepot" Background="#FFFBFBF4" TextChanged="tbImageDepot_TextChanged" >
                     </TextBox>
-                    <Button x:Name="btnNewFolder" Grid.Column="1" Content="Browse" Click="btnNewFolder_Click" Foreground="#FF2963BE" HorizontalAlignment="Left" Width="50" FontWeight="Bold" Background="#FFF4F4F4" Margin="3,0,0,0"/>
-                    <Button x:Name="btnRefresh" Grid.Column="1" Content="Refresh" Click="btnNewFolder_Click" Foreground="#FF0F8001" HorizontalAlignment="Right" Width="55" FontWeight="Bold" Background="#FFF4F4F4"/>
+                    <Button x:Name="btnNewFolder" Grid.Column="1" Content="Browse" Click="btnNewFolder_Click" Foreground="#FF2963BE" HorizontalAlignment="Left" Width="55" FontWeight="Bold" Background="#FFF4F4F4" Margin="3,0,0,0"/>
+                    <Button x:Name="btnRefresh" Grid.Column="1" Content="Refresh" Click="btnNewFolder_Click" Foreground="#FF0F8001" HorizontalAlignment="Right" Width="65" FontWeight="Bold" Background="#FFF4F4F4"/>
                 </Grid>
             </GroupBox>
             <Grid Grid.Row="2">

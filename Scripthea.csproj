@@ -89,20 +89,26 @@
     <Compile Include="AboutWin.xaml.cs">
       <DependentUpon>AboutWin.xaml</DependentUpon>
     </Compile>
-    <Compile Include="cue_composer\CatModifUC.xaml.cs">
-      <DependentUpon>CatModifUC.xaml</DependentUpon>
+    <Compile Include="composer\ModifListUC.xaml.cs">
+      <DependentUpon>ModifListUC.xaml</DependentUpon>
     </Compile>
-    <Compile Include="cue_composer\ModifiersUC.xaml.cs">
+    <Compile Include="composer\ModifiersUC.xaml.cs">
       <DependentUpon>ModifiersUC.xaml</DependentUpon>
     </Compile>
-    <Compile Include="cue_composer\QueryUC.xaml.cs">
+    <Compile Include="composer\ModifItemUC.xaml.cs">
+      <DependentUpon>ModifItemUC.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="composer\QueryUC.xaml.cs">
       <DependentUpon>QueryUC.xaml</DependentUpon>
     </Compile>
-    <Compile Include="cue_composer\SeedItemUC.xaml.cs">
-      <DependentUpon>SeedItemUC.xaml</DependentUpon>
+    <Compile Include="composer\CueItemUC.xaml.cs">
+      <DependentUpon>CueItemUC.xaml</DependentUpon>
     </Compile>
-    <Compile Include="cue_composer\SeedListUC.xaml.cs">
-      <DependentUpon>SeedListUC.xaml</DependentUpon>
+    <Compile Include="composer\CueListUC.xaml.cs">
+      <DependentUpon>CueListUC.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="composer\ScanPreviewUC.xaml.cs">
+      <DependentUpon>ScanPreviewUC.xaml</DependentUpon>
     </Compile>
     <Compile Include="external\ControlAPI.xaml.cs">
       <DependentUpon>ControlAPI.xaml</DependentUpon>
@@ -120,6 +126,7 @@
       <DependentUpon>SimulatorUC.xaml</DependentUpon>
     </Compile>
     <Compile Include="external\UtilsLib.cs" />
+    <Compile Include="external\VisualHelper.cs" />
     <Compile Include="viewer\GridViewUC.xaml.cs">
       <DependentUpon>GridViewUC.xaml</DependentUpon>
     </Compile>
@@ -139,25 +146,33 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="cue_composer\CatModifUC.xaml">
+    <Page Include="composer\ModifListUC.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="cue_composer\ModifiersUC.xaml">
+    <Page Include="composer\ModifiersUC.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="cue_composer\QueryUC.xaml">
+    <Page Include="composer\ModifItemUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="composer\QueryUC.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="cue_composer\SeedItemUC.xaml">
+    <Page Include="composer\CueItemUC.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="cue_composer\SeedListUC.xaml">
+    <Page Include="composer\CueListUC.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="composer\ScanPreviewUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="external\ControlAPI.xaml">
       <Generator>MSBuild:Compile</Generator>

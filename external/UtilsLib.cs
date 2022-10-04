@@ -394,31 +394,77 @@ namespace UtilsNS
                 }
             }
         }*/
-
-        public static Bitmap GetImage(string imageUrl) //, string filename, ImageFormat format)
+        private static Dictionary<string,string> FakeBrowserHeaders()
         {
-            WebClient client = new WebClient();
-            Stream stream = client.OpenRead(imageUrl);
-            Bitmap bitmap; bitmap = new Bitmap(stream);
+            Dictionary<string, string> webHeaders = new Dictionary<string, string>();
+            webHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml");
+            //client.Headers.Add("Accept-Encoding", "gzip, deflate");
+            webHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.2; WOW64; rv:19.0) Gecko/20100101 Firefox/19.0");
+            webHeaders.Add("Accept-Charset", "ISO-8859-1");
+            return webHeaders;
+        }
+        public static bool DownloadFile(Uri address, string fileName)
+        {
+            bool bb = true;
+            try
+            {
+                using (var client = new WebClient())
+                {
+                    foreach (var pr in FakeBrowserHeaders())
+                        client.Headers.Add(pr.Key, pr.Value);
+                    client.DownloadFile(address, fileName);
+                }
+            }
+            catch (WebException we) { TimedMessageBox(we.Message); bb = false; }
+            return bb;
+        }
 
-            //if (bitmap != null) {  bitmap.Save(filename, format); }
+        public static Bitmap GetWebImage(string imageUrl, string filename = "", ImageFormat format = null)
+        {
+            Bitmap bitmap;
+            try
+            {
+                using (var client = new WebClient())
+                {
+                    foreach (var pr in FakeBrowserHeaders())
+                        client.Headers.Add(pr.Key, pr.Value);
 
-            stream.Flush();
-            stream.Close();
-            client.Dispose();
+                    Stream stream = client.OpenRead(imageUrl);
+                    bitmap = new Bitmap(stream);
+
+                    if ((bitmap != null) && (filename != ""))
+                    {
+                        if (isNull(format)) bitmap.Save(filename, System.Drawing.Imaging.ImageFormat.Png); // default
+                        else bitmap.Save(filename, format);
+                    }
+                    stream.Flush();
+                    stream.Close();                    
+                }
+            }
+            catch (WebException we) { TimedMessageBox(we.Message); return null; }
             return bitmap;
         }
+        
         /* PROBLEMS ??? 
          * https://www.csharp-examples.net/download-files/#:~:text=The%20simply%20way%20how%20to,want%20to%20save%20the%20file
          * https://stackoverflow.com/questions/525364/how-to-download-a-file-from-a-website-in-c-sharp
-         * https://jonathancrozier.com/blog/how-to-download-files-using-c-sharp
-        public static List<string> GetText(string textUrl) 
+         * https://jonathancrozier.com/blog/how-to-download-files-using-c-sharp */
+        public static List<string> GetWebText(string textUrl) 
         {
-            WebClient client = new WebClient();           
-            string text = client.DownloadString(textUrl);
+            string text;
+            try 
+            { 
+                using (var client = new WebClient())
+                {
+                    foreach (var pr in FakeBrowserHeaders())
+                        client.Headers.Add(pr.Key, pr.Value);
+
+                    text = client.DownloadString(textUrl);                   
+                }
+            }
+            catch (WebException we) { TimedMessageBox(we.Message); return null; }
             string[] txtArr = text.Split('\r');
-            List<string> ls = new List<string>(txtArr);           
-            client.Dispose();
+            List<string> ls = new List<string>(txtArr);                      
             return ls;
         }         
         public static BitmapImage ToBitmapImage(Bitmap bitmap, ImageFormat imageFormat)
@@ -437,8 +483,27 @@ namespace UtilsNS
 
                 return bitmapImage;
             }
-        }*/
-
+        }
+        public static string GetMD5Checksum(string filename) // https://makolyte.com/csharp-get-a-files-checksum-using-any-hashing-algorithm-md5-sha256/
+        {
+            using (var md5 = System.Security.Cryptography.MD5.Create())
+            {
+                using (var stream = System.IO.File.OpenRead(filename))
+                {
+                    var hash = md5.ComputeHash(stream);
+                    return BitConverter.ToString(hash).Replace("-", "");
+                }
+            }
+        }
+        public static string AvoidOverwrite(string filename)
+        {
+            if (!File.Exists(filename)) return filename;
+            string ext = Path.GetExtension(filename);
+            string fp = Path.ChangeExtension(filename, null);
+            string fn = fp + randomString(1);
+            if (!File.Exists(fn + ext)) return fn + ext;
+            return fn + randomString(2);
+        }
         public static void VisualCompToPng(UIElement element, string filename = "")
         {
             var rect = new Rect(element.RenderSize);
@@ -536,7 +601,6 @@ namespace UtilsNS
                 rslt.Add(replaceFromDict(itm, dict, bracket));
             return rslt;
         }
-
         public static Dictionary<string, List<string>> readStructList(string filename, bool skipRem = true)
         {
             List<string> ls = readList(filename, skipRem);
@@ -607,7 +671,6 @@ namespace UtilsNS
             }
             return dict;
         }
-
         /// <summary>
         /// Write dictionary(string,string) in key=value format
         /// </summary>
@@ -623,7 +686,6 @@ namespace UtilsNS
             string fn = filename.Equals("") ? dataPath + timeName() + ".txt" : filename;
             File.WriteAllLines(fn, ls.ToArray());
         }
-
         /// <summary>
         /// Write dictionary(string,oblect) in key=value format
         /// </summary>
@@ -639,7 +701,6 @@ namespace UtilsNS
             string fn = filename.Equals("") ? dataPath + timeName() + ".txt" : filename;
             File.WriteAllLines(fn, ls.ToArray());
         }
-
         /// <summary>
         /// Restrict Value to MinValue and MaxValue (double)
         /// </summary>
@@ -692,7 +753,6 @@ namespace UtilsNS
             if (MinValue > MaxValue) return InRange(Value, MaxValue, MinValue);
             return ((MinValue <= Value) && (Value <= MaxValue));
         }
-
         /// <summary>
         /// Convert string to bool with default value if cannot
         /// </summary>

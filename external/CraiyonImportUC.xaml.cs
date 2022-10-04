@@ -112,15 +112,8 @@ namespace scripthea
                     string prompt = System.IO.Path.ChangeExtension(efn.Substring(15), null);
                     for (int j = 0; j < 4; j++)
                         if (prompt.EndsWith("_br_")) prompt = prompt.Substring(0, prompt.Length - 4);
-                    string numFile = System.IO.Path.Combine(imageFolder, System.IO.Path.ChangeExtension("c_" + efn.Substring(8, 6), ".png"));
-                    if (File.Exists(numFile)) 
-                    { 
-                        numFile = System.IO.Path.Combine(imageFolder, System.IO.Path.ChangeExtension("c_" + efn.Substring(8, 6)+Utils.randomString(1), ".png"));
-                        if (File.Exists(numFile))
-                        {
-                            File.Delete(numFile); Log("Warning: deleting -> " + numFile); Utils.Sleep(1000);
-                        }
-                    }
+                    string numFile = Utils.AvoidOverwrite(System.IO.Path.Combine(imageFolder, System.IO.Path.ChangeExtension("c_" + efn.Substring(8, 6), ".png")));
+                    if (File.Exists(numFile)) { File.Delete(numFile); Log("Warning: deleting -> " + numFile); Utils.Sleep(1000); }
                     try
                     {
                         File.Move(ffn, numFile); // Rename the oldFileName into newFileName     
@@ -137,15 +130,32 @@ namespace scripthea
             {
                 btnNewFolder_Click(null, null);
                 Log("Done! Image depot of "+k.ToString()+" images was created.", Brushes.DarkGreen); converting = false;
-            }
-            
+            }            
         }
+        private void dGrid_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
+        {
+            var col = e.Column as DataGridTextColumn; if (Utils.isNull(col)) return;
+            switch (e.Column.Header.ToString())
+            {                
+                case ("on"):
+                    col.Width = new DataGridLength(1, DataGridLengthUnitType.Auto);
+                    break;
+                case ("file"):
+                    var style = new Style(typeof(TextBlock));
+                    style.Setters.Add(new Setter(TextBlock.TextWrappingProperty, TextWrapping.Wrap));
+                    style.Setters.Add(new Setter(TextBlock.VerticalAlignmentProperty, VerticalAlignment.Center));
+                    col.ElementStyle = style;
+                    col.Width = new DataGridLength(1, DataGridLengthUnitType.Star);
+                    break;
+            }
+        }
+
         private void dGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (converting) return;  
             DataRowView dataRow = (DataRowView)dGrid.SelectedItem;
             if (Utils.isNull(dataRow)) return;
-            string fn = System.IO.Path.Combine(imageFolder,System.IO.Path.ChangeExtension( Convert.ToString(dataRow.Row.ItemArray[1]), ".png"));
+            string fn = System.IO.Path.Combine(imageFolder,System.IO.Path.ChangeExtension(Convert.ToString(dataRow.Row.ItemArray[1]), ".png"));
             if (File.Exists(fn))
             {
                 BitmapImage bi = new BitmapImage(new Uri(fn));

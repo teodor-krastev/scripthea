@@ -16,6 +16,7 @@ using System.Windows.Threading;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using scripthea.viewer;
+using scripthea.composer;
 using UtilsNS;
 
 namespace scripthea

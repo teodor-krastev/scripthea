@@ -55,7 +55,7 @@ namespace scripthea.external
             catch (Exception e) { bb = false; filename = e.Message; }
             if (bb)
             {
-                Bitmap bm = Utils.GetImage(imgName);
+                Bitmap bm = Utils.GetWebImage(imgName);
                 filename  = Utils.timeName() + ".jpg";
                 bm.Save(imageDepotFolder + filename, ImageFormat.Jpeg);
             }

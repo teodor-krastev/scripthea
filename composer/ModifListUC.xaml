@@ -1,0 +1,23 @@
+﻿<UserControl x:Class="scripthea.composer.ModifListUC"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:scripthea"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="158.329">
+    <UserControl.Resources>
+        <ContextMenu x:Key="cmPopupMenu">
+            <MenuItem Header="Menu item 1" StaysOpenOnClick="True" Click="MenuItem_Click"/>
+        </ContextMenu>
+    </UserControl.Resources>
+    <Grid Background="MintCream">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="29"/>
+            <RowDefinition Height="206*"/>
+        </Grid.RowDefinitions>
+        <CheckBox x:Name="chkCategory" Content="Category" HorizontalAlignment="Center" Margin="0" VerticalAlignment="Center" FontSize="13" MouseRightButtonDown="chkCategory_MouseRightButtonDown" Foreground="Black" Background="{x:Null}" Checked="Change" Unchecked="Change"/>
+        <ListBox x:Name="modifListBox" Margin="0" Grid.Row="1" MouseRightButtonDown="chkCategory_MouseRightButtonDown" KeyDown="modifListBox_KeyDown">
+        </ListBox>
+    </Grid>
+</UserControl>
