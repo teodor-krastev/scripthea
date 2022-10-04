@@ -44,7 +44,14 @@ namespace scripthea.viewer
         {
             if (OnLog != null) OnLog(txt, clr);
         }
-
+        public void picItemsClear()
+        {
+            for(int i = 0; i < picItems.Count; i++)
+            {
+                picItems[i] = null;
+            }            
+            picItems.Clear(); wrapPics.Children.Clear(); Utils.DoEvents();
+        }
         private string _imageFolder = "";
         public string imageFolder { get { return _imageFolder; } }
         public void FeedList(List<Tuple<int, string, string>> theList, string imageDepot) 
@@ -54,7 +61,8 @@ namespace scripthea.viewer
             try
             {               
                 _imageFolder = imageDepot;
-                picItems.Clear();                 
+
+                picItemsClear();                 
                 foreach (var itm in theList)
                 {
                     PicItemUC piUC = new PicItemUC(ref opts); picItems.Add(piUC); Utils.DoEvents();
@@ -145,14 +153,12 @@ namespace scripthea.viewer
             lbZoom.Content = opts.ThumbZoom.ToString() + "%";
             UpdatePicItems();            
         }
-
         private void btnItemUp_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (Count == 0) return;
             int k = sender.Equals(btnItemUp) ? -1 : 1;
             selectedIndex = Utils.EnsureRange(selectedIndex + k, 1, Count);
         }
-
         private void btnHome_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (Count == 0) return;

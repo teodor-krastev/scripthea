@@ -84,8 +84,8 @@ namespace scripthea.composer
                         break;
                 }
                 ModifItemUC mi = new ModifItemUC() { Height = 24, Text = s0, FontSize = 13 };
-                mi.Margin = new Thickness(0, 0, 0, 0);
-                if (!s1.Equals("")) mi.tbContent.ToolTip = s1;
+                mi.Margin = new Thickness(0, 0, 0, 0); mi.tbContent.MouseRightButtonDown += new System.Windows.Input.MouseButtonEventHandler(chkCategory_MouseRightButtonDown);
+                if (!s1.Equals("")) mi.tbContent.ToolTip = s1; 
                 mi.OnChange += new RoutedEventHandler(Change);
                 modifListBox.Items.Add(mi); 
                 i++;
@@ -110,16 +110,9 @@ namespace scripthea.composer
 
         private void chkCategory_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
-            CheckBox chk = null; bool imagesTab = true;
-            if (sender is CheckBox)
-            {
-                chk = sender as CheckBox;
-                imagesTab = !chk.Name.Equals("chkCategory");
-            }
-            if (Utils.isNull(chk)) return;
-            string input = new InputBox("Ask Google about", (string)chk.Content, "").ShowDialog();
+            string input = new InputBox("Ask Google about", (string)chkCategory.Content, "").ShowDialog();
             if (input.Equals("")) return;
-            Utils.AskTheWeb(input, imagesTab);            
+            Utils.AskTheWeb(input, false);            
         }
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
@@ -130,6 +123,7 @@ namespace scripthea.composer
 
         private void modifListBox_KeyDown(object sender, KeyEventArgs e)
         {
+            //if (e.Key.Equals(Key.Space)) { chkCategory.IsChecked = !chkCategory.IsChecked.Value; }
             if (!e.Key.Equals(Key.Enter) && !e.Key.Equals(Key.Left) && !e.Key.Equals(Key.Right)) return;
             if (Utils.isNull(modifListBox.SelectedItem)) return;
             (modifListBox.SelectedItem as ModifItemUC).SwitchState(e.Key.Equals(Key.Enter) || e.Key.Equals(Key.Left));

@@ -16,12 +16,12 @@
             <WrapPanel x:Name="wrapPics"  Focusable="True" KeyDown="scroller_KeyDown"></WrapPanel>
         </ScrollViewer>
         <StackPanel Margin="0,3,0,0" Grid.Row="1" Orientation="Horizontal" Background="#FFF9FEFC" >
-            <Label Content="Zoom"></Label>
+            <Label Content="Zoom:"></Label>
             <Button x:Name="btnZoomIn" FontSize="13" Content="in" Width="25" Background="{x:Null}" VerticalAlignment="Top" Margin="0,2,0,0" FontFamily="Microsoft Sans Serif" Click="btnZoomIn_Click"/>
             <Label x:Name="lbZoom" Content="100%"></Label>
             <Button x:Name="btnZoomOut" FontSize="13" Content="out" Width="28" Background="{x:Null}" VerticalAlignment="Top" Margin="0,2,0,0" FontFamily="Microsoft Sans Serif" Click="btnZoomIn_Click"/>
             <Rectangle Fill="#FFB0CFC0" Margin="10,0,0,0" Width="3" />
-            <Label Content="Show" Margin="5,0,0,0"></Label>
+            <Label Content="Show:" Margin="5,0,0,0"></Label>
             <CheckBox x:Name="chkShowCue" VerticalAlignment="Center" Margin="2,0,0,0" Content="Prompt" Checked="chkShowCue_Checked" Unchecked="chkShowCue_Checked"></CheckBox>
             <CheckBox x:Name="chkShowFilename" VerticalAlignment="Center" Margin="5,0,0,0" Content="Filename"  Checked="chkShowCue_Checked" Unchecked="chkShowCue_Checked"></CheckBox>
             <Rectangle Fill="#FFB0CFC0" Margin="10,0,0,0" Width="3" />

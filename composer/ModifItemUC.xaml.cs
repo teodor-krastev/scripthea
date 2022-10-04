@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using UtilsNS;
 
 namespace scripthea.composer
 {
@@ -122,6 +123,13 @@ namespace scripthea.composer
                 index = (index + k) % 3;
                 modifStatus = (ModifStatus)index;
             }
+        }
+
+        private void tbContent_ContextMenuOpening(object sender, ContextMenuEventArgs e)
+        {
+            string input = new InputBox("Ask Google about", tbContent.Text, "").ShowDialog();
+            if (input.Equals("")) return;
+            Utils.AskTheWeb(input, true);
         }
     }
 }

@@ -28,6 +28,6 @@
         <Grid x:Name="noscrollGrid" Grid.Row="1">
             <Image x:Name="image" Margin="5" />
         </Grid>
-        <TextBox x:Name="tbCue" Margin="0" Grid.Row="2" TextWrapping="Wrap" Text="" Background="{x:Null}" IsReadOnly="True" FontSize="13" HorizontalAlignment="Center" BorderThickness="1,1,0,0"/>
+        <TextBox x:Name="tbCue" Margin="0" Grid.Row="2" TextWrapping="Wrap" Text="" Background="White" IsReadOnly="True" FontSize="13" HorizontalAlignment="Center" BorderThickness="1,1,0,0"/>
     </Grid>
 </UserControl>

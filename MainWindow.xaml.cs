@@ -90,7 +90,7 @@ namespace scripthea
 
             oldTab = tiComposer;
             Title = "Scripthea - text-to-image prompt composer v" + Utils.getAppFileVersion + "  ";  
-            Log("> Welcome to Scrpithea"); Log("");
+            Log("> Welcome to Scripthea"); Log("");
             if (opts.SingleAuto) queryUC.btnCompose_Click(null, null);
 
             aboutWin.Hide();
