@@ -29,6 +29,7 @@ namespace scripthea
         public int Width;
         public int LogColWidth;
         public bool LogColWaveSplit;
+        public int QueryRowHeight;
         public int QueryColWidth;
         public int ViewColWidth;       
 
@@ -55,8 +56,8 @@ namespace scripthea
             aboutWin = new AboutWin();
             aboutWin.Show();
 
-            InitializeComponent();           
-        }       
+            InitializeComponent();
+        }
         string optionsFile;
         public Options opts;
 
@@ -67,13 +68,16 @@ namespace scripthea
             {
                 string json = System.IO.File.ReadAllText(optionsFile);
                 opts = JsonConvert.DeserializeObject<Options>(json);
-                if (opts.ImageDepotFolder.Equals("<default.image.depot>")) opts.ImageDepotFolder = queryUC.defaultImageFolder;
+                if (opts.ImageDepotFolder.Equals("<default.image.depot>")) opts.ImageDepotFolder = ImgUtils.defaultImageDepot;
             }
             else opts = new Options();
 
-            queryUC.OnLog += new QueryUC.LogHandler(Log);
-            viewerUC.OnLog += new ViewerUC.LogHandler(Log);
-            craiyonImportUC.OnLog += new CraiyonImportUC.LogHandler(Log);
+            dirTreeUC.Init();
+            dirTreeUC.OnActive += new DirTreeUC.SelectHandler(Active);
+
+            queryUC.OnLog += new QueryUC.LogHandler(Log); queryUC.tbImageDepot.KeyDown += new KeyEventHandler(MainWindow1_KeyDown);
+            viewerUC.OnLog += new ViewerUC.LogHandler(Log); viewerUC.tbImageDepot.KeyDown += new KeyEventHandler(MainWindow1_KeyDown);
+            craiyonImportUC.OnLog += new CraiyonImportUC.LogHandler(Log); craiyonImportUC.tbImageDepot.KeyDown += new KeyEventHandler(MainWindow1_KeyDown);
 
             queryUC.Init(ref opts);
             viewerUC.Init(ref opts);
@@ -86,18 +90,43 @@ namespace scripthea
             Width = opts.Width;
             pnlLog.Width = new GridLength(opts.LogColWidth);
             gridSplitLeft_MouseDoubleClick(null, null);
-            pnlLogImage.Height = new GridLength(opts.LogColWidth); 
+            rowLogImage.Height = new GridLength(opts.LogColWidth);
 
             oldTab = tiComposer;
-            Title = "Scripthea - text-to-image prompt composer v" + Utils.getAppFileVersion + "  ";  
+            Title = "Scripthea - text-to-image prompt composer v" + Utils.getAppFileVersion + "  " + (Utils.isInVisualStudio ? "(within VS)" : "");
             Log("> Welcome to Scripthea"); Log("");
             if (opts.SingleAuto) queryUC.btnCompose_Click(null, null);
 
+            Log("@ExplorerPart=0");
             aboutWin.Hide();
         }
-
+        private int _ExplorerPart;
+        public int ExplorerPart // from 0 to 100%
+        {
+            get { return _ExplorerPart; }
+            set
+            {
+                int vl = Utils.EnsureRange(value, 0, 100);
+                _ExplorerPart = vl;
+                rowLog.Height = new GridLength(100 - vl, GridUnitType.Star);
+                rowExplorer.Height = new GridLength(vl, GridUnitType.Star);
+                if (vl.Equals(0) || vl.Equals(100)) gridSplitLeft2.Visibility = Visibility.Collapsed;
+                else gridSplitLeft2.Visibility = Visibility.Visible;
+                if (vl != 100 && vl != 0 && !Utils.isNull(opts))
+                {
+                    if (vl > 70) //partly shown
+                    {
+                        gridSplitLog.Visibility = Visibility.Collapsed; rowLogImage.Height = new GridLength(0);
+                    }
+                    else
+                    {
+                        gridSplitLeft.Visibility = Visibility.Visible; rowLogImage.Height = new GridLength(Utils.EnsureRange(opts.LogColWidth, 100, gridLog.Height * 0.66));
+                    }
+                }
+            }
+        }
         private void MainWindow1_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {            
+        {
             opts.Left = Convert.ToInt32(Left);
             opts.Top = Convert.ToInt32(Top);
             opts.Width = Convert.ToInt32(Width);
@@ -106,7 +135,7 @@ namespace scripthea
             queryUC.Finish();
             viewerUC.Finish();
             if (!Utils.isNull(aboutWin)) aboutWin.Close();
- 
+
             string json = JsonConvert.SerializeObject(opts);
             System.IO.File.WriteAllText(optionsFile, json);
         }
@@ -117,20 +146,20 @@ namespace scripthea
         }
         public void Log(string msg, SolidColorBrush clr = null)
         {
-            try 
-            { 
+            try
+            {
                 if (msg.Length > 7)
-                    switch (msg.Substring(0,8))
+                    switch (msg.Substring(0, 8))
                     {
                         case "@StartPr": // StartProc
                             if (Utils.isNull(dTimer))
                             {
                                 dTimer = new DispatcherTimer();
                                 dTimer.Tick += new EventHandler(dTimer_Tick);
-                                dTimer.Interval = new TimeSpan(200*10000);
+                                dTimer.Interval = new TimeSpan(200 * 10000);
                             }
                             dti = 0; dTimer.Start(); return;
-                        
+
                         case "@EndProc":
                             if (Utils.isNull(dTimer)) return;
                             dTimer.Stop(); lbProcessing.Content = "";
@@ -138,15 +167,30 @@ namespace scripthea
                             if (File.Exists(fn)) // success
                             {
                                 imgLast.Source = (new BitmapImage(new Uri(fn))).Clone();
-                            } return;
-                        case "@WorkDir":
-                            if (Directory.Exists(opts.ImageDepotFolder))
-                                tbImageDepot.Text = "working image depot -> " + opts.ImageDepotFolder;
+                            }
                             return;
+                        case "@WorkDir":
+                            if (ImgUtils.checkImageDepot(opts.ImageDepotFolder,false))
+                            {
+                                dirTreeUC.CatchAFolder(opts.ImageDepotFolder);
+                                tbImageDepot.Text = "working image depot -> " + opts.ImageDepotFolder;
+                            }
+                            return;
+                        case "@Explore":
+                            string[] sa = msg.Split('='); if (sa.Length != 2) Utils.TimedMessageBox("Error(#458)");
+                            ExplorerPart = Convert.ToInt32(sa[1]);
+                            return;
+
                     }
-                if (chkLog.IsChecked.Value) Utils.log(tbLogger, msg, clr);
+                if (chkLog.IsChecked.Value)
+                    if (ExplorerPart.Equals(100)) Utils.TimedMessageBox(msg);
+                    else Utils.log(tbLogger, msg, clr);
             }
-            finally { Utils.DoEvents(); }
+            finally
+            {
+                if (msg.Length > 0 && msg.Substring(0, 1).Equals("@") && Utils.isInVisualStudio && !ExplorerPart.Equals(100)) Utils.log(tbLogger, msg, clr);
+                Utils.DoEvents();
+            }
         }
         int dti;
         private void dTimer_Tick(object sender, EventArgs e)
@@ -154,13 +198,17 @@ namespace scripthea
             string ch = "";
             switch (dti % 4)
             {
-                case 0: ch = "--";
+                case 0:
+                    ch = "--";
                     break;
-                case 1: ch = " \\";
+                case 1:
+                    ch = " \\";
                     break;
-                case 2: ch = " |";
+                case 2:
+                    ch = " |";
                     break;
-                case 3: ch = " /";
+                case 3:
+                    ch = " /";
                     break;
             }
             dti++;
@@ -170,18 +218,46 @@ namespace scripthea
         private void tabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (sender != tabControl) return;
+            if (tabControl.SelectedItem.Equals(tiComposer))
+            {
+                if (queryUC.tcQuery.SelectedItem.Equals(queryUC.tiOptions))
+                {
+                    ExplorerPart = 100; dirTreeUC.CatchAFolder(queryUC.tbImageDepot.Text);
+                }
+                else ExplorerPart = 0;
+            }
             if (tabControl.SelectedItem.Equals(tiViewer))
             {
                 if (oldTab.Equals(tiComposer)) viewerUC.tbImageDepot.Text = queryUC.tbImageDepot.Text;
                 if (oldTab.Equals(tiUtils)) viewerUC.tbImageDepot.Text = craiyonImportUC.imageFolder;
+                ExplorerPart = 100; dirTreeUC.CatchAFolder(viewerUC.tbImageDepot.Text);
+            }
+            if (tabControl.SelectedItem.Equals(tiUtils))
+            {
+                ExplorerPart = 100; dirTreeUC.CatchAFolder(craiyonImportUC.imageFolder);
             }
             oldTab = (TabItem)tabControl.SelectedItem;
-        }
 
+        }
+        protected void Active(string path)
+        {
+            if (tabControl.SelectedItem.Equals(tiComposer))
+            {
+                queryUC.tbImageDepot.Text = path;
+            }
+            if (tabControl.SelectedItem.Equals(tiViewer))
+            {
+                viewerUC.tbImageDepot.Text = path;
+            }
+            if (tabControl.SelectedItem.Equals(tiUtils))
+            {
+                craiyonImportUC.imageFolder = path; craiyonImportUC.btnNewFolder_Click(null, null);
+            }
+        }
         private void imgAbout_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (Utils.isNull(aboutWin)) aboutWin = new AboutWin();
-            aboutWin.ShowDialog();            
+            aboutWin.ShowDialog();
         }
         private void gridSplitLeft_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
@@ -201,7 +277,17 @@ namespace scripthea
         }
         private void MainWindow1_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key.Equals(Key.F1)) Utils.CallTheWeb("https://scripthea.sicyon.com");
+            if (sender.Equals(MainWindow1))
+                if (e.Key.Equals(Key.F1)) Utils.CallTheWeb("https://scripthea.sicyon.com");
+            if (e.Key.Equals(Key.Enter))
+            {
+                string fld = "";
+                if (sender.Equals(queryUC.tbImageDepot) && tabControl.SelectedItem.Equals(tiComposer)) fld = queryUC.tbImageDepot.Text;
+                if (sender.Equals(viewerUC.tbImageDepot) && tabControl.SelectedItem.Equals(tiViewer)) fld = viewerUC.tbImageDepot.Text;
+                if (sender.Equals(craiyonImportUC.tbImageDepot) && tabControl.SelectedItem.Equals(tiUtils)) fld = craiyonImportUC.tbImageDepot.Text;
+                if (ImgUtils.checkImageDepot(fld)) 
+                    dirTreeUC.CatchAFolder(fld);
+            }
         }
     }
 }

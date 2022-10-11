@@ -30,7 +30,7 @@ namespace scripthea.composer
     /// </summary>
     public partial class QueryUC : UserControl
     {
-        public string defaultImageFolder = Utils.basePath + "\\images\\";
+        //public string defaultImageFolder = Utils.basePath + "\\images\\";
         public ControlAPI API;
         public Options opts;
         public QueryUC()
@@ -121,6 +121,7 @@ namespace scripthea.composer
         {
             if (Utils.isNull(opts)) return;
             UpdatingOptions = true;
+            pnlCue.Height = new GridLength(opts.QueryRowHeight);
             colQuery.Width = new GridLength(opts.QueryColWidth);
             chkAutoSingle.IsChecked = opts.SingleAuto; btnCompose.IsEnabled = !opts.SingleAuto;              
             chkOneLineCue.IsChecked = opts.OneLineCue;           
@@ -129,14 +130,15 @@ namespace scripthea.composer
             if (Directory.Exists(opts.ImageDepotFolder)) tbImageDepot.Text = opts.ImageDepotFolder;
             else
             {
-                Log("Directory <"+tbImageDepot.Text+"> does not exist. Setting to default directory :"+ defaultImageFolder);
-                opts.ImageDepotFolder = defaultImageFolder; tbImageDepot.Text = defaultImageFolder;
+                Log("Directory <"+tbImageDepot.Text+"> does not exist. Setting to default directory :"+ ImgUtils.defaultImageDepot);
+                opts.ImageDepotFolder = ImgUtils.defaultImageDepot; tbImageDepot.Text = ImgUtils.defaultImageDepot;
             }           
             UpdatingOptions = false;              
         }
         private void UpdateToOptions(object sender, RoutedEventArgs e) // visual to internal options
         {
             if (UpdatingOptions || Utils.isNull(opts)) return;
+            opts.QueryRowHeight = Convert.ToInt32(pnlCue.Height.Value);
             opts.QueryColWidth = Convert.ToInt32(colQuery.Width.Value);
             opts.SingleAuto = chkAutoSingle.IsChecked.Value; btnCompose.IsEnabled = !opts.SingleAuto;           
             opts.OneLineCue = chkOneLineCue.IsChecked.Value;           
@@ -144,14 +146,20 @@ namespace scripthea.composer
             opts.API = cbActiveAPI.Text; opts.ModifPrefix = tbModifPrefix.Text;
             opts.ImageDepotFolder = tbImageDepot.Text;           
         }
-        private void tbImageDepo_TextChanged(object sender, TextChangedEventArgs e)
+        private void tbImageDepot_TextChanged(object sender, TextChangedEventArgs e)
         {
-            UpdateToOptions(sender, null); Log("@WorkDir");
+            if (ImgUtils.checkImageDepot(tbImageDepot.Text, false))
+            {
+                UpdateToOptions(sender, null);
+                tbImageDepot.Foreground = Brushes.Black;
+                Log("@WorkDir");
+            }
+            else tbImageDepot.Foreground = Brushes.Red;
         }
         private void btnNewFolder_Click(object sender, RoutedEventArgs e)
         {
             CommonOpenFileDialog dialog = new CommonOpenFileDialog();
-            dialog.InitialDirectory = defaultImageFolder;
+            dialog.InitialDirectory = ImgUtils.defaultImageDepot;
             dialog.IsFolderPicker = true;
             if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
             {
@@ -326,9 +334,20 @@ namespace scripthea.composer
         private void tcQuery_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (Utils.isNull(tcQuery.SelectedItem)) return;
-            if (tcQuery.SelectedItem.Equals(tiOptions)) return;
-            if (tcQuery.SelectedItem.Equals(tiSingle)) pnlCue.Height = new GridLength(150);
-            else pnlCue.Height = new GridLength(1);
+            if (tcQuery.SelectedItem.Equals(tiOptions))
+            {
+                Log("@ExplorerPart=100"); return;
+            }    
+            else Log("@ExplorerPart=0");
+            if (!Utils.isNull(opts))
+            {
+                if (tcQuery.SelectedItem.Equals(tiSingle)) pnlCue.Height = new GridLength(opts.QueryRowHeight);
+                else
+                {
+                    opts.QueryRowHeight = Convert.ToInt32(pnlCue.Height.Value);
+                    pnlCue.Height = new GridLength(1);
+                }
+            }
             tbModifier.Text = "";
             if (Utils.isNull(cueListUC)) return;
             cueListUC.radioMode = tcQuery.SelectedItem.Equals(tiSingle);

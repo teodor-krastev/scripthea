@@ -1,8 +1,8 @@
 ﻿Ideas for further development
 
-1. Another cues/prompt tab - "user" which is mutable and saved at exit
+1. Another cues tab - "user" which is mutable and saved at exit
 
-2. Thumbnail view of image review table
+2. Thumbnail view of image review table (DONE)
 
 3. Evolve modifiers in two (or three) stages: 
 	- thumbnails images representing the style, material or artist
@@ -11,4 +11,10 @@
 
  4. In scan mode to have a two or three copies of modifiers panel so the scan can have more than one modifiers.
 
+ 5. Get thesaurus and dictionary on board - many possibilities after
 
+ 6. API-specific control panel: between cues and modif. OR above modif.
+ 
+ 7. Snippets - small pieces of code to control a scan with parameters inside to iterate over  
+
+ 

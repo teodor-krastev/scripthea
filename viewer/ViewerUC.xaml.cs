@@ -62,7 +62,7 @@ namespace scripthea.viewer
             get
             {
                 if (Directory.Exists(tbImageDepot.Text)) _imageFolder = tbImageDepot.Text;
-                else _imageFolder = Utils.basePath + "\\images\\";
+                else _imageFolder = ImgUtils.defaultImageDepot;
                 return  _imageFolder.EndsWith("\\") ? _imageFolder: _imageFolder + "\\";
             }
             set
@@ -77,24 +77,11 @@ namespace scripthea.viewer
             if (OnLog != null) OnLog(txt, clr);
         }
         
-        private bool checkImageDepot(string imageDepot = "", bool checkDesc = false)
-        {
-            string idepot = imageDepot == "" ? imageFolder : imageDepot;
-            idepot = idepot.EndsWith("\\") ? idepot : idepot + "\\";
-            if (!Directory.Exists(idepot))
-            {
-                Log("Err: Directory <" + idepot + "> does not exist. "); return false;
-            }
-            if (!File.Exists(idepot + "description.txt") && checkDesc) // probably no need
-            {
-                Log("Err: File <" + idepot + "description.txt" + "> does not exist."); return false;
-            }
-            return true;
-        }
+        
         List<iPicList> views;
         private List<Tuple<int, string, string>> DecompImageDepot(string imageDepot, bool checkFileAndOut)
         {
-            if (!checkImageDepot("", true)) return null;
+            if (!ImgUtils.checkImageDepot(imageDepot, true)) return null;
             List<Tuple<int, string, string>> lt = new List<Tuple<int, string, string>>();
             List<string> ls = new List<string>(File.ReadAllLines(imageDepot + "description.txt")); int k = 1;
             foreach (string ss in ls)
@@ -117,14 +104,15 @@ namespace scripthea.viewer
                 if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
                 {
                     tbImageDepot.Text = dialog.FileName;
-                    if (checkImageDepot()) 
+                    if (ImgUtils.checkImageDepot(tbImageDepot.Text)) 
                         activeView.FeedList(DecompImageDepot(imageFolder, true), imageFolder);
                 }           
                 return;
             }  
             else // btnRefresh
             {
-                if (!checkImageDepot()) return;
+                if (!ImgUtils.checkImageDepot(tbImageDepot.Text)) 
+                    { Log("Error: not an image depot: "+ tbImageDepot.Text); return; }
                 List <Tuple<int, string, string>> decompImageDepot = DecompImageDepot(imageFolder, true);
                 if (!Utils.isNull(decompImageDepot)) activeView.FeedList(decompImageDepot, imageFolder);
             }               
@@ -147,7 +135,9 @@ namespace scripthea.viewer
         }
         private void tbImageDepot_TextChanged(object sender, TextChangedEventArgs e)
         {
-            btnRefresh.IsEnabled = checkImageDepot(tbImageDepot.Text);
+            btnRefresh.IsEnabled = ImgUtils.checkImageDepot(tbImageDepot.Text);
+            if (btnRefresh.IsEnabled) tbImageDepot.Foreground = Brushes.Black;
+            else tbImageDepot.Foreground = Brushes.Red;
         }
     }
 }

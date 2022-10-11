@@ -40,13 +40,13 @@ namespace scripthea
         {
             get
             {
-                if (Directory.Exists(tbImageDepo.Text)) _imageFolder = tbImageDepo.Text;
-                else _imageFolder = Utils.basePath + "\\images\\";
+                if (Directory.Exists(tbImageDepot.Text)) _imageFolder = tbImageDepot.Text;
+                else _imageFolder = ImgUtils.defaultImageDepot;
                 return _imageFolder.EndsWith("\\") ? _imageFolder : _imageFolder + "\\";
             }
             set
             {
-                _imageFolder = value; tbImageDepo.Text = value;
+                _imageFolder = value; tbImageDepot.Text = value;
             }
         }
         public delegate void LogHandler(string txt, SolidColorBrush clr = null);
@@ -56,7 +56,7 @@ namespace scripthea
             if (OnLog != null) OnLog(txt, clr);
             else Utils.TimedMessageBox(txt);
         }
-        private void btnNewFolder_Click(object sender, RoutedEventArgs e)
+        public void btnNewFolder_Click(object sender, RoutedEventArgs e)
         {
             if (!Utils.isNull(sender))
             {
@@ -65,7 +65,7 @@ namespace scripthea
                 dialog.IsFolderPicker = true;
                 if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
                 {
-                    tbImageDepo.Text = dialog.FileName; 
+                    tbImageDepot.Text = dialog.FileName; 
                 }
             }
             if (!Directory.Exists(imageFolder))
@@ -162,6 +162,12 @@ namespace scripthea
                 image.Source = bi.Clone(); bi = null;                                                             
             }                    
             else Log("Error: file not found-> " + fn);            
+        }
+
+        private void tbImageDepot_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (ImgUtils.checkImageDepot(tbImageDepot.Text,false)) tbImageDepot.Foreground = Brushes.Black;
+            else tbImageDepot.Foreground = Brushes.Red;
         }
     }
 }

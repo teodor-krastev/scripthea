@@ -14,15 +14,15 @@
         <Grid Grid.Column="0" Margin="5,0,0,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="120"/>
-                <RowDefinition Height="150" x:Name="pnlCue" MaxHeight="400"/>
+                <RowDefinition Height="150" x:Name="pnlCue" MaxHeight="500"/>
                 <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
             <Grid Grid.Row="1">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="20*"/>
-                    <RowDefinition Height="10*"/>
+                    <RowDefinition Height="13*"/>
                 </Grid.RowDefinitions>
-                <TextBox x:Name="tbCue" Margin="0" TextWrapping="Wrap" Background="#FFFFFFF8" BorderBrush="#FFF9DE34" Text="" FontSize="13" TextChanged="tbCue_TextChanged" ContextMenuOpening="tbCue_ContextMenuOpening" AcceptsReturn="True">
+                <TextBox x:Name="tbCue" Margin="0,2,0,0" TextWrapping="Wrap" Background="#FFFFFFF8" BorderBrush="#FFF9DE34" Text="" FontSize="13" TextChanged="tbCue_TextChanged" ContextMenuOpening="tbCue_ContextMenuOpening" AcceptsReturn="True">
                     <TextBox.ContextMenu>
                         <ContextMenu x:Name="cmCue"/>
                     </TextBox.ContextMenu>
@@ -53,11 +53,11 @@
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="1*"/>
-                                    <ColumnDefinition Width="62"/>
+                                    <ColumnDefinition Width="1"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBox x:Name="tbImageDepot" Background="#FFFBFBF4" TextChanged="tbImageDepo_TextChanged">
+                                <TextBox x:Name="tbImageDepot" Background="#FFFBFBF4" TextChanged="tbImageDepot_TextChanged">
                                 </TextBox>
-                                <Button x:Name="btnNewFolder" Grid.Column="1" Content=" Browse " Click="btnNewFolder_Click" Foreground="#FF0F8001" FontWeight="Bold" Background="#FFF4F4F4" Margin="3,0,0,0">
+                                <Button x:Name="btnNewFolder" Grid.Column="1" Content=" Browse " Click="btnNewFolder_Click" Foreground="#FF0F8001" FontWeight="Bold" Background="#FFF4F4F4" Margin="3,0,0,0" Visibility="Hidden">
 
                                 </Button>
                             </Grid>
