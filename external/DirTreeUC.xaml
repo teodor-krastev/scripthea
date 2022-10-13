@@ -7,8 +7,12 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800" FontSize="13">
     <Grid>
-        <TreeView x:Name="tvFolders" Margin="0,0,0,25" SelectedItemChanged="tvFolders_SelectedItemChanged" KeyDown="tvFolders_KeyDown" MouseDoubleClick="tvFolders_MouseDoubleClick" ></TreeView>
+        <TreeView x:Name="tvFolders" Margin="0,0,0,25" SelectedItemChanged="tvFolders_SelectedItemChanged" KeyDown="tvFolders_KeyDown" MouseDoubleClick="tvFolders_MouseDoubleClick" ContextMenuOpening="tvFolders_ContextMenuOpening" >
+            <TreeView.ContextMenu>
+                <ContextMenu x:Name="cmFolders"/>
+            </TreeView.ContextMenu>
+        </TreeView>
         <TextBlock x:Name="tbSelected" TextWrapping="Wrap" VerticalAlignment="Bottom" Text="" Margin="0,0,0,3"/>
-        <ComboBox x:Name="cbDrives" Margin="0,0,25,0" SelectionChanged="comboBox_SelectionChanged" Background="#FFF0F0F0" HorizontalAlignment="Right" VerticalAlignment="Top" Width="50" Height="25" FontSize="13"/>
+        <ComboBox x:Name="cbDrives" Margin="0,0,25.203,0" SelectionChanged="comboBox_SelectionChanged" Background="#FFF0F0F0" HorizontalAlignment="Right" VerticalAlignment="Top" Width="90" Height="25" FontSize="13"/>
     </Grid>
 </UserControl>

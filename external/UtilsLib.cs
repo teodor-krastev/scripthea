@@ -510,23 +510,6 @@ namespace UtilsNS
             List<string> ls = new List<string>(txtArr);                      
             return ls;
         }         
-        public static BitmapImage ToBitmapImage(Bitmap bitmap, ImageFormat imageFormat)
-        {
-            using (var memory = new MemoryStream())
-            {
-                bitmap.Save(memory, imageFormat);
-                memory.Position = 0;
-
-                var bitmapImage = new BitmapImage();
-                bitmapImage.BeginInit();
-                bitmapImage.StreamSource = memory;
-                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                bitmapImage.EndInit();
-                bitmapImage.Freeze();
-
-                return bitmapImage;
-            }
-        }
         public static string GetMD5Checksum(string filename) // https://makolyte.com/csharp-get-a-files-checksum-using-any-hashing-algorithm-md5-sha256/
         {
             using (var md5 = System.Security.Cryptography.MD5.Create())
@@ -546,35 +529,6 @@ namespace UtilsNS
             string fn = fp + randomString(1);
             if (!File.Exists(fn + ext)) return fn + ext;
             return fn + randomString(2);
-        }
-        public static void VisualCompToPng(UIElement element, string filename = "")
-        {
-            var rect = new Rect(element.RenderSize);
-            var visual = new DrawingVisual();
-
-            using (var dc = visual.RenderOpen())
-            {
-                dc.DrawRectangle(new VisualBrush(element), null, rect);
-            }
-            var bitmap = new RenderTargetBitmap(
-                (int)rect.Width, (int)rect.Height, 96, 96, PixelFormats.Default);
-            bitmap.Render(visual);
-
-            if (filename.Equals(""))
-            {
-                Clipboard.SetImage(bitmap);
-                Utils.TimedMessageBox("The image is in the clipboard");
-            }
-            else
-            {
-                var encoder = new PngBitmapEncoder();
-                encoder.Frames.Add(BitmapFrame.Create(bitmap));
-
-                using (var file = File.OpenWrite(filename))
-                {
-                    encoder.Save(file);
-                }
-            }
         }
         public static string betweenStrings(string text, string start, string end = "")
         {

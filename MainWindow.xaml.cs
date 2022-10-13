@@ -93,8 +93,8 @@ namespace scripthea
             rowLogImage.Height = new GridLength(opts.LogColWidth);
 
             oldTab = tiComposer;
-            Title = "Scripthea - text-to-image prompt composer v" + Utils.getAppFileVersion + "  " + (Utils.isInVisualStudio ? "(within VS)" : "");
-            Log("> Welcome to Scripthea"); Log("");
+            Title = "Scripthea - text-to-image prompt composer v" + Utils.getAppFileVersion;
+            Log("> Welcome to Scripthea" + "  " + (Utils.isInVisualStudio ? "(within VS)" : "")); Log("");
             if (opts.SingleAuto) queryUC.btnCompose_Click(null, null);
 
             Log("@ExplorerPart=0");
