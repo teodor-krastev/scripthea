@@ -69,6 +69,43 @@ namespace UtilsNS
             }
             return child;
         }
+        /*public static DataGridCell GetCell(this DataGrid grid, DataGridRow row, int column)
+        {
+            if (row != null)
+            {
+                DataGridCellsPresenter presenter = GetVisualChild<DataGridCellsPresenter>(row);
+
+                if (presenter == null)
+                {
+                    grid.ScrollIntoView(row, grid.Columns[column]);
+                    presenter = GetVisualChild<DataGridCellsPresenter>(row);
+                }
+
+                DataGridCell cell = (DataGridCell)presenter.ItemContainerGenerator.ContainerFromIndex(column);
+                return cell;
+            }
+            return null;
+        }*/
+
+        public static T GetChildObjectOfTypeInVisualTree<T>(DependencyObject dpob) where T : DependencyObject
+        {
+            int count = VisualTreeHelper.GetChildrenCount(dpob);
+            for (int i = 0; i < count; i++)
+            {
+                DependencyObject child = VisualTreeHelper.GetChild(dpob, i);
+                T childAsT = child as T;
+                if (childAsT != null)
+                {
+                    return childAsT;
+                }
+                childAsT = GetChildObjectOfTypeInVisualTree<T>(child);
+                if (childAsT != null)
+                {
+                    return childAsT;
+                }
+            }
+            return null;
+        }
     }
     public static class DataGridHelper
     {
@@ -102,7 +139,14 @@ namespace UtilsNS
 
             var row = dataGrid.GetRowByIndex(rowIndex);
 
-            if (row != null)
+            if (row == null)
+            {
+                object item = dataGrid.Items[rowIndex]; dataGrid.UpdateLayout();
+                dataGrid.ScrollIntoView(item); dataGrid.UpdateLayout(); 
+                row = dataGrid.GetRowByIndex(rowIndex);
+                if (row != null) return row.GetCellByColumnIndex(dataGrid, columnIndex);
+            }
+            else            
                 return row.GetCellByColumnIndex(dataGrid, columnIndex);
 
             return null;

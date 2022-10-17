@@ -19,9 +19,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using Brushes = System.Windows.Media.Brushes;
 
-// https://stackoverflow.com/questions/6415037/populate-treeview-from-list-of-file-paths-in-wpf
 
-// display folders and subfolders in a treeview wpf c#
 
 namespace UtilsNS
 {
@@ -85,7 +83,7 @@ namespace UtilsNS
         }
     }
     /// <summary>
-    /// Interaction logic for DirTreeUC.xaml
+    /// display folders and subfolders in a treeview wpf c#
     /// </summary>
     public partial class DirTreeUC : UserControl
     {

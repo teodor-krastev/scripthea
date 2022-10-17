@@ -27,6 +27,7 @@ namespace scripthea.composer
         {
             InitializeComponent();
         }
+
         public delegate void LogHandler(string txt, SolidColorBrush clr = null);
         public event LogHandler OnLog;
         protected void Log(string txt, SolidColorBrush clr = null)
@@ -35,14 +36,14 @@ namespace scripthea.composer
             else Utils.TimedMessageBox(txt);
         }
 
-        DataTable dTable;
+        DataTable dTable; List<CheckBox> checks;
         public void LoadPrompts(List<string> prompts)
         {
             if (prompts.Count == 0)
             {
                 Log("Error: no prompts in the list"); return;
             }
-            dTable = new DataTable();
+            dTable = new DataTable(); checks = new List<CheckBox>(); 
             dTable.Columns.Add(new DataColumn("#", typeof(int)));
             dTable.Columns.Add(new DataColumn("On", typeof(bool)));
             dTable.Columns.Add(new DataColumn("Prompt", typeof(string)));
@@ -53,9 +54,12 @@ namespace scripthea.composer
             Utils.DoEvents(); 
             for (int i = 0; i < prompts.Count; i++)
             {
-                CheckBox chk = DataGridHelper.GetCellByIndices(dGrid, i, 1).FindVisualChild<CheckBox>();
-                if (Utils.isNull(chk)) continue;
+                DataGridCell dgc = DataGridHelper.GetCellByIndices(dGrid, i, 1);
+                if (Utils.isNull(dgc)) { Log("Error: missing cell #" + i.ToString()); continue; }
+                CheckBox chk = dgc.FindVisualChild<CheckBox>();
+                if (Utils.isNull(chk)) { Log("Error: missing check #" + i.ToString()); continue; }                
                 chk.Checked += new RoutedEventHandler(chkTable_Checked); chk.Unchecked += new RoutedEventHandler(chkTable_Checked);
+                checks.Add(chk);
             }                            
             if (dTable.Rows.Count > 0) dGrid.SelectedIndex = 0;
         }
@@ -125,12 +129,10 @@ namespace scripthea.composer
         }
         public List<string> checkedPrompts()
         {
-            List<string> ls = new List<string>();
+            List<string> ls = new List<string>();                
             for (int i = 0; i < dTable.Rows.Count; i++)
-            {
-                CheckBox chk = DataGridHelper.GetCellByIndices(dGrid, i, 1).FindVisualChild<CheckBox>();
-                if (Utils.isNull(chk)) continue;
-                if (chk.IsChecked.Value)
+            {                
+                if (checks[i].IsChecked.Value)
                     ls.Add(Convert.ToString(dTable.Rows[i]["Prompt"]));
             }
             return ls;
@@ -140,13 +142,33 @@ namespace scripthea.composer
             for (int i = 0; i < dTable.Rows.Count; i++)
             {
                 TextBlock tb = DataGridHelper.GetCellByIndices(dGrid, i, 2).FindVisualChild<TextBlock>();
-                if (Utils.isNull(tb)) continue; //if (chk.IsChecked.Value) ls.Add(Convert.ToString(dTable.Rows[i]["Prompt"]));
+                if (Utils.isNull(tb)) continue; 
                 if (tb.Text.Equals(pr))
                 {
                     dGrid.SelectedIndex = i; dGrid.Focus();
                     btnQuerySelected.IsEnabled = !scanning; return;
                 }
             }
+        }
+        private void btnCopy_Click(object sender, RoutedEventArgs e)
+        {
+            List<string> ls = checkedPrompts(); string ss = "";
+            foreach (var s in ls) ss += s + "\r";
+            Clipboard.SetText(ss);
+        }
+        private void btnSaveAs_Click(object sender, RoutedEventArgs e)
+        {                    
+            Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
+            dlg.FileName = ""; // Default file name
+            dlg.DefaultExt = ".txt"; // Default file extension
+            dlg.Filter = "Prompts (.txt)|*.txt"; // Filter files by extension
+            //dlg.InitialDirectory = Controller.scriptListPath;
+            // Show open file dialog box
+            bool? result = dlg.ShowDialog();
+
+            // Process open file dialog box results
+            if (result != true) return;
+            Utils.writeList(dlg.FileName, checkedPrompts());
         }
     }
 }

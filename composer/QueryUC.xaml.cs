@@ -138,7 +138,8 @@ namespace scripthea.composer
         private void UpdateToOptions(object sender, RoutedEventArgs e) // visual to internal options
         {
             if (UpdatingOptions || Utils.isNull(opts)) return;
-            opts.QueryRowHeight = Convert.ToInt32(pnlCue.Height.Value);
+            int QueryRowHeight = Convert.ToInt32(pnlCue.Height.Value);
+            if (QueryRowHeight > 1) opts.QueryRowHeight = QueryRowHeight;
             opts.QueryColWidth = Convert.ToInt32(colQuery.Width.Value);
             opts.SingleAuto = chkAutoSingle.IsChecked.Value; btnCompose.IsEnabled = !opts.SingleAuto;           
             opts.OneLineCue = chkOneLineCue.IsChecked.Value;           

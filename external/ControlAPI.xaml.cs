@@ -79,7 +79,7 @@ namespace scripthea.external
 
         private void backgroundWorker1_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
-            success = activeAPI.GenerateImage(prompt2api, imageFolder, out imageName);// calling API
+            success = activeAPI.GenerateImage(prompt2api, imageFolder, out imageName); // calling API
         }
         private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
