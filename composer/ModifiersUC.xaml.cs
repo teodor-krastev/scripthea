@@ -54,7 +54,7 @@ namespace scripthea.composer
         {
             separator = "; ";
             modifLists = new List<ModifListUC>();
-            var files = new List<string>(Directory.GetFiles(Utils.configPath, "*.mdf"));
+            var files = new List<string>(Directory.GetFiles(Utils.configPath, "*.mdfr"));
             foreach (string fn in files)
             {
                 ModifListUC cmu = new ModifListUC(fn); 

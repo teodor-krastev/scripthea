@@ -166,12 +166,12 @@ namespace scripthea.composer
                     os.radioMode = value;
                 if (value)
                 {
-                    imgRandom.Visibility = Visibility.Visible; lbSelCount.Visibility = Visibility.Collapsed;
+                    imgRandom.Visibility = Visibility.Visible; imgMenu.Visibility = Visibility.Collapsed; lbSelCount.Visibility = Visibility.Collapsed;
                     tabControl_SelectionChanged(null, null);
                 }
                 else
                 {
-                    imgRandom.Visibility = Visibility.Collapsed; lbSelCount.Visibility = Visibility.Visible;                    
+                    imgRandom.Visibility = Visibility.Collapsed; imgMenu.Visibility = Visibility.Visible; lbSelCount.Visibility = Visibility.Visible;                    
                 }
                 Change(null, null); 
             }
@@ -191,6 +191,49 @@ namespace scripthea.composer
             int si = rand.Next(ssd.Count);
             if (si.Equals(localSeedIdx)) si = rand.Next(ssd.Count);
             localSeedIdx = si;
+        }
+        private readonly string[] miTitles = { "Check All", "Uncheck All", "Invert Checking" };
+        private void imgMenu_ContextMenuOpening(object sender, ContextMenuEventArgs e)
+        {
+            if (radioMode) return;
+            cmCue.Items.Clear(); 
+            for (int i = 0; i < 3; i++)
+            {
+                MenuItem mi = new MenuItem(); mi.Header = miTitles[i];                
+                mi.Click += mi_Click;
+                cmCue.Items.Add(mi);
+            }
+        }
+        private void mi_Click(object sender, RoutedEventArgs e)
+        {            
+            MenuItem mi = sender as MenuItem; string header = Convert.ToString(mi.Header);
+            foreach (CueItemUC os in localSeeds[tabControl.SelectedIndex])
+            { 
+                switch (header)
+                {
+                    case "Check All":
+                        os.boxChecked = true;
+                        break; 
+                    case "Uncheck All":
+                        os.boxChecked = false;
+                        break;
+                    case "Invert Checking":
+                        os.boxChecked = !os.boxChecked;
+                        break;
+                }
+            }            
+        }
+        private void imgMenu_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+            {
+                Image image = sender as Image;
+                ContextMenu contextMenu = image.ContextMenu;
+                contextMenu.PlacementTarget = image;
+                contextMenu.IsOpen = true;
+                e.Handled = true;
+                imgMenu_ContextMenuOpening(sender, null);
+            }
         }
     }
 }

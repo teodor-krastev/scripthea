@@ -11,6 +11,11 @@
 
         </TabControl>
         <Image x:Name="imgRandom" HorizontalAlignment="Right" Margin="0,0,5,0" VerticalAlignment="Top" Width="30" Source="/Scripthea;component/Properties/random.png" ToolTip="Random select" Cursor="Hand" MouseDown="imgRandom_MouseDown"/>
-        <Label x:Name="lbSelCount" FontWeight="Bold" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,-3,17,0" Visibility="Collapsed"></Label>
+        <Image x:Name="imgMenu" HorizontalAlignment="Right" Margin="0,-2,5,0" VerticalAlignment="Top" Width="25" Source="/Scripthea;component/Properties/TripleBarTeal.bmp" ToolTip="Random select" Cursor="Hand" ContextMenuOpening="imgMenu_ContextMenuOpening" Visibility="Collapsed" MouseDown="imgMenu_MouseDown">
+            <Image.ContextMenu>
+                <ContextMenu x:Name="cmCue"/>
+            </Image.ContextMenu>
+        </Image>
+        <Label x:Name="lbSelCount" FontWeight="Bold" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,-3,33,0" Visibility="Collapsed"></Label>
     </Grid>
 </UserControl>
