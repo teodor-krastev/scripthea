@@ -61,7 +61,7 @@
                         <ColumnDefinition Width="500"/>
                         <ColumnDefinition Width="646*"/>
                     </Grid.ColumnDefinitions>
-                    <local:CraiyonImportUC x:Name="craiyonImportUC" Width="Auto"/>
+                    <local:ImportUtilUC x:Name="importUtilUC" Width="Auto"/>
                     <GridSplitter x:Name="gridSplitter" HorizontalAlignment="Left" Grid.Column="1" Margin="0" Width="5" Background="#FFEBFBFB"/>
                 </Grid>
             </TabItem>

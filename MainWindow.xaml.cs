@@ -77,11 +77,11 @@ namespace scripthea
 
             queryUC.OnLog += new QueryUC.LogHandler(Log); queryUC.tbImageDepot.KeyDown += new KeyEventHandler(MainWindow1_KeyDown);
             viewerUC.OnLog += new ViewerUC.LogHandler(Log); viewerUC.tbImageDepot.KeyDown += new KeyEventHandler(MainWindow1_KeyDown);
-            craiyonImportUC.OnLog += new CraiyonImportUC.LogHandler(Log); craiyonImportUC.tbImageDepot.KeyDown += new KeyEventHandler(MainWindow1_KeyDown);
+            importUtilUC.OnLog += new ImportUtilUC.LogHandler(Log); importUtilUC.tbImageDepot.KeyDown += new KeyEventHandler(MainWindow1_KeyDown);
 
             queryUC.Init(ref opts);
             viewerUC.Init(ref opts);
-            craiyonImportUC.Init();
+            importUtilUC.Init();
 
             Left = opts.Left;
             Top = opts.Top;
@@ -170,7 +170,7 @@ namespace scripthea
                             }
                             return;
                         case "@WorkDir":
-                            if (ImgUtils.checkImageDepot(opts.ImageDepotFolder,false))
+                            if (ImgUtils.checkImageDepot(opts.ImageDepotFolder,false) > 0)
                             {
                                 dirTreeUC.CatchAFolder(opts.ImageDepotFolder);
                                 tbImageDepot.Text = "working image depot -> " + opts.ImageDepotFolder;
@@ -229,12 +229,12 @@ namespace scripthea
             if (tabControl.SelectedItem.Equals(tiViewer))
             {
                 if (oldTab.Equals(tiComposer)) viewerUC.tbImageDepot.Text = queryUC.tbImageDepot.Text;
-                if (oldTab.Equals(tiUtils)) viewerUC.tbImageDepot.Text = craiyonImportUC.imageFolder;
+                if (oldTab.Equals(tiUtils)) viewerUC.tbImageDepot.Text = importUtilUC.imageFolder;
                 ExplorerPart = 100; dirTreeUC.CatchAFolder(viewerUC.tbImageDepot.Text);
             }
             if (tabControl.SelectedItem.Equals(tiUtils))
             {
-                ExplorerPart = 100; dirTreeUC.CatchAFolder(craiyonImportUC.imageFolder);
+                ExplorerPart = 100; dirTreeUC.CatchAFolder(importUtilUC.imageFolder);
             }
             oldTab = (TabItem)tabControl.SelectedItem;
 
@@ -251,7 +251,7 @@ namespace scripthea
             }
             if (tabControl.SelectedItem.Equals(tiUtils))
             {
-                craiyonImportUC.imageFolder = path; craiyonImportUC.btnNewFolder_Click(null, null);
+                importUtilUC.imageFolder = path; importUtilUC.btnNewFolder_Click(null, null);
             }
         }
         private void imgAbout_MouseDown(object sender, MouseButtonEventArgs e)
@@ -284,8 +284,8 @@ namespace scripthea
                 string fld = "";
                 if (sender.Equals(queryUC.tbImageDepot) && tabControl.SelectedItem.Equals(tiComposer)) fld = queryUC.tbImageDepot.Text;
                 if (sender.Equals(viewerUC.tbImageDepot) && tabControl.SelectedItem.Equals(tiViewer)) fld = viewerUC.tbImageDepot.Text;
-                if (sender.Equals(craiyonImportUC.tbImageDepot) && tabControl.SelectedItem.Equals(tiUtils)) fld = craiyonImportUC.tbImageDepot.Text;
-                if (ImgUtils.checkImageDepot(fld)) 
+                if (sender.Equals(importUtilUC.tbImageDepot) && tabControl.SelectedItem.Equals(tiUtils)) fld = importUtilUC.tbImageDepot.Text;
+                if (ImgUtils.checkImageDepot(fld) > 0) 
                     dirTreeUC.CatchAFolder(fld);
             }
         }

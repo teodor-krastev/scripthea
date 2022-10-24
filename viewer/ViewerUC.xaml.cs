@@ -81,7 +81,7 @@ namespace scripthea.viewer
         List<iPicList> views;
         private List<Tuple<int, string, string>> DecompImageDepot(string imageDepot, bool checkFileAndOut)
         {
-            if (!ImgUtils.checkImageDepot(imageDepot, true)) return null;
+            if (ImgUtils.checkImageDepot(imageDepot, true) < 1) return null;
             List<Tuple<int, string, string>> lt = new List<Tuple<int, string, string>>();
             List<string> ls = new List<string>(File.ReadAllLines(imageDepot + "description.txt")); int k = 1;
             foreach (string ss in ls)
@@ -104,14 +104,14 @@ namespace scripthea.viewer
                 if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
                 {
                     tbImageDepot.Text = dialog.FileName;
-                    if (ImgUtils.checkImageDepot(tbImageDepot.Text)) 
+                    if (ImgUtils.checkImageDepot(tbImageDepot.Text) > 0) 
                         activeView.FeedList(DecompImageDepot(imageFolder, true), imageFolder);
                 }           
                 return;
             }  
             else // btnRefresh
             {
-                if (!ImgUtils.checkImageDepot(tbImageDepot.Text)) 
+                if (ImgUtils.checkImageDepot(tbImageDepot.Text) < 1) 
                     { Log("Error: not an image depot: "+ tbImageDepot.Text); return; }
                 List <Tuple<int, string, string>> decompImageDepot = DecompImageDepot(imageFolder, true);
                 if (!Utils.isNull(decompImageDepot)) activeView.FeedList(decompImageDepot, imageFolder);
@@ -135,7 +135,7 @@ namespace scripthea.viewer
         }
         private void tbImageDepot_TextChanged(object sender, TextChangedEventArgs e)
         {
-            btnRefresh.IsEnabled = ImgUtils.checkImageDepot(tbImageDepot.Text);
+            btnRefresh.IsEnabled = ImgUtils.checkImageDepot(tbImageDepot.Text) > 0;
             if (btnRefresh.IsEnabled) tbImageDepot.Foreground = Brushes.Black;
             else tbImageDepot.Foreground = Brushes.Red;
         }

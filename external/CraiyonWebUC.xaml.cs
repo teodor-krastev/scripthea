@@ -29,14 +29,11 @@ namespace scripthea.external
 
         public Dictionary<string, string> opts { get; set; }
 
-        public void ShowAccess(string prompt) // updsate visual from opts
-        {
-
-        }
-        public bool isEnabled
-        {
-            get { return true; }
-        }
+        public void Init(string prompt) {  }
+        public void Finish() { }
+        public bool isDocked { get { return false; } }
+        public UserControl userControl { get { return this as UserControl; } }
+        public bool isEnabled { get { return true; } }
         public bool GenerateImage(string prompt, string imageDepotFolder, out string filename)
         {
             Utils.CallTheWeb("https://craiyon.com/?prompt=" + prompt.Trim().Replace(' ', '+'));

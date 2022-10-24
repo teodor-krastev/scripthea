@@ -23,7 +23,10 @@ namespace scripthea.external
     public interface interfaceAPI
     {
         Dictionary<string, string> opts { get; set; } // visual adjustable options to that particular API, keep it in synchro with the visuals 
-        void ShowAccess(string prompt); // update visuals from opts
+        void Init(string prompt);
+        void Finish();
+        bool isDocked { get; }
+        UserControl userControl { get; }
         bool isEnabled { get; } // connected and working (depends on the API)
         bool GenerateImage(string prompt, string imageDepotFolder, out string filename); // returns the filename of saved in _ImageDepoFolder image 
     }
@@ -40,6 +43,7 @@ namespace scripthea.external
             visualControl("Simulation", new SimulatorUC());
             visualControl("DeepAI", new DeepAIUC());
             visualControl("Craiyon", new CraiyonWebUC());
+            visualControl("Diffusion", new diffusionUC());
             _activeAPIname = "Simulation"; tabControl.SelectedIndex = 0;
 
             backgroundWorker1 = new BackgroundWorker();
@@ -58,10 +62,13 @@ namespace scripthea.external
         }
         private void visualControl(string APIname, UserControl uc)
         {
-            uc.Name = APIname.ToLower() + "UC"; interfaceAPIs[APIname] = (interfaceAPI)uc;
-            TabItem ti = new TabItem(); ti.Header = APIname;
-            uc.Height = Double.NaN; uc.Width = Double.NaN; uc.Margin = new Thickness(0, 0, 0, 0);
-            ti.Content = uc; ti.Visibility = Visibility.Collapsed; tabControl.Items.Add(ti);
+            uc.Name = APIname.ToLower() + "UC"; interfaceAPIs[APIname] = (interfaceAPI)uc; 
+            if (!interfaceAPIs[APIname].isDocked)
+            {
+                TabItem ti = new TabItem(); ti.Header = APIname;
+                uc.Height = Double.NaN; uc.Width = Double.NaN; uc.Margin = new Thickness(0, 0, 0, 0);
+                ti.Content = uc; ti.Visibility = Visibility.Collapsed; tabControl.Items.Add(ti);
+            }
         }
         private string _activeAPIname;
         public string activeAPIname
@@ -108,7 +115,7 @@ namespace scripthea.external
         public void about2Show(string prompt)
         {
             Dictionary<string, string> tempOpts = new Dictionary<string, string>(activeAPI.opts);
-            activeAPI.ShowAccess(prompt); // update visuals from opts
+            activeAPI.Init(prompt); 
             foreach (TabItem ti in tabControl.Items)
             {               
                 if (ti.Header.Equals(activeAPIname))
@@ -129,6 +136,7 @@ namespace scripthea.external
         public bool eCancel = true;
         private void controlAPIwin_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            if (!Utils.isNull(activeAPI)) activeAPI.Finish();
             e.Cancel = eCancel; Hide();
         }
     }

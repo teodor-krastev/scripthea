@@ -31,14 +31,17 @@ namespace scripthea.external
             opts = new Dictionary<string, string>();
         }
         public Dictionary<string, string> opts { get; set; }
-        public void ShowAccess(string prompt)
+        public void Init(string prompt)
         {
             lbStatus.Content = "Status";
             if (!opts.ContainsKey("folder")) opts["folder"] = Utils.basePath + "\\images\\";
             if (!Directory.Exists(opts["folder"])) opts["folder"] = Utils.basePath + "\\images\\";
             tbIn.Text = prompt;
         }
-        public bool isEnabled { get; }
+        public void Finish() { }
+        public bool isDocked { get { return false; } }
+        public UserControl userControl { get { return this as UserControl; } }
+        public bool isEnabled { get; } // to be implemented ?
         public bool GenerateImage(string prompt, string imageDepotFolder, out string filename) // returns image filename or error message if failed
         {
             string DeepAI_key = File.Exists(Utils.configPath + "DeepAI.key") ? File.ReadAllText(Utils.configPath + "DeepAI.key").Trim() : "quickstart-QUdJIGlzIGNvbWluZy4uLi4K";            

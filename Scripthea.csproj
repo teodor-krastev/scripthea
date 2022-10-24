@@ -114,14 +114,17 @@
     <Compile Include="external\ControlAPI.xaml.cs">
       <DependentUpon>ControlAPI.xaml</DependentUpon>
     </Compile>
-    <Compile Include="external\CraiyonImportUC.xaml.cs">
-      <DependentUpon>CraiyonImportUC.xaml</DependentUpon>
+    <Compile Include="external\ImportUtilUC.xaml.cs">
+      <DependentUpon>ImportUtilUC.xaml</DependentUpon>
     </Compile>
     <Compile Include="external\CraiyonWebUC.xaml.cs">
       <DependentUpon>CraiyonWebUC.xaml</DependentUpon>
     </Compile>
     <Compile Include="external\DeepAIUC.xaml.cs">
       <DependentUpon>DeepAIUC.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="external\diffusionUC.xaml.cs">
+      <DependentUpon>diffusionUC.xaml</DependentUpon>
     </Compile>
     <Compile Include="external\DirTreeUC.xaml.cs">
       <DependentUpon>DirTreeUC.xaml</DependentUpon>
@@ -182,7 +185,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="external\CraiyonImportUC.xaml">
+    <Page Include="external\ImportUtilUC.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -191,6 +194,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="external\DeepAIUC.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="external\diffusionUC.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

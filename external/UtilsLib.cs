@@ -86,7 +86,7 @@ namespace UtilsNS
     }
     public static class Utils
     {
-        static Random rand = new Random();
+        static Random rand = new Random(RandomnSeed);
         /// <summary>
         /// ProcessMessages of the visual components 
         /// </summary>
@@ -264,7 +264,7 @@ namespace UtilsNS
         public static List<T> Randomize<T>(List<T> list)
         {
             List<T> randomizedList = new List<T>();
-            Random rnd = new Random();
+            Random rnd = new Random(RandomnSeed);
             while (list.Count > 0)
             {
                 int index = rnd.Next(0, list.Count); //pick a random item from the master list
@@ -968,22 +968,40 @@ namespace UtilsNS
                 return rslt;  
             } 
         }
-
+        public static int RandomnSeed
+        {
+            get 
+            {                
+                return  Convert.ToInt32(DateTime.Now.TimeOfDay.Ticks % int.MaxValue); 
+            }
+        }
         /// <summary>
         /// Random string (for testing purposes)
         /// </summary>
         /// <param name="length"></param>
         /// <returns></returns>
-        public static string randomString(int length)
+        public static string randomString(int length, bool numOnly = false )
         {
-            int l8 = 1 + length / 8; string path, ss = "";
-            for (int i = 0; i < l8; i++)
+            if (length < 1) return "";
+            if (numOnly)
             {
-                path = Path.GetRandomFileName();
-                path = path.Replace(".", ""); // Remove period.
-                ss += path.Substring(0, 8);  // Return 8 character string
+                Random rnd = new Random(RandomnSeed);
+                string rslt = "";
+                for (int i = 0; i < length; i++)
+                    rslt += rnd.Next(0, 9).ToString();
+                return rslt;
             }
-            return ss.Remove(length);
+            else
+            {
+                int l8 = 1 + length / 8; string path, ss = "";
+                for (int i = 0; i < l8; i++)
+                {
+                    path = Path.GetRandomFileName();
+                    path = path.Replace(".", ""); // Remove period.
+                    ss += path.Substring(0, 8);  // Return 8 character string
+                }
+                return ss.Remove(length);
+            }
         }
 
         public static double tick2sec(long ticks)

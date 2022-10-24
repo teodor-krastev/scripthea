@@ -52,7 +52,7 @@ namespace scripthea.composer
             tiMiodifiers.Visibility = Visibility.Collapsed; tiScanPreview.Visibility = Visibility.Collapsed;
 
             API = new ControlAPI(); cbActiveAPI_SelectionChanged(null, null);
-            API.OnQueryComplete += new ControlAPI.APIEventHandler(QueryComplete);
+            API.OnQueryComplete += new ControlAPI.APIEventHandler(QueryComplete);           
 
             if (Utils.TheosComputer()) cbiCraiyon.Visibility = Visibility.Visible;
             else cbiCraiyon.Visibility = Visibility.Collapsed;
@@ -98,7 +98,19 @@ namespace scripthea.composer
         {
             if (OnLog != null) OnLog(txt, clr);
         }
-
+        private bool _showAPI;
+        public bool showAPI
+        {
+            get { return _showAPI; }
+            set 
+            {
+                if (value) rowAPI.Height = new GridLength(60);
+                else rowAPI.Height = new GridLength(1);
+                if (value) imgAPIdialog.Visibility = Visibility.Hidden;
+                else imgAPIdialog.Visibility = Visibility.Visible;
+                _showAPI = value;  
+            }
+        }
         //public event RoutedEventHandler OnChange;
         /// <summary>
         /// Receive message
@@ -149,7 +161,7 @@ namespace scripthea.composer
         }
         private void tbImageDepot_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (ImgUtils.checkImageDepot(tbImageDepot.Text, false))
+            if (ImgUtils.checkImageDepot(tbImageDepot.Text, false) > 0)
             {
                 UpdateToOptions(sender, null);
                 tbImageDepot.Foreground = Brushes.Black;
@@ -279,7 +291,6 @@ namespace scripthea.composer
                 status = Status.Request2Cancel; btnScan.Content = "S c a n"; btnScan.Background = Brushes.MintCream;
                 btnScanPreview.IsEnabled = true; return;
             }
-
             GetScanPrompts();
             if (scanPrompts.Count == 0) { Log("Err: no prompt generated"); return; }
             scanPromptIdx = 1; QueryAPI(scanPrompts[0]);
@@ -294,12 +305,17 @@ namespace scripthea.composer
             if (!Utils.isNull(opts)) opts.ModifPrefix = tbModifPrefix.Text;
             if (!Utils.isNull(modifiersUC))  modifiersUC.separator = tbModifPrefix.Text;
         }
-
         private void cbActiveAPI_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (Utils.isNull(API)) return;
             ComboBoxItem cbi = (ComboBoxItem)cbActiveAPI.SelectedItem;
             API.activeAPIname = (string)cbi.Content; opts.API = API.activeAPIname;
+            showAPI = API.activeAPI.isDocked;
+            if (showAPI) 
+            { 
+                gridAPI.Children.Clear(); gridAPI.Children.Add(API.activeAPI.userControl);
+                API.activeAPI.Init("");
+            }               
         }
 
         private void imgAPIdialog_MouseDown(object sender, MouseButtonEventArgs e)

@@ -66,8 +66,9 @@
                         <TextBox x:Name="tbModifPrefix" HorizontalAlignment="Right" Height="23" Margin="0,7,0,0" TextWrapping="Wrap" Text=";" VerticalAlignment="Top" Width="30" TextChanged="tbModifSepar_TextChanged" FontWeight="Bold" FontSize="13"/>
                         <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
                             <Label x:Name="lbAPI" Content="API" Width="32" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                            <ComboBox x:Name="cbActiveAPI" HorizontalAlignment="Left" VerticalAlignment="Top" SelectedIndex="0" Width="90" FontSize="12" Background="Transparent" Margin="3,1,0,0" SelectionChanged="cbActiveAPI_SelectionChanged">
+                            <ComboBox x:Name="cbActiveAPI" HorizontalAlignment="Left" VerticalAlignment="Top" SelectedIndex="0" Width="90" FontSize="12" Background="White" Margin="3,1,0,0" SelectionChanged="cbActiveAPI_SelectionChanged">
                                 <ComboBoxItem Content="Simulation"/>
+                                <ComboBoxItem Content="Diffusion"/>
                                 <ComboBoxItem Content="DeepAI"/>
                                 <ComboBoxItem x:Name="cbiCraiyon" Content="Craiyon"/>
                             </ComboBox>
@@ -85,20 +86,26 @@
         </Grid>
 
         <GridSplitter x:Name="gridSplitRight" Grid.Column="1" HorizontalAlignment="Left" Margin="0" Width="5" Background="#FFF4FAFF"/>
-        <TabControl x:Name="tcModScanPre" Grid.Column="1" Margin="5,0,0,0" BorderBrush="{x:Null}" >
-            <TabItem x:Name="tiMiodifiers" Header="Modifiers">
-                <Grid>
-                    <ScrollViewer Margin="0" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto">
-                        <local:ModifiersUC x:Name="modifiersUC"/>
-                    </ScrollViewer>
-                </Grid>
-            </TabItem>
-            <TabItem x:Name="tiScanPreview" Header="Scan Preview">
-                <Grid>
-                    <local:ScanPreviewUC x:Name="scanPreviewUC" Margin="0"/>
-                </Grid>
-            </TabItem>
-
-        </TabControl>
+        <Grid Grid.Column="1" >
+            <Grid.RowDefinitions>
+                <RowDefinition x:Name="rowAPI" Height="50"/>
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
+            <Grid x:Name="gridAPI" Margin="7,0,0,0"></Grid>
+            <TabControl Grid.Row="1"  x:Name="tcModScanPre" Margin="5,0,0,0" BorderBrush="#FF19B995" BorderThickness="0,1,0,0" >
+                <TabItem x:Name="tiMiodifiers" Header="Modifiers">
+                    <Grid>
+                        <ScrollViewer Margin="0" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto">
+                            <local:ModifiersUC x:Name="modifiersUC"/>
+                        </ScrollViewer>
+                    </Grid>
+                </TabItem>
+                <TabItem x:Name="tiScanPreview" Header="Scan Preview">
+                    <Grid>
+                        <local:ScanPreviewUC x:Name="scanPreviewUC" Margin="0"/>
+                    </Grid>
+                </TabItem>
+            </TabControl>
+        </Grid>
     </Grid>
 </UserControl>

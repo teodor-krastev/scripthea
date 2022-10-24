@@ -21,10 +21,10 @@ namespace scripthea
     /// <summary>
     /// Interaction logic for CraiyonImportUC.xaml
     /// </summary>
-    public partial class CraiyonImportUC : UserControl
+    public partial class ImportUtilUC : UserControl
     {
         DataTable dTable; 
-        public CraiyonImportUC()
+        public ImportUtilUC()
         {
             InitializeComponent();
         }
@@ -72,7 +72,7 @@ namespace scripthea
             {
                 Log("Err: Directory <" + imageFolder + "> does not exist. "); return;
             }            
-            List<string> orgFiles = new List<string>(Directory.GetFiles(imageFolder, "craiyon*.png"));
+            List<string> orgFiles = new List<string>(Directory.GetFiles(imageFolder, "*.png"));
             lstFiles.Items.Clear(); converting = false;
             switch (tcMain.SelectedIndex)
             {
@@ -87,7 +87,7 @@ namespace scripthea
                 case 1: //tiGrid
                     dTable.Rows.Clear();
                     foreach (string ss in orgFiles)
-                        dTable.Rows.Add(true, System.IO.Path.GetFileNameWithoutExtension(ss));
+                        dTable.Rows.Add(true, System.IO.Path.GetFileName(ss));
                     dGrid.ItemsSource = dTable.DefaultView;
                     if (dTable.Rows.Count > 0) dGrid.SelectedIndex = 0;
                     btnConvertFolder.IsEnabled = dTable.Rows.Count > 0;
@@ -96,32 +96,63 @@ namespace scripthea
                     break;
             }
         }
+        private List<string> SplitFilename(string fn, char sep) // pattern <txt><sep><txt><sep><cue><ext>
+        {
+            var ls = new List<string>();
+            string[] spl = fn.Split(sep);
+            if (spl.Length < 3) return ls;
+            ls.Add(spl[0]); ls.Add(spl[1]+Utils.randomString(9-spl[1].Length,true));
+            string ext = System.IO.Path.GetExtension(fn);
+            string fnn = System.IO.Path.ChangeExtension(fn, null); // no ext
+             
+            ls.Add(fnn.Substring(spl[0].Length + spl[0].Length + 1));
+            ls.Add(ext);
+            return ls;
+        }  
+        private bool DecodeFilename(string filename, out string newFile, out string cue)
+        {
+            newFile = ""; cue = ""; List<string> ls; 
+            if (filename.StartsWith("craiyon"))
+            {
+                ls = SplitFilename(filename, '_');
+                if ((ls.Count < 4) || !ls[0].Equals("craiyon")) return false;
+                if (!Utils.isNumeric(ls[1])) return false;
+                newFile = System.IO.Path.ChangeExtension("c-" + ls[1], ls[3]);
+                cue = ls[2];
+            }
+            else // Stable Diffusion
+            {
+                ls = SplitFilename(filename, '-');
+                if (ls.Count < 4) return false;
+                if (!Utils.isNumeric(ls[0]) || !Utils.isNumeric(ls[1])) return false;
+                newFile = System.IO.Path.ChangeExtension("SD-" + ls[1], ls[3]);
+                cue = ls[2];
+            }
+            return true;
+        }
         private bool converting = false; 
         private void btnConvertFolder_Click(object sender, RoutedEventArgs e)
         {       
-            if (dTable.Rows.Count == 0) return; int k = 0; 
+            if (dTable.Rows.Count == 0) return; int k = 0; string cue; string ffn;
             try
             {           
                 converting = true; image.Source = null; 
                 foreach (DataRow row in dTable.Rows)
                 {
                     if (!Convert.ToBoolean(row["on"])) continue;
-                    string efn = Convert.ToString(row["file"]); 
-                    string ffn = System.IO.Path.Combine(imageFolder, System.IO.Path.ChangeExtension(efn, ".png")); 
-                    if (!(efn.Substring(0, 7)).Equals("craiyon")) continue;                    
-                    string prompt = System.IO.Path.ChangeExtension(efn.Substring(15), null);
-                    for (int j = 0; j < 4; j++)
-                        if (prompt.EndsWith("_br_")) prompt = prompt.Substring(0, prompt.Length - 4);
-                    string numFile = Utils.AvoidOverwrite(System.IO.Path.Combine(imageFolder, System.IO.Path.ChangeExtension("c_" + efn.Substring(8, 6), ".png")));
+                    string efn = Convert.ToString(row["file"]);
+                    if (!DecodeFilename(efn, out ffn, out cue)) continue;
+                    ffn = System.IO.Path.Combine(imageFolder, ffn);                                                      
+                    string numFile = Utils.AvoidOverwrite(System.IO.Path.Combine(imageFolder,ffn));
                     if (File.Exists(numFile)) { File.Delete(numFile); Log("Warning: deleting -> " + numFile); Utils.Sleep(1000); }
                     try
                     {
-                        File.Move(ffn, numFile); // Rename the oldFileName into newFileName     
+                        File.Move(System.IO.Path.Combine(imageFolder, efn), numFile); // Rename the oldFileName into newFileName     
                     }
                     catch (System.IO.IOException IOe) { Log("Error: ("+System.IO.Path.GetFileName(ffn)+") " + IOe.Message); continue; }                               
                     using (StreamWriter sw = File.AppendText(imageFolder + "description.txt"))
                     {
-                        sw.WriteLine(System.IO.Path.GetFileName(numFile) + "=" + prompt);
+                        sw.WriteLine(System.IO.Path.GetFileName(numFile) + "=" + cue);
                     }
                     k++;
                 }
@@ -166,7 +197,7 @@ namespace scripthea
 
         private void tbImageDepot_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (ImgUtils.checkImageDepot(tbImageDepot.Text,false)) tbImageDepot.Foreground = Brushes.Black;
+            if (ImgUtils.checkImageDepot(tbImageDepot.Text,false) > 0) tbImageDepot.Foreground = Brushes.Black;
             else tbImageDepot.Foreground = Brushes.Red;
         }
     }

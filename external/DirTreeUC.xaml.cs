@@ -28,12 +28,24 @@ namespace UtilsNS
         public static string defaultImageDepot
         { get { return System.IO.Path.Combine(Utils.basePath, "images"); } }
 
-        public static bool checkImageDepot(string imageDepot, bool checkDesc = true)
+        public static int checkImageDepot(string imageDepot, bool checkDesc = true)
         {
             string idepot = imageDepot.EndsWith("\\") ? imageDepot : imageDepot + "\\";
-            if (!Directory.Exists(idepot)) return false;
-            if (!File.Exists(Path.Combine(idepot, "description.txt")) && checkDesc) return false;
-            return true;
+
+            DirectoryInfo di = new DirectoryInfo(idepot);
+            if ((di.Attributes & FileAttributes.System) == FileAttributes.System) return -1;
+            if (!Directory.Exists(idepot)) return -1;
+            if (checkDesc)
+            {
+                if (!File.Exists(Path.Combine(idepot, "description.txt")) && checkDesc) return -1;
+                List<string> ls = new List<string>(File.ReadAllLines(Path.Combine(idepot, "description.txt"))); 
+                return ls.Count;
+            }
+            else
+            {
+                string[] imgPng = Directory.GetFiles(imageDepot, "*.png"); string[] imgJpg = Directory.GetFiles(imageDepot, "*.jpg");
+                return imgPng.Length + imgJpg.Length;
+            }
         }
         public static BitmapImage ToBitmapImage(Bitmap bitmap, ImageFormat imageFormat)
         {
@@ -94,7 +106,12 @@ namespace UtilsNS
         string AppDataStr = "<AppData>";
         public string AppData
         {
-            get { return Utils.basePath; }
+            get 
+            {
+                if (Directory.Exists(Utils.basePath)) return Utils.basePath.EndsWith("\\") ? Utils.basePath : Utils.basePath + "\\";
+                else Utils.TimedMessageBox("No directory: " + Utils.basePath);
+                return "";
+            }
         }
         public void Init()
         {
@@ -139,15 +156,16 @@ namespace UtilsNS
                         TreeViewItem subitem = new TreeViewItem();
                         subitem.Header = s.Substring(s.LastIndexOf("\\") + 1);  // the name of the folder
                         subitem.Tag = s;                                        // the path to the folder
-                        subitem.FontWeight = FontWeights.Normal;
-                        if (ImgUtils.checkImageDepot(s, true))
+                        subitem.FontWeight = FontWeights.Normal; subitem.FontSize = tvFolders.FontSize;
+                        if (ImgUtils.checkImageDepot(s, false) > 0)
+                        {
+                            subitem.FontSize = tvFolders.FontSize + 0.5;
+                            subitem.Foreground = Brushes.Blue; //Coral; // OrangeRed;
+                        }
+                        if (ImgUtils.checkImageDepot(s, true) > 0)
                         {
                             subitem.FontSize = tvFolders.FontSize + 0.5;
                             subitem.Foreground = Brushes.LimeGreen; //Coral; // OrangeRed;
-                        }
-                        else
-                        {
-                            subitem.FontSize = tvFolders.FontSize;
                         }
                         bool bb = true; bool bc = true; ;
                         try
@@ -207,8 +225,9 @@ namespace UtilsNS
             foreach (ComboBoxItem cbi in cbDrives.Items)
                 if (cbi.Content.ToString().Equals(fld[0] + "\\")) { cbf = cbi; break; }
             if (cbf.Equals(null)) Log("Error: no drive: " + fld[0] + "\\");
-            if (pth.Substring(0, AppData.Length).Equals(AppData, StringComparison.OrdinalIgnoreCase))
-                cbf = cbDrives.Items[0] as ComboBoxItem;
+            if (pth.Length > AppData.Length) 
+                if (pth.Substring(0, AppData.Length).Equals(AppData, StringComparison.OrdinalIgnoreCase))
+                    cbf = cbDrives.Items[0] as ComboBoxItem;
             cbDrives.SelectedItem = cbf; // creates root
             TreeViewItem prn = (TreeViewItem)tvFolders.Items[0];
             string itm0 = Convert.ToString(prn.Header);
