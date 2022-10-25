@@ -103,9 +103,8 @@ namespace scripthea
             if (spl.Length < 3) return ls;
             ls.Add(spl[0]); ls.Add(spl[1]+Utils.randomString(9-spl[1].Length,true));
             string ext = System.IO.Path.GetExtension(fn);
-            string fnn = System.IO.Path.ChangeExtension(fn, null); // no ext
-             
-            ls.Add(fnn.Substring(spl[0].Length + spl[1].Length + 2));
+            string fnn = System.IO.Path.ChangeExtension(fn, null); // no ext            
+            ls.Add(fnn.Substring(spl[0].Length + spl[1].Length + 2)); // cue
             ls.Add(ext);
             return ls;
         }  

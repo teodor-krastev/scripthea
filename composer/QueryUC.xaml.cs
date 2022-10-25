@@ -133,7 +133,7 @@ namespace scripthea.composer
         {
             if (Utils.isNull(opts)) return;
             UpdatingOptions = true;
-            pnlCue.Height = new GridLength(opts.QueryRowHeight);
+            pnlCue.Height = new GridLength(Utils.EnsureRange(opts.QueryRowHeight, 150, 500));
             colQuery.Width = new GridLength(opts.QueryColWidth);
             chkAutoSingle.IsChecked = opts.SingleAuto; btnCompose.IsEnabled = !opts.SingleAuto;              
             chkOneLineCue.IsChecked = opts.OneLineCue;           
@@ -358,7 +358,7 @@ namespace scripthea.composer
             else Log("@ExplorerPart=0");
             if (!Utils.isNull(opts))
             {
-                if (tcQuery.SelectedItem.Equals(tiSingle)) pnlCue.Height = new GridLength(opts.QueryRowHeight);
+                if (tcQuery.SelectedItem.Equals(tiSingle)) pnlCue.Height = new GridLength(Utils.EnsureRange(opts.QueryRowHeight, 150,500));
                 else
                 {
                     opts.QueryRowHeight = Convert.ToInt32(pnlCue.Height.Value);
