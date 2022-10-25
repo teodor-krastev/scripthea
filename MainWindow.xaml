@@ -31,7 +31,7 @@
                     <RowDefinition Height="499*"/>
                     <RowDefinition x:Name="rowLogImage" Height="200*"/>
                 </Grid.RowDefinitions>
-                <RichTextBox x:Name="tbLogger" Grid.Row="0" VerticalScrollBarVisibility="Auto" Margin="1,0,0,0">
+                <RichTextBox x:Name="tbLogger" Grid.Row="0" VerticalScrollBarVisibility="Auto" Margin="1,0,0,0" BorderThickness="0,1,0,1">
                     <FlowDocument>
                         <Paragraph>
                             <Run x:Name="tbLog" Text=""/>

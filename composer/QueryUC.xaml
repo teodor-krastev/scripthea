@@ -68,7 +68,7 @@
                             <Label x:Name="lbAPI" Content="API" Width="32" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                             <ComboBox x:Name="cbActiveAPI" HorizontalAlignment="Left" VerticalAlignment="Top" SelectedIndex="0" Width="90" FontSize="12" Background="White" Margin="3,1,0,0" SelectionChanged="cbActiveAPI_SelectionChanged">
                                 <ComboBoxItem Content="Simulation"/>
-                                <ComboBoxItem Content="Diffusion"/>
+                                <ComboBoxItem x:Name="cbiDiffusion" Content="Diffusion"/>
                                 <ComboBoxItem Content="DeepAI"/>
                                 <ComboBoxItem x:Name="cbiCraiyon" Content="Craiyon"/>
                             </ComboBox>

@@ -54,8 +54,8 @@ namespace scripthea.composer
             API = new ControlAPI(); cbActiveAPI_SelectionChanged(null, null);
             API.OnQueryComplete += new ControlAPI.APIEventHandler(QueryComplete);           
 
-            if (Utils.TheosComputer()) cbiCraiyon.Visibility = Visibility.Visible;
-            else cbiCraiyon.Visibility = Visibility.Collapsed;
+            if (Utils.TheosComputer()) cbiDiffusion.Visibility = Visibility.Visible;
+            else cbiDiffusion.Visibility = Visibility.Collapsed;
         }
         public void Finish()
         {

@@ -105,7 +105,7 @@ namespace scripthea
             string ext = System.IO.Path.GetExtension(fn);
             string fnn = System.IO.Path.ChangeExtension(fn, null); // no ext
              
-            ls.Add(fnn.Substring(spl[0].Length + spl[0].Length + 1));
+            ls.Add(fnn.Substring(spl[0].Length + spl[1].Length + 2));
             ls.Add(ext);
             return ls;
         }  
@@ -183,14 +183,19 @@ namespace scripthea
 
         private void dGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (converting) return;  
+            if (converting) return;
             DataRowView dataRow = (DataRowView)dGrid.SelectedItem;
             if (Utils.isNull(dataRow)) return;
+            dGrid.Dispatcher.InvokeAsync(() =>
+            {
+                dGrid.UpdateLayout();
+                dGrid.ScrollIntoView(dGrid.SelectedItem, null);
+            });
             string fn = System.IO.Path.Combine(imageFolder,System.IO.Path.ChangeExtension(Convert.ToString(dataRow.Row.ItemArray[1]), ".png"));
             if (File.Exists(fn))
             {
                 BitmapImage bi = new BitmapImage(new Uri(fn));
-                image.Source = bi.Clone(); bi = null;                                                             
+                image.Source = bi.Clone(); image.UpdateLayout(); // bi = null;                                                             
             }                    
             else Log("Error: file not found-> " + fn);            
         }
