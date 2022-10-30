@@ -101,7 +101,8 @@ namespace scripthea
             var ls = new List<string>();
             string[] spl = fn.Split(sep);
             if (spl.Length < 3) return ls;
-            ls.Add(spl[0]); ls.Add(spl[1]+Utils.randomString(9-spl[1].Length,true));
+            ls.Add(spl[0]); 
+            ls.Add(spl[1]+Utils.randomString(9-spl[1].Length,true));
             string ext = System.IO.Path.GetExtension(fn);
             string fnn = System.IO.Path.ChangeExtension(fn, null); // no ext            
             ls.Add(fnn.Substring(spl[0].Length + spl[1].Length + 2)); // cue
@@ -140,8 +141,7 @@ namespace scripthea
                 {
                     if (!Convert.ToBoolean(row["on"])) continue;
                     string efn = Convert.ToString(row["file"]);
-                    if (!DecodeFilename(efn, out ffn, out cue)) continue;
-                    ffn = System.IO.Path.Combine(imageFolder, ffn);                                                      
+                    if (!DecodeFilename(efn, out ffn, out cue)) continue;                                                                         
                     string numFile = Utils.AvoidOverwrite(System.IO.Path.Combine(imageFolder,ffn));
                     if (File.Exists(numFile)) { File.Delete(numFile); Log("Warning: deleting -> " + numFile); Utils.Sleep(1000); }
                     try
@@ -159,7 +159,7 @@ namespace scripthea
             finally
             {
                 btnNewFolder_Click(null, null);
-                Log("Done! Image depot of "+k.ToString()+" images was created.", Brushes.DarkGreen); converting = false;
+                Log("Done! Image depot of " + k.ToString() + " images was created.", Brushes.DarkGreen); converting = false;
             }            
         }
         private void dGrid_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)

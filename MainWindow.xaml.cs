@@ -183,7 +183,7 @@ namespace scripthea
 
                     }
                 if (chkLog.IsChecked.Value)
-                    if (ExplorerPart.Equals(100)) Utils.TimedMessageBox(msg);
+                    if (ExplorerPart.Equals(100)) Utils.TimedMessageBox(msg,"Warning",3500);
                     else Utils.log(tbLogger, msg, clr);
             }
             finally

@@ -16,6 +16,7 @@ using System.Windows.Shapes;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using Newtonsoft.Json;
 using UtilsNS;
 
 namespace scripthea.external
@@ -58,12 +59,18 @@ namespace scripthea.external
         } 
         public bool GenerateImage(string prompt, string imageDepotFolder, out string filename) // returns the filename of saved in ImageDepoFolder image 
         {
-            bool bb = true;
-            server.SendToClient(prompt);
-            opts["folder"] = imageDepotFolder; filename = System.IO.Path.ChangeExtension(Utils.timeName(),".sdj");
-            server.GetFromClient(System.IO.Path.Combine(opts["folder"], filename));            
-
-            return bb;
+            filename = Utils.timeName();
+            opts["folder"] = imageDepotFolder.EndsWith("\\") ? imageDepotFolder : imageDepotFolder + "\\";
+            server.SendFields(prompt, opts["folder"], filename);
+            string data = server.GetFromClient();
+            string fn = System.IO.Path.ChangeExtension(filename,".sdj");
+            /* add some custom fields
+            Dictionary<string, object> dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(data);
+            // add to dict HERE 
+            data = JsonConvert.SerializeObject(dict);
+             */
+            File.WriteAllText(System.IO.Path.Combine(opts["folder"], fn), data);            
+            return !data.Equals("");
         }
         protected void Log(String txt)
         {
@@ -96,8 +103,8 @@ namespace scripthea.external
         private void btnShoot_Click(object sender, RoutedEventArgs e)
         {
             pCount++;
-            server.SendToClient("prompt" + pCount.ToString());
-            tbAdvice.Text += server.GetFromClient()+"\r";
+            server.SendFields("Little fairy town ; ink drawing", Utils.basePath + "\\images\\", "imageName" );
+            tbAdvice.Text = server.GetFromClient()+"\r";
         }
 
         private void lb1_MouseDown(object sender, MouseButtonEventArgs e)
@@ -166,7 +173,7 @@ namespace scripthea.external
                 // Get a stream object for reading and writing
                 stream = client.GetStream();
                 
-                if (GetFromClient().Equals("start"))
+                if (GetFromClient().Equals("@start"))
                 {
                     status = Status.connected; Console.WriteLine("Connected!");
                 }                                   
@@ -181,12 +188,13 @@ namespace scripthea.external
             try
             {           
                 Byte[] bytes = new Byte[4096];
-
                 // Loop to receive all the data sent by the client.
                 //while ((i = stream.Read(bytes, 0, bytes.Length)) != 0)
                 int i = stream.Read(bytes, 0, bytes.Length);                                      
                 // Translate data bytes to a ASCII string.
                 String data = System.Text.Encoding.ASCII.GetString(bytes, 0, i);
+                if (data.Equals("@ping"))
+                    if (!SendToClient("@pong")) { status = Status.closed; Console.WriteLine("Broken COMM !");  return ""; }
                 status = Status.imageReceived;
                 if (filepath.Equals("")) Console.WriteLine("Received: {0}", data);
                 else File.WriteAllText(filepath, data);
@@ -198,22 +206,40 @@ namespace scripthea.external
                 Log(String.Format("Error: SocketException: {0}", e)); return "";
             }
         }
+        public bool SendFields(string prompt, string folder, string filename, int sampler_index = -1, int seed = -2)
+        {
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            dict.Add("prompt", prompt); 
+            dict.Add("folder", folder); // with trailing '\'
+            dict.Add("filename", filename); // no ext
+            dict.Add("sampler", sampler_index); // 0 based index; -1 - from UI
+            dict.Add("seed", seed); // -2 - from UI
+            return SendDict(dict);
+        }
+        public bool SendDict(Dictionary<string, object> dict)
+        {
+            return SendToClient(JsonConvert.SerializeObject(dict));
+        }
         public bool SendToClient(string txt)
         {
-            bool bb = true;
             try
             {
                 byte[] msg = System.Text.Encoding.ASCII.GetBytes(txt);
-                // Send back a response.
+                // Send back a response to the client
                 stream.Write(msg, 0, msg.Length);
-                status = Status.promptSent; Console.WriteLine("Sent: {0}", txt);
+                status = Status.promptSent; //Console.WriteLine("Sent: {0}", txt);
             }
-            catch { bb = false; }
-            return bb;
+            catch { return false; }
+            return true;
+        }
+        public bool CheckCOMM()
+        {            
+            if (!SendToClient("@ping")) return false;
+            return GetFromClient().Equals("@pong");
         }
         public void CloseSession() // Shutdown and end the connection
         {
-            SendToClient("end"); client.Close(); server.Stop(); server = null;
+            SendToClient("@end"); client.Close(); server.Stop(); server = null;
         }
     }
 }

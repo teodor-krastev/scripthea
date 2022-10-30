@@ -35,7 +35,7 @@
                 <TabItem x:Name="tiSingle" Header="Single" Width="70" Height="25" Background="#FFECECEC" Margin="2,0,-9.063,0.089" HorizontalAlignment="Left">
                     <Grid>
                         <Button x:Name="btnCompose" Content="Compose a prompt" Height="30" Width="130" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,7,0,0" Click="btnCompose_Click" Background="#FFFAFAEB" FontSize="13"/>
-                        <Button x:Name="btnQuery" Content="Query API" Height="30" Width="103" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="150,7,0,0" Background="#FFEBF3FA" FontSize="13" Click="btnQuery_Click"/>
+                        <Button x:Name="btnQuery" Content="Generayte image" Height="30" Width="120" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="150,7,0,0" Background="#FFEBF3FA" FontSize="13" Click="btnQuery_Click"/>
                         <CheckBox x:Name="chkAutoSingle" Content="Auto-refresh" Width="95" Margin="10,0,0,15" HorizontalAlignment="Left" VerticalAlignment="Bottom" Checked="chkAutoSingle_Checked" Unchecked="UpdateToOptions"/>
                         <CheckBox x:Name="chkOneLineCue" Content="One line cue" Width="87" Margin="105,50,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Checked="UpdateToOptions" Unchecked="UpdateToOptions" IsChecked="True" Visibility="Collapsed" />
                     </Grid>

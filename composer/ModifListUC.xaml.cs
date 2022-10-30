@@ -105,6 +105,13 @@ namespace scripthea.composer
         /// <returns></returns>
         protected void Change(object sender, RoutedEventArgs e)
         {
+            if (sender is ModifItemUC)
+            {
+                bool bb = false;
+                foreach (var mdf in modifList)
+                    bb |= !mdf.modifStatus.Equals(ModifStatus.Off);
+                enabled = bb;
+            }
             if ((OnChange != null) && enabled) OnChange(sender,e);
         }
 

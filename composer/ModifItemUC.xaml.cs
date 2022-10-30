@@ -93,7 +93,6 @@ namespace scripthea.composer
                 Change(this, null);
             }
         }
-
         public string Text
         {
             get { return tbContent.Text; }
