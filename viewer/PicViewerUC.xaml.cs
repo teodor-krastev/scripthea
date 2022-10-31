@@ -26,8 +26,13 @@ namespace scripthea.viewer
         {
             InitializeComponent();
         }
+        private string _imagePath;
+        public string imagePath { get { return _imagePath; }  private set { _imagePath = value; } }
         public void loadPic(int idx, string filePath, string prompt)
         {
+            if (File.Exists(filePath)) imagePath = filePath;
+            if (chkExtra.IsChecked.Value) UpdateMeta();
+            
             lbIndex.Content = "[" + idx.ToString() + "]";
             tbPath.Text = System.IO.Path.GetDirectoryName(filePath)+"\\";
             tbName.Text = System.IO.Path.GetFileName(filePath);
@@ -41,9 +46,16 @@ namespace scripthea.viewer
             var uri = new Uri(filePath);
             var bitmap = new BitmapImage(uri);
             image.Source = bitmap;
-            tbCue.Text = prompt;           
+            tbCue.Text = prompt;
         }
-
+        private void UpdateMeta()
+        {
+            if (!File.Exists(imagePath)) return;
+            Dictionary<string, string> meta;
+            if (!ImgUtils.GetMetaDataItems(imagePath, out meta)) return;
+            meta.Remove("prompt");
+            Utils.dict2ListBox(meta, lboxMetadata);
+        }
         private void imageMove(double h, double v) // ?
         {
             Thickness m = image.Margin;
@@ -77,6 +89,21 @@ namespace scripthea.viewer
         {
             Clipboard.SetImage((BitmapSource)image.Source);
             Utils.TimedMessageBox("The image is in the clipboard");
+        }
+
+        private void chkExtra_Checked(object sender, RoutedEventArgs e)
+        {
+            lboxMetadata.Visibility = Visibility.Visible;
+            columnMeta.Width = new GridLength(150);
+            rowBottom.Height = new GridLength(120);
+            UpdateMeta();
+        }
+
+        private void chkExtra_Unchecked(object sender, RoutedEventArgs e)
+        {
+            lboxMetadata.Visibility = Visibility.Collapsed;
+            columnMeta.Width = new GridLength(1);
+            rowBottom.Height = new GridLength(42);
         }
     }
 }

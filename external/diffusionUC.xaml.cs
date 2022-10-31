@@ -149,8 +149,7 @@ namespace scripthea.external
         protected void Receive(String txt)
         {
             if (OnReceive != null) OnReceive(Convert.ToString(txt));
-        }
- 
+        } 
         private TcpClient client; NetworkStream stream;
         public void OpenSession(Int32 port = 5344)
         {

@@ -17,8 +17,8 @@ using Path = System.IO.Path;
 using UtilsNS;
 using System.Drawing;
 using System.Drawing.Imaging;
+using Newtonsoft.Json;
 using Brushes = System.Windows.Media.Brushes;
-
 
 
 namespace UtilsNS
@@ -93,6 +93,38 @@ namespace UtilsNS
                 }
             }
         }
+        public static bool GetMetaDataItems(string imageFilePath, out Dictionary<string, string> itemMap)
+        {
+            itemMap = new Dictionary<string, string>();
+            if (!Path.GetExtension(imageFilePath).ToLower().Equals(".png")) return false;           
+            var query = "/tEXt/{str=parameters}"; var ret = false; 
+            try
+            {
+                using (Stream fileStream = File.Open(imageFilePath, FileMode.Open))  
+                {
+                    var decoder = BitmapDecoder.Create(fileStream, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.None);
+                    BitmapMetadata bitmapMetadata = decoder.Frames[0].Metadata as BitmapMetadata;
+                    if (bitmapMetadata == null) return false;
+                    var metadata = bitmapMetadata.GetQuery(query);
+                    string md = metadata?.ToString();
+                    var mda = md.Split((char)10);
+                    if (mda.Length != 2) return false;
+                    itemMap.Add("prompt", mda[0]);
+                    var mdb = mda[1].Split(',');
+                    if (mdb.Length.Equals(0)) return false;
+                    foreach(var item in mdb)
+                    {
+                        var mdc = item.Split(':');
+                        if (mdc.Length != 2) return false;
+                        itemMap.Add(mdc[0].Trim(), mdc[1].Trim());
+                    }                                      
+                }
+                ret = itemMap.Count > 0;
+            }
+            catch (Exception e) { ret = false;  }
+            return ret;
+        }
+
     }
     /// <summary>
     /// display folders and subfolders in a treeview wpf c#

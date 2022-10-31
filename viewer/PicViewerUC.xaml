@@ -10,7 +10,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="25"/>
             <RowDefinition Height="4*"/>
-            <RowDefinition Height="42"/>
+            <RowDefinition x:Name="rowBottom" Height="42"/>
         </Grid.RowDefinitions>
         <StackPanel Margin="0" Orientation="Horizontal" HorizontalAlignment="Left">
             <Image x:Name="imgCopy" Margin="5,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Right" Height="23" Width="29" ToolTip="Copy image to clipboard" Cursor="Hand" MouseDown="imgCopy_MouseDown_1" Source="/Scripthea;component/Properties/copy1a.png"/>
@@ -28,6 +28,16 @@
         <Grid x:Name="noscrollGrid" Grid.Row="1">
             <Image x:Name="image" Margin="5" />
         </Grid>
-        <TextBox x:Name="tbCue" Margin="0" Grid.Row="2" TextWrapping="Wrap" Text="" Background="White" IsReadOnly="True" FontSize="13" HorizontalAlignment="Center" BorderThickness="1,1,0,0"/>
+        <Grid Grid.Row="2" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition x:Name="columnMeta" Width="200"/>
+                <ColumnDefinition Width="60"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBox x:Name="tbCue" Margin="0,0,-0.798,-0.076" TextWrapping="Wrap" Text="" Background="White" IsReadOnly="True" FontSize="13" BorderThickness="1,1,0,0" HorizontalAlignment="Center" />
+            <ListBox x:Name="lboxMetadata" Margin="3,0,0.202,-0.076" Grid.Column="1" Visibility="Collapsed" BorderBrush="DarkGreen" ></ListBox>
+            <CheckBox x:Name="chkExtra" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Background="#FFFDFEED" Content="Meta" FontSize="14" Margin="0,0,3,0" Checked="chkExtra_Checked" Unchecked="chkExtra_Unchecked" Foreground="DarkGreen"/>
+        </Grid>
     </Grid>
 </UserControl>
