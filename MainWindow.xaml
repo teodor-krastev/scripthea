@@ -45,7 +45,7 @@
             <UtilsNS:DirTreeUC x:Name="dirTreeUC" Margin="0,5,0,0" Grid.Row="2"/>
         </Grid>
         <TabControl x:Name="tabControl" Margin="17,0" Grid.Column="1" SelectionChanged="tabControl_SelectionChanged" BorderBrush="{x:Null}" >
-            <TabItem x:Name="tiComposer"  Header=" Prompt composer " Width="125" Height="25" Background="#FFECECEC" HorizontalAlignment="Left" Margin="-2,-2,2,-1">
+            <TabItem x:Name="tiComposer"  Header=" Prompt composer " Width="125" Height="25" HorizontalAlignment="Left" Margin="-2,-2,2,-1" Background="#FFF1F0F0">
                 <Grid>
                     <composer:QueryUC x:Name="queryUC" Margin="0" />
                 </Grid>

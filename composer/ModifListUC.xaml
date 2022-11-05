@@ -16,8 +16,8 @@
             <RowDefinition Height="29"/>
             <RowDefinition Height="206*"/>
         </Grid.RowDefinitions>
-        <CheckBox x:Name="chkCategory" Content="Category" HorizontalAlignment="Center" Margin="0" VerticalAlignment="Center" FontSize="13" MouseRightButtonDown="chkCategory_MouseRightButtonDown" Foreground="Black" Background="{x:Null}" Checked="Change" Unchecked="Change"/>
-        <ListBox x:Name="modifListBox" Margin="0" Grid.Row="1" MouseRightButtonDown="chkCategory_MouseRightButtonDown" KeyDown="modifListBox_KeyDown">
+        <CheckBox x:Name="chkCategory" Content="Category" HorizontalAlignment="Center" Margin="0" VerticalAlignment="Center" FontSize="14" MouseRightButtonDown="chkCategory_MouseRightButtonDown" Foreground="Black" Background="{x:Null}" Checked="Change" Unchecked="Change" FontStyle="Italic"/>
+        <ListBox x:Name="modifListBox" Margin="0" Grid.Row="1" MouseRightButtonDown="chkCategory_MouseRightButtonDown" KeyDown="modifListBox_KeyDown" BorderThickness="0,1,1,1">
         </ListBox>
     </Grid>
 </UserControl>

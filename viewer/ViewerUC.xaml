@@ -32,12 +32,12 @@
             <Grid Grid.Row="2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="69"/>
+                    <ColumnDefinition Width="55"/>
                 </Grid.ColumnDefinitions>
                 <Label Content="Find" HorizontalAlignment="Left"></Label>
                 <TextBox x:Name="tbFind" Margin="34,3,5,3"/>
-                <Image x:Name="btnFindUp" Grid.Column="1" Width="30" HorizontalAlignment="Left" Source="/Scripthea;component/Properties/find_up.png" Margin="3,0,0,0" Cursor="Hand" ToolTip="Find Up" MouseDown="btnFindUp_MouseDown"/>
-                <Image x:Name="btnFindDown"  Grid.Column="1" Width="30" HorizontalAlignment="Left" Source="/Scripthea;component/Properties/find_down.png" Margin="32,0,0,0" Cursor="Hand" ToolTip="Find Down" MouseDown="btnFindUp_MouseDown"/>
+                <Image x:Name="btnFindUp" Grid.Column="1" Width="25" HorizontalAlignment="Left" Source="/Scripthea;component/Properties/find_up.png" Margin="0,0,0,0" Cursor="Hand" ToolTip="Find Up" MouseDown="btnFindUp_MouseDown" Height="25"/>
+                <Image x:Name="btnFindDown"  Grid.Column="1" Width="25" HorizontalAlignment="Left" Source="/Scripthea;component/Properties/find_down.png" Margin="27,0,0,0" Cursor="Hand" ToolTip="Find Down" MouseDown="btnFindUp_MouseDown" Height="25"/>
             </Grid>
             <TabControl x:Name="tabCtrlViews" Grid.Row="1" SelectedIndex="0" BorderBrush="{x:Null}">
                 <TabItem x:Name="tiTable" Header="Table view"  Height="25" Background="#FFECECEC" >

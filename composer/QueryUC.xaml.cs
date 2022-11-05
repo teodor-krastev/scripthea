@@ -23,7 +23,7 @@ namespace scripthea.composer
 {
     public enum Status
     {
-        Idle, SingeQuery, Scanning, Request2Cancel 
+        Undefined, Idle, SingeQuery, Scanning, Request2Cancel 
     }
     /// <summary>
     /// Interaction logic for QueryUC.xaml
@@ -39,11 +39,11 @@ namespace scripthea.composer
         }
         public void Init(ref Options _opts)
         {
-            status = Status.Idle;
+            status = Status.Undefined;            
             opts = _opts;
             UpdateFromOptions();
-
-            cueListUC.Init(); cueListUC.OnChange += new RoutedEventHandler(ChangeCue);
+            status = Status.Idle;
+            cuePoolUC.Init(); cuePoolUC.OnChange += new RoutedEventHandler(ChangeCue);
             modifiersUC.Init(); modifiersUC.OnChange += new RoutedEventHandler(ChangeModif);
             scanPreviewUC.btnClose.Click += new RoutedEventHandler(btnScanPreviewProcs_Click);
             scanPreviewUC.btnScanChecked.Click += new RoutedEventHandler(btnScanPreviewProcs_Click);
@@ -55,11 +55,12 @@ namespace scripthea.composer
             API.OnQueryComplete += new ControlAPI.APIEventHandler(QueryComplete);           
 
             if (Utils.TheosComputer()) cbiDiffusion.Visibility = Visibility.Visible;
-            else cbiDiffusion.Visibility = Visibility.Collapsed;
+            else cbiDiffusion.Visibility = Visibility.Collapsed;           
         }
         public void Finish()
         {
             UpdateToOptions(null, null);
+            cuePoolUC.Finish(); modifiersUC.Finish();
             if (!Utils.isNull(API))
             {
                API.eCancel = false; API.Close();
@@ -120,7 +121,7 @@ namespace scripthea.composer
         protected void ChangeCue(object sender, RoutedEventArgs e)
         {
             //Log("conditions changed");
-            if (opts.SingleAuto && cueListUC.radioMode) btnCompose_Click(sender,e);
+            if (opts.SingleAuto && cuePoolUC.radioMode) btnCompose_Click(sender,e);
         }
         protected void ChangeModif(object sender, RoutedEventArgs e)
         {
@@ -186,7 +187,7 @@ namespace scripthea.composer
 
         public string Compose(object sender,  CueItemUC selectedSeed, string modifiers, bool OneLineCue = true)
         {
-            if (sender == null || sender == btnCompose || sender == tcQuery || sender == cueListUC)
+            if (sender == null || sender == btnCompose || sender == tcQuery || sender == cuePoolUC)
             {
                 tbCue.Text = "";
                 List<string> ls = selectedSeed.cueTextAsList(true);
@@ -204,11 +205,12 @@ namespace scripthea.composer
         }
         public void btnCompose_Click(object sender, RoutedEventArgs e)
         {
-            if (Utils.isNull(cueListUC) || Utils.isNull(modifiersUC)) return;
-            if (Utils.isNull(cueListUC.allSeeds) || Utils.isNull(modifiersUC.modifLists)) return;
-            List<CueItemUC> selectedSeed = cueListUC.selectedSeeds();
-            if (Utils.isNull(selectedSeed)) { Log("Err: no cue is selected"); return; }
-            if (selectedSeed.Count.Equals(0)) { Log("Err: no cue is selected"); return; }
+            if (Utils.isNull(cuePoolUC) || Utils.isNull(modifiersUC)) return;
+            if (Utils.isNull(cuePoolUC.ActiveCueList) && !status.Equals(Status.Undefined)) { Log("Err: no active cue pool."); return; }
+            if (Utils.isNull(cuePoolUC.ActiveCueList?.allSeeds) || Utils.isNull(modifiersUC.modifLists)) return;
+            List<CueItemUC> selectedSeed = cuePoolUC?.ActiveCueList?.selectedSeeds();
+            if (Utils.isNull(selectedSeed)) { Log("Err: no cue is selected."); return; }
+            if (selectedSeed.Count.Equals(0)) { Log("Err: no cue is selected."); return; }
             Compose(sender, selectedSeed[0], modifiersUC.Composite());
         }
         private void QueryAPI(string prompt)
@@ -251,7 +253,7 @@ namespace scripthea.composer
 
         private void GetScanPrompts()
         {        
-            List<CueItemUC> selectedSeeds = cueListUC.selectedSeeds(); scanPrompts = new List<string>(); 
+            List<CueItemUC> selectedSeeds = cuePoolUC?.ActiveCueList?.selectedSeeds(); scanPrompts = new List<string>(); 
             if (Utils.isNull(selectedSeeds)) { Log("Err: no cue is selected"); return; }
             if (selectedSeeds.Count.Equals(0)) { Log("Err: no cue is selected"); return; }
             List<string> ScanModifs = modifiersUC.ModifItemsByType(ModifStatus.Scannable); 
@@ -336,7 +338,7 @@ namespace scripthea.composer
                 Utils.TimedMessageBox("API is busy, try again later...", "Warning"); return;
             }            
             btnCompose_Click(null, null); status = Status.SingeQuery;
-            QueryAPI(Compose(null, cueListUC.selectedSeeds()[0], modifiersUC.Composite()));
+            QueryAPI(Compose(null, cuePoolUC.ActiveCueList?.selectedSeeds()[0], modifiersUC.Composite()));
         }
 
         private void tbCue_TextChanged(object sender, TextChangedEventArgs e)
@@ -366,8 +368,8 @@ namespace scripthea.composer
                 }
             }
             tbModifier.Text = "";
-            if (Utils.isNull(cueListUC)) return;
-            cueListUC.radioMode = tcQuery.SelectedItem.Equals(tiSingle);
+            if (Utils.isNull(cuePoolUC)) return;
+            cuePoolUC.radioMode = tcQuery.SelectedItem.Equals(tiSingle);
             modifiersUC.SetSingleScanMode(tcQuery.SelectedItem.Equals(tiSingle));
             ChangeModif(sender, e);
         }

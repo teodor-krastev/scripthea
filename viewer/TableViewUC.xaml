@@ -7,7 +7,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="388.06">
     <Grid>
-        <DataGrid x:Name="dGrid" Margin="0" SelectionChanged="dGrid_SelectionChanged" IsReadOnly="True" AutoGeneratingColumn="DataGrid_AutoGeneratingColumn" SelectionMode="Single" MaxColumnWidth="1000" CanUserReorderColumns="False">
+        <DataGrid x:Name="dGrid" Margin="0" SelectionChanged="dGrid_SelectionChanged" IsReadOnly="True" AutoGeneratingColumn="DataGrid_AutoGeneratingColumn" SelectionMode="Single" MaxColumnWidth="1000" CanUserReorderColumns="False" BorderBrush="{x:Null}">
         </DataGrid>
     </Grid>
 </UserControl>

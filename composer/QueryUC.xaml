@@ -4,10 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:scripthea.composer"
-             mc:Ignorable="d" d:DesignHeight="450" FontSize="13" >
+             mc:Ignorable="d" d:DesignHeight="450" FontSize="13">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition x:Name="colQuery" Width="285" MinWidth="150" MaxWidth="700"/>
+            <ColumnDefinition x:Name="colQuery" Width="285" MinWidth="250" MaxWidth="1700"/>
             <ColumnDefinition Width="3*"/>
         </Grid.ColumnDefinitions>
 
@@ -35,7 +35,7 @@
                 <TabItem x:Name="tiSingle" Header="Single" Width="70" Height="25" Background="#FFECECEC" Margin="2,0,-9.063,0.089" HorizontalAlignment="Left">
                     <Grid>
                         <Button x:Name="btnCompose" Content="Compose a prompt" Height="30" Width="130" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,7,0,0" Click="btnCompose_Click" Background="#FFFAFAEB" FontSize="13"/>
-                        <Button x:Name="btnQuery" Content="Generayte image" Height="30" Width="120" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="150,7,0,0" Background="#FFEBF3FA" FontSize="13" Click="btnQuery_Click"/>
+                        <Button x:Name="btnQuery" Content="Generate image" Height="30" Width="120" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="150,7,0,0" Background="#FFEBF3FA" FontSize="13" Click="btnQuery_Click"/>
                         <CheckBox x:Name="chkAutoSingle" Content="Auto-refresh" Width="95" Margin="10,0,0,15" HorizontalAlignment="Left" VerticalAlignment="Bottom" Checked="chkAutoSingle_Checked" Unchecked="UpdateToOptions"/>
                         <CheckBox x:Name="chkOneLineCue" Content="One line cue" Width="87" Margin="105,50,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Checked="UpdateToOptions" Unchecked="UpdateToOptions" IsChecked="True" Visibility="Collapsed" />
                     </Grid>
@@ -43,7 +43,7 @@
                 <TabItem x:Name="tiScan" Header="Scan" Height="25" Background="#FFECECEC" Margin="4,0,-9.063,0.089" HorizontalAlignment="Left" Width="69" >
                     <Grid>
                         <Button x:Name="btnScan" Content="S c a n" Height="30" Width="77" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,7,0,0" FontWeight="Bold" Background="#FFFAFAEB" Click="btnScan_Click" FontSize="13"/>
-                        <TextBox HorizontalAlignment="Right" Text="Combine all checked cues with one from the checked modifiers." Width="162" Margin="0,0,-0.228,0" TextWrapping="Wrap" Background="{x:Null}" BorderBrush="{x:Null}" VerticalAlignment="Top" FontSize="12"/>
+                        <TextBox HorizontalAlignment="Right" Text="Combine all checked cues + fixed modifiers with one from the scanned modifiers." Width="162" Margin="0,0,-0.228,0" TextWrapping="Wrap" Background="{x:Null}" BorderBrush="{x:Null}" VerticalAlignment="Top" FontSize="12"/>
                         <Button x:Name="btnScanPreview" Content="Scan Preview" Height="30" Width="98" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10,0,0,7" Background="MintCream" FontSize="13" Click="btnScanPreview_Click"/>
                     </Grid>
                 </TabItem>
@@ -76,13 +76,11 @@
                         </StackPanel>
                     </Grid>
                 </TabItem>
-
-
             </TabControl>
             <Image x:Name="imgPreferences" Margin="0,0,30,0" VerticalAlignment="Top" HorizontalAlignment="Right"  Height="23" Width="29" ToolTip="Preferences dialog box" Cursor="Hand" Source="/Scripthea;component/Properties/TripleBarTeal.bmp" Visibility="Collapsed"/>
-            <Image x:Name="imgCopy" Margin="0" VerticalAlignment="Top" HorizontalAlignment="Right" Height="23" Width="29" ToolTip="Copy to clipboard" Cursor="Hand" MouseDown="imgCopy_MouseDown_1" Source="/Scripthea;component/Properties/copy1a.png"/>
+            <Image x:Name="imgCopy" Margin="0,0,7,0" VerticalAlignment="Top" HorizontalAlignment="Right" Height="23" Width="29" ToolTip="Copy to clipboard" Cursor="Hand" MouseDown="imgCopy_MouseDown_1" Source="/Scripthea;component/Properties/copy1a.png"/>
             <GridSplitter x:Name="gridSplitCue" HorizontalAlignment="Stretch" Height="5" Margin="0" Grid.Row="2" VerticalAlignment="Top"/>
-            <local:CueListUC x:Name="cueListUC"  Margin="0,6,0,0" Grid.Row="3"/>
+            <local:CuePoolUC x:Name="cuePoolUC"  Margin="0,6,0,0" Grid.Row="3"/>
         </Grid>
 
         <GridSplitter x:Name="gridSplitRight" Grid.Column="1" HorizontalAlignment="Left" Margin="0" Width="5" Background="#FFF4FAFF"/>

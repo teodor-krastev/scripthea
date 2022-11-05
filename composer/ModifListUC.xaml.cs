@@ -44,10 +44,27 @@ namespace scripthea.composer
             InitializeComponent();
             OpenCat(_filename);
         }
-        public bool enabled
+        public bool isChecked
         {
-            get { return chkCategory.IsChecked.Value; }
+            get { return chkCategory.IsChecked.Value && isVisible; }
             set { chkCategory.IsChecked = value; }
+        }
+        public bool isVisible
+        {
+            get { return Visibility.Equals(Visibility.Visible); }
+            set
+            {
+                if (value) Visibility = Visibility.Visible;
+                else
+                {
+                    Visibility = Visibility.Collapsed; isChecked = false;
+                }
+            }
+        }
+        public void SetHeaderPosition(bool first)
+        {
+            if (first) chkCategory.Margin = new Thickness(12, 0, 0, 0);
+            else chkCategory.Margin = new Thickness(0);
         }
         public bool OpenCat(string _filename)
         {
@@ -67,8 +84,8 @@ namespace scripthea.composer
                 if (ss[0].Equals('['))
                 {                    
                     char[] charsToTrim = { '[', ']' };
-                    catName = ss.Trim(charsToTrim);
-                    enabled = false;                   
+                    ModifListName = ss.Trim(charsToTrim);
+                    isChecked = false;                   
                     i++; continue;
                 }
                 string[] sa = ss.Split('=');
@@ -92,7 +109,7 @@ namespace scripthea.composer
             }
             return true;
         }
-        public string catName
+        public string ModifListName
         {
             get { return Convert.ToString(chkCategory.Content); }
             set { chkCategory.Content = value; }
@@ -110,9 +127,9 @@ namespace scripthea.composer
                 bool bb = false;
                 foreach (var mdf in modifList)
                     bb |= !mdf.modifStatus.Equals(ModifStatus.Off);
-                enabled = bb;
+                isChecked = bb;
             }
-            if ((OnChange != null) && enabled) OnChange(sender,e);
+            if ((OnChange != null) && isChecked) OnChange(sender,e);
         }
 
         private void chkCategory_MouseRightButtonDown(object sender, MouseButtonEventArgs e)

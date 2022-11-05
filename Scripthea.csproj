@@ -90,6 +90,9 @@
     <Compile Include="AboutWin.xaml.cs">
       <DependentUpon>AboutWin.xaml</DependentUpon>
     </Compile>
+    <Compile Include="composer\CuePoolUC.xaml.cs">
+      <DependentUpon>CuePoolUC.xaml</DependentUpon>
+    </Compile>
     <Compile Include="composer\ModifListUC.xaml.cs">
       <DependentUpon>ModifListUC.xaml</DependentUpon>
     </Compile>
@@ -150,6 +153,10 @@
       <DependentUpon>ViewerUC.xaml</DependentUpon>
     </Compile>
     <Page Include="AboutWin.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="composer\CuePoolUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -321,6 +328,10 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Properties\v3line-6.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Properties\down_arrow.png" />
+    <Resource Include="Properties\up_arrow.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
