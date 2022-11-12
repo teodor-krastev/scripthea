@@ -56,7 +56,7 @@ namespace scripthea
         {
             aboutWin = new AboutWin();
             aboutWin.Show();
-            Utils.baseLocation = Utils.BaseLocation.appData;
+            //Utils.baseLocation = Utils.BaseLocation.appData;
             InitializeComponent();
         }
         string optionsFile;
