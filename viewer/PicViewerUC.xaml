@@ -8,7 +8,7 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="25"/>
+            <RowDefinition Height="27"/>
             <RowDefinition Height="4*"/>
             <RowDefinition x:Name="rowBottom" Height="42"/>
         </Grid.RowDefinitions>
@@ -18,24 +18,24 @@
             <Image x:Name="imgZoomFit" Margin="3,0" Source="/Scripthea;component/Properties/fit2.png" MouseDown="imgZoomFit_MouseDown" Cursor="Hand" />
             <Image x:Name="imgZoomOut" Margin="3,0" Source="/Scripthea;component/Properties/zoom-out.png" MouseDown="imgZoomIn_MouseDown" Cursor="Hand"/>
         </StackPanel>
-        <StackPanel Margin="0" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Label x:Name="lbIndex" Content="" Margin="7,0,5,0" FontWeight="Bold"/>
-            <TextBlock x:Name="tbPath" VerticalAlignment="Center" HorizontalAlignment="Left"></TextBlock>
-            <TextBox x:Name="tbName" Margin="2,0,10,0" FontWeight="Bold" VerticalAlignment="Center" IsReadOnly="True" HorizontalAlignment="Left" Background="{x:Null}" BorderThickness="0,0,0,1"/>
+        <StackPanel Margin="0" Orientation="Horizontal" HorizontalAlignment="Right" Height="27">
+            <Label x:Name="lbIndex" Content="" Margin="7,0,5,0" FontSize="14" Height="27" />
+            <TextBlock x:Name="tbPath" VerticalAlignment="Center" HorizontalAlignment="Left" Visibility="Collapsed"></TextBlock>
+            <TextBox x:Name="tbName" Margin="2,3,10,0" FontWeight="Bold" VerticalAlignment="Center" IsReadOnly="True" HorizontalAlignment="Left" Background="{x:Null}" BorderThickness="0,0,0,1"/>
         </StackPanel>
         <ScrollViewer x:Name="scrollViewer" Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Visibility="Collapsed">
         </ScrollViewer>
         <Grid x:Name="noscrollGrid" Grid.Row="1">
             <Image x:Name="image" Margin="5" />
         </Grid>
-        <Grid Grid.Row="2" >
+        <Grid Grid.Row="2" Background="White" Margin="7,0,0,0" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"/>
                 <ColumnDefinition x:Name="columnMeta" Width="1"/>
                 <ColumnDefinition Width="60"/>
             </Grid.ColumnDefinitions>
 
-            <TextBox x:Name="tbCue" Margin="0,0,-0.798,-0.076" TextWrapping="Wrap" Text="" Background="White" IsReadOnly="True" FontSize="13" BorderThickness="1,1,0,0" HorizontalAlignment="Center" />
+            <TextBox x:Name="tbCue" Margin="0" TextWrapping="Wrap" Text="" Background="White" IsReadOnly="True" FontSize="13" BorderThickness="0,1,0,0" HorizontalAlignment="Center" />
             <ListBox x:Name="lboxMetadata" Margin="3,0,0.202,-0.076" Grid.Column="1" Visibility="Collapsed" BorderBrush="DarkGreen" ></ListBox>
             <CheckBox x:Name="chkExtra" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Background="#FFFDFEED" Content="Meta" FontSize="14" Margin="0,0,3,0" Checked="chkExtra_Checked" Unchecked="chkExtra_Unchecked" Foreground="DarkGreen"/>
         </Grid>

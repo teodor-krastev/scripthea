@@ -61,10 +61,11 @@ namespace scripthea.viewer
             if (OnSelect != null) OnSelect(this, e);
         }
 
-        public string imageFolder, filename, prompt; 
-        public void Log(string msg)
+        public string imageFolder, filename, prompt;
+        public event Utils.LogHandler OnLog;
+        protected void Log(string txt, SolidColorBrush clr = null)
         {
-            Utils.TimedMessageBox(msg);
+            if (OnLog != null) OnLog(txt, clr);
         }
         public void ContentUpdate(int index, string filePath, string _prompt)
         {
@@ -73,7 +74,7 @@ namespace scripthea.viewer
             if (File.Exists(filePath))
             {
                 imageFolder = System.IO.Path.GetDirectoryName(filePath) +"\\";               
-                imgPic.Source = new BitmapImage(new Uri(filePath));
+                imgPic.Source = new BitmapImage(new Uri(filePath)).Clone();
             }
             else lbFile.Foreground = Brushes.Tomato;
             lbFile.Content = filename;

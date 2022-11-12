@@ -21,12 +21,13 @@
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
-                        <ColumnDefinition Width="68.658"/>
+                        <ColumnDefinition x:Name="colRefresh"  Width="70"/>
+                        <ColumnDefinition Width="97"/>
                     </Grid.ColumnDefinitions>
                     <TextBox x:Name="tbImageDepot" Background="#FFFBFBF4" TextChanged="tbImageDepot_TextChanged" Margin="0,0,1.987,-0.051" >
                     </TextBox>
-                    <Button x:Name="btnNewFolder" Grid.Column="1" Content="Browse" Click="btnNewFolder_Click" Foreground="#FF2963BE" HorizontalAlignment="Left" Width="55" FontWeight="Bold" Background="#FFF4F4F4" Margin="3.013,0,0,-0.051" Visibility="Collapsed"/>
-                    <Button x:Name="btnRefresh" Grid.Column="1" Content="Refresh" Click="btnNewFolder_Click" Foreground="#FF0F8001" HorizontalAlignment="Right" Width="65" FontWeight="Bold" Background="#FFF4F4F4" Margin="0,0,-0.354,-0.051"/>
+                    <Button x:Name="btnRefresh" Grid.Column="1" Content="Refresh" Foreground="#FF0F8001" HorizontalAlignment="Center" Width="65" FontWeight="Bold" Background="#FFF4F4F4" Margin="0,0,-0.354,-0.051" RenderTransformOrigin="0.5,0.501" Click="btnRefresh_Click"/>
+                    <CheckBox x:Name="chkAutoRefresh" Grid.Column="2" Content="Auto-refresh" Foreground="#FF2963BE" HorizontalAlignment="Left"  Background="#FFF4F4F4" Margin="5,0,0,-0.051" VerticalAlignment="Center" Checked="chkAutoRefresh_Checked" Unchecked="chkAutoRefresh_Checked" />
                 </Grid>
             </GroupBox>
             <Grid Grid.Row="2">
@@ -39,7 +40,8 @@
                 <Image x:Name="btnFindUp" Grid.Column="1" Width="25" HorizontalAlignment="Left" Source="/Scripthea;component/Properties/find_up.png" Margin="0,0,0,0" Cursor="Hand" ToolTip="Find Up" MouseDown="btnFindUp_MouseDown" Height="25"/>
                 <Image x:Name="btnFindDown"  Grid.Column="1" Width="25" HorizontalAlignment="Left" Source="/Scripthea;component/Properties/find_down.png" Margin="27,0,0,0" Cursor="Hand" ToolTip="Find Down" MouseDown="btnFindUp_MouseDown" Height="25"/>
             </Grid>
-            <TabControl x:Name="tabCtrlViews" Grid.Row="1" SelectedIndex="0" BorderBrush="{x:Null}">
+            <Label x:Name="lbDepotInfo" Content="" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,5,0" Foreground="#FFD14B19"></Label>
+            <TabControl x:Name="tabCtrlViews" Grid.Row="1" SelectedIndex="0" BorderBrush="{x:Null}" Panel.ZIndex="10" SelectionChanged="tabCtrlViews_SelectionChanged">
                 <TabItem x:Name="tiTable" Header="Table view"  Height="25" Background="#FFECECEC" >
                     <Grid>
                         <local:TableViewUC x:Name="tableViewUC"/>

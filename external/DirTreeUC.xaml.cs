@@ -97,7 +97,7 @@ namespace UtilsNS
         {
             itemMap = new Dictionary<string, string>();
             if (!Path.GetExtension(imageFilePath).ToLower().Equals(".png")) return false;           
-            var query = "/tEXt/{str=parameters}"; var ret = false; 
+            var query = "/tEXt/{str=parameters}"; 
             try
             {
                 using (Stream fileStream = File.Open(imageFilePath, FileMode.Open))  
@@ -117,12 +117,12 @@ namespace UtilsNS
                         var mdc = item.Split(':');
                         if (mdc.Length != 2) return false;
                         itemMap.Add(mdc[0].Trim(), mdc[1].Trim());
-                    }                                      
+                    }
+                    fileStream.Close();                    
                 }
-                ret = itemMap.Count > 0;
             }
-            catch (Exception e) { ret = false;  }
-            return ret;
+            catch (Exception e) { Utils.TimedMessageBox("Error (I/O): " + e.Message, "Error message", 3000); return false; }
+            return itemMap.Count > 0;
         }
 
     }
@@ -229,6 +229,7 @@ namespace UtilsNS
             tvFolders.Items.Clear();
             tvFolders.Items.Add(item);
             item.IsExpanded = true;
+            if (!Utils.isNull(e)) e.Handled = true;
         }
         private void tvFolders_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
@@ -244,9 +245,10 @@ namespace UtilsNS
             }
             Select(pth);
         }
-        public void Log(string msg)
+        public event Utils.LogHandler OnLog;
+        protected void Log(string txt, SolidColorBrush clr = null)
         {
-            Utils.TimedMessageBox(msg);
+            if (OnLog != null) OnLog(txt, clr);
         }
         public bool CatchAFolder(string pth)
         {
@@ -299,18 +301,18 @@ namespace UtilsNS
         private void tvFolders_ContextMenuOpening(object sender, ContextMenuEventArgs e)
         {
             cmFolders.Items.Clear();
-            MenuItem mi = new MenuItem(); mi.Header = "New folder"; mi.Click += mi_Click; cmFolders.Items.Add(mi);
+            MenuItem mi = new MenuItem(); mi.Header = "New folder (inside sel.)"; mi.Click += mi_Click; cmFolders.Items.Add(mi);
             MenuItem mj = new MenuItem(); mj.Header = "Rename"; mj.Click += mi_Click; cmFolders.Items.Add(mj);
         }
         void mi_Click(object sender, RoutedEventArgs e)
         {
             if (tvFolders.SelectedItem.Equals(null)) return;
-            string pth = (tvFolders.SelectedItem as TreeViewItem).Tag.ToString();
-            string prn = Directory.GetParent(pth).FullName; int maxLen = 30;
+            string pth = (tvFolders.SelectedItem as TreeViewItem).Tag.ToString(); string prn = pth.EndsWith("\\") ? pth : pth + "\\"; // Directory.GetParent(pth).FullName; 
+            int maxLen = 30;
             string input = ""; string dir = ""; string prn1 = "";
             switch (Convert.ToString((sender as MenuItem).Header))
             {
-                case "New folder":                   
+                case "New folder (inside sel.)":                   
                     prn1 = prn.Length > maxLen ? "..."+prn.Substring(prn.Length - maxLen) : prn;
                     input = new InputBox("New folder in " + prn1, "", "").ShowDialog();
                     if (input.Equals("")) return;
@@ -332,6 +334,8 @@ namespace UtilsNS
                     {
                         Directory.Move(pth,dir); refreshTree(); CatchAFolder(prn);
                     }
+                    break;
+                default: Utils.TimedMessageBox("internal error #951");
                     break;
             }
         }

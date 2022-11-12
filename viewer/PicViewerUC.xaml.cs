@@ -26,8 +26,20 @@ namespace scripthea.viewer
         {
             InitializeComponent();
         }
+        public event Utils.LogHandler OnLog;
+        protected void Log(string txt, SolidColorBrush clr = null)
+        {
+            if (OnLog != null) OnLog(txt, clr);
+        }
+
         private string _imagePath;
         public string imagePath { get { return _imagePath; }  private set { _imagePath = value; } }
+        public void Clear()
+        {
+            lbIndex.Content = ""; tbPath.Text = ""; tbName.Text = "";
+            image.Source = null; image.UpdateLayout(); 
+            tbCue.Text = ""; lboxMetadata.Items.Clear();
+        }
         public void loadPic(int idx, string filePath, string prompt)
         {
             if (File.Exists(filePath)) imagePath = filePath;
@@ -45,16 +57,26 @@ namespace scripthea.viewer
             tbName.Foreground = System.Windows.Media.Brushes.Navy;
             var uri = new Uri(filePath);
             var bitmap = new BitmapImage(uri);
-            image.Source = bitmap;
+            image.Source = bitmap.Clone(); image.UpdateLayout(); bitmap = null;
             tbCue.Text = prompt;
         }
+        private int attemptCount = 0;
         private void UpdateMeta()
         {
             if (!File.Exists(imagePath)) return;
             Dictionary<string, string> meta;
-            if (!ImgUtils.GetMetaDataItems(imagePath, out meta)) return;
-            meta.Remove("prompt");
-            Utils.dict2ListBox(meta, lboxMetadata);
+            if (ImgUtils.GetMetaDataItems(imagePath, out meta)) { meta.Remove("prompt"); attemptCount = 0; }
+            else
+            {
+                if (attemptCount < 2)
+                    Utils.DelayExec(1000,
+                        new Action(() =>
+                        {
+                            attemptCount++; UpdateMeta();
+                        }));
+                meta.Add("No access to Meta data: ", ""); meta.Add(" the info is missing", ""); meta.Add(" or internal error.", "");
+            }
+            Utils.dict2ListBox(meta, lboxMetadata); Utils.Sleep(200);
         }
         private void imageMove(double h, double v) // ?
         {

@@ -328,6 +328,9 @@ namespace UtilsNS
             }
             return true;
         }
+        #region LOG
+        public delegate void LogHandler(string txt, SolidColorBrush clr = null);
+
         /// <summary>
         /// Write in log to rich-text-box
         /// </summary>
@@ -388,6 +391,7 @@ namespace UtilsNS
         {
             foreach (string tx in txt) log(tbLog, tx);
         }
+        #endregion LOG
         public static Dictionary<string, string> dictDouble2String(Dictionary<string, double> dv, string prec)
         {
             Dictionary<string, string> ds = new Dictionary<string, string>();
@@ -401,7 +405,8 @@ namespace UtilsNS
             foreach (var item in ds)
             {
                 ListBoxItem lbi = new ListBoxItem();
-                lbi.Content = string.Format("{0}: {1}", item.Key, item.Value);
+                if (item.Value.Equals("")) lbi.Content = item.Key;
+                else lbi.Content = string.Format("{0}: {1}", item.Key, item.Value);
                 lbox.Items.Add(lbi);
             }
         }

@@ -43,8 +43,18 @@ namespace scripthea.composer
             opts = _opts;
             UpdateFromOptions();
             status = Status.Idle;
-            cuePoolUC.Init(); cuePoolUC.OnChange += new RoutedEventHandler(ChangeCue);
-            modifiersUC.Init(); modifiersUC.OnChange += new RoutedEventHandler(ChangeModif);
+
+            Log("@_Header=loading cues files (*.cues)");
+            cuePoolUC.OnLog += new Utils.LogHandler(Log);
+            cuePoolUC.Init(); 
+            cuePoolUC.OnChange += new RoutedEventHandler(ChangeCue);
+            
+            Log("@_Header=loading modifiers files (*.mdfr)");
+            modifiersUC.Init();
+            modifiersUC.OnChange += new RoutedEventHandler(ChangeModif);
+            modifiersUC.OnLog += new Utils.LogHandler(Log);
+
+            scanPreviewUC.OnLog += new Utils.LogHandler(Log);
             scanPreviewUC.btnClose.Click += new RoutedEventHandler(btnScanPreviewProcs_Click);
             scanPreviewUC.btnScanChecked.Click += new RoutedEventHandler(btnScanPreviewProcs_Click);
             scanPreviewUC.btnQuerySelected.Click += new RoutedEventHandler(btnScanPreviewProcs_Click);
@@ -93,8 +103,7 @@ namespace scripthea.composer
                 _status = value;
             }
         }
-        public delegate void LogHandler(string txt, SolidColorBrush clr = null);
-        public event LogHandler OnLog;
+        public event Utils.LogHandler OnLog;
         protected void Log(string txt, SolidColorBrush clr = null)
         {
             if (OnLog != null) OnLog(txt, clr);
@@ -162,13 +171,10 @@ namespace scripthea.composer
         }
         private void tbImageDepot_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (ImgUtils.checkImageDepot(tbImageDepot.Text, false) > 0)
-            {
-                UpdateToOptions(sender, null);
-                tbImageDepot.Foreground = Brushes.Black;
-                Log("@WorkDir");
-            }
+            opts.ImageDepotFolder = tbImageDepot.Text;
+            if (Directory.Exists(tbImageDepot.Text)) tbImageDepot.Foreground = Brushes.Black;                
             else tbImageDepot.Foreground = Brushes.Red;
+            Log("@WorkDir");
         }
         private void btnNewFolder_Click(object sender, RoutedEventArgs e)
         {
@@ -278,9 +284,9 @@ namespace scripthea.composer
                 switch (status)
                 {
                     case Status.SingeQuery:
-                        Utils.TimedMessageBox("API is busy, try again later..."); return;
+                        Log("Warning: API is busy, try again later..."); return;
                     case Status.Request2Cancel:
-                        Log("Your request for cancelation has been already accepted.", Brushes.Tomato); return;
+                        Log("Warning: Your request for cancelation has been already accepted.", Brushes.Tomato); return;
                     case Status.Scanning:
                         Log("Err: internal error #45"); return;
                 }
@@ -317,7 +323,8 @@ namespace scripthea.composer
             { 
                 gridAPI.Children.Clear(); gridAPI.Children.Add(API.activeAPI.userControl);
                 API.activeAPI.Init("");
-            }               
+            }
+            if (!Utils.isNull(e)) e.Handled = true;
         }
 
         private void imgAPIdialog_MouseDown(object sender, MouseButtonEventArgs e)
@@ -372,6 +379,7 @@ namespace scripthea.composer
             cuePoolUC.radioMode = tcQuery.SelectedItem.Equals(tiSingle);
             modifiersUC.SetSingleScanMode(tcQuery.SelectedItem.Equals(tiSingle));
             ChangeModif(sender, e);
+            if (!Utils.isNull(e)) e.Handled = true;
         }
         private readonly string[] miTitles = { "Copy", "Cut", "Paste", "\"...\" synonyms", "\"...\" meaning" };
         private void tbCue_ContextMenuOpening(object sender, ContextMenuEventArgs e)

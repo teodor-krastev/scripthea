@@ -49,8 +49,7 @@ namespace scripthea
                 _imageFolder = value; tbImageDepot.Text = value;
             }
         }
-        public delegate void LogHandler(string txt, SolidColorBrush clr = null);
-        public event LogHandler OnLog;
+        public event Utils.LogHandler OnLog;
         protected void Log(string txt, SolidColorBrush clr = null)
         {
             if (OnLog != null) OnLog(txt, clr);
@@ -196,7 +195,8 @@ namespace scripthea
                 BitmapImage bi = new BitmapImage(new Uri(fn));
                 image.Source = bi.Clone(); image.UpdateLayout(); // bi = null;                                                             
             }                    
-            else Log("Error: file not found-> " + fn);            
+            else Log("Error: file not found-> " + fn);
+            if (!Utils.isNull(e)) e.Handled = true;
         }
 
         private void tbImageDepot_TextChanged(object sender, TextChangedEventArgs e)

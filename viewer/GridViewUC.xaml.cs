@@ -37,9 +37,8 @@ namespace scripthea.viewer
         {
 
         }
-
-        public delegate void LogHandler(string txt, SolidColorBrush clr = null);
-        public event LogHandler OnLog;
+        
+        public event Utils.LogHandler OnLog;
         protected void Log(string txt, SolidColorBrush clr = null)
         {
             if (OnLog != null) OnLog(txt, clr);
@@ -50,10 +49,14 @@ namespace scripthea.viewer
             {
                 picItems[i] = null;
             }            
-            picItems.Clear(); wrapPics.Children.Clear(); Utils.DoEvents();
+            picItems.Clear(); wrapPics.Children.Clear(); wrapPics.UpdateLayout();
         }
         private string _imageFolder = "";
         public string imageFolder { get { return _imageFolder; } }
+        public void Clear()
+        {
+            picItemsClear(); 
+        }
         public void FeedList(List<Tuple<int, string, string>> theList, string imageDepot) 
         {
             if (Utils.isNull(theList)) { Log("Error: not items found."); return; }
@@ -170,7 +173,6 @@ namespace scripthea.viewer
             double selectedPos = (double)selectedIndex / Count; 
             scroller.ScrollToVerticalOffset(selectedPos * wrapPics.ActualHeight - rowTumbs.ActualHeight/3);
         }
-
         private void scroller_KeyDown(object sender, KeyEventArgs e)
         {           
             switch (e.Key)

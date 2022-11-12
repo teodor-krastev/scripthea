@@ -88,7 +88,9 @@ namespace scripthea.composer
             for (int i = 0; i < poolCount; i++)
             {
                 CueListUC clu = new CueListUC(); cueLists.Add(clu); 
-                clu.Init(GetLists(i)); clu.OnChange += new RoutedEventHandler(Change);                   
+                clu.OnLog += new Utils.LogHandler(Log);
+                clu.Init(GetLists(i));
+                clu.OnChange += new RoutedEventHandler(Change);                   
                 (tabControl.Items[i] as TabItem).Content = clu;
             }            
         }
@@ -97,6 +99,11 @@ namespace scripthea.composer
         {
             if (OnChange != null) OnChange(this, e);
         }
+        public event Utils.LogHandler OnLog;
+        protected void Log(string txt, SolidColorBrush clr = null)
+        {
+            if (OnLog != null) OnLog(txt, clr);
+        }
         private bool _radioMode = true;
         public bool radioMode
         {
@@ -104,6 +111,7 @@ namespace scripthea.composer
             set
             {
                 _radioMode = value;
+                if (Utils.isNull(cueLists)) return;
                 foreach (CueListUC clu in cueLists)
                     clu.radioMode = value;
             }
@@ -147,12 +155,11 @@ namespace scripthea.composer
             UpdatePoolMapFromVisuals();
             System.IO.File.WriteAllText(mapFile, JsonConvert.SerializeObject(poolMap));
         }
-
         private void imgDown_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (Utils.isNull(lBoxApool.SelectedItem))
             {
-                Utils.TimedMessageBox("No item is selected for the move."); return;
+                Log("No item is selected for the move."); return;
             }
             CheckBox chk = lBoxApool.SelectedItem as CheckBox;
             CheckBox newChk = new CheckBox()
@@ -160,12 +167,11 @@ namespace scripthea.composer
             lBoxApool.Items.Remove(lBoxApool.SelectedItem);
             lBoxBpool.Items.Add(newChk); lBoxBpool.SelectedItem = newChk;
         }
-
         private void imgUp_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (Utils.isNull(lBoxBpool.SelectedItem))
             {
-                Utils.TimedMessageBox("No item is selected for the move."); return;
+                Log("No item is selected for the move."); return;
             }
             CheckBox chk = lBoxBpool.SelectedItem as CheckBox;
             CheckBox newChk = new CheckBox()
@@ -178,7 +184,7 @@ namespace scripthea.composer
         {
             if (!(sender as TabControl).Name.Equals("tabControl")) return;
             int idx = tabControl.SelectedIndex;
-            if (lastTabIdx.Equals(poolCount)) // out of map tab
+            if (lastTabIdx.Equals(poolCount) && Utils.InRange(idx, 0,poolCount-1)) // out of map tab
             {
                 if (!cueLists[idx].isBusy)
                 {
@@ -188,7 +194,8 @@ namespace scripthea.composer
             }
             if (Utils.InRange(idx, 0, poolCount-1) && !Utils.isNull(cueLists)) 
                 cueLists[idx].tabControl_SelectionChanged(null, null);
-            lastTabIdx = idx; if (Utils.InRange(idx, 0, poolCount-1)) lastPoolIdx = idx;            
+            lastTabIdx = idx; if (Utils.InRange(idx, 0, poolCount-1)) lastPoolIdx = idx;
+            if (!Utils.isNull(e)) e.Handled = true;
         }
     }
 }

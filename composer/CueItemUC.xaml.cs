@@ -39,7 +39,13 @@ namespace scripthea.composer
             {
                 tbSeed.Text += line + (k.Equals(text.Count - 1) ? "": "\r"); k++;
             }
-        }       
+        }
+        public event Utils.LogHandler OnLog;
+        protected void Log(string txt, SolidColorBrush clr = null)
+        {
+            if (OnLog != null) OnLog(txt, clr);
+        }
+
         public bool radioMode
         {
             get { return rbChecked.Visibility.Equals(Visibility.Visible); }

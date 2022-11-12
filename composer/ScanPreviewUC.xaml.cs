@@ -28,12 +28,10 @@ namespace scripthea.composer
             InitializeComponent();
         }
 
-        public delegate void LogHandler(string txt, SolidColorBrush clr = null);
-        public event LogHandler OnLog;
+        public event Utils.LogHandler OnLog;
         protected void Log(string txt, SolidColorBrush clr = null)
         {
-            if (OnLog != null) OnLog(txt, clr);
-            else Utils.TimedMessageBox(txt);
+            if (OnLog != null) OnLog(txt, clr);          
         }
 
         DataTable dTable; List<CheckBox> checks;
@@ -126,6 +124,7 @@ namespace scripthea.composer
             catch(System.InvalidCastException ex) { selectedPrompt = ""; }
             if (Utils.isNull(dataRow)) return;
             selectedPrompt = Convert.ToString(dataRow.Row.ItemArray[2]);
+            if (!Utils.isNull(e)) e.Handled = true;
         }
         public List<string> checkedPrompts()
         {

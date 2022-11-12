@@ -41,9 +41,8 @@ namespace scripthea.composer
                 allSeeds = new List<CueItemUC>(); localSeeds = new List<List<CueItemUC>>(); tcLists.Items.Clear(); 
                 foreach (string sf in seedFiles)
                 {
-                    string se = System.IO.Path.ChangeExtension(System.IO.Path.GetFileName(sf),"");
-                    char[] charsToTrim = { '.', ' ' }; 
-                    se = se.Trim(charsToTrim); if (!Utils.IsValidVarName(se)) throw new Exception(se + "is not valid name");
+                    string se = System.IO.Path.GetFileNameWithoutExtension(sf);
+                    if (!Utils.IsValidVarName(se)) { Log("Error: <" + se + "> is not valid cue list name. (no special char.)"); continue; }
                     TabItem newTabItem = new TabItem()
                     {
                         Header = se,
@@ -79,7 +78,11 @@ namespace scripthea.composer
                 else ((TabItem)tcLists.Items[i]).Background = Utils.ToSolidColorBrush("#FFFFFFF8");
             }
         }
-
+        public event Utils.LogHandler OnLog;
+        protected void Log(string txt, SolidColorBrush clr = null)
+        {
+            if (OnLog != null) OnLog(txt, clr);
+        }
         protected void AddSeeds(StackPanel sp, ref List<CueItemUC> ocl, string fn)
         {
             if (!File.Exists(fn)) throw new Exception("Err: no <" + fn + "> file");
@@ -98,6 +101,7 @@ namespace scripthea.composer
                 if (ss.Equals("---"))
                 {
                     CueItemUC seed = new CueItemUC(ls);
+                    seed.OnLog += new Utils.LogHandler(Log);
                     seed.rbChecked.Checked += new RoutedEventHandler(Change); //seed.rbChecked.Unchecked += new RoutedEventHandler(Change);
                     seed.checkBox.Checked += new RoutedEventHandler(Change); seed.checkBox.Unchecked += new RoutedEventHandler(Change);
                     allSeeds.Add(seed); ocl.Add(seed);
@@ -199,6 +203,7 @@ namespace scripthea.composer
             List<CueItemUC> ssd = localSeeds[tcLists.SelectedIndex];
             if (ssd.Count == 0) return;
             localSeedIdx = 0;
+            if (!Utils.isNull(e)) e.Handled = true;
         }
         private void imgRandom_MouseDown(object sender, MouseButtonEventArgs e)
         {

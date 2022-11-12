@@ -40,6 +40,7 @@ namespace scripthea
         public string ModifPrefix;
         public string API;
 
+        public bool Autorefresh;
         public int ThumbZoom;
         public bool ThumbCue;
         public bool ThumbFilename;
@@ -64,6 +65,7 @@ namespace scripthea
         private void MainWindow1_Loaded(object sender, RoutedEventArgs e)
         {
             optionsFile = Utils.configPath + "options.json";
+            if (!Directory.Exists(Utils.configPath)) throw new Exception("Fatal error: Directory <" + Utils.configPath + "> does not exist.");
             if (File.Exists(optionsFile))
             {
                 string json = System.IO.File.ReadAllText(optionsFile);
@@ -71,15 +73,17 @@ namespace scripthea
                 if (opts.ImageDepotFolder.Equals("<default.image.depot>")) opts.ImageDepotFolder = ImgUtils.defaultImageDepot;
             }
             else opts = new Options();
-
+            Title = "Scripthea - options loaded";
             dirTreeUC.Init();
             dirTreeUC.OnActive += new DirTreeUC.SelectHandler(Active);
 
-            queryUC.OnLog += new QueryUC.LogHandler(Log); queryUC.tbImageDepot.KeyDown += new KeyEventHandler(MainWindow1_KeyDown);
-            viewerUC.OnLog += new ViewerUC.LogHandler(Log); viewerUC.tbImageDepot.KeyDown += new KeyEventHandler(MainWindow1_KeyDown);
-            importUtilUC.OnLog += new ImportUtilUC.LogHandler(Log); importUtilUC.tbImageDepot.KeyDown += new KeyEventHandler(MainWindow1_KeyDown);
+            queryUC.OnLog += new Utils.LogHandler(Log); queryUC.tbImageDepot.KeyDown += new KeyEventHandler(MainWindow1_KeyDown);
+            viewerUC.OnLog += new Utils.LogHandler(Log); viewerUC.tbImageDepot.KeyDown += new KeyEventHandler(MainWindow1_KeyDown);
+            importUtilUC.OnLog += new Utils.LogHandler(Log); importUtilUC.tbImageDepot.KeyDown += new KeyEventHandler(MainWindow1_KeyDown);
 
+            Title = "Scripthea - loading text files...";
             queryUC.Init(ref opts);
+            Title = "Scripthea - text files loaded";
             viewerUC.Init(ref opts);
             importUtilUC.Init();
 
@@ -170,17 +174,21 @@ namespace scripthea
                             }
                             return;
                         case "@WorkDir":
-                            if (ImgUtils.checkImageDepot(opts.ImageDepotFolder,false) > 0)
+                            if (Directory.Exists(opts.ImageDepotFolder))
                             {
                                 dirTreeUC.CatchAFolder(opts.ImageDepotFolder);
                                 tbImageDepot.Text = "working image depot -> " + opts.ImageDepotFolder;
                             }
+                            else tbImageDepot.Text = "working image depot -> <NOT SET>";
                             return;
                         case "@Explore":
                             string[] sa = msg.Split('='); if (sa.Length != 2) Utils.TimedMessageBox("Error(#458)");
                             ExplorerPart = Convert.ToInt32(sa[1]);
                             return;
-
+                        case "@_Header":
+                            string[] sb = msg.Split('='); if (sb.Length != 2) Utils.TimedMessageBox("Error(#459)");
+                            Title = "Scripthea - "+sb[1];
+                            return;
                     }
                 if (chkLog.IsChecked.Value)
                     if (ExplorerPart.Equals(100)) Utils.TimedMessageBox(msg,"Warning",3500);
@@ -189,7 +197,7 @@ namespace scripthea
             finally
             {
                 if (msg.Length > 0 && msg.Substring(0, 1).Equals("@") && Utils.isInVisualStudio && !ExplorerPart.Equals(100)) Utils.log(tbLogger, msg, clr);
-                Utils.DoEvents();
+                //Utils.DoEvents();
             }
         }
         int dti;
@@ -228,8 +236,8 @@ namespace scripthea
             }
             if (tabControl.SelectedItem.Equals(tiViewer))
             {
-                if (oldTab.Equals(tiComposer)) viewerUC.tbImageDepot.Text = queryUC.tbImageDepot.Text;
-                if (oldTab.Equals(tiUtils)) viewerUC.tbImageDepot.Text = importUtilUC.imageFolder;
+                if (oldTab.Equals(tiComposer)) viewerUC.ShowImageDepot(queryUC.tbImageDepot.Text);
+                if (oldTab.Equals(tiUtils)) viewerUC.ShowImageDepot(importUtilUC.imageFolder);
                 ExplorerPart = 100; dirTreeUC.CatchAFolder(viewerUC.tbImageDepot.Text);
             }
             if (tabControl.SelectedItem.Equals(tiUtils))
@@ -237,7 +245,7 @@ namespace scripthea
                 ExplorerPart = 100; dirTreeUC.CatchAFolder(importUtilUC.imageFolder);
             }
             oldTab = (TabItem)tabControl.SelectedItem;
-
+            e.Handled = true;
         }
         protected void Active(string path)
         {

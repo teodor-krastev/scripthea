@@ -36,8 +36,8 @@ namespace scripthea.external
         public Dictionary<string, string> opts { get; set; } // visual adjustable options to that particular API, keep it in synchro with the visuals 
         public void Init(string prompt) // init and update visuals from opts
         {
-            server.OnLog += new PyTcpListener.LogHandler(Log);
-            server.OnReceive += new PyTcpListener.LogHandler(Receive);
+            server.OnLog += new Utils.LogHandler(Log);
+            server.OnReceive += new Utils.LogHandler(Receive);
             lbStatus.Content = "COMM: closed"; server.Init(); 
         }
         public void Finish() 
@@ -72,7 +72,7 @@ namespace scripthea.external
             File.WriteAllText(System.IO.Path.Combine(opts["folder"], fn), data);            
             return !data.Equals("");
         }
-        protected void Log(String txt)
+        protected void Log(String txt, SolidColorBrush clr = null)
         {
             if (txt.Length.Equals("")) return;
             Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background,
@@ -82,7 +82,7 @@ namespace scripthea.external
                   tbAdvice.Text = "Log: " + txt + "\r"; tbAdvice.UpdateLayout();
               }));
         }
-        protected void Receive(String txt)
+        protected void Receive(String txt, SolidColorBrush clr = null)
         {
             Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background,
               new Action(() =>
@@ -139,14 +139,13 @@ namespace scripthea.external
             private set { _status = value; Log("@" + Convert.ToString(status)); }
         }
 
-        public delegate void LogHandler(string txt);
-        public event LogHandler OnLog;
-        protected void Log(string txt)
+        public event Utils.LogHandler OnLog;
+        protected void Log(string txt, SolidColorBrush clr = null)
         {
-            if (OnLog != null) OnLog(txt);
+            if (OnLog != null) OnLog(txt, clr);
         }
-        public event LogHandler OnReceive;
-        protected void Receive(String txt)
+        public event Utils.LogHandler OnReceive;
+        protected void Receive(string txt, SolidColorBrush clr = null)
         {
             if (OnReceive != null) OnReceive(Convert.ToString(txt));
         } 

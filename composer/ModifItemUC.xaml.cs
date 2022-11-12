@@ -31,14 +31,14 @@ namespace scripthea.composer
             InitializeComponent(); modifStatus = ModifStatus.Off;
         }
         public event RoutedEventHandler OnChange;
-        /// <summary>
-        /// Receive message
-        /// </summary>
-        /// <param name="msg"></param>
-        /// <returns></returns>
         protected void Change(object sender, RoutedEventArgs e)
         {
             if (OnChange != null) OnChange(sender, e);
+        }
+        public event Utils.LogHandler OnLog;
+        protected void Log(string txt, SolidColorBrush clr = null)
+        {
+            if (OnLog != null) OnLog(txt, clr);
         }
 
         private ModifStatus _modifStatus;

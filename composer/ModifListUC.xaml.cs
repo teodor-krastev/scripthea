@@ -104,6 +104,7 @@ namespace scripthea.composer
                 mi.Margin = new Thickness(0, 0, 0, 0); mi.tbContent.MouseRightButtonDown += new System.Windows.Input.MouseButtonEventHandler(chkCategory_MouseRightButtonDown);
                 if (!s1.Equals("")) mi.tbContent.ToolTip = s1; 
                 mi.OnChange += new RoutedEventHandler(Change);
+                mi.OnLog += new Utils.LogHandler(Log);
                 modifListBox.Items.Add(mi); 
                 i++;
             }
@@ -115,12 +116,7 @@ namespace scripthea.composer
             set { chkCategory.Content = value; }
         }
         public event RoutedEventHandler OnChange;        
-        /// <summary>
-        /// Receive message
-        /// </summary>
-        /// <param name="msg"></param>
-        /// <returns></returns>
-        protected void Change(object sender, RoutedEventArgs e)
+         protected void Change(object sender, RoutedEventArgs e)
         {
             if (sender is ModifItemUC)
             {
@@ -130,6 +126,11 @@ namespace scripthea.composer
                 isChecked = bb;
             }
             if ((OnChange != null) && isChecked) OnChange(sender,e);
+        }
+        public event Utils.LogHandler OnLog;
+        protected void Log(string txt, SolidColorBrush clr = null)
+        {
+            if (OnLog != null) OnLog(txt, clr);
         }
 
         private void chkCategory_MouseRightButtonDown(object sender, MouseButtonEventArgs e)

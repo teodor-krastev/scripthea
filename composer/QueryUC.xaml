@@ -66,13 +66,13 @@
                         <TextBox x:Name="tbModifPrefix" HorizontalAlignment="Right" Height="23" Margin="0,7,0,0" TextWrapping="Wrap" Text=";" VerticalAlignment="Top" Width="30" TextChanged="tbModifSepar_TextChanged" FontWeight="Bold" FontSize="13"/>
                         <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
                             <Label x:Name="lbAPI" Content="API" Width="32" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                            <ComboBox x:Name="cbActiveAPI" HorizontalAlignment="Left" VerticalAlignment="Top" SelectedIndex="0" Width="90" FontSize="12" Background="White" Margin="3,1,0,0" SelectionChanged="cbActiveAPI_SelectionChanged">
+                            <ComboBox x:Name="cbActiveAPI" HorizontalAlignment="Left" VerticalAlignment="Top" SelectedIndex="0" Width="90" FontSize="12" Background="White" Margin="3,3,0,0" SelectionChanged="cbActiveAPI_SelectionChanged" FontWeight="Bold">
                                 <ComboBoxItem Content="Simulation"/>
                                 <ComboBoxItem x:Name="cbiDiffusion" Content="Diffusion"/>
                                 <ComboBoxItem Content="DeepAI"/>
                                 <ComboBoxItem x:Name="cbiCraiyon" Content="Craiyon"/>
                             </ComboBox>
-                            <Image x:Name="imgAPIdialog"  Width="25" Height="25" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="4,0,0,0" Cursor="Hand" MouseDown="imgAPIdialog_MouseDown" Source="/Scripthea;component/Properties/gears1.png"/>
+                            <Image x:Name="imgAPIdialog"  Width="25" Height="25" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="6,3,0,0" Cursor="Hand" MouseDown="imgAPIdialog_MouseDown" Source="/Scripthea;component/Properties/gears1.png"/>
                         </StackPanel>
                     </Grid>
                 </TabItem>

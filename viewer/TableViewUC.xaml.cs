@@ -49,6 +49,10 @@ namespace scripthea.viewer
         }
         private string _imageFolder;
         public string imageFolder { get { return _imageFolder; } }
+        public void Clear()
+        {
+            dTable.Rows.Clear(); dGrid.ItemsSource = dTable.DefaultView;
+        }
         public void FeedList(List<Tuple<int, string, string>> theList, string imageDepot)
         {
             _imageFolder = imageDepot;
@@ -98,7 +102,7 @@ namespace scripthea.viewer
                     col.Width = new DataGridLength(1, DataGridLengthUnitType.Star);
                     break;                
             }
-       }
+        }
         private void dGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             DataRowView dataRow = (DataRowView)dGrid.SelectedItem;
@@ -110,6 +114,7 @@ namespace scripthea.viewer
             });
             int iRow = Convert.ToInt32(dataRow.Row.ItemArray[0]) - 1;
             OnSelect(iRow + 1, imageFolder + Convert.ToString(dTable.Rows[iRow].ItemArray[2]), Convert.ToString(dTable.Rows[iRow].ItemArray[1]) );
+            if (!Utils.isNull(e)) e.Handled = true;
         }
     }
 }

@@ -44,15 +44,16 @@ namespace scripthea.composer
             InitializeComponent();
         }
         public event RoutedEventHandler OnChange;
-        /// <summary>
-        /// Receive message
-        /// </summary>
-        /// <param name="msg"></param>
-        /// <returns></returns>
         protected void Change(object sender, RoutedEventArgs e)
         {
             if (OnChange != null) OnChange(this, e);
         }
+        public event Utils.LogHandler OnLog;
+        protected void Log(string txt, SolidColorBrush clr = null)
+        {
+            if (OnLog != null) OnLog(txt, clr);
+        }
+
         public string mapFile { get { return System.IO.Path.Combine(Utils.configPath + "modifiers.map"); } }
         public void Init()
         {
@@ -70,6 +71,7 @@ namespace scripthea.composer
             {
                 ModifListUC cmu = new ModifListUC(fn); 
                 cmu.OnChange += new RoutedEventHandler(Change);
+                cmu.OnLog += new Utils.LogHandler(Log);
                 modifLists.Add(cmu);
                 stackModifiers.Children.Add(cmu);
                 if (!Utils.isNull(ModifMap))

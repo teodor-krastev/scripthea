@@ -23,6 +23,7 @@ namespace scripthea.viewer
         void Init(ref Options _opts);
         void Finish();
         string imageFolder { get; }
+        void Clear();
         void FeedList(List<Tuple<int, string, string>> theList, string imageDepot);  // index, filename, prompt     
         int selectedIndex { get; set; } // one based index
         int Count { get; }
@@ -45,7 +46,7 @@ namespace scripthea.viewer
         public void Init(ref Options _opts)
         {
             opts = _opts;
-            imageFolder = opts.ImageDepotFolder;
+            chkAutoRefresh.IsChecked = opts.Autorefresh; imageFolder = opts.ImageDepotFolder; 
             colListWidth.Width = new GridLength(opts.ViewColWidth);
             foreach (iPicList ipl in views)
                 ipl.Init(ref opts);            
@@ -53,6 +54,7 @@ namespace scripthea.viewer
         public void Finish()
         {
             opts.ViewColWidth = Convert.ToInt32(colListWidth.Width.Value);
+            opts.Autorefresh = chkAutoRefresh.IsChecked.Value;
             foreach (iPicList ipl in views)
                 ipl.Finish();
         }
@@ -63,21 +65,32 @@ namespace scripthea.viewer
             {
                 if (Directory.Exists(tbImageDepot.Text)) _imageFolder = tbImageDepot.Text;
                 else _imageFolder = ImgUtils.defaultImageDepot;
-                return  _imageFolder.EndsWith("\\") ? _imageFolder: _imageFolder + "\\";
+                return _imageFolder.EndsWith("\\") ? _imageFolder: _imageFolder + "\\";
             }
             set
             {
                 _imageFolder = value;  tbImageDepot.Text = value;
             }
         }
-        public delegate void LogHandler(string txt, SolidColorBrush clr = null);
-        public event LogHandler OnLog;
+        
+        public event Utils.LogHandler OnLog;
         protected void Log(string txt, SolidColorBrush clr = null)
         {
             if (OnLog != null) OnLog(txt, clr);
         }
-        
-        
+        public void Clear() 
+        {
+            activeView.Clear(); picViewerUC.Clear();
+        }
+        private bool updating = false; private bool showing = false;
+        public void ShowImageDepot(string imageDepot)
+        {
+            if (updating) return;
+            updating = true;
+            tbImageDepot.Text = imageDepot; 
+            tbImageDepot_TextChanged(null, null);
+            updating = false; showing = true;
+        }
         List<iPicList> views;
         private List<Tuple<int, string, string>> DecompImageDepot(string imageDepot, bool checkFileAndOut)
         {
@@ -93,29 +106,6 @@ namespace scripthea.viewer
                 lt.Add(new Tuple<int, string, string>(k, sa[0], sa[1])); k++;
             }
             return lt;
-        }
-        private void btnNewFolder_Click(object sender, RoutedEventArgs e)
-        {            
-            if (sender.Equals(btnNewFolder))
-            {
-                CommonOpenFileDialog dialog = new CommonOpenFileDialog();
-                dialog.InitialDirectory = imageFolder;
-                dialog.IsFolderPicker = true;
-                if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
-                {
-                    tbImageDepot.Text = dialog.FileName;
-                    if (ImgUtils.checkImageDepot(tbImageDepot.Text) > 0) 
-                        activeView.FeedList(DecompImageDepot(imageFolder, true), imageFolder);
-                }           
-                return;
-            }  
-            else // btnRefresh
-            {
-                if (ImgUtils.checkImageDepot(tbImageDepot.Text) < 1) 
-                    { Log("Error: not an image depot: "+ tbImageDepot.Text); return; }
-                List <Tuple<int, string, string>> decompImageDepot = DecompImageDepot(imageFolder, true);
-                if (!Utils.isNull(decompImageDepot)) activeView.FeedList(decompImageDepot, imageFolder);
-            }               
         }
         private void btnFindUp_MouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -133,11 +123,47 @@ namespace scripthea.viewer
                 idx += k;
             }
         }
-        private void tbImageDepot_TextChanged(object sender, TextChangedEventArgs e)
+        private bool checkImageDepot(string folder)
         {
-            btnRefresh.IsEnabled = ImgUtils.checkImageDepot(tbImageDepot.Text) > 0;
-            if (btnRefresh.IsEnabled) tbImageDepot.Foreground = Brushes.Black;
-            else tbImageDepot.Foreground = Brushes.Red;
+            bool bb = ImgUtils.checkImageDepot(tbImageDepot.Text) > 0;
+            if (bb) lbDepotInfo.Content = "";
+            else lbDepotInfo.Content = "This is not an image depot.";
+            return bb;
+        }
+        private void btnRefresh_Click(object sender, RoutedEventArgs e)
+        { 
+            if (!checkImageDepot(tbImageDepot.Text))                 
+            {                
+                if (sender.Equals(btnRefresh)) Clear();
+                return; 
+            }
+            List <Tuple<int, string, string>> decompImageDepot = DecompImageDepot(imageFolder, true);
+            if (!Utils.isNull(decompImageDepot))
+            {
+                activeView.FeedList(decompImageDepot, imageFolder); 
+            }
+            if (!Utils.isNull(e)) e.Handled = true;
+        }
+        private void tbImageDepot_TextChanged(object sender, TextChangedEventArgs e)
+        {           
+            if (checkImageDepot(tbImageDepot.Text))
+            {
+                tbImageDepot.Foreground = Brushes.Black; 
+                opts.ImageDepotFolder = tbImageDepot.Text; Log("@WorkDir");
+                if (chkAutoRefresh.IsChecked.Value) btnRefresh_Click(sender, e);
+            }
+            else { tbImageDepot.Foreground = Brushes.Red; }     
+        }
+        private void chkAutoRefresh_Checked(object sender, RoutedEventArgs e)
+        {
+            if (chkAutoRefresh.IsChecked.Value)
+            { colRefresh.Width = new GridLength(0); btnRefresh.Visibility = Visibility.Collapsed; btnRefresh_Click(sender, e); }
+            else { colRefresh.Width = new GridLength(70); btnRefresh.Visibility = Visibility.Visible; }
+        }
+        private void tabCtrlViews_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (chkAutoRefresh.IsChecked.Value && showing) btnRefresh_Click(sender, e); 
+            if (!Utils.isNull(e)) e.Handled = true;
         }
     }
 }
