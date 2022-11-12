@@ -58,6 +58,7 @@ namespace scripthea.composer
                 if (allSeeds.Count > 0) allSeeds[0].radioChecked = true;
                 //if (tcLists.SelectedIndex.Equals(-1)) tcLists.SelectedIndex = 0; //???
             }
+            catch (Exception ex) { Utils.TimedMessageBox(ex.Message); }
             finally { isBusy = false; }
         }
         public void Finish()
@@ -85,7 +86,7 @@ namespace scripthea.composer
         }
         protected void AddSeeds(StackPanel sp, ref List<CueItemUC> ocl, string fn)
         {
-            if (!File.Exists(fn)) throw new Exception("Err: no <" + fn + "> file");
+            if (!File.Exists(fn)) { Log("Err: no <" + fn + "> file found"); return; }
             List<string> seedText = new List<string>(File.ReadAllLines(fn));
             List<string> seedList = new List<string>();
             foreach (string ss in seedText)
