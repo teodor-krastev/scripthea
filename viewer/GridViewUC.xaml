@@ -12,9 +12,11 @@
             <RowDefinition x:Name="rowTumbOpt" Height="1"/>
             <RowDefinition Height="25"/>
         </Grid.RowDefinitions>
-        <ScrollViewer x:Name="scroller" CanContentScroll="True" KeyDown="scroller_KeyDown">
-            <WrapPanel x:Name="wrapPics"  Focusable="True" KeyDown="scroller_KeyDown"></WrapPanel>
-        </ScrollViewer>
+        <Grid x:Name="gridScroll" PreviewKeyDown="scroller_KeyDown">
+            <ScrollViewer x:Name="scroller" CanContentScroll="True">
+                <WrapPanel x:Name="wrapPics"  Focusable="True"></WrapPanel>
+            </ScrollViewer>
+        </Grid>
         <StackPanel Margin="0,3,0,0" Grid.Row="1" Orientation="Horizontal" Background="#FFF9FEFC" >
             <Label Content="Zoom:"></Label>
             <Button x:Name="btnZoomIn" FontSize="13" Content="in" Width="25" Background="{x:Null}" VerticalAlignment="Top" Margin="0,2,0,0" FontFamily="Microsoft Sans Serif" Click="btnZoomIn_Click"/>
@@ -29,10 +31,11 @@
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="25"/>
-                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="43.747"/>
             </Grid.ColumnDefinitions>
-            <Image x:Name="ibtnTumbOpt" Source="/Scripthea;component/Properties/TripleBarTeal.bmp" MouseDown="ibtnTumbOpt_MouseDown" Margin="0,3,0,0"></Image>
-            <StackPanel Margin="0,3,0,0"  Orientation="Horizontal" HorizontalAlignment="Center" Grid.Column="1">
+            <Image x:Name="ibtnTumbOpt" Source="/Scripthea;component/Properties/TripleBarTeal.bmp" MouseDown="ibtnTumbOpt_MouseDown" Margin="0"></Image>
+            <StackPanel Margin="0"  Orientation="Horizontal" HorizontalAlignment="Center" Grid.Column="1" Width="197">
                 <Image x:Name="btnHome" Width="30" HorizontalAlignment="Left"  Margin="3,0,0,0" Cursor="Hand" Source="/Scripthea;component/Properties/home_arrow.png" MouseDown="btnHome_MouseDown" ToolTip="Home"/>
                 <Image x:Name="btnPageUp" Width="30" HorizontalAlignment="Left" Source="/Scripthea;component/Properties/left_dbl_arrow.png" Margin="3,0,0,0" Cursor="Hand" MouseDown="btnHome_MouseDown" ToolTip="Page Up"/>
                 <Image x:Name="btnItemUp" Width="30" HorizontalAlignment="Left" Source="/Scripthea;component/Properties/left_arrow.png" Margin="3,0,0,0" Cursor="Hand" MouseDown="btnItemUp_MouseDown" ToolTip="Previous"/>
@@ -40,6 +43,7 @@
                 <Image x:Name="btnPageDown" Width="30" HorizontalAlignment="Left" Source="/Scripthea;component/Properties/right_dbl_arrow.png" Margin="3,0,0,0" Cursor="Hand" MouseDown="btnHome_MouseDown" ToolTip="Page Down"/>
                 <Image x:Name="btnEnd" Width="30" HorizontalAlignment="Left" Source="/Scripthea;component/Properties/end_arrow.png" Margin="3,0,0,0" Cursor="Hand" MouseDown="btnHome_MouseDown" ToolTip="End"/>
             </StackPanel>
+            <Label x:Name="labelNum" Content="" Grid.Column="2" HorizontalAlignment="Center" Margin="0" VerticalAlignment="Center"/>
         </Grid>
     </Grid>
 </UserControl>

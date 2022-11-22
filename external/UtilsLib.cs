@@ -531,9 +531,14 @@ namespace UtilsNS
             if (!File.Exists(filename)) return filename;
             string ext = Path.GetExtension(filename);
             string fp = Path.ChangeExtension(filename, null);
-            string fn = fp + randomString(1);
-            if (!File.Exists(fn + ext)) return fn + ext;
-            return fn + randomString(2);
+            string fn; int k = 0;
+            do
+            {
+                fn = fp + "-" + k.ToString();
+                fn = Path.ChangeExtension(fn, ext);
+                k++;
+            } while (File.Exists(fn));            
+            return fn;
         }
         public static string betweenStrings(string text, string start, string end = "")
         {

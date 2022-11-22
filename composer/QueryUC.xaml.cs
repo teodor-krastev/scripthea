@@ -62,10 +62,10 @@ namespace scripthea.composer
             tiMiodifiers.Visibility = Visibility.Collapsed; tiScanPreview.Visibility = Visibility.Collapsed;
 
             API = new ControlAPI(); cbActiveAPI_SelectionChanged(null, null);
-            API.OnQueryComplete += new ControlAPI.APIEventHandler(QueryComplete);           
+            API.OnQueryComplete += new ControlAPI.APIEventHandler(QueryComplete);
 
-            if (Utils.TheosComputer()) cbiDiffusion.Visibility = Visibility.Visible;
-            else cbiDiffusion.Visibility = Visibility.Collapsed;           
+            if (Utils.TheosComputer()) { cbiDiffusion.Visibility = Visibility.Visible; btnTest.Visibility = Visibility.Visible; }
+            else { cbiDiffusion.Visibility = Visibility.Collapsed; btnTest.Visibility = Visibility.Collapsed; }
         }
         public void Finish()
         {
@@ -457,6 +457,20 @@ namespace scripthea.composer
                 tcModScanPre.SelectedIndex = 0;
                 btnScan.IsEnabled = true;
             }
+        }
+
+        private void btnTest_Click(object sender, RoutedEventArgs e)
+        {
+            List<string> files = new List<string>(Directory.GetFiles(tbImageDepot.Text, "*.png"));
+            Log(files.Count.ToString()+" files"); DateTime t0 = DateTime.Now;
+            Dictionary<string, string> meta; int ns = 0;
+            foreach (string fn in files)
+            {
+                if (ImgUtils.GetMetaDataItems(fn, out meta)) ns++;
+            }
+            double t = (DateTime.Now - t0).TotalSeconds;
+            Log("time taken = "+t.ToString("G3")+" [sec]  "+ns.ToString()+" files OK");
+            Log("time " + (t / ns).ToString("G3") + " [sec] per file");
         }
     }
 }

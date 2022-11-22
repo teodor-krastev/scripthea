@@ -69,7 +69,7 @@ namespace scripthea.viewer
                 foreach (var itm in theList)
                 {
                     PicItemUC piUC = new PicItemUC(ref opts); picItems.Add(piUC); Utils.DoEvents();
-                    piUC.ContentUpdate(itm.Item1, imageFolder + itm.Item2, itm.Item3); piUC.VisualUpdate();
+                    piUC.ContentUpdate(itm.Item1, Path.Combine(imageFolder,itm.Item2), itm.Item3); piUC.VisualUpdate();
                     piUC.OnSelect += new RoutedEventHandler(SelectTumb); wrapPics.Children.Add(piUC);  
                     if (itm.Item1 == 1)
                     {
@@ -167,21 +167,45 @@ namespace scripthea.viewer
             if (Count == 0) return;
             if (sender.Equals(btnHome)) { selectedIndex = 1; scroller.ScrollToHome(); return; }
             if (sender.Equals(btnEnd)) { selectedIndex = Count; scroller.ScrollToEnd(); return; }
-            int k = sender.Equals(btnPageUp) ? -20 : 20;
+            int k = sender.Equals(btnPageUp) ? -5 : 5; k *= thumbsPerRow;
             selectedIndex = Utils.EnsureRange(selectedIndex + k, 1, Count);
-            if (wrapPics.ActualHeight < rowTumbs.ActualHeight) return;
+            if (wrapPics.ActualHeight < rowTumbs.ActualHeight) return;           
             double selectedPos = (double)selectedIndex / Count; 
             scroller.ScrollToVerticalOffset(selectedPos * wrapPics.ActualHeight - rowTumbs.ActualHeight/3);
         }
+        private int thumbsPerRow { get { return (int)Math.Floor(wrapPics.ActualWidth / picItems[0].ActualWidth); } }
+        private int RowsCount { get { return (int)Math.Ceiling((double)Count / thumbsPerRow); } }
         private void scroller_KeyDown(object sender, KeyEventArgs e)
         {           
             switch (e.Key)
             {
-                case (Key.Home): btnHome_MouseDown(btnHome, null);
+                case Key.Left:
+                    btnItemUp_MouseDown(btnItemUp, null);
                     break;
-                case (Key.End):  btnHome_MouseDown(btnEnd, null);
+                case Key.Space:
+                case Key.Right:
+                    btnItemUp_MouseDown(btnItemDown, null);
+                    break;
+                case Key.Up:
+                    selectedIndex = Utils.EnsureRange(selectedIndex - thumbsPerRow, 1, Count);
+                    break;
+                case Key.Down:
+                    selectedIndex = Utils.EnsureRange(selectedIndex + thumbsPerRow, 1, Count);
+                    break;
+                case Key.PageUp:
+                    btnHome_MouseDown(btnPageUp, null); e.Handled = true;
+                    break;
+                case Key.PageDown:
+                    btnHome_MouseDown(btnPageDown, null); e.Handled = true;
+                    break;
+                case Key.Home: 
+                    btnHome_MouseDown(btnHome, null);
+                    break;
+                case Key.End:  
+                    btnHome_MouseDown(btnEnd, null);
                     break;
             }
         }
+
     }
 }

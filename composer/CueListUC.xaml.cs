@@ -34,13 +34,14 @@ namespace scripthea.composer
         {
             isBusy = true;
             try
-            {            
+            {
                 if (Utils.isNull(_seedFiles)) seedFiles = new List<string>(Directory.GetFiles(Utils.configPath, "*.cues"));
                 else seedFiles = new List<string>(_seedFiles);
 
-                allSeeds = new List<CueItemUC>(); localSeeds = new List<List<CueItemUC>>(); tcLists.Items.Clear(); 
-                foreach (string sf in seedFiles)
+                allSeeds = new List<CueItemUC>(); localSeeds = new List<List<CueItemUC>>(); tcLists.Items.Clear();
+                foreach (string sf in _seedFiles)
                 {
+                    if (!File.Exists(sf)) { Log("Error: File <" + sf + "> is missing."); continue; }
                     string se = System.IO.Path.GetFileNameWithoutExtension(sf);
                     if (!Utils.IsValidVarName(se)) { Log("Error: <" + se + "> is not valid cue list name. (no special char.)"); continue; }
                     TabItem newTabItem = new TabItem()

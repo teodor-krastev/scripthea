@@ -18,32 +18,38 @@ using System.Net;
 using System.Net.Sockets;
 using Newtonsoft.Json;
 using UtilsNS;
+using OpenHWMonitor;
 
 namespace scripthea.external
 {
     /// <summary>
     /// Interaction logic for diffusionUC.xaml
     /// </summary>
-    public partial class diffusionUC : UserControl, interfaceAPI
-    {
-        PyTcpListener server; int pCount = 0;
-        public diffusionUC()
+    public partial class SDiffusionUC : UserControl, interfaceAPI
+    {        
+        PyTcpListener server; int pCount = 0; NVidia nVidia;
+        public SDiffusionUC()
         {
             InitializeComponent();
             opts = new Dictionary<string, string>();
             server = new PyTcpListener();
+            nVidia = new NVidia();
         }
-        public Dictionary<string, string> opts { get; set; } // visual adjustable options to that particular API, keep it in synchro with the visuals 
+        SDoptionsWindow SDopts;
+        public Dictionary<string, string> opts { get; set; } // main (non this API specific) options 
         public void Init(string prompt) // init and update visuals from opts
         {
             server.OnLog += new Utils.LogHandler(Log);
             server.OnReceive += new Utils.LogHandler(Receive);
-            lbStatus.Content = "COMM: closed"; server.Init(); 
+            lbStatus.Content = "COMM: closed"; server.Init();
+            if (!nVidia.IsAvailable()) gridTmp.Visibility = Visibility.Collapsed;
+            SDopts = new SDoptionsWindow(); 
         }
         public void Finish() 
         {
             if (Utils.isNull(server)) return;
-            if (!server.status.Equals(PyTcpListener.Status.closed)) server.CloseSession(); 
+            if (!server.status.Equals(PyTcpListener.Status.closed)) server.CloseSession();
+            SDopts.keepOpen = false; SDopts.Close();
         }
         public bool isDocked { get { return true; } }
         public UserControl userControl { get { return this as UserControl; } }
@@ -112,6 +118,55 @@ namespace scripthea.external
             if (sender.Equals(lb1)) Utils.AskTheWeb("Stable Diffusion");
             if (sender.Equals(lb2)) Utils.CallTheWeb("https://stability.ai/");
             if (sender.Equals(lb3)) Utils.CallTheWeb("http://127.0.0.1:7860/");
+        }
+
+        int currentTmp = -1; double averTmp = -1; int maxTmp = -1;
+        List<int> tmpStack; int stackDepth = 15; 
+        DispatcherTimer dTimer; 
+        private void chkTemp_Checked(object sender, RoutedEventArgs e)
+        {
+            if (chkTemp.IsChecked.Value)
+            {
+                if (Utils.isNull(dTimer))
+                {
+                    dTimer = new DispatcherTimer();
+                    dTimer.Tick += new EventHandler(dTimer_Tick);
+                    dTimer.Interval = new TimeSpan(2000 * 10000); // 2 [sec]
+                    tmpStack = new List<int>(); 
+                }
+                dTimer.Start();              
+            }
+            else dTimer.Stop();
+        }
+        private void dTimer_Tick(object sender, EventArgs e)
+        {
+            if (!nVidia.IsAvailable()) return;
+            currentTmp = nVidia.GetGPUtemperature();
+            chkTemp.Content = "GPU temp[°C] = " + currentTmp.ToString();
+            tmpStack.Add(currentTmp);
+            while (tmpStack.Count > stackDepth) tmpStack.RemoveAt(0);
+            averTmp = tmpStack.ToArray().Average();
+            maxTmp = -1;
+            foreach (int t in tmpStack)
+                maxTmp = Math.Max(t, maxTmp);
+            lbTmpInfo.Content = "aver: " + averTmp.ToString("G3") + "  max: "+maxTmp.ToString();
+        }
+        int tmpThreshold = 60; // 0 -> not avail.
+        private void tbThreshold_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (int.TryParse(tbThreshold.Text, out tmpThreshold))
+            {
+                if (Utils.InRange(tmpThreshold, 35, 85)) tbThreshold.Foreground = Brushes.Black; // ALLOWED RANGE !
+                else
+                {
+                    tbThreshold.Foreground = Brushes.Red; tmpThreshold = 0;
+                }
+            }               
+            else tbThreshold.Foreground = Brushes.Red;
+        }
+        private void ibtnOpts_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            SDopts.Show();
         }
     }
 

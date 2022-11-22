@@ -43,7 +43,7 @@ namespace scripthea.external
             visualControl("Simulation", new SimulatorUC());
             visualControl("DeepAI", new DeepAIUC());
             visualControl("Craiyon", new CraiyonWebUC());
-            visualControl("Diffusion", new diffusionUC());
+            visualControl("SDiffusion", new SDiffusionUC());
             _activeAPIname = "Simulation"; tabControl.SelectedIndex = 0;
 
             backgroundWorker1 = new BackgroundWorker();

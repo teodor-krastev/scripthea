@@ -60,6 +60,23 @@ namespace scripthea.viewer
             image.Source = bitmap.Clone(); image.UpdateLayout(); bitmap = null;
             tbCue.Text = prompt;
         }
+
+/*        private const int NumberOfRetries = 3;
+        private const int DelayOnRetry = 1000;
+
+for (int i=1; i <= NumberOfRetries; ++i) {
+    try {
+        // Do stuff with file
+        break; // When done we can break loop
+    }
+    catch (IOException e) when(i <= NumberOfRetries)
+        {
+            // You may check error code to filter some exceptions, not every error
+            // can be recovered.
+            Thread.Sleep(DelayOnRetry);
+        }
+    }*/
+
         private int attemptCount = 0;
         private void UpdateMeta()
         {
@@ -69,12 +86,8 @@ namespace scripthea.viewer
             else
             {
                 if (attemptCount < 2)
-                    Utils.DelayExec(1000,
-                        new Action(() =>
-                        {
-                            attemptCount++; UpdateMeta();
-                        }));
-                meta.Add("No access to Meta data: ", ""); meta.Add(" the info is missing", ""); meta.Add(" or internal error.", "");
+                    Utils.DelayExec(1000, new Action(() => { attemptCount++; UpdateMeta(); }));
+                meta.Add("No access to Meta data: ", ""); meta.Add(" the info is missing or ", ""); meta.Add("file is opened by a process.", "");
             }
             Utils.dict2ListBox(meta, lboxMetadata); Utils.Sleep(200);
         }

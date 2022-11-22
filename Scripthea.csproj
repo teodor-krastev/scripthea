@@ -126,15 +126,19 @@
     <Compile Include="external\DeepAIUC.xaml.cs">
       <DependentUpon>DeepAIUC.xaml</DependentUpon>
     </Compile>
-    <Compile Include="external\diffusionUC.xaml.cs">
-      <DependentUpon>diffusionUC.xaml</DependentUpon>
+    <Compile Include="external\SDiffusionUC.xaml.cs">
+      <DependentUpon>SDiffusionUC.xaml</DependentUpon>
     </Compile>
     <Compile Include="external\DirTreeUC.xaml.cs">
       <DependentUpon>DirTreeUC.xaml</DependentUpon>
     </Compile>
+    <Compile Include="external\SDoptions.xaml.cs">
+      <DependentUpon>SDoptions.xaml</DependentUpon>
+    </Compile>
     <Compile Include="external\SimulatorUC.xaml.cs">
       <DependentUpon>SimulatorUC.xaml</DependentUpon>
     </Compile>
+    <Compile Include="external\tempNVAPI.cs" />
     <Compile Include="external\UtilsLib.cs" />
     <Compile Include="external\VisualHelper.cs" />
     <Compile Include="viewer\GridViewUC.xaml.cs">
@@ -204,11 +208,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="external\diffusionUC.xaml">
+    <Page Include="external\SDiffusionUC.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
     <Page Include="external\DirTreeUC.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="external\SDoptions.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -332,6 +340,10 @@
   <ItemGroup>
     <Resource Include="Properties\down_arrow.png" />
     <Resource Include="Properties\up_arrow.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Properties\TripleBarGrey.bmp" />
+    <Resource Include="Properties\TripleBarRusty.bmp" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

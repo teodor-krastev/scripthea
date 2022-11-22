@@ -14,17 +14,16 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Path = System.IO.Path;
-using UtilsNS;
 using System.Drawing;
 using System.Drawing.Imaging;
 using Newtonsoft.Json;
 using Brushes = System.Windows.Media.Brushes;
 
-
 namespace UtilsNS
 {
     public static class ImgUtils
-    {    
+    {
+        public const string descriptionFile = "DESCRIPTION.idf";
         public static string defaultImageDepot
         { get { return System.IO.Path.Combine(Utils.basePath, "images"); } }
 
@@ -37,9 +36,9 @@ namespace UtilsNS
             if (!Directory.Exists(idepot)) return -1;
             if (checkDesc)
             {
-                if (!File.Exists(Path.Combine(idepot, "description.txt")) && checkDesc) return -1;
-                List<string> ls = new List<string>(File.ReadAllLines(Path.Combine(idepot, "description.txt"))); 
-                return ls.Count;
+                if (!File.Exists(Path.Combine(idepot, descriptionFile)) && checkDesc) return -1;
+                List<string> ls = new List<string>(File.ReadAllLines(Path.Combine(idepot, descriptionFile))); 
+                return ls.Count - 1;
             }
             else
             {
@@ -93,14 +92,14 @@ namespace UtilsNS
                 }
             }
         }
-        public static bool GetMetaDataItems(string imageFilePath, out Dictionary<string, string> itemMap)
+        public static bool GetMetaDataItems(string imageFilePath, out Dictionary<string, string> itemMap, bool original = false)
         {
             itemMap = new Dictionary<string, string>();
             if (!Path.GetExtension(imageFilePath).ToLower().Equals(".png")) return false;           
             var query = "/tEXt/{str=parameters}"; 
             try
             {
-                using (Stream fileStream = File.Open(imageFilePath, FileMode.Open))  
+                using (Stream fileStream = File.Open(imageFilePath, FileMode.Open, FileAccess.Read, FileShare.Read))  
                 {
                     var decoder = BitmapDecoder.Create(fileStream, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.None);
                     BitmapMetadata bitmapMetadata = decoder.Frames[0].Metadata as BitmapMetadata;
@@ -116,7 +115,14 @@ namespace UtilsNS
                     {
                         var mdc = item.Split(':');
                         if (mdc.Length != 2) return false;
-                        itemMap.Add(mdc[0].Trim(), mdc[1].Trim());
+                        string nm = mdc[0].Trim(); 
+                        if (!original)
+                        {                             
+                            if (nm.Equals("CFG scale")) nm = "scale";                           
+                            if (nm.Equals("Model hash")) nm = "ModelHash";
+                            else nm = nm.ToLower();                           
+                        }                       
+                        itemMap.Add(nm, mdc[1].Trim());
                     }
                     fileStream.Close();                    
                 }

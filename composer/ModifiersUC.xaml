@@ -17,14 +17,18 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="27"/>
                 <RowDefinition Height="1*"/>
+                <RowDefinition Height="120"/>
             </Grid.RowDefinitions>
             <Label Content="Modifiers Map" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="DarkGreen"></Label>
             <ListBox x:Name="listBox" Grid.Row="1"  Margin="2" />
-            </Grid>
+            <GroupBox Header="Modifiers Options" Grid.Row="2" Margin="2">
+                <StackPanel x:Name="stackOptModifiers" Margin="2" >
+                    <CheckBox x:Name="chkAddEmpty" Content="Add an empty modifier" Margin="0"></CheckBox>
+                </StackPanel>
+            </GroupBox>
+        </Grid>
         <StackPanel x:Name="stackModifiers" Margin="0,0,0.203,0.228" Grid.Column = "1" Orientation="Horizontal">
-
         </StackPanel>
         <Button x:Name="btnModifMap" Content=">>" Height="23" Width="27" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,2,5,0" FontWeight="Bold" Background="#FFFEFBE1" Click="btnModifMap_Click" BorderBrush="#FF589B37" BorderThickness="2"/>
-
     </Grid>
 </UserControl>

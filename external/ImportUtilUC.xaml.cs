@@ -14,7 +14,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using scripthea.viewer;
 using UtilsNS;
+using Path = System.IO.Path;
 
 namespace scripthea
 {
@@ -67,15 +69,27 @@ namespace scripthea
                     tbImageDepot.Text = dialog.FileName; 
                 }
             }
-            if (!Directory.Exists(imageFolder))
+            LoadImages(imageFolder);
+        }
+
+        public void LoadImages(string path)
+        {
+            if (!Directory.Exists(path))
             {
                 Log("Err: Directory <" + imageFolder + "> does not exist. "); return;
-            }            
-            List<string> orgFiles = new List<string>(Directory.GetFiles(imageFolder, "*.png"));
-            lstFiles.Items.Clear(); converting = false;
+            }
+            else imageFolder = path;
+            List<string> orgFiles = new List<string>();            
+            if (Utils.isNull(depotFolder))
+            {               
+                if (ImgUtils.checkImageDepot(path, true) > -1) depotFolder = new DepotFolder(path, ImageInfo.ImageGenerator.FromFile);
+                else orgFiles = new List<string>(Directory.GetFiles(imageFolder, "*.png"));
+            }
+            if (!Utils.isNull(depotFolder)) orgFiles = depotFolder.Extras();            
             switch (tcMain.SelectedIndex)
             {
                 case 0: //tiList
+                    lstFiles.Items.Clear(); 
                     foreach (string ss in orgFiles)
                     {
                         CheckBox chk = new CheckBox(); chk.Content = System.IO.Path.GetFileName(ss); chk.IsChecked = true;
@@ -91,7 +105,8 @@ namespace scripthea
                     if (dTable.Rows.Count > 0) dGrid.SelectedIndex = 0;
                     btnConvertFolder.IsEnabled = dTable.Rows.Count > 0;
                     break;
-                default: Log("Error: intrernal error 23");
+                default:
+                    Log("Error: intrernal error 23");
                     break;
             }
         }
@@ -121,18 +136,16 @@ namespace scripthea
             }
             else // Stable Diffusion
             {
-                ls = SplitFilename(filename, '-');
-                if (ls.Count < 4) return false;
-                if (!Utils.isNumeric(ls[0]) || !Utils.isNumeric(ls[1])) return false;
-                newFile = System.IO.Path.ChangeExtension("SD-" + ls[1], ls[3]);
-                cue = ls[2];
+                Utils.TimedMessageBox("Error: no implementation");
             }
             return true;
         }
-        private bool converting = false; 
+        private bool converting = false; DepotFolder depotFolder =null;
         private void btnConvertFolder_Click(object sender, RoutedEventArgs e)
         {       
-            if (dTable.Rows.Count == 0) return; int k = 0; string cue; string ffn;
+            if (dTable.Rows.Count == 0) return; int k = 0; 
+            if (Utils.isNull(depotFolder))
+                depotFolder = new DepotFolder(imageFolder, ImageInfo.ImageGenerator.StableDiffusion);
             try
             {           
                 converting = true; image.Source = null; 
@@ -140,24 +153,14 @@ namespace scripthea
                 {
                     if (!Convert.ToBoolean(row["on"])) continue;
                     string efn = Convert.ToString(row["file"]);
-                    if (!DecodeFilename(efn, out ffn, out cue)) continue;                                                                         
-                    string numFile = Utils.AvoidOverwrite(System.IO.Path.Combine(imageFolder,ffn));
-                    if (File.Exists(numFile)) { File.Delete(numFile); Log("Warning: deleting -> " + numFile); Utils.Sleep(1000); }
-                    try
-                    {
-                        File.Move(System.IO.Path.Combine(imageFolder, efn), numFile); // Rename the oldFileName into newFileName     
-                    }
-                    catch (System.IO.IOException IOe) { Log("Error: ("+System.IO.Path.GetFileName(ffn)+") " + IOe.Message); continue; }                               
-                    using (StreamWriter sw = File.AppendText(imageFolder + "description.txt"))
-                    {
-                        sw.WriteLine(System.IO.Path.GetFileName(numFile) + "=" + cue);
-                    }
+                    depotFolder.infos.Add(new ImageInfo(Path.Combine(imageFolder,efn), ImageInfo.ImageGenerator.StableDiffusion, false));                   
                     k++;
                 }
+                depotFolder.Save();
             }
             finally
             {
-                btnNewFolder_Click(null, null);
+                LoadImages(imageFolder);
                 Log("Done! Image depot of " + k.ToString() + " images was created.", Brushes.DarkGreen); converting = false;
             }            
         }
@@ -193,7 +196,7 @@ namespace scripthea
             if (File.Exists(fn))
             {
                 BitmapImage bi = new BitmapImage(new Uri(fn));
-                image.Source = bi.Clone(); image.UpdateLayout(); // bi = null;                                                             
+                image.Source = bi.Clone(); image.UpdateLayout(); bi = null;                                                             
             }                    
             else Log("Error: file not found-> " + fn);
             if (!Utils.isNull(e)) e.Handled = true;

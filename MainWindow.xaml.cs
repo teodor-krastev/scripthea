@@ -259,7 +259,7 @@ namespace scripthea
             }
             if (tabControl.SelectedItem.Equals(tiUtils))
             {
-                importUtilUC.imageFolder = path; importUtilUC.btnNewFolder_Click(null, null);
+                importUtilUC.LoadImages(path);
             }
         }
         private void imgAbout_MouseDown(object sender, MouseButtonEventArgs e)
@@ -286,7 +286,7 @@ namespace scripthea
         private void MainWindow1_KeyDown(object sender, KeyEventArgs e)
         {
             if (sender.Equals(MainWindow1))
-                if (e.Key.Equals(Key.F1)) Utils.CallTheWeb("https://scripthea.sicyon.com");
+                if (e.Key.Equals(Key.F1)) Utils.CallTheWeb("https://scripthea.com");
             if (e.Key.Equals(Key.Enter))
             {
                 string fld = "";
