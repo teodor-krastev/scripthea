@@ -1,8 +1,8 @@
 ﻿<Window
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:ni="http://schemas.ni.com/controls/2009/xaml/presentation" x:Name="wndSDOptions" x:Class="scripthea.external.SDoptionsWindow"
-        Title=" Stable Diffusion options" Height="491.087" Width="416.279" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" Icon="/Scripthea;component/Properties/TripleBarGrey.bmp" ShowInTaskbar="False" Closing="wndSDOptions_Closing">
+        xmlns:ni="http://schemas.ni.com/controls/2009/xaml/presentation" xmlns:NumericUpDownControl="clr-namespace:NumericUpDownControl" x:Name="wndSDOptions" x:Class="scripthea.external.SDoptionsWindow"
+        Title=" Stable Diffusion options" Height="402.378" Width="392.583" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" Icon="/Scripthea;component/Properties/TripleBarGrey.bmp" ShowInTaskbar="False" Closing="wndSDOptions_Closing" FontSize="13">
     <Grid Margin="0,0,4.127,0.987">
         <Grid.RowDefinitions>
             <RowDefinition/>
@@ -11,11 +11,52 @@
         <TabControl x:Name="tabCtrl" Margin="0,0,0.286,0" Grid.Row="0" Background="{x:Null}" >
             <TabItem x:Name="tiOptions" Header="Gereral" Width="130" Background="#FFF0F0F0">
                 <Grid>
+                    <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Width="225">
+                        <CheckBox x:Name="chkAutoOpenSession" Content="Open session when needed" Margin="5,5,0,0" Visibility="Collapsed"/>
+                        <CheckBox x:Name="chkAutoCloseSession" Content="Close session after a scan" Margin="5,5,0,0"/>
+                        <StackPanel Orientation="Horizontal" Height="28" Margin="0,5,0,0">
+                            <Label Content="Time out for image gen.[s]" Height="27" ></Label>
+                            <NumericUpDownControl:NumericBox x:Name="numTimeOutImgGen" HorizontalAlignment="Left" Height="25" Margin="0,3,0,-0.051" VerticalAlignment="Top" Width="52" FontSize="13" Maximum="1000" Minimum="2" Value="60"/>
+
+                        </StackPanel>
+                    </StackPanel>
+                    <GroupBox x:Name="groupBox1" Header="Panes visible" HorizontalAlignment="Right" Margin="5" VerticalAlignment="Top">
+                            <StackPanel Margin="2,5,2,2">
+                                <CheckBox x:Name="chkCommLog" Content="Comm.Log" Height="20"/>
+                                <CheckBox x:Name="chkGPUtemp" Content="GPU temperature" Height="20"/>
+                            </StackPanel>
+                        
+                    </GroupBox>
+                    <GroupBox x:Name="groupGPUtmpr" Header="      nVidia GPU temperature" Margin="0" VerticalAlignment="Bottom" >
+                        <Grid>
+                            <CheckBox x:Name="chkGPUtemperature" Margin="5,-14,0,0"></CheckBox>
+                            <StackPanel Margin="2,5,2,2" Orientation="Horizontal">
+                                <Label Content="Threshold "></Label>
+                                <NumericUpDownControl:NumericBox x:Name="numGPUThreshold" HorizontalAlignment="Left" Height="25" Margin="0" VerticalAlignment="Top" Width="59" FontSize="13" Maximum="100" Minimum="2" Value="60"/>
+                                <Label Content="Aver/Max stack depth " Margin="6,0,0,0"></Label>
+                                <NumericUpDownControl:NumericBox x:Name="numGPUstackDepth" HorizontalAlignment="Left" Height="25" Margin="0" VerticalAlignment="Top" Width="59" FontSize="13" Maximum="100" Minimum="2" Value="10"/>
+                            </StackPanel>
+                        </Grid>
+                    </GroupBox>
+
                 </Grid>
             </TabItem>
             <TabItem x:Name="tiMEMS" Header="Initial setting" Height="24" Margin="-0.286,-1,0,1" HorizontalAlignment="Left" Width="130" Background="#FFF0F0F0">
                 <StackPanel >
+                    <GroupBox x:Name="groupBox" Header="Stable Diffusion location" Height="57" Margin="0,0,-0.456,0">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="70"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox x:Name="tbSDlocation" Background="#FFFBFBF4"  Margin="4"/>
+                            <Button x:Name="btnBrowse" Content=" Browse " Grid.Column="1" Foreground="#FF0F8001" FontWeight="Bold" Background="#FFF4F4F4" Margin="3" HorizontalAlignment="Center" VerticalAlignment="Center" Height="25" Click="btnBrowse_Click" />
+                        </Grid>
+                    </GroupBox>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Stable Diffusion version"></Label>
 
+                    </StackPanel>
                 </StackPanel>
             </TabItem>
         </TabControl>

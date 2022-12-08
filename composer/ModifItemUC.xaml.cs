@@ -93,6 +93,12 @@ namespace scripthea.composer
                 Change(this, null);
             }
         }
+        private bool _marked = false;
+        public bool marked 
+        { 
+            get { return _marked; }
+            set { _marked = value; tbContent.Background = value ? Brushes.LemonChiffon : null; } 
+        }
         public string Text
         {
             get { return tbContent.Text; }
@@ -123,7 +129,6 @@ namespace scripthea.composer
                 modifStatus = (ModifStatus)index;
             }
         }
-
         private void tbContent_ContextMenuOpening(object sender, ContextMenuEventArgs e)
         {
             string input = new InputBox("Ask Google about", tbContent.Text, "").ShowDialog();

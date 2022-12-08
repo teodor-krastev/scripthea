@@ -28,17 +28,17 @@ namespace scripthea.composer
         public Dictionary<string, bool> ModifMap;
         public List<ModifItemUC> modifItems
         {
-            get 
+            get
             {
                 List<ModifItemUC> mdf = new List<ModifItemUC>();
                 if (!Utils.isNull(modifLists))
                 {
-                    foreach (ModifListUC mdl in modifLists)               
-                        mdf.AddRange(mdl.modifList);                
+                    foreach (ModifListUC mdl in modifLists)
+                        mdf.AddRange(mdl.modifList);
                 }
                 return mdf;
             }
-        }           
+        }
         public ModifiersUC()
         {
             InitializeComponent();
@@ -52,15 +52,21 @@ namespace scripthea.composer
         protected void Log(string txt, SolidColorBrush clr = null)
         {
             if (OnLog != null) OnLog(txt, clr);
+        }        
+        protected void CatChange(object sender, RoutedEventArgs e)
+        {
+            foreach (CheckBox chk in listBox.Items)
+                ModifMap[chk.Content.ToString()] = chk.IsChecked.Value;
+            foreach (ModifListUC cmu in modifLists)
+                cmu.isVisible = ModifMap.ContainsKey(cmu.ModifListName) ? ModifMap[cmu.ModifListName] : true;
         }
-
         public string mapFile { get { return System.IO.Path.Combine(Utils.configPath + "modifiers.map"); } }
         public void Init()
         {
             separator = "; ";
             modifLists = new List<ModifListUC>();
             var files = new List<string>(Directory.GetFiles(Utils.configPath, "*.mdfr"));
-            
+
             if (File.Exists(mapFile))
             {
                 string json = System.IO.File.ReadAllText(mapFile);
@@ -69,16 +75,16 @@ namespace scripthea.composer
             if (Utils.isNull(ModifMap)) ModifMap = new Dictionary<string, bool>();
             foreach (string fn in files)
             {
-                ModifListUC cmu = new ModifListUC(fn); 
+                ModifListUC cmu = new ModifListUC(fn);
                 cmu.OnChange += new RoutedEventHandler(Change);
                 cmu.OnLog += new Utils.LogHandler(Log);
                 modifLists.Add(cmu);
                 stackModifiers.Children.Add(cmu);
                 if (!Utils.isNull(ModifMap))
-                    if (ModifMap.ContainsKey(cmu.ModifListName)) 
-                        cmu.isVisible = ModifMap[cmu.ModifListName];                   
+                    if (ModifMap.ContainsKey(cmu.ModifListName))
+                        cmu.isVisible = ModifMap[cmu.ModifListName];
             }
-            ShowMap = true; ShowMap = false;            
+            ShowMap = true; ShowMap = false;
             SetSingleScanMode(true);
         }
 
@@ -91,8 +97,8 @@ namespace scripthea.composer
         public bool ShowMap
         {
             get { return _ShowMap; }
-            set 
-            { 
+            set
+            {
                 if (Utils.isNull(ModifMap)) { _ShowMap = false; return; }
                 if (value)
                 {
@@ -102,17 +108,17 @@ namespace scripthea.composer
                     {
                         CheckBox chk = new CheckBox();
                         chk.Height = 23;
+                        chk.Checked += new RoutedEventHandler(CatChange); chk.Unchecked += new RoutedEventHandler(CatChange);
                         chk.IsChecked = ModifMap.ContainsKey(cmu.ModifListName) ? ModifMap[cmu.ModifListName] : true;
                         chk.Content = cmu.ModifListName;
                         listBox.Items.Add(chk);
-                    }    
+                    }
                     btnModifMap.Content = "<<"; btnModifMap.SetValue(Grid.ColumnProperty, 0);
                 }
                 else
-                { 
+                {
                     colMap.Width = new GridLength(1);
-                    foreach (CheckBox chk in listBox.Items)
-                        ModifMap[chk.Content.ToString()] = chk.IsChecked.Value;
+                    CatChange(null, null);
                     bool firstSet = false;
                     foreach (ModifListUC cmu in modifLists)
                     {
@@ -124,14 +130,14 @@ namespace scripthea.composer
                 }
                 _ShowMap = value;
             }
-        } 
+        }
         public string separator { get; set; }
         public string Composite() // for single mode
         {
             string ss = "";
             foreach (string sc in ModifItemsByType(ModifStatus.Scannable))
                 ss += separator + sc + " ";
-            return FixItemsAsString()+ss;
+            return FixItemsAsString() + ss;
         }
         public List<string> ModifItemsByType(ModifStatus ms)
         {
@@ -153,13 +159,69 @@ namespace scripthea.composer
         }
         public void SetSingleScanMode(bool singleMode)
         {
-            foreach (ModifItemUC mdf in modifItems)           
-                mdf.singleMode = singleMode;            
+            foreach (ModifItemUC mdf in modifItems)
+                mdf.singleMode = singleMode;
         }
-
         private void btnModifMap_Click(object sender, RoutedEventArgs e)
         {
-            ShowMap = !ShowMap;            
+            ShowMap = !ShowMap;
+        }
+        private void removeDuplicates()
+        {
+            Log("Removing duplicate modifiers... ");
+            for (int i = 0; i < modifLists.Count; i++)
+            {
+                ModifListUC ml = modifLists[i]; // source
+                
+                ml.chkCategory.FontWeight = FontWeights.Bold; ml.chkCategory.UpdateLayout(); Utils.DoEvents();
+                for (int j = 0; j < ml.modifList.Count; j++)
+                {
+                    ModifItemUC mi = modifItems[j]; // inside the source
+                    for (int k = i + 1; k < modifLists.Count; k++)
+                    {
+                        if (modifLists[k].removeByText(mi.Text)) 
+                            modifLists[k].UpdateLayout();
+                    }
+                }
+                ml.chkCategory.FontWeight = FontWeights.Normal; ml.chkCategory.UpdateLayout();
+            }
+        }
+
+        private void chkRemoveDuplicates_Checked(object sender, RoutedEventArgs e)
+        {
+            removeDuplicates();
+        }
+
+        private void chkRemoveDuplicates_Unchecked(object sender, RoutedEventArgs e)
+        {
+            for (int i = 0; i < modifLists.Count; i++)
+            {
+                modifLists[i].OpenCat();
+            }
+        }
+        private void btnSearch_Click(object sender, RoutedEventArgs e)
+        {
+            lbCategories.Items.Clear();
+            if (tbSearch.Text == "") return;           
+            foreach (ModifListUC ml in modifLists)
+            {
+                int k = ml.markWithWildcard(tbSearch.Text);
+                if (k == 0) continue;
+                ListBoxItem lbi = new ListBoxItem();
+                lbi.Content = ml.ModifListName + " ("+k+")";
+                lbCategories.Items.Add(lbi);
+            }
+        }
+        private void btnClear_Click(object sender, RoutedEventArgs e)
+        {
+            tbSearch.Text = "";
+            foreach (ModifListUC ml in modifLists)
+                ml.demark();
+            lbCategories.Items.Clear();
+        }
+        private void tbSearch_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key.Equals(Key.Enter)) btnSearch_Click(sender, e);
         }
     }
 }

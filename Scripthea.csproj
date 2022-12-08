@@ -114,6 +114,9 @@
     <Compile Include="composer\ScanPreviewUC.xaml.cs">
       <DependentUpon>ScanPreviewUC.xaml</DependentUpon>
     </Compile>
+    <Compile Include="composer\Preferences.xaml.cs">
+      <DependentUpon>Preferences.xaml</DependentUpon>
+    </Compile>
     <Compile Include="external\ControlAPI.xaml.cs">
       <DependentUpon>ControlAPI.xaml</DependentUpon>
     </Compile>
@@ -125,6 +128,9 @@
     </Compile>
     <Compile Include="external\DeepAIUC.xaml.cs">
       <DependentUpon>DeepAIUC.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="external\NumericUpDownControl.xaml.cs">
+      <DependentUpon>NumericUpDownControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="external\SDiffusionUC.xaml.cs">
       <DependentUpon>SDiffusionUC.xaml</DependentUpon>
@@ -192,6 +198,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="composer\Preferences.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="external\ControlAPI.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -205,6 +215,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="external\DeepAIUC.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="external\NumericUpDownControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

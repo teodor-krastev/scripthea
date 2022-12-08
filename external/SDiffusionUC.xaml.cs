@@ -15,6 +15,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.IO;
 using System.Net;
+using System.Threading;
 using System.Net.Sockets;
 using Newtonsoft.Json;
 using UtilsNS;
@@ -26,34 +27,55 @@ namespace scripthea.external
     /// Interaction logic for diffusionUC.xaml
     /// </summary>
     public partial class SDiffusionUC : UserControl, interfaceAPI
-    {        
-        PyTcpListener server; int pCount = 0; NVidia nVidia;
+    {
+        AsyncSocketListener server; NVidia nVidia;
         public SDiffusionUC()
         {
             InitializeComponent();
             opts = new Dictionary<string, string>();
-            server = new PyTcpListener();
             nVidia = new NVidia();
         }
         SDoptionsWindow SDopts;
         public Dictionary<string, string> opts { get; set; } // main (non this API specific) options 
+        Thread listenerThread = null; 
         public void Init(string prompt) // init and update visuals from opts
         {
+            SDopts = new SDoptionsWindow(); lbStatus.Content = "COMM: closed"; 
+            bool nVidiaAvailable = nVidia.IsAvailable();
+            SDopts.groupGPUtmpr.IsEnabled = nVidiaAvailable;
+            gridTmpr.IsEnabled = nVidiaAvailable;
+            if (!nVidia.IsAvailable()) SDopts.opts.showGPUtemp = false;
+            opts2Visual(SDopts.opts);
+
+            // server.Init();
+            server = new AsyncSocketListener(); 
             server.OnLog += new Utils.LogHandler(Log);
             server.OnReceive += new Utils.LogHandler(Receive);
-            lbStatus.Content = "COMM: closed"; server.Init();
-            if (!nVidia.IsAvailable()) gridTmp.Visibility = Visibility.Collapsed;
-            SDopts = new SDoptionsWindow(); 
+            
+            ThreadStart listenerThreadStart = new ThreadStart(server.StartListening);
+            listenerThread = new Thread(listenerThreadStart);
+            listenerThread.Start();
         }
-        public void Finish() 
+        private void opts2Visual(SDoptions opts)
+        {
+            if (opts.showCommLog) gridSDlog.Visibility = Visibility.Visible;
+            else gridSDlog.Visibility = Visibility.Collapsed;
+            if (opts.showGPUtemp) gridTmpr.Visibility = Visibility.Visible;
+            else gridTmpr.Visibility = Visibility.Collapsed;
+            chkTmpr.IsChecked = opts.GPUtemperature;
+            numGPUThreshold.Value = opts.GPUThreshold;
+        }
+        public void Finish()
         {
             if (Utils.isNull(server)) return;
-            if (!server.status.Equals(PyTcpListener.Status.closed)) server.CloseSession();
+            btnReset_Click(null, null); // close session
+            server.Close(); // close server 
+            listenerThread.Abort(); // clean up the server treading
             SDopts.keepOpen = false; SDopts.Close();
         }
         public bool isDocked { get { return true; } }
         public UserControl userControl { get { return this as UserControl; } }
-        public bool isEnabled { get ; } // connected and working (depends on the API)
+        public bool isEnabled { get; } // connected and working (depends on the API)
         private void SimulatorImage(string filepath)
         {
             string imageSimulFolder = Utils.basePath + "\\images\\Simulator\\";
@@ -62,138 +84,218 @@ namespace scripthea.external
             Random rnd = new Random(Convert.ToInt32(DateTime.Now.TimeOfDay.TotalSeconds));
             string fn = orgFiles[rnd.Next(orgFiles.Count - 1)];
             File.Copy(fn, filepath);
-        } 
-        public bool GenerateImage(string prompt, string imageDepotFolder, out string filename) // returns the filename of saved in ImageDepoFolder image 
+        }
+        private bool imageReady = false; 
+        public bool GenerateImage(string prompt, string imageDepotFolder, out string filename) // returns the filename of saved/copied in ImageDepoFolder image 
         {
+            if (SDopts.opts.GPUtemperature)
+            {
+                while ((currentTmp > SDopts.opts.GPUThreshold) || (currentTmp == -1)) { Thread.Sleep(500); }
+            }
             filename = Utils.timeName();
             opts["folder"] = imageDepotFolder.EndsWith("\\") ? imageDepotFolder : imageDepotFolder + "\\";
-            server.SendFields(prompt, opts["folder"], filename);
-            string data = server.GetFromClient();
-            string fn = System.IO.Path.ChangeExtension(filename,".sdj");
+            if (server.status.Equals(AsyncSocketListener.Status.promptExpect) && !Utils.isNull(server.workSocket))
+            { 
+                server.Send(server.workSocket, prompt); //, Utils.basePath + "\\images\\", "imageName"
+                imageReady = false; //iTimer.Start();
+                int k = 0; 
+                while (!imageReady && (k < (2*SDopts.opts.TimeOutImgGen))) { Thread.Sleep(500); k++; }
+            }
+
+            //server.SendFields(prompt, opts["folder"], filename);
+
+            
+
+            //string data = server.GetFromClient();
+            //string fn = System.IO.Path.ChangeExtension(filename,".sdj");
             /* add some custom fields
             Dictionary<string, object> dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(data);
             // add to dict HERE 
             data = JsonConvert.SerializeObject(dict);
              */
-            File.WriteAllText(System.IO.Path.Combine(opts["folder"], fn), data);            
-            return !data.Equals("");
+            //File.WriteAllText(System.IO.Path.Combine(opts["folder"], fn), data);            
+            return imageReady;// !data.Equals("");
+        }
+        private void iTimer_Tick(object sender, EventArgs e)
+        {
+        }
+        private void OnChangeStatus()
+        {
+            switch (server.status)
+            {
+                case AsyncSocketListener.Status.imageReady: imageReady = true;
+                    break;                    
+            }
+            btnReset.IsEnabled = server.status == AsyncSocketListener.Status.promptExpect;
         }
         protected void Log(String txt, SolidColorBrush clr = null)
         {
-            if (txt.Length.Equals("")) return;
+            if (txt.Length.Equals(0)) return;
             Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background,
               new Action(() =>
               {
-                  if (txt.Substring(0, 1).Equals("@")) { lbStatus.Content = "COMM: "+txt.Substring(1); lbStatus.UpdateLayout(); return;  } 
-                  tbAdvice.Text = "Log: " + txt + "\r"; tbAdvice.UpdateLayout();
+                  if (txt.StartsWith("@")) 
+                  { 
+                      lbStatus.Content = "COMM: " + txt.Substring(1); lbStatus.UpdateLayout();
+                      OnChangeStatus(); // secondary actions
+                  }
+                  else Utils.log(tbSDlog, txt);
               }));
+            
         }
         protected void Receive(String txt, SolidColorBrush clr = null)
         {
-            Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background,
-              new Action(() =>
-              {
-                  tbAdvice.Text += "Received: "+txt+"\r"; tbAdvice.UpdateLayout();
-              }));
-        }
-        private void btnOpen_Click(object sender, RoutedEventArgs e)
-        {
-            lbStatus.Content = "COMM: waiting"; lbStatus.UpdateLayout(); 
-            tbAdvice.Text = "Start python client in SD webUI\r"; tbAdvice.UpdateLayout(); Utils.DoEvents();
-            server.OpenSession(); 
-        }
-        private void btnClose_Click(object sender, RoutedEventArgs e)
-        {
-            server.CloseSession();
-        }
-        private void btnShoot_Click(object sender, RoutedEventArgs e)
-        {
-            pCount++;
-            server.SendFields("Little fairy town ; ink drawing", Utils.basePath + "\\images\\", "imageName" );
-            tbAdvice.Text = server.GetFromClient()+"\r";
-        }
+            if (server.debug)
+            {
+                Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background,
+                    new Action(() =>
+                    {
+                        Utils.log(tbSDlog, ">"+txt);
+                    }));
 
+            }
+         }
+
+        private void btnReset_Click(object sender, RoutedEventArgs e)
+        {
+            if (server.status.Equals(AsyncSocketListener.Status.promptExpect) && !Utils.isNull(server.workSocket))
+            {
+                server.Send(server.workSocket, "@close.session"); 
+            }
+        }
         private void lb1_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (sender.Equals(lb1)) Utils.AskTheWeb("Stable Diffusion");
             if (sender.Equals(lb2)) Utils.CallTheWeb("https://stability.ai/");
             if (sender.Equals(lb3)) Utils.CallTheWeb("http://127.0.0.1:7860/");
         }
-
         int currentTmp = -1; double averTmp = -1; int maxTmp = -1;
-        List<int> tmpStack; int stackDepth = 15; 
-        DispatcherTimer dTimer; 
+        List<int> tmpStack; 
+        DispatcherTimer dTimer;
         private void chkTemp_Checked(object sender, RoutedEventArgs e)
         {
-            if (chkTemp.IsChecked.Value)
+            if (chkTmpr.IsChecked.Value)
             {
                 if (Utils.isNull(dTimer))
                 {
                     dTimer = new DispatcherTimer();
                     dTimer.Tick += new EventHandler(dTimer_Tick);
                     dTimer.Interval = new TimeSpan(2000 * 10000); // 2 [sec]
-                    tmpStack = new List<int>(); 
+                    tmpStack = new List<int>();
                 }
-                dTimer.Start();              
+                dTimer.Start();
             }
             else dTimer.Stop();
+            SDopts.opts.GPUtemperature = chkTmpr.IsChecked.Value;
         }
         private void dTimer_Tick(object sender, EventArgs e)
         {
             if (!nVidia.IsAvailable()) return;
             currentTmp = nVidia.GetGPUtemperature();
-            chkTemp.Content = "GPU temp[°C] = " + currentTmp.ToString();
+            chkTmpr.Content = "GPU temp[°C] = " + currentTmp.ToString();
             tmpStack.Add(currentTmp);
-            while (tmpStack.Count > stackDepth) tmpStack.RemoveAt(0);
+            while (tmpStack.Count > SDopts.opts.GPUstackDepth) tmpStack.RemoveAt(0);
             averTmp = tmpStack.ToArray().Average();
             maxTmp = -1;
             foreach (int t in tmpStack)
                 maxTmp = Math.Max(t, maxTmp);
-            lbTmpInfo.Content = "aver: " + averTmp.ToString("G3") + "  max: "+maxTmp.ToString();
+            lbTmpInfo.Content = "aver: " + averTmp.ToString("G3") + "  max: " + maxTmp.ToString();
         }
-        int tmpThreshold = 60; // 0 -> not avail.
-        private void tbThreshold_TextChanged(object sender, TextChangedEventArgs e)
+        private void numGPUThreshold_ValueChanged(object sender, RoutedEventArgs e)
         {
-            if (int.TryParse(tbThreshold.Text, out tmpThreshold))
-            {
-                if (Utils.InRange(tmpThreshold, 35, 85)) tbThreshold.Foreground = Brushes.Black; // ALLOWED RANGE !
-                else
-                {
-                    tbThreshold.Foreground = Brushes.Red; tmpThreshold = 0;
-                }
-            }               
-            else tbThreshold.Foreground = Brushes.Red;
+            if (SDopts != null)
+                SDopts.opts.GPUThreshold = numGPUThreshold.Value;
         }
         private void ibtnOpts_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            SDopts.Show();
+            SDopts.opts2Visual(); SDopts.ShowDialog(); 
+            opts2Visual(SDopts.opts);
+        }
+
+        // Watcher ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        FileSystemWatcher watcher;
+
+        private void watchImageDir(string dir)
+        {
+            if (Utils.isNull(watcher))
+            {
+                watcher = new FileSystemWatcher(dir);
+                watcher.NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite
+                                       | NotifyFilters.FileName | NotifyFilters.DirectoryName;
+                watcher.Filter = "*.*";
+                watcher.Created += new FileSystemEventHandler(OnChangedWatcher);
+            }
+            else { watcher.Path = dir; }
+            watcher.EnableRaisingEvents = true;
+        }
+        public bool IsFileReady(string filename)
+        {
+            // If the file can be opened for exclusive access it means that the file
+            // is no longer locked by another process.
+            try
+            {
+                using (FileStream inputStream = File.Open(filename, FileMode.Open, FileAccess.Read, FileShare.None))
+                    return inputStream.Length > 0;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        private void OnChangedWatcher(object source, FileSystemEventArgs e)
+        {
+            if (!System.IO.Path.GetExtension(e.Name).Equals(".sis")) return;
+            this.Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.Background,
+                new Action(
+                    delegate ()
+                    {
+                        /*if (!LineMode) return;
+                        procStage = 2;
+                        while (!IsFileReady(e.FullPath)) { DoEvents(); }
+                        UpdateFileList(e.Name);*/
+                    }
+                )
+            );
         }
     }
 
-    //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-    public class PyTcpListener
+    /// https://learn.microsoft.com/en-us/dotnet/fundamentals/networking/sockets/socket-services
+    /// </summary>
+    public class AsyncSocketListener
     {
-        public PyTcpListener()
-        {
-            
-        }
-        private TcpListener server = null;
-        public enum Status { closed, waiting, connected, imageReceived, promptSent }
-        private Status _status;
-        public void Init()
+        // Thread signal.  
+        public static ManualResetEvent allDone = new ManualResetEvent(false);
+
+        public AsyncSocketListener()
         {
             status = Status.closed;
         }
+
+        public bool debug = false;
+        public void Init()
+        {
+            
+        }
+        public enum Status 
+        { 
+            closed,         // before server opens 
+            waiting,        // waiting the client to call
+            connected,      // ... the client called from the Scripthea script          
+            promptExpect, // the script for the next prompt
+            promptSent,     // prompt sent, image is expected 
+            imageReady      // image has been generated
+        }
+        private Status _status;
         public Status status
         {
             get
             {
-                if (server == null) _status = Status.closed;
+                if (listener == null) _status = Status.closed;
                 return _status;
             }
             private set { _status = value; Log("@" + Convert.ToString(status)); }
         }
-
         public event Utils.LogHandler OnLog;
         protected void Log(string txt, SolidColorBrush clr = null)
         {
@@ -203,153 +305,182 @@ namespace scripthea.external
         protected void Receive(string txt, SolidColorBrush clr = null)
         {
             if (OnReceive != null) OnReceive(Convert.ToString(txt));
-        } 
-        private TcpClient client; NetworkStream stream;
-        public void OpenSession(Int32 port = 5344)
+            switch (txt.Trim())
+            {
+                case "@next.prompt": status = Status.promptExpect;
+                    break;
+                case "@image.ready": status = Status.imageReady;
+                    break;
+                case "@close.session": status = Status.waiting;
+                    break;
+            }            
+        }
+        private Socket listener;
+        public Socket GetSocket()
         {
+            return this.listener;
+        }
+        public void StartListening()
+        {
+            // Establish the local endpoint for the socket.  
+            // The DNS name of the computer  
+            // running the listener is "host.contoso.com".  
+            IPHostEntry ipHostInfo = Dns.GetHostEntry(IPAddress.Parse("127.0.0.1")); //Dns.GetHostEntry(Dns.GetHostName()); 
+            IPAddress ipAddress = ipHostInfo.AddressList[3];
+            IPEndPoint localEndPoint = new IPEndPoint(ipAddress, 5344); //11000
+
+            // Create a TCP/IP socket.  
+            listener = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+
+            // Bind the socket to the local endpoint and listen for incoming connections.  
             try
             {
-                IPAddress localAddr = IPAddress.Parse("127.0.0.1"); // not used
-
-                // TcpListener server = new TcpListener(port);
-                server = new TcpListener(IPAddress.Any, port);
-
-                status = Status.waiting; Console.WriteLine("Waiting for a connection... "); 
-
-                // Start listening for client requests.               
-                server.Start();
-
-                // Perform a blocking call to accept requests.
-                // You could also use server.AcceptSocket() here.
-                client = server.AcceptTcpClient();
-
-                // Get a stream object for reading and writing
-                stream = client.GetStream();
-                
-                if (GetFromClient().Equals("@start"))
+                listener.Bind(localEndPoint);
+                listener.Listen(100);
+                status = Status.waiting; Log("waiting SD webUI script");
+                while (true)
                 {
-                    status = Status.connected; Console.WriteLine("Connected!");
-                }                                   
+                    // Set the event to nonsignaled state.  
+                    allDone.Reset();
+                    // Start an asynchronous socket to listen for connections.  
+                    //Log("Waiting for Scrpthea script in SD-webui");
+                    listener.BeginAccept(new AsyncCallback(AcceptCallback), listener);
+                    
+                    // Wait until a connection is made before continuing.  
+                    allDone.WaitOne();
+                    Thread.Sleep(100);
+                }
             }
-            catch (SocketException e)
+            catch (Exception e)
             {
-                Log(String.Format("Error: SocketException: {0}", e));
+                Log("Err: " + e.ToString());
             }
         }
-        public string GetFromClient(string filepath = "")
+
+        public void AcceptCallback(IAsyncResult ar)
+        {
+            // Signal the main thread to continue.  
+            allDone.Set();
+            if (status.Equals(Status.waiting) || status.Equals(Status.closed))
+            {
+                status = Status.connected; Log("client connected");
+            }
+
+            // Get the socket that handles the client request.  
+            Socket listener = (Socket)ar.AsyncState;
+            Socket handler = listener.EndAccept(ar);
+
+            // Create the state object.  
+            ServerStateObject state = new ServerStateObject();
+            state.workSocket = handler;
+            handler.BeginReceive(state.buffer, 0, ServerStateObject.BufferSize, 0, new AsyncCallback(ReadCallback), state);
+        }
+        public Socket workSocket = null;
+
+        public void ReadCallback(IAsyncResult ar)
+        {
+            String content = String.Empty;
+            if (closing) return;
+            // Retrieve the state object and the handler socket  
+            // from the asynchronous state object.  
+            ServerStateObject state = (ServerStateObject)ar.AsyncState;
+            Socket handler = state.workSocket; workSocket = state.workSocket; ;
+            try
+            {            
+                // Read data from the client socket.
+                int bytesRead = handler.EndReceive(ar);
+
+                if (bytesRead > 0)
+                {
+                    // There  might be more data, so store the data received so far.  
+                    state.sb.Append(Encoding.ASCII.GetString(state.buffer, 0, bytesRead));
+
+                    // Check for end-of-file tag. If it is not there, read
+                    // more data.  
+                    content = state.sb.ToString();
+                    if (content.Contains("\n"))
+                    {
+                        // All the data has been read from the
+                        // client. Display it on the console.  
+                        //Log("justIn: "+content);
+                        Receive(content);
+                        // Echo the data back to the client.  
+                        //this.Send(handler, content);
+                        content = string.Empty;
+                        state.sb.Clear();
+                        handler.BeginReceive(state.buffer, 0, ServerStateObject.BufferSize, 0, new AsyncCallback(ReadCallback), state);
+                    }
+                    else
+                    {
+                        // Not all data received. Get more.  
+                        handler.BeginReceive(state.buffer, 0, ServerStateObject.BufferSize, 0, new AsyncCallback(ReadCallback), state);
+                    }
+                }
+            }
+            catch (Exception e) { Log("client force closed -> "+e.Message);  status = Status.closed; }
+        }
+
+        public void Send(Socket handler, String data)
+        {
+            if (handler == null) return;
+            // Convert the string data to byte data using ASCII encoding.  
+            byte[] byteData = Encoding.ASCII.GetBytes(data);
+
+            // Begin sending the data to the remote device.  
+            handler.BeginSend(byteData, 0, byteData.Length, 0, new AsyncCallback(SendCallback), handler);
+            if (data.Equals("@close.session")) status = Status.waiting;
+            else status = Status.promptSent;
+        }
+
+        private void SendCallback(IAsyncResult ar)
         {
             try
-            {           
-                Byte[] bytes = new Byte[4096];
-                // Loop to receive all the data sent by the client.
-                //while ((i = stream.Read(bytes, 0, bytes.Length)) != 0)
-                int i = stream.Read(bytes, 0, bytes.Length);                                      
-                // Translate data bytes to a ASCII string.
-                String data = System.Text.Encoding.ASCII.GetString(bytes, 0, i);
-                if (data.Equals("@ping"))
-                    if (!SendToClient("@pong")) { status = Status.closed; Console.WriteLine("Broken COMM !");  return ""; }
-                status = Status.imageReceived;
-                if (filepath.Equals("")) Console.WriteLine("Received: {0}", data);
-                else File.WriteAllText(filepath, data);
-                Receive(data);
-                return data;
-            }
-            catch (SocketException e)
             {
-                Log(String.Format("Error: SocketException: {0}", e)); return "";
+                // Retrieve the socket from the state object.  
+                Socket handler = (Socket)ar.AsyncState;
+
+                // Complete sending the data to the remote device.  
+                int bytesSent = handler.EndSend(ar);
+                if (debug) Log(">" + bytesSent.ToString()+" bytes sent");
             }
-        }
-        public bool SendFields(string prompt, string folder, string filename, int sampler_index = -1, int seed = -2)
-        {
-            Dictionary<string, object> dict = new Dictionary<string, object>();
-            dict.Add("prompt", prompt); 
-            dict.Add("folder", folder); // with trailing '\'
-            dict.Add("filename", filename); // no ext
-            dict.Add("sampler", sampler_index); // 0 based index; -1 - from UI
-            dict.Add("seed", seed); // -2 - from UI
-            return SendDict(dict);
-        }
-        public bool SendDict(Dictionary<string, object> dict)
-        {
-            return SendToClient(JsonConvert.SerializeObject(dict));
-        }
-        public bool SendToClient(string txt)
-        {
-            try
+            catch (Exception e)
             {
-                byte[] msg = System.Text.Encoding.ASCII.GetBytes(txt);
-                // Send back a response to the client
-                stream.Write(msg, 0, msg.Length);
-                status = Status.promptSent; //Console.WriteLine("Sent: {0}", txt);
+                Log("Err: "+e.ToString());
             }
-            catch { return false; }
-            return true;
         }
-        public bool CheckCOMM()
-        {            
-            if (!SendToClient("@ping")) return false;
-            return GetFromClient().Equals("@pong");
-        }
-        public void CloseSession() // Shutdown and end the connection
+        private bool closing = false;
+        public void Close() // complete
         {
-            SendToClient("@end"); client.Close(); server.Stop(); server = null;
+            closing = true;
+            if (!Utils.isNull(workSocket))
+            {
+                if (status.Equals(Status.promptExpect))
+                {
+                    Send(workSocket, "@close.session"); //, Utils.basePath + "\\images\\", "imageName"
+                }
+                if (workSocket.Connected)
+                {
+                    workSocket.Shutdown(SocketShutdown.Both);
+                    workSocket.Close();
+                }
+                workSocket.Dispose();
+            }
         }
     }
+
+    // State object for reading client data asynchronously  
+    public class ServerStateObject
+    {
+        // Size of receive buffer.  
+        public const int BufferSize = 4096;
+
+        // Receive buffer.  
+        public byte[] buffer = new byte[BufferSize];
+
+        // Received data string.
+        public StringBuilder sb = new StringBuilder();
+
+        // Client socket.
+        public Socket workSocket = null;
+    }
 }
-/* JSON massage both ways is dictionary based on StableDiffusionProcessing
- * 
- * from ..\stable-diffusion-webui\modules\processing.py
- 
-class StableDiffusionProcessing :
-    def __init__(self, sd_model=None, outpath_samples=None, outpath_grids=None, prompt="", styles=None, seed=-1, subseed=-1, subseed_strength=0, seed_resize_from_h=-1, 
-seed_resize_from_w=-1, seed_enable_extras=True, sampler_index=0, batch_size=1, n_iter=1, steps=50, cfg_scale=7.0, width=512, height=512, restore_faces=False, 
-tiling=False, do_not_save_samples=False, do_not_save_grid=False, extra_generation_params=None, overlay_images=None, negative_prompt=None, eta=None):
-
-        self.sd_model = sd_model
-        self.outpath_samples: str = outpath_samples
-        self.outpath_grids: str = outpath_grids
-        self.prompt: str = prompt
-        self.prompt_for_display: str = None
-        self.negative_prompt: str = (negative_prompt or "")
-        self.styles: list = styles or[]
-        self.seed: int = seed
-        self.subseed: int = subseed
-        self.subseed_strength: float = subseed_strength
-        self.seed_resize_from_h: int = seed_resize_from_h
-        self.seed_resize_from_w: int = seed_resize_from_w
-        self.sampler_index: int = sampler_index
-        self.batch_size: int = batch_size
-        self.n_iter: int = n_iter
-        self.steps: int = steps
-        self.cfg_scale: float = cfg_scale
-        self.width: int = width
-        self.height: int = height
-        self.restore_faces: bool = restore_faces
-        self.tiling: bool = tiling
-        self.do_not_save_samples: bool = do_not_save_samples
-        self.do_not_save_grid: bool = do_not_save_grid
-        self.extra_generation_params: dict = extra_generation_params or { }
-self.overlay_images = overlay_images
-        self.eta = eta
-        self.paste_to = None
-        self.color_corrections = None
-        self.denoising_strength: float = 0
-        self.sampler_noise_scheduler_override = None
-        self.ddim_discretize = opts.ddim_discretize
-        self.s_churn = opts.s_churn
-        self.s_tmin = opts.s_tmin
-        self.s_tmax = float('inf')  # not representable as a standard ui option
-        self.s_noise = opts.s_noise
-
-        if not seed_enable_extras:
-    self.subseed = -1
-            self.subseed_strength = 0
-            self.seed_resize_from_h = 0
-            self.seed_resize_from_w = 0
-
-    def init(self, all_prompts, all_seeds, all_subseeds):
-        pass
-
-    def sample(self, conditioning, unconditional_conditioning, seeds, subseeds, subseed_strength):
-        raise NotImplementedError()
-*/

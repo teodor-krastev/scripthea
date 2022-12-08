@@ -33,6 +33,7 @@ namespace scripthea.composer
         //public string defaultImageFolder = Utils.basePath + "\\images\\";
         public ControlAPI API;
         public Options opts;
+        public PreferencesWindow prefsWnd;
         public QueryUC()
         {
             InitializeComponent();
@@ -66,6 +67,8 @@ namespace scripthea.composer
 
             if (Utils.TheosComputer()) { cbiDiffusion.Visibility = Visibility.Visible; btnTest.Visibility = Visibility.Visible; }
             else { cbiDiffusion.Visibility = Visibility.Collapsed; btnTest.Visibility = Visibility.Collapsed; }
+
+            prefsWnd = new PreferencesWindow();
         }
         public void Finish()
         {
@@ -74,6 +77,10 @@ namespace scripthea.composer
             if (!Utils.isNull(API))
             {
                API.eCancel = false; API.Close();
+            }
+            if (!Utils.isNull(prefsWnd))
+            {
+                prefsWnd.keepOpen = false; prefsWnd.Close();
             }
         }
         private Status _status;
@@ -471,6 +478,11 @@ namespace scripthea.composer
             double t = (DateTime.Now - t0).TotalSeconds;
             Log("time taken = "+t.ToString("G3")+" [sec]  "+ns.ToString()+" files OK");
             Log("time " + (t / ns).ToString("G3") + " [sec] per file");
+        }
+
+        private void imgPreferences_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            prefsWnd.ShowDialog();
         }
     }
 }

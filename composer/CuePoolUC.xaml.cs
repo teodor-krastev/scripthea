@@ -46,14 +46,34 @@ namespace scripthea.composer
                 return cueLists[tabControl.SelectedIndex];
             }
         }
+        private string missingCues(int poolIdx)
+        {
+            foreach (var pair in poolMap[poolIdx])
+            {
+                if (!File.Exists(System.IO.Path.Combine(Utils.configPath + Path.ChangeExtension(pair.Key,".cues"))))
+                {
+                    return pair.Key;
+                }
+            }            
+            return "";
+        }
         public void Init()
         {
             if (File.Exists(mapFile))
             {
                 string json = System.IO.File.ReadAllText(mapFile);
                 poolMap = JsonConvert.DeserializeObject<List<Dictionary<string, bool>>>(json);
-                if (!poolMap.Count.Equals(poolCount)) throw new Exception("Error: Broken pool-map file");
-            }
+                if (!poolMap.Count.Equals(poolCount)) throw new Exception("Error: Broken pool-map file. Fix or delete it and restart.");
+                for (int i = 0; i < poolCount; i++)
+                {
+                    string nf = missingCues(i);
+                    while (nf != "")
+                    {
+                        poolMap[i].Remove(nf);
+                        nf = missingCues(i);
+                    }
+                }             
+            }           
             else
             {
                 poolMap = new List<Dictionary<string, bool>>();
@@ -72,7 +92,7 @@ namespace scripthea.composer
                     int found = -1;
                     for (int j = 0; j < files.Count; j++)
                     {
-                        if (pair.Key.Equals(files[j],StringComparison.CurrentCultureIgnoreCase))
+                        if (pair.Key.Equals(files[j],StringComparison.InvariantCultureIgnoreCase))
                         {
                             found = j; break;
                         }

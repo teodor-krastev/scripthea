@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:scripthea"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Name="colMap" Width="150"/>
@@ -17,18 +17,34 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="27"/>
                 <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
                 <RowDefinition Height="120"/>
             </Grid.RowDefinitions>
             <Label Content="Modifiers Map" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="DarkGreen"></Label>
-            <ListBox x:Name="listBox" Grid.Row="1"  Margin="2" />
-            <GroupBox Header="Modifiers Options" Grid.Row="2" Margin="2">
+            <ListBox x:Name="listBox" Grid.Row="1"  Margin="2,0,2,2" />
+            <StackPanel  Grid.Row="2">
+                <Label Content="Search (use ? * wildcarts)"></Label>
+                <Grid x:Name="gridSearch" Height="23">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="27"/>
+                        <ColumnDefinition Width="25"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox x:Name="tbSearch" Margin="3,0,0,0" TextWrapping="Wrap" Text="" KeyDown="tbSearch_KeyDown"/>
+                    <Button x:Name="btnSearch" Grid.Column="1" Content=">>" Click="btnSearch_Click" Background="#FFFEFBFB" Foreground="#FF0162A6" FontWeight="Bold" Margin="2,0,0,0"/>
+                    <Button x:Name="btnClear" Grid.Column="2" Content="X" Click="btnClear_Click" Foreground="#FFCB0202" FontWeight="Bold" Background="#FFFAFAFA" Margin="2,0"/>
+                </Grid>
+                <ListBox x:Name="lbCategories" Margin="0,3,0,0"></ListBox>
+            </StackPanel>
+            <GroupBox Header="Modifiers Options" Grid.Row="3" Margin="2">
                 <StackPanel x:Name="stackOptModifiers" Margin="2" >
-                    <CheckBox x:Name="chkAddEmpty" Content="Add an empty modifier" Margin="0"></CheckBox>
+                    <CheckBox x:Name="chkAddEmpty" Content="Add empty modifier" Margin="0" ToolTip="Add an empty modfifier to the scan list"></CheckBox>
+                    <CheckBox x:Name="chkRemoveDuplicates" Content="Remove duplicates" Margin="0" Checked="chkRemoveDuplicates_Checked" Unchecked="chkRemoveDuplicates_Unchecked" ToolTip="Remove duplicated modifiers"></CheckBox>
                 </StackPanel>
             </GroupBox>
         </Grid>
         <StackPanel x:Name="stackModifiers" Margin="0,0,0.203,0.228" Grid.Column = "1" Orientation="Horizontal">
         </StackPanel>
-        <Button x:Name="btnModifMap" Content=">>" Height="23" Width="27" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,2,5,0" FontWeight="Bold" Background="#FFFEFBE1" Click="btnModifMap_Click" BorderBrush="#FF589B37" BorderThickness="2"/>
+        <Button x:Name="btnModifMap" Content=">>" Width="25" HorizontalAlignment="Left" Margin="0,0,5,0" FontWeight="Bold" Background="#FFFEFBE1" Click="btnModifMap_Click" BorderBrush="#FF589B37" BorderThickness="0" Height="28" VerticalAlignment="Top"/>
     </Grid>
 </UserControl>

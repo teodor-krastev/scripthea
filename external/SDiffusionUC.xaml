@@ -3,21 +3,17 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:scripthea.external"
+             xmlns:local="clr-namespace:scripthea.external" xmlns:NumericUpDownControl="clr-namespace:NumericUpDownControl"
              mc:Ignorable="d" d:DesignWidth="800" Height="60" FontSize="13" BorderThickness="0,0,0,1" >
     <Grid>
         <StackPanel Margin="0,0,0.203,0.215" Orientation="Horizontal">
             <Grid Width="150" Height="60">
-                <Label x:Name="lbStatus" Height="25" Content="COMM:" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,0,0,3"/>
-                <Button x:Name="btnShoot" Content="Shoot" HorizontalAlignment="Left" VerticalAlignment="Bottom" Height="26" Width="60" Click="btnShoot_Click" Margin="5,0,0,3" Background="#FFF0FBFA"/>
-                <Image x:Name="ibtnOpts" Source="/Scripthea;component/Properties/TripleBarGrey.bmp" Margin="0,0,5,5" Width="25" Height="25" HorizontalAlignment="Right" VerticalAlignment="Bottom" Cursor="Hand" MouseDown="ibtnOpts_MouseDown"></Image>
+                <Label x:Name="lbStatus" Height="28" Content="COMM:" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,0,0,3"/>
+                <Button x:Name="btnReset" Content="Reset" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="26" Width="49" Click="btnReset_Click" Margin="0,0,5,3" Background="#FFFDD07E"/>
+                <Image x:Name="ibtnOpts" Source="/Scripthea;component/Properties/TripleBarGrey.bmp" Margin="5,0,5,5" Width="25" Height="25" HorizontalAlignment="Left" VerticalAlignment="Bottom" Cursor="Hand" MouseDown="ibtnOpts_MouseDown"></Image>
             </Grid>
-            <Grid Width="150" Height="60">
-                <Button x:Name="btnOpen" Content="Open Session" Width="90" HorizontalAlignment="Left" VerticalAlignment="Top" Height="26" Margin="0,3,0,0" Click="btnOpen_Click" Background="#FFF8FDF6"/>
-                <Button x:Name="btnClose" Content="Close session" HorizontalAlignment="Left" Width="90" Click="btnClose_Click" Background="#FFFDFCEA" Margin="0,0,0,3" VerticalAlignment="Bottom"/>
-            </Grid>
-            <Grid Width="150" Height="60">
-                <TextBlock x:Name="tbAdvice" TextWrapping="Wrap" Text="TextBlldffgo;sdhfo;ghdsf;osdf;h olhdolehegoijaefljkadf oliojheaoigjojdafjlvolioafhf opijaefoigoijoiasjfdfvlkfnlvknfvvnfdoig ock houhljjpi" Margin="0" FontSize="12" ScrollViewer.CanContentScroll="True"/>
+            <Grid x:Name="gridSDlog" Width="150" Height="60">
+                <TextBox x:Name="tbSDlog" TextWrapping="Wrap" Text="" Margin="0" FontSize="12" ScrollViewer.CanContentScroll="True" Background="White" VerticalScrollBarVisibility="Auto"/>
             </Grid>
             <Grid Width="150" Height="60">
                 <StackPanel>
@@ -27,13 +23,13 @@
                 </StackPanel>
 
             </Grid>
-            <Grid x:Name="gridTmp" Width="150" Height="60">
+            <Grid x:Name="gridTmpr" Width="150" Height="60">
                 <StackPanel Height="40" VerticalAlignment="Top">
-                    <CheckBox x:Name="chkTemp" Content="GPU temperature" VerticalAlignment="Top" Height="20" Margin="5,0,0,0" Background="#FFF0FBFA" Checked="chkTemp_Checked" Unchecked="chkTemp_Checked" HorizontalAlignment="Left"/>
-                    <Label x:Name="lbTmpInfo" Height="25" Margin="0,-6,0.076,0" Content="aver:   max:"/>
+                    <CheckBox x:Name="chkTmpr" Content="GPU temperature" VerticalAlignment="Top" Height="20" Margin="5,0,0,0" Background="#FFF0FBFA" Checked="chkTemp_Checked" Unchecked="chkTemp_Checked" HorizontalAlignment="Left"/>
+                    <Label x:Name="lbTmpInfo" Height="25" Margin="0,-8,0.076,0" Content="aver:   max:"/>
                 </StackPanel>
                 <Label VerticalAlignment="Bottom" HorizontalAlignment="Left" Content="next when T &lt;" Height="24"></Label>
-                <TextBox x:Name="tbThreshold" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="38" Margin="0,0,15,1" Height="21" TextChanged="tbThreshold_TextChanged" Text="60"></TextBox>
+                <NumericUpDownControl:NumericBox x:Name="numGPUThreshold" HorizontalAlignment="Right" Height="25" Margin="0,0,3,0" VerticalAlignment="Bottom" Width="55" FontSize="13" Maximum="100" Minimum="2" Value="60" ValueChanged="numGPUThreshold_ValueChanged"/>
             </Grid>
 
         </StackPanel>

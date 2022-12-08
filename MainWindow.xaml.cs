@@ -17,6 +17,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using scripthea.viewer;
 using scripthea.composer;
+using scripthea.external;
 using UtilsNS;
 
 namespace scripthea
@@ -197,7 +198,7 @@ namespace scripthea
             finally
             {
                 if (msg.Length > 0 && msg.Substring(0, 1).Equals("@") && Utils.isInVisualStudio && !ExplorerPart.Equals(100)) Utils.log(tbLogger, msg, clr);
-                //Utils.DoEvents();
+                
             }
         }
         int dti;

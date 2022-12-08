@@ -22,7 +22,7 @@ namespace scripthea.viewer
 {    
     public class ImageInfo
     {
-        public enum ImageGenerator { FromFile, Crayion, StableDiffusion, DeepAI }
+        public enum ImageGenerator { StableDiffusion, Crayion, DeepAI, FromDescFile}
         public ImageInfo()
         {
 
@@ -34,7 +34,7 @@ namespace scripthea.viewer
             switch (imageGenerator) 
             {
                 case ImageGenerator.StableDiffusion:
-                    bb = FromSDFile(fullfilename, out suggestedName); if (!bb) return;
+                    bb = FromSDFile(fullfilename, out suggestedName); if (!bb) return; // when it is not SD file
                     break;
                 case ImageGenerator.Crayion:
                     if (!FromCraiyonFile(fullfilename, out suggestedName)) return;
@@ -43,15 +43,18 @@ namespace scripthea.viewer
                     if (!FromDeepAIFile(fullfilename, out suggestedName)) return;
                     break;
             }
-            if (keepName || suggestedName.Equals("")) return;
+            if (keepName) { filename = Path.GetFileName(fullfilename); return; } 
             try
             {
-                File.Move(fullfilename, suggestedName); // Rename the oldFileName into newFileName
-                filename = Path.GetFileName(suggestedName);
+                if (!fullfilename.Equals(suggestedName, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    File.Move(fullfilename, suggestedName); // Rename the oldFileName into newFileName                    
+                }             
+                filename = Path.GetFileName(suggestedName);       
             }
             catch (System.IO.IOException IOe) { Utils.TimedMessageBox("Error: (" + System.IO.Path.GetFileName(fullfilename) + ") " + IOe.Message);  }
-
         }
+        public bool IsAvailable() { return !filename.Equals(""); }
         private List<string> SplitFilename(string fn, char sep) // pattern <txt><sep><txt><sep><cue><ext>
         {
             var ls = new List<string>();
@@ -121,19 +124,28 @@ namespace scripthea.viewer
             filename = Path.GetFileName(fullfilename);
             MD5Checksum = Utils.GetMD5Checksum(fullfilename);
             history = "";
-            
+
             Dictionary<string, string> meta;
             bool sd = ImgUtils.GetMetaDataItems(fullfilename, out meta);
             if (sd) sd &= FromDictionary(meta);
             if (!sd) { filename = ""; return false; }
 
             // suggest a name
-            List<string> ls = SplitFilename(filename, '-');
-            if (ls.Count < 4) return false;
-            if (!Utils.isNumeric(ls[0]) || !Utils.isNumeric(ls[1])) return false;
-            suggestedName =  System.IO.Path.ChangeExtension("SD-" + ls[1], ls[3]);
-            suggestedName = Utils.AvoidOverwrite(System.IO.Path.Combine(Path.GetDirectoryName(fullfilename),suggestedName));
-            
+            List<string> ls = SplitFilename(filename, '-'); 
+            if (ls.Count >= 4) 
+            {
+                if (Utils.isNumeric(ls[0]) && Utils.isNumeric(ls[1])) // check pattern
+                    suggestedName = System.IO.Path.ChangeExtension("SD-" + ls[1], ls[3]);                 
+            }
+            bool sf = false;  
+            if (suggestedName == "")
+            {
+                sf = filename.StartsWith("SD-"); // file is there (previous import)
+                suggestedName = sf ? filename : "SD-" + filename; 
+            }
+            suggestedName = System.IO.Path.Combine(Path.GetDirectoryName(fullfilename), suggestedName); // complete with folder
+            if (sd && !sf) // pattern or not, meta data is there
+                suggestedName = Utils.AvoidOverwrite(suggestedName);            
             return sd;
         }
         public bool FromCraiyonFile(string fullfilename, out string suggestedName) // true if it's there and it's sd image 
@@ -187,12 +199,12 @@ namespace scripthea.viewer
     }
     public class DepotFolder
     {
-        public DepotFolder(string _folder, ImageInfo.ImageGenerator _imageGenerator = ImageInfo.ImageGenerator.FromFile) 
+        public DepotFolder(string _folder, ImageInfo.ImageGenerator _imageGenerator = ImageInfo.ImageGenerator.FromDescFile) 
         {
             if (!Directory.Exists(_folder)) return;
             header = new Dictionary<string, string>(); infos = new List<ImageInfo>();
 
-            if (_imageGenerator == ImageInfo.ImageGenerator.FromFile) // read type from file
+            if (_imageGenerator == ImageInfo.ImageGenerator.FromDescFile) // read type from file
             {
                 string desc = Path.Combine(_folder, ImgUtils.descriptionFile);
                 if (File.Exists(desc))
@@ -215,7 +227,7 @@ namespace scripthea.viewer
             else
             {
                 imageGenerator = _imageGenerator; header.Add("ImageGenerator", imageGenerator.ToString());
-                header.Add("version", "1.4"); header.Add("application", "Scripthea " + Utils.getAppFileVersion);
+                header.Add("webui", "AUTOMATIC1111"); header.Add("application", "Scripthea " + Utils.getAppFileVersion);
             }
             folder = _folder;
         }
@@ -271,7 +283,7 @@ namespace scripthea.viewer
                 bool found = false; int j = -1;
                 for (int i = 0; i < infos.Count; i++)
                 {
-                    found = infos[i].filename.Equals(img, StringComparison.OrdinalIgnoreCase);
+                    found = infos[i].filename.Equals(img, StringComparison.InvariantCultureIgnoreCase);
                     if (found) { j = i; break; } 
                 }
                 if (found && correct) infos.RemoveAt(j);

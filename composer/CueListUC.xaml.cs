@@ -222,7 +222,8 @@ namespace scripthea.composer
             cmCue.Items.Clear(); 
             for (int i = 0; i < 3; i++)
             {
-                MenuItem mi = new MenuItem(); mi.Header = miTitles[i];                
+                MenuItem mi = new MenuItem() { Name = "mi" + i.ToString(), Header = miTitles[i] };
+                if (i == 2) mi.FontWeight = FontWeights.Bold;
                 mi.Click += mi_Click;
                 cmCue.Items.Add(mi);
             }
@@ -248,14 +249,10 @@ namespace scripthea.composer
         }
         private void imgMenu_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (e.ChangedButton == MouseButton.Left)
+            if (e.ChangedButton == MouseButton.Left && e.ClickCount == 2)
             {
-                Image image = sender as Image;
-                ContextMenu contextMenu = image.ContextMenu;
-                contextMenu.PlacementTarget = image;
-                contextMenu.IsOpen = true;
-                e.Handled = true;
-                imgMenu_ContextMenuOpening(sender, null);
+                foreach (CueItemUC os in localSeeds[tcLists.SelectedIndex])
+                    os.boxChecked = !os.boxChecked;                
             }
         }
     }

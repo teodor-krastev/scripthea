@@ -46,22 +46,30 @@ namespace UtilsNS
                 return imgPng.Length + imgJpg.Length;
             }
         }
-        public static BitmapImage ToBitmapImage(Bitmap bitmap, ImageFormat imageFormat)
+        public static BitmapImage BitmapToBitmapImage(System.Drawing.Bitmap bitmap, ImageFormat imageFormat)
         {
+            var bitmapImage = new BitmapImage();
             using (var memory = new MemoryStream())
             {
                 bitmap.Save(memory, imageFormat);
                 memory.Position = 0;
-
-                var bitmapImage = new BitmapImage();
+                
                 bitmapImage.BeginInit();
                 bitmapImage.StreamSource = memory;
                 bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
                 bitmapImage.EndInit();
-                bitmapImage.Freeze();
+                bitmapImage.Freeze();                
+            }           
+            return bitmapImage.Clone();
+        }
 
-                return bitmapImage;
-            }
+        public static BitmapImage UnhookedImageLoad(string filename, ImageFormat imageFormat)
+        {
+            System.Drawing.Image selectedImage = System.Drawing.Image.FromFile(filename);
+            System.Drawing.Bitmap bitmap = new System.Drawing.Bitmap(selectedImage);            
+            BitmapImage bitmapImage = BitmapToBitmapImage(bitmap, imageFormat);
+            selectedImage.Dispose(); bitmap.Dispose(); GC.Collect();
+            return bitmapImage;
         }
         public static void VisualCompToPng(UIElement element, string filename = "")
         {
@@ -198,12 +206,12 @@ namespace UtilsNS
                         if (ImgUtils.checkImageDepot(s, false) > 0)
                         {
                             subitem.FontSize = tvFolders.FontSize + 0.5;
-                            subitem.Foreground = Brushes.Blue; //Coral; // OrangeRed;
+                            subitem.Foreground = Brushes.Blue; //Coral; OrangeRed;
                         }
                         if (ImgUtils.checkImageDepot(s, true) > 0)
                         {
                             subitem.FontSize = tvFolders.FontSize + 0.5;
-                            subitem.Foreground = Brushes.LimeGreen; //Coral; // OrangeRed;
+                            subitem.Foreground = Utils.ToSolidColorBrush("#FF02CB02"); // Brushes.LimeGreen;  MediumSeaGreen  SeaGreen              
                         }
                         bool bb = true; bool bc = true; ;
                         try
@@ -266,7 +274,7 @@ namespace UtilsNS
                 if (cbi.Content.ToString().Equals(fld[0] + "\\")) { cbf = cbi; break; }
             if (cbf.Equals(null)) Log("Error: no drive: " + fld[0] + "\\");
             if (pth.Length > AppData.Length) 
-                if (pth.Substring(0, AppData.Length).Equals(AppData, StringComparison.OrdinalIgnoreCase))
+                if (pth.Substring(0, AppData.Length).Equals(AppData, StringComparison.InvariantCultureIgnoreCase))
                     cbf = cbDrives.Items[0] as ComboBoxItem;
             cbDrives.SelectedItem = cbf; // creates root
             TreeViewItem prn = (TreeViewItem)tvFolders.Items[0];
@@ -298,7 +306,7 @@ namespace UtilsNS
         }
         private void tvFolders_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (!tvFolders.SelectedItem.Equals(null))
+            if (tvFolders.SelectedItem != null)
             {
                 string pth = (tvFolders.SelectedItem as TreeViewItem).Tag.ToString();
                 Active(pth); tbSelected.Text = pth;

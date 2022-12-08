@@ -15,6 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using UtilsNS;
+using Path = System.IO.Path;
 
 namespace scripthea.external
 {
@@ -45,13 +46,13 @@ namespace scripthea.external
         public bool isEnabled { get { return true; } }
         public bool GenerateImage(string prompt, string imageDepotFolder, out string filename)
         {
-            opts["folder"] = imageDepotFolder; Utils.Sleep(4000);
+            opts["folder"] = imageDepotFolder; Utils.Sleep(10000);
             List<string> orgFiles = new List<string>(Directory.GetFiles(imageSimulFolder, "c*.png"));
             if (orgFiles.Count.Equals(0)) throw new Exception("Wrong simulator image folder ->" + imageSimulFolder);
             Random rnd = new Random(Convert.ToInt32(DateTime.Now.TimeOfDay.TotalSeconds));
             string fn = orgFiles[rnd.Next(orgFiles.Count-1)];
             filename = Utils.timeName() + ".png"; 
-            File.Copy(fn, imageDepotFolder + filename);       
+            File.Copy(fn, Path.Combine( imageDepotFolder, filename));       
             return true;
         }        
 

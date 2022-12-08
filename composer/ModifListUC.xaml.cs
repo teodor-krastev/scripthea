@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -66,10 +67,12 @@ namespace scripthea.composer
             if (first) chkCategory.Margin = new Thickness(12, 0, 0, 0);
             else chkCategory.Margin = new Thickness(0);
         }
-        public bool OpenCat(string _filename)
+        public bool OpenCat(string _filename = "")
         {
-            filename = _filename; if (!File.Exists(_filename)) return false;           
-            List<string> txtFile = new List<string>(File.ReadAllLines(_filename));
+            if (!_filename.Equals("")) filename = _filename; 
+            if (!File.Exists(filename)) return false;
+            modifListBox.Items.Clear();
+            List<string> txtFile = new List<string>(File.ReadAllLines(filename, Encoding.ASCII));
             List<string> modiFile = new List<string>();
             foreach (string ss in txtFile)
             {
@@ -81,7 +84,7 @@ namespace scripthea.composer
             {
                 string ss = modiFile[i].Trim();
                 if (ss.Equals("")) continue;
-                if (ss[0].Equals('['))
+                if (ss.StartsWith("["))
                 {                    
                     char[] charsToTrim = { '[', ']' };
                     ModifListName = ss.Trim(charsToTrim);
@@ -100,7 +103,7 @@ namespace scripthea.composer
                         s0 = sa[0].Trim(); s1 = sa[1].Trim();
                         break;
                 }
-                ModifItemUC mi = new ModifItemUC() { Height = 24, Text = s0, FontSize = 13 };
+                ModifItemUC mi = new ModifItemUC() { Height = 20, Text = s0, FontSize = 13 };
                 mi.Margin = new Thickness(0, 0, 0, 0); mi.tbContent.MouseRightButtonDown += new System.Windows.Input.MouseButtonEventHandler(chkCategory_MouseRightButtonDown);
                 if (!s1.Equals("")) mi.tbContent.ToolTip = s1; 
                 mi.OnChange += new RoutedEventHandler(Change);
@@ -116,23 +119,22 @@ namespace scripthea.composer
             set { chkCategory.Content = value; }
         }
         public event RoutedEventHandler OnChange;        
-         protected void Change(object sender, RoutedEventArgs e)
-        {
+        protected void Change(object sender, RoutedEventArgs e)
+        {        
+            bool bb = false;     
             if (sender is ModifItemUC)
-            {
-                bool bb = false;
+            {                            
                 foreach (var mdf in modifList)
-                    bb |= !mdf.modifStatus.Equals(ModifStatus.Off);
-                isChecked = bb;
+                    bb |= !mdf.modifStatus.Equals(ModifStatus.Off);  
+                if (bb) isChecked = true;              
             }
-            if ((OnChange != null) && isChecked) OnChange(sender,e);
+            if (OnChange != null) OnChange(sender,e);             
         }
         public event Utils.LogHandler OnLog;
         protected void Log(string txt, SolidColorBrush clr = null)
         {
             if (OnLog != null) OnLog(txt, clr);
         }
-
         private void chkCategory_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
             string input = new InputBox("Ask Google about", (string)chkCategory.Content, "").ShowDialog();
@@ -145,13 +147,50 @@ namespace scripthea.composer
             string smi = Convert.ToString(mi.Header).Substring(8).TrimEnd('>');
             Utils.AskTheWeb(smi);
         }
-
         private void modifListBox_KeyDown(object sender, KeyEventArgs e)
         {
             //if (e.Key.Equals(Key.Space)) { chkCategory.IsChecked = !chkCategory.IsChecked.Value; }
             if (!e.Key.Equals(Key.Enter) && !e.Key.Equals(Key.Left) && !e.Key.Equals(Key.Right)) return;
             if (Utils.isNull(modifListBox.SelectedItem)) return;
             (modifListBox.SelectedItem as ModifItemUC).SwitchState(e.Key.Equals(Key.Enter) || e.Key.Equals(Key.Left));
+        }
+        private static String WildCardToRegular(String value) // If you want to implement both "*" and "?"
+        {
+          return "^" + Regex.Escape(value).Replace("\\?", ".").Replace("\\*", ".*") + "$"; 
+        }
+        public int markWithWildcard(string searchPattern)
+        {
+            int cnt = 0;
+            foreach (ModifItemUC mdf in modifList)
+            {
+                mdf.marked = Regex.IsMatch(mdf.Text, WildCardToRegular(searchPattern));
+                if (mdf.marked) cnt++;
+            } 
+            return cnt;
+        }
+        // https://stackoverflow.com/questions/30299671/matching-strings-with-wildcard
+        public void demark()
+        {
+            foreach (ModifItemUC mdf in modifList)
+                if (mdf.marked) mdf.marked = false;
+        }
+        public void removeByIdx(int idx)
+        {
+            if (!Utils.InRange(idx, 0, modifList.Count - 1)) return;
+            modifListBox.Items.RemoveAt(idx);
+        }
+
+        public bool removeByText(string txt)
+        {
+            List<int> ls = new List<int>();
+            for (int i = 0; i < modifList.Count; i++)
+                if (txt.Equals(modifList[i].Text, StringComparison.InvariantCultureIgnoreCase)) ls.Add(i);
+            for (int i = ls.Count-1; i > -1; i--)
+            {
+                modifList[ls[i]].Text = "";
+                removeByIdx(ls[i]);
+            }               
+            return ls.Count > 0;
         }
     }
 }

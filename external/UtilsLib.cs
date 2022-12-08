@@ -379,13 +379,17 @@ namespace UtilsNS
         /// <param name="txt">the actual text to log</param>
         public static void log(TextBox tbLog, string txt)
         {
-            tbLog.AppendText(txt + "\r\n");
-            string text = tbLog.Text;
-            int maxLen = 10000;
-            if (text.Length > 2 * maxLen) tbLog.Text = text.Substring(maxLen);
-            tbLog.Focus();
-            tbLog.CaretIndex = tbLog.Text.Length;
-            tbLog.ScrollToEnd();
+            Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background,
+                new Action(() =>
+                {
+                    tbLog.AppendText(txt + "\r\n");
+                    string text = tbLog.Text;
+                    int maxLen = 10000;
+                    if (text.Length > 2 * maxLen) tbLog.Text = text.Substring(maxLen);
+                    tbLog.Focus();
+                    tbLog.CaretIndex = tbLog.Text.Length;
+                    tbLog.ScrollToEnd();
+                }));
         }
         public static void log(TextBox tbLog, List<string> txt)
         {
@@ -528,7 +532,7 @@ namespace UtilsNS
         }
         public static string AvoidOverwrite(string filename)
         {
-            if (!File.Exists(filename)) return filename;
+            if (!File.Exists(filename)) return filename; // it's safe
             string ext = Path.GetExtension(filename);
             string fp = Path.ChangeExtension(filename, null);
             string fn; int k = 0;
@@ -977,6 +981,10 @@ namespace UtilsNS
                 }
                 return rslt;  
             } 
+        }
+        public static bool comparePaths(string path1, string path2)
+        {
+            return Path.GetFullPath(path1).TrimEnd('\\').Equals(Path.GetFullPath(path2).TrimEnd('\\'), StringComparison.InvariantCultureIgnoreCase);
         }
         public static int RandomnSeed
         {

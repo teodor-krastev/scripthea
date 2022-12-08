@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:scripthea" xmlns:viewer="clr-namespace:scripthea.viewer"
-        xmlns:composer="clr-namespace:scripthea.composer" xmlns:UtilsNS="clr-namespace:UtilsNS" x:Name="MainWindow1" x:Class="scripthea.MainWindow"
+        xmlns:composer="clr-namespace:scripthea.composer" xmlns:UtilsNS="clr-namespace:UtilsNS" xmlns:external="clr-namespace:scripthea.external" x:Name="MainWindow1" x:Class="scripthea.MainWindow"
         mc:Ignorable="d"
         Title="Scripthea - text-to-image prompt composer" Height="450" Width="800" Loaded="MainWindow1_Loaded" Closing="MainWindow1_Closing" Icon="Properties/penzy4.png" FontSize="13" KeyDown="MainWindow1_KeyDown">
     <Grid>
@@ -61,10 +61,11 @@
                         <ColumnDefinition Width="500"/>
                         <ColumnDefinition Width="646*"/>
                     </Grid.ColumnDefinitions>
-                    <local:ImportUtilUC x:Name="importUtilUC" Width="Auto"/>
+                    <external:ImportUtilUC x:Name="importUtilUC" Width="Auto"/>
                     <GridSplitter x:Name="gridSplitter" HorizontalAlignment="Left" Grid.Column="1" Margin="0" Width="5" Background="#FFEBFBFB"/>
                 </Grid>
             </TabItem>
+            
         </TabControl>
 
         <GridSplitter x:Name="gridSplitLeft" Grid.Column="1" HorizontalAlignment="Left" Margin="2,0" Width="12" ResizeDirection="Columns" MouseDoubleClick="gridSplitLeft_MouseDoubleClick" Visibility="Hidden">
