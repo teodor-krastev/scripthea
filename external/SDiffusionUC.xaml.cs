@@ -88,7 +88,7 @@ namespace scripthea.external
         private bool imageReady = false; 
         public bool GenerateImage(string prompt, string imageDepotFolder, out string filename) // returns the filename of saved/copied in ImageDepoFolder image 
         {
-            if (SDopts.opts.GPUtemperature)
+            if (SDopts.opts.GPUtemperature && dTimer.IsEnabled)
             {
                 while ((currentTmp > SDopts.opts.GPUThreshold) || (currentTmp == -1)) { Thread.Sleep(500); }
             }
@@ -131,17 +131,21 @@ namespace scripthea.external
         protected void Log(String txt, SolidColorBrush clr = null)
         {
             if (txt.Length.Equals(0)) return;
-            Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background,
-              new Action(() =>
-              {
-                  if (txt.StartsWith("@")) 
-                  { 
-                      lbStatus.Content = "COMM: " + txt.Substring(1); lbStatus.UpdateLayout();
-                      OnChangeStatus(); // secondary actions
-                  }
-                  else Utils.log(tbSDlog, txt);
-              }));
-            
+            if (Application.Current == null) return;
+            try
+            {
+                Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background,
+                  new Action(() =>
+                  {
+                      if (txt.StartsWith("@"))
+                      {
+                          lbStatus.Content = "COMM: " + txt.Substring(1); lbStatus.UpdateLayout();
+                          OnChangeStatus(); // secondary actions
+                      }
+                      else Utils.log(tbSDlog, txt);
+                  }));
+            }
+            catch { }
         }
         protected void Receive(String txt, SolidColorBrush clr = null)
         {
@@ -152,9 +156,8 @@ namespace scripthea.external
                     {
                         Utils.log(tbSDlog, ">"+txt);
                     }));
-
             }
-         }
+        }
 
         private void btnReset_Click(object sender, RoutedEventArgs e)
         {
@@ -185,13 +188,15 @@ namespace scripthea.external
                 }
                 dTimer.Start();
             }
-            else dTimer.Stop();
+            else { dTimer.Stop(); chkTmpr.Foreground = Brushes.Black; }
             SDopts.opts.GPUtemperature = chkTmpr.IsChecked.Value;
         }
         private void dTimer_Tick(object sender, EventArgs e)
         {
             if (!nVidia.IsAvailable()) return;
             currentTmp = nVidia.GetGPUtemperature();
+            if (currentTmp < SDopts.opts.GPUThreshold) chkTmpr.Foreground = Brushes.Blue;
+            else chkTmpr.Foreground = Brushes.Red;
             chkTmpr.Content = "GPU temp[°C] = " + currentTmp.ToString();
             tmpStack.Add(currentTmp);
             while (tmpStack.Count > SDopts.opts.GPUstackDepth) tmpStack.RemoveAt(0);
@@ -365,7 +370,6 @@ namespace scripthea.external
             {
                 status = Status.connected; Log("client connected");
             }
-
             // Get the socket that handles the client request.  
             Socket listener = (Socket)ar.AsyncState;
             Socket handler = listener.EndAccept(ar);
@@ -484,3 +488,11 @@ namespace scripthea.external
         public Socket workSocket = null;
     }
 }
+
+/* Err: System.Threading.ThreadAbortException: Thread was being aborted.
+   at System.Threading.WaitHandle.WaitOneNative(SafeHandle waitableSafeHandle, UInt32 millisecondsTimeout, Boolean hasThreadAffinity, Boolean exitContext)
+   at System.Threading.WaitHandle.InternalWaitOne(SafeHandle waitableSafeHandle, Int64 millisecondsTimeout, Boolean hasThreadAffinity, Boolean exitContext)
+   at System.Threading.WaitHandle.WaitOne(Int32 millisecondsTimeout, Boolean exitContext)
+   at System.Threading.WaitHandle.WaitOne()
+   at scripthea.external.AsyncSocketListener.StartListening() in F:\Projects\Scripthea\external\SDiffusionUC.xaml.cs:line 351
+*/

@@ -45,15 +45,15 @@ namespace scripthea.composer
             UpdateFromOptions();
             status = Status.Idle;
 
-            Log("@_Header=loading cues files (*.cues)");
+            Log("@_Header=loading cues files (*.cues)");            
+            cuePoolUC.OnChange += new RoutedEventHandler(ChangeCue);            
             cuePoolUC.OnLog += new Utils.LogHandler(Log);
-            cuePoolUC.Init(); 
-            cuePoolUC.OnChange += new RoutedEventHandler(ChangeCue);
+            cuePoolUC.Init();
             
             Log("@_Header=loading modifiers files (*.mdfr)");
-            modifiersUC.Init();
             modifiersUC.OnChange += new RoutedEventHandler(ChangeModif);
             modifiersUC.OnLog += new Utils.LogHandler(Log);
+            modifiersUC.Init();
 
             scanPreviewUC.OnLog += new Utils.LogHandler(Log);
             scanPreviewUC.btnClose.Click += new RoutedEventHandler(btnScanPreviewProcs_Click);
@@ -222,8 +222,8 @@ namespace scripthea.composer
             if (Utils.isNull(cuePoolUC.ActiveCueList) && !status.Equals(Status.Undefined)) { Log("Err: no active cue pool."); return; }
             if (Utils.isNull(cuePoolUC.ActiveCueList?.allSeeds) || Utils.isNull(modifiersUC.modifLists)) return;
             List<CueItemUC> selectedSeed = cuePoolUC?.ActiveCueList?.selectedSeeds();
-            if (Utils.isNull(selectedSeed)) { Log("Err: no cue is selected."); return; }
-            if (selectedSeed.Count.Equals(0)) { Log("Err: no cue is selected."); return; }
+            if (Utils.isNull(selectedSeed)) { Log("Err: no cue is selected. (35)"); return; }
+            if (selectedSeed.Count.Equals(0)) { /*Log("Err: no cue is selected. (58)");*/ return; }
             Compose(sender, selectedSeed[0], modifiersUC.Composite());
         }
         private void QueryAPI(string prompt)
@@ -267,8 +267,8 @@ namespace scripthea.composer
         private void GetScanPrompts()
         {        
             List<CueItemUC> selectedSeeds = cuePoolUC?.ActiveCueList?.selectedSeeds(); scanPrompts = new List<string>(); 
-            if (Utils.isNull(selectedSeeds)) { Log("Err: no cue is selected"); return; }
-            if (selectedSeeds.Count.Equals(0)) { Log("Err: no cue is selected"); return; }
+            if (Utils.isNull(selectedSeeds)) { Log("Err: no cue is selected (12)"); return; }
+            if (selectedSeeds.Count.Equals(0)) { Log("Err: no cue is selected (96)"); return; }
             List<string> ScanModifs = modifiersUC.ModifItemsByType(ModifStatus.Scannable); 
             foreach (CueItemUC ssd in selectedSeeds)
             {
@@ -336,8 +336,8 @@ namespace scripthea.composer
 
         private void imgAPIdialog_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (Utils.isNull(API)) { Log("Err: no API is selected."); return; }
-            if (Utils.isNull(API.activeAPI)) { Log("Err: no API is selected. (2)"); return; }           
+            if (Utils.isNull(API)) { Log("Err: no API is selected. (55)"); return; }
+            if (Utils.isNull(API.activeAPI)) { Log("Err: no API is selected. (22)"); return; }           
             API.activeAPI.opts["folder"] = opts.ImageDepotFolder;
             API.about2Show(propmt);
             API.ShowDialog();
@@ -345,8 +345,8 @@ namespace scripthea.composer
 
         private void btnQuery_Click(object sender, RoutedEventArgs e)
         {
-            if (Utils.isNull(API)) { Log("Err: no API is selected."); return; }
-            if (Utils.isNull(API.activeAPI)) { Log("Err: no API is selected. (2)"); return; }
+            if (Utils.isNull(API)) { Log("Err: no API is selected. (56)"); return; }
+            if (Utils.isNull(API.activeAPI)) { Log("Err: no API is selected. (21)"); return; }
             if (API.IsBusy || status != Status.Idle)
             {
                 Utils.TimedMessageBox("API is busy, try again later...", "Warning"); return;

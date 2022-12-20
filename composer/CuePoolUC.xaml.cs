@@ -112,7 +112,10 @@ namespace scripthea.composer
                 clu.Init(GetLists(i));
                 clu.OnChange += new RoutedEventHandler(Change);                   
                 (tabControl.Items[i] as TabItem).Content = clu;
-            }            
+            }
+            if (cueLists.Count > 0)
+                if (cueLists[0].allSeeds.Count > 0)
+                    cueLists[0].allSeeds[0].radioChecked = true;
         }
         public event RoutedEventHandler OnChange;
         protected void Change(object sender, RoutedEventArgs e)
@@ -206,10 +209,13 @@ namespace scripthea.composer
             int idx = tabControl.SelectedIndex;
             if (lastTabIdx.Equals(poolCount) && Utils.InRange(idx, 0,poolCount-1)) // out of map tab
             {
-                if (!cueLists[idx].isBusy)
+                UpdatePoolMapFromVisuals();
+                for (int i = 0; i < poolCount; i++)
                 {
-                    UpdatePoolMapFromVisuals();
-                    cueLists[idx].Init(GetLists(idx)); cueLists[idx].radioMode = radioMode;
+                    if (!cueLists[i].isBusy)
+                    {                        
+                        cueLists[i].Init(GetLists(i)); cueLists[i].radioMode = radioMode;
+                    }
                 }
             }
             if (Utils.InRange(idx, 0, poolCount-1) && !Utils.isNull(cueLists)) 

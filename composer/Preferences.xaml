@@ -15,7 +15,6 @@
             <ComboBox x:Name="cbActiveAPI" HorizontalAlignment="Left" VerticalAlignment="Top" SelectedIndex="0" Width="90" FontSize="12" Background="White" Margin="3,7,0,0" FontWeight="Bold">
                 <ComboBoxItem Content="Simulation"/>
                 <ComboBoxItem x:Name="cbiDiffusion" Content="SDiffusion"/>
-                <ComboBoxItem Content="DeepAI"/>
                 <ComboBoxItem x:Name="cbiCraiyon" Content="Craiyon"/>
             </ComboBox>
             <Image x:Name="imgAPIdialog"  Width="25" Height="25" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="6,7,0,0" Cursor="Hand" Source="/Scripthea;component/Properties/gears1.png"/>

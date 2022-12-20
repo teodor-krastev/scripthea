@@ -56,7 +56,7 @@ namespace scripthea.viewer
         public void FeedList(List<Tuple<int, string, string>> theList, string imageDepot)
         {
             _imageFolder = imageDepot;
-            dTable.Rows.Clear();
+            dGrid.ItemsSource = null; dTable.Rows.Clear();
             foreach (var itm in theList)
             {
                 dTable.Rows.Add(itm.Item1, itm.Item3, itm.Item2);

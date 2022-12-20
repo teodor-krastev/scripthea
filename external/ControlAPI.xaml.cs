@@ -41,7 +41,7 @@ namespace scripthea.external
             InitializeComponent();
             interfaceAPIs = new Dictionary<string, interfaceAPI>();
             visualControl("Simulation", new SimulatorUC());
-            visualControl("DeepAI", new DeepAIUC());
+            //visualControl("DeepAI", new DeepAIUC()); Later plugin...
             visualControl("Craiyon", new CraiyonWebUC());
             visualControl("SDiffusion", new SDiffusionUC());
             _activeAPIname = "Simulation"; tabControl.SelectedIndex = 0;

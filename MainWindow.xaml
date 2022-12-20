@@ -58,8 +58,8 @@
             <TabItem x:Name="tiUtils" Header=" Utilities " Width="110" Height="25" Background="#FFECECEC" HorizontalAlignment="Left" >
                 <Grid >
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="500"/>
-                        <ColumnDefinition Width="646*"/>
+                        <ColumnDefinition Width="1000"/>
+                        <ColumnDefinition Width="1*"/>
                     </Grid.ColumnDefinitions>
                     <external:ImportUtilUC x:Name="importUtilUC" Width="Auto"/>
                     <GridSplitter x:Name="gridSplitter" HorizontalAlignment="Left" Grid.Column="1" Margin="0" Width="5" Background="#FFEBFBFB"/>

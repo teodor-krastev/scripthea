@@ -57,7 +57,7 @@ namespace scripthea.composer
                     AddSeeds(sp, ref ocl, sf);
                 }
                 if (allSeeds.Count > 0) allSeeds[0].radioChecked = true;
-                //if (tcLists.SelectedIndex.Equals(-1)) tcLists.SelectedIndex = 0; //???
+                if (tcLists.SelectedIndex.Equals(-1)) tcLists.SelectedIndex = 0; //???
             }
             catch (Exception ex) { Utils.TimedMessageBox(ex.Message); }
             finally { isBusy = false; }
@@ -120,7 +120,11 @@ namespace scripthea.composer
             List<CueItemUC> ssd = new List<CueItemUC>();
             if (radioMode)
             {
-                if (tcLists.SelectedIndex < 0) { return ssd; }
+                if (tcLists.SelectedIndex < 0)
+                {
+                    if (tcLists.Items.Count > 0) tcLists.SelectedIndex = 0;
+                    else return ssd; 
+                }
                 foreach (CueItemUC os in localSeeds[tcLists.SelectedIndex])
                     if (os.radioChecked)
                     {

@@ -22,7 +22,7 @@ namespace scripthea.viewer
 {    
     public class ImageInfo
     {
-        public enum ImageGenerator { StableDiffusion, Crayion, DeepAI, FromDescFile}
+        public enum ImageGenerator { StableDiffusion, Crayion, FromDescFile}
         public ImageInfo()
         {
 
@@ -38,9 +38,6 @@ namespace scripthea.viewer
                     break;
                 case ImageGenerator.Crayion:
                     if (!FromCraiyonFile(fullfilename, out suggestedName)) return;
-                    break;
-                case ImageGenerator.DeepAI:
-                    if (!FromDeepAIFile(fullfilename, out suggestedName)) return;
                     break;
             }
             if (keepName) { filename = Path.GetFileName(fullfilename); return; } 
@@ -149,12 +146,6 @@ namespace scripthea.viewer
             return sd;
         }
         public bool FromCraiyonFile(string fullfilename, out string suggestedName) // true if it's there and it's sd image 
-        {
-            suggestedName = "";
-            if (File.Exists(fullfilename)) return false;
-            return true;
-        }
-        public bool FromDeepAIFile(string fullfilename, out string suggestedName) // true if it's there and it's sd image 
         {
             suggestedName = "";
             if (File.Exists(fullfilename)) return false;
@@ -436,11 +427,13 @@ namespace scripthea.viewer
                 return; 
             }
             DepotFolder df = new DepotFolder(imageFolder);
-            if (!df.IsEnabled) { Log("Error: Image depot folder is not formated as it should be."); return; }
+            if (!df.IsEnabled) { Log("Error: This is not an image depot."); return; }
             List<Tuple<int, string, string>> decompImageDepot = df.Export2Viewer(); // DecompImageDepot(imageFolder, true);
             if (!Utils.isNull(decompImageDepot))
             {
-                activeView.FeedList(decompImageDepot, imageFolder); 
+                showing = false;
+                activeView.FeedList(decompImageDepot, imageFolder);
+                showing = true;
             }
             if (!Utils.isNull(e)) e.Handled = true;
         }
