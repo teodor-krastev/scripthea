@@ -25,7 +25,8 @@ namespace scripthea.composer
         {
             InitializeComponent();            
         }
-        public string mapFile { get { return System.IO.Path.Combine(Utils.configPath + "cue_pools.map"); } }
+        public string cuesFolder { get { return Path.Combine(Utils.basePath, "cues"); } }
+        public string mapFile { get { return System.IO.Path.Combine(Utils.basePath, "cues", "cue_pools.map"); } }
         private int poolCount { get { return tabControl.Items.Count - 1; } }
         private List<Dictionary<string, bool>> poolMap;
         public List<string> GetLists(int idx) // full path
@@ -34,7 +35,7 @@ namespace scripthea.composer
             if (!Utils.InRange(idx, 0, poolCount - 1)) return ls;
             foreach (var pair in poolMap[idx])
                 if (pair.Value)
-                    ls.Add(System.IO.Path.Combine(Utils.configPath, Path.ChangeExtension(pair.Key, ".cues")));
+                    ls.Add(System.IO.Path.Combine(Utils.basePath, "cues", Path.ChangeExtension(pair.Key, ".cues")));
             return ls;
         }
         private List<CueListUC> cueLists;
@@ -50,7 +51,7 @@ namespace scripthea.composer
         {
             foreach (var pair in poolMap[poolIdx])
             {
-                if (!File.Exists(System.IO.Path.Combine(Utils.configPath + Path.ChangeExtension(pair.Key,".cues"))))
+                if (!File.Exists(System.IO.Path.Combine(Utils.basePath, "cues", Path.ChangeExtension(pair.Key,".cues"))))
                 {
                     return pair.Key;
                 }
@@ -81,7 +82,7 @@ namespace scripthea.composer
                     poolMap.Add(new Dictionary<string, bool>());
             }  
             // check for new cues
-            List<string> files = new List<string>(Directory.GetFiles(Utils.configPath, "*.cues"));
+            List<string> files = new List<string>(Directory.GetFiles(cuesFolder, "*.cues"));
             for (int j = 0; j < files.Count; j++) // strip all but the name
                 files[j] = System.IO.Path.GetFileNameWithoutExtension(files[j]);
 
@@ -114,8 +115,8 @@ namespace scripthea.composer
                 (tabControl.Items[i] as TabItem).Content = clu;
             }
             if (cueLists.Count > 0)
-                if (cueLists[0].allSeeds.Count > 0)
-                    cueLists[0].allSeeds[0].radioChecked = true;
+                if (cueLists[0].allCues.Count > 0)
+                    cueLists[0].allCues[0].radioChecked = true;
         }
         public event RoutedEventHandler OnChange;
         protected void Change(object sender, RoutedEventArgs e)

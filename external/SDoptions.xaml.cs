@@ -36,6 +36,7 @@ namespace scripthea.external
         public int GPUstackDepth;        
         // Initial settings
         public string SDlocation;
+        public bool ValidScript;
         public void save(string configFilename)
         {
             File.WriteAllText(configFilename, JsonConvert.SerializeObject(this));
@@ -76,6 +77,7 @@ namespace scripthea.external
             opts.GPUstackDepth = numGPUstackDepth.Value;
         
             opts.SDlocation = tbSDlocation.Text;
+            opts.ValidScript = chkValidScript.IsChecked.Value;
         }
         public void opts2Visual()
         {
@@ -89,6 +91,7 @@ namespace scripthea.external
 
             if (Directory.Exists(opts.SDlocation)) tbSDlocation.Text = opts.SDlocation;
             else Utils.TimedMessageBox("SD-WebUI directory <" + opts.SDlocation + "> does not exist.", "Warning", 3000);
+            chkValidScript.IsChecked = opts.ValidScript;
         }
 
         /// <summary>

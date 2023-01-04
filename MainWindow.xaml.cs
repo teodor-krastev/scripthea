@@ -18,41 +18,18 @@ using Newtonsoft.Json.Converters;
 using scripthea.viewer;
 using scripthea.composer;
 using scripthea.external;
+using scripthea.master;
 using UtilsNS;
 
 namespace scripthea
 {
-    public class Options
-    {
-        public int Left;
-        public int Top;
-        public int Height;
-        public int Width;
-        public int LogColWidth;
-        public bool LogColWaveSplit;
-        public int QueryRowHeight;
-        public int QueryColWidth;
-        public int ViewColWidth;       
-
-        public bool SingleAuto;
-        public bool OneLineCue;
-
-        public string ImageDepotFolder;
-        public string ModifPrefix;
-        public string API;
-
-        public bool Autorefresh;
-        public int ThumbZoom;
-        public bool ThumbCue;
-        public bool ThumbFilename;
-    }
-
     /// <summary>
     /// Scripthea is a prompt composer as utility for text-to-image AI generators
     /// </summary>
     public partial class MainWindow : Window
     {
         AboutWin aboutWin;
+
         public MainWindow()
         {
             aboutWin = new AboutWin();
@@ -62,7 +39,9 @@ namespace scripthea
         }
         string optionsFile;
         public Options opts;
+        public PreferencesWindow prefsWnd;
 
+        public FocusControl focusControl;
         private void MainWindow1_Loaded(object sender, RoutedEventArgs e)
         {
             optionsFile = Utils.configPath + "options.json";
@@ -74,6 +53,7 @@ namespace scripthea
                 if (opts.ImageDepotFolder.Equals("<default.image.depot>")) opts.ImageDepotFolder = ImgUtils.defaultImageDepot;
             }
             else opts = new Options();
+            prefsWnd = new PreferencesWindow();
             Title = "Scripthea - options loaded";
             dirTreeUC.Init();
             dirTreeUC.OnActive += new DirTreeUC.SelectHandler(Active);
@@ -86,7 +66,9 @@ namespace scripthea
             queryUC.Init(ref opts);
             Title = "Scripthea - text files loaded";
             viewerUC.Init(ref opts);
+            depotMaster.Init(ref opts);
             importUtilUC.Init();
+            exportUtilUC.Init(ref opts);
 
             Left = opts.Left;
             Top = opts.Top;
@@ -101,6 +83,14 @@ namespace scripthea
             Title = "Scripthea - text-to-image prompt composer v" + Utils.getAppFileVersion;
             Log("> Welcome to Scripthea" + "  " + (Utils.isInVisualStudio ? "(within VS)" : "")); Log("");
             if (opts.SingleAuto) queryUC.btnCompose_Click(null, null);
+
+            focusControl = new FocusControl();
+            focusControl.Register(importUtilUC);
+            focusControl.Register(exportUtilUC.iPicker);
+            focusControl.Register(queryUC);
+            focusControl.Register(viewerUC);
+            focusControl.Register(depotMaster.iPickerA);
+            focusControl.Register(depotMaster.iPickerB);
 
             Log("@ExplorerPart=0");
             aboutWin.Hide();
@@ -143,6 +133,10 @@ namespace scripthea
 
             string json = JsonConvert.SerializeObject(opts);
             System.IO.File.WriteAllText(optionsFile, json);
+            if (!Utils.isNull(prefsWnd))
+            {
+                prefsWnd.keepOpen = false; prefsWnd.Close();
+            }
         }
         private DispatcherTimer dTimer;
         private void btnClear_Click(object sender, RoutedEventArgs e)
@@ -241,6 +235,10 @@ namespace scripthea
                 if (oldTab.Equals(tiUtils)) viewerUC.ShowImageDepot(importUtilUC.imageFolder);
                 ExplorerPart = 100; dirTreeUC.CatchAFolder(viewerUC.tbImageDepot.Text);
             }
+            if (tabControl.SelectedItem.Equals(tiDepotMaster))
+            {
+                ExplorerPart = 100;
+            }
             if (tabControl.SelectedItem.Equals(tiUtils))
             {
                 ExplorerPart = 100; dirTreeUC.CatchAFolder(importUtilUC.imageFolder);
@@ -250,18 +248,7 @@ namespace scripthea
         }
         protected void Active(string path)
         {
-            if (tabControl.SelectedItem.Equals(tiComposer))
-            {
-                queryUC.tbImageDepot.Text = path;
-            }
-            if (tabControl.SelectedItem.Equals(tiViewer))
-            {
-                viewerUC.tbImageDepot.Text = path;
-            }
-            if (tabControl.SelectedItem.Equals(tiUtils))
-            {
-                importUtilUC.LoadImages(path);
-            }
+            focusControl.ifc.textFolder.Text = path;            
         }
         private void imgAbout_MouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -298,5 +285,10 @@ namespace scripthea
                     dirTreeUC.CatchAFolder(fld);
             }
         }
+        private void imgPreferences_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            prefsWnd.ShowDialog();
+        }
+
     }
 }

@@ -14,11 +14,12 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using UtilsNS;
+using Path = System.IO.Path;
 
 namespace scripthea.composer
 {
     /// <summary>
-    /// Interaction logic for SeedsUC.xaml
+    /// Interaction logic for CueItemsUC.xaml
     /// </summary>
     public partial class CueListUC : UserControl
     {
@@ -26,20 +27,21 @@ namespace scripthea.composer
         {
             InitializeComponent();
         }
-        private List<string> seedFiles; 
-        public List<CueItemUC> allSeeds; // all seeds
-        public List<List<CueItemUC>> localSeeds; // seeds by tab
+        private List<string> cueFiles; 
+        public List<CueItemUC> allCues; // all cues
+        public List<List<CueItemUC>> localCues; // cues by tab
         public bool isBusy = false;
-        public void Init(List<string> _seedFiles = null)
+        public string cuesFolder { get { return Path.Combine(Utils.basePath, "cues"); } } 
+        public void Init(List<string> _cueFiles = null)
         {
             isBusy = true;
             try
             {
-                if (Utils.isNull(_seedFiles)) seedFiles = new List<string>(Directory.GetFiles(Utils.configPath, "*.cues"));
-                else seedFiles = new List<string>(_seedFiles);
+                if (Utils.isNull(_cueFiles)) cueFiles = new List<string>(Directory.GetFiles(cuesFolder, "*.cues"));
+                else cueFiles = new List<string>(_cueFiles);
 
-                allSeeds = new List<CueItemUC>(); localSeeds = new List<List<CueItemUC>>(); tcLists.Items.Clear();
-                foreach (string sf in _seedFiles)
+                allCues = new List<CueItemUC>(); localCues = new List<List<CueItemUC>>(); tcLists.Items.Clear();
+                foreach (string sf in _cueFiles)
                 {
                     if (!File.Exists(sf)) { Log("Error: File <" + sf + "> is missing."); continue; }
                     string se = System.IO.Path.GetFileNameWithoutExtension(sf);
@@ -51,12 +53,12 @@ namespace scripthea.composer
                         FontSize = 14, FontStyle = FontStyles.Italic,
                         Background = Utils.ToSolidColorBrush("#FFFFFFF8")
                     };
-                    tcLists.Items.Add(newTabItem); List<CueItemUC> ocl = new List<CueItemUC>(); localSeeds.Add(ocl);
+                    tcLists.Items.Add(newTabItem); List<CueItemUC> ocl = new List<CueItemUC>(); localCues.Add(ocl);
                     ScrollViewer sv = new ScrollViewer(); sv.CanContentScroll = true; newTabItem.Content = sv;
                     StackPanel sp = new StackPanel(); sv.Content = sp;                
-                    AddSeeds(sp, ref ocl, sf);
+                    AddCues(sp, ref ocl, sf);
                 }
-                if (allSeeds.Count > 0) allSeeds[0].radioChecked = true;
+                if (allCues.Count > 0) allCues[0].radioChecked = true;
                 if (tcLists.SelectedIndex.Equals(-1)) tcLists.SelectedIndex = 0; //???
             }
             catch (Exception ex) { Utils.TimedMessageBox(ex.Message); }
@@ -73,10 +75,10 @@ namespace scripthea.composer
             {
                 if ((OnChange != null)) OnChange(this, e); 
             }
-            else lbSelCount.Content = "#"+selectedSeeds().Count.ToString();
+            else lbSelCount.Content = "#"+selectedCues().Count.ToString();
             for (int i = 0; i < tcLists.Items.Count; i++)
             {
-                if (selectedSeeds(i).Count > 0 && !radioMode) ((TabItem)tcLists.Items[i]).Background = Utils.ToSolidColorBrush("#FFFFF3DE");
+                if (selectedCues(i).Count > 0 && !radioMode) ((TabItem)tcLists.Items[i]).Background = Utils.ToSolidColorBrush("#FFFFF3DE");
                 else ((TabItem)tcLists.Items[i]).Background = Utils.ToSolidColorBrush("#FFFFFFF8");
             }
         }
@@ -85,29 +87,29 @@ namespace scripthea.composer
         {
             if (OnLog != null) OnLog(txt, clr);
         }
-        protected void AddSeeds(StackPanel sp, ref List<CueItemUC> ocl, string fn)
+        protected void AddCues(StackPanel sp, ref List<CueItemUC> ocl, string fn)
         {
             if (!File.Exists(fn)) { Log("Err: no <" + fn + "> file found"); return; }
-            List<string> seedText = new List<string>(File.ReadAllLines(fn));
-            List<string> seedList = new List<string>();
-            foreach (string ss in seedText)
+            List<string> cueText = new List<string>(File.ReadAllLines(fn));
+            List<string> cueList = new List<string>();
+            foreach (string ss in cueText)
             {
                 if (ss.Length > 1)
                     if (ss.Substring(0, 2).Equals("##")) continue;
                 if (ss.Trim().Equals("")) continue;
-                seedList.Add(ss.Trim());
+                cueList.Add(ss.Trim());
             }             
             List<string> ls = new List<string>();
-            foreach (string ss in seedList)
+            foreach (string ss in cueList)
             {               
                 if (ss.Equals("---"))
                 {
-                    CueItemUC seed = new CueItemUC(ls);
-                    seed.OnLog += new Utils.LogHandler(Log);
-                    seed.rbChecked.Checked += new RoutedEventHandler(Change); //seed.rbChecked.Unchecked += new RoutedEventHandler(Change);
-                    seed.checkBox.Checked += new RoutedEventHandler(Change); seed.checkBox.Unchecked += new RoutedEventHandler(Change);
-                    allSeeds.Add(seed); ocl.Add(seed);
-                    sp.Children.Add(seed); ls.Clear();
+                    CueItemUC cue = new CueItemUC(ls);
+                    cue.OnLog += new Utils.LogHandler(Log);
+                    cue.rbChecked.Checked += new RoutedEventHandler(Change); //cue.rbChecked.Unchecked += new RoutedEventHandler(Change);
+                    cue.checkBox.Checked += new RoutedEventHandler(Change); cue.checkBox.Unchecked += new RoutedEventHandler(Change);
+                    allCues.Add(cue); ocl.Add(cue);
+                    sp.Children.Add(cue); ls.Clear();
                 }
                 else
                 {
@@ -115,7 +117,7 @@ namespace scripthea.composer
                 }
             }
         }
-        public List<CueItemUC> selectedSeeds(int tabIdx = -1) // -1 -> allSeeds in non-radio
+        public List<CueItemUC> selectedCues(int tabIdx = -1) // -1 -> allCues in non-radio
         {
             List<CueItemUC> ssd = new List<CueItemUC>();
             if (radioMode)
@@ -125,7 +127,7 @@ namespace scripthea.composer
                     if (tcLists.Items.Count > 0) tcLists.SelectedIndex = 0;
                     else return ssd; 
                 }
-                foreach (CueItemUC os in localSeeds[tcLists.SelectedIndex])
+                foreach (CueItemUC os in localCues[tcLists.SelectedIndex])
                     if (os.radioChecked)
                     {
                         ssd.Add(os); return ssd;
@@ -134,38 +136,38 @@ namespace scripthea.composer
             else
             {
                 List<CueItemUC> ssf;
-                if (Utils.InRange(tabIdx, 0, tcLists.Items.Count - 1)) ssf = localSeeds[tabIdx];
-                else ssf = allSeeds;
+                if (Utils.InRange(tabIdx, 0, tcLists.Items.Count - 1)) ssf = localCues[tabIdx];
+                else ssf = allCues;
                 foreach (CueItemUC os in ssf)
                     if (os.boxChecked) ssd.Add(os);                
             }
             return ssd;            
         }
 
-        public int allSeedIdx
+        public int allCueIdx
         {
             get
             {
                 if (radioMode)
                 {
-                    for (int i = 0; i < allSeeds.Count; i++)
+                    for (int i = 0; i < allCues.Count; i++)
                     {
-                        if (allSeeds[i].radioChecked) return i;
+                        if (allCues[i].radioChecked) return i;
                     }
                     return -1;
                 }
                 else return -1;
             }
         }
-        public int localSeedIdx // local (active) list index
+        public int localCueIdx // local (active) list index
         {
             get
             {
                 if (tcLists.SelectedIndex < 0) return -1;
                 if (radioMode)
                 {
-                    for (int i = 0; i < localSeeds[tcLists.SelectedIndex].Count; i++)
-                        if (localSeeds[tcLists.SelectedIndex][i].radioChecked)
+                    for (int i = 0; i < localCues[tcLists.SelectedIndex].Count; i++)
+                        if (localCues[tcLists.SelectedIndex][i].radioChecked)
                             return i;
                     return -1;
                 }
@@ -174,7 +176,7 @@ namespace scripthea.composer
             set
             {
                 if (!radioMode || tcLists.SelectedIndex < 0) return;
-                List<CueItemUC> ssd = localSeeds[tcLists.SelectedIndex];
+                List<CueItemUC> ssd = localCues[tcLists.SelectedIndex];
                 if (!Utils.InRange(value, 0,ssd.Count)) return;
                 ssd[value].radioChecked = true;
                 Change(ssd[value].rbChecked, null);
@@ -187,8 +189,8 @@ namespace scripthea.composer
             set
             {
                 _radioMode = value;
-                if (Utils.isNull(allSeeds)) return;
-                foreach (CueItemUC os in allSeeds)
+                if (Utils.isNull(allCues)) return;
+                foreach (CueItemUC os in allCues)
                     os.radioMode = value;
                 if (value)
                 {
@@ -206,36 +208,27 @@ namespace scripthea.composer
         public void tabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (tcLists.SelectedIndex < 0) return;
-            List<CueItemUC> ssd = localSeeds[tcLists.SelectedIndex];
+            List<CueItemUC> ssd = localCues[tcLists.SelectedIndex];
             if (ssd.Count == 0) return;
-            localSeedIdx = 0;
+            localCueIdx = 0;
             if (!Utils.isNull(e)) e.Handled = true;
         }
         private void imgRandom_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (!radioMode) return;
-            List<CueItemUC> ssd = localSeeds[tcLists.SelectedIndex];
+            List<CueItemUC> ssd = localCues[tcLists.SelectedIndex];
             int si = rand.Next(ssd.Count);
-            if (si.Equals(localSeedIdx)) si = rand.Next(ssd.Count);
-            localSeedIdx = si;
+            if (si.Equals(localCueIdx)) si = rand.Next(ssd.Count);
+            localCueIdx = si;
         }
         private readonly string[] miTitles = { "Check All", "Uncheck All", "Invert Checking" };
         private void imgMenu_ContextMenuOpening(object sender, ContextMenuEventArgs e)
         {
-            if (radioMode) return;
-            cmCue.Items.Clear(); 
-            for (int i = 0; i < 3; i++)
-            {
-                MenuItem mi = new MenuItem() { Name = "mi" + i.ToString(), Header = miTitles[i] };
-                if (i == 2) mi.FontWeight = FontWeights.Bold;
-                mi.Click += mi_Click;
-                cmCue.Items.Add(mi);
-            }
         }
         private void mi_Click(object sender, RoutedEventArgs e)
         {            
             MenuItem mi = sender as MenuItem; string header = Convert.ToString(mi.Header);
-            foreach (CueItemUC os in localSeeds[tcLists.SelectedIndex])
+            foreach (CueItemUC os in localCues[tcLists.SelectedIndex])
             { 
                 switch (header)
                 {
@@ -251,13 +244,24 @@ namespace scripthea.composer
                 }
             }            
         }
+        bool inverting = false;
         private void imgMenu_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (e.ChangedButton == MouseButton.Left && e.ClickCount == 2)
+            inverting = false;
+            if (e.ChangedButton == MouseButton.Left)
             {
-                foreach (CueItemUC os in localSeeds[tcLists.SelectedIndex])
-                    os.boxChecked = !os.boxChecked;                
+                if (e.ClickCount == 1)
+                {
+                    Utils.DelayExec(300, () => { imgMenu.ContextMenu.IsOpen = !inverting; });
+                }
+                if (e.ClickCount == 2)
+                {
+                    inverting = true;
+                    foreach (CueItemUC os in localCues[tcLists.SelectedIndex])
+                    os.boxChecked = !os.boxChecked;      
+                }
             }
         }
+
     }
 }

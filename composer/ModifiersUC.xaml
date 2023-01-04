@@ -45,6 +45,11 @@
         </Grid>
         <StackPanel x:Name="stackModifiers" Margin="0,0,0.203,0.228" Grid.Column = "1" Orientation="Horizontal">
         </StackPanel>
-        <Button x:Name="btnModifMap" Content=">>" Width="25" HorizontalAlignment="Left" Margin="0,0,5,0" FontWeight="Bold" Background="#FFFEFBE1" Click="btnModifMap_Click" BorderBrush="#FF589B37" BorderThickness="0" Height="28" VerticalAlignment="Top"/>
+        <Button x:Name="btnModifMap" Width="27" HorizontalAlignment="Left" Margin="0,1,5,0" FontWeight="Bold"  Click="btnModifMap_Click" BorderBrush="#FF589B37" BorderThickness="0" Height="25" VerticalAlignment="Top" Background="White">
+            <StackPanel>
+                <Image x:Name="imgOpen" Source="/Scripthea;component/Properties/right_black_arrow.png" ToolTip="Open modifiers map"></Image>
+                <Image x:Name="imgClose" Source="/Scripthea;component/Properties/left_black_arrow.png" ToolTip="Close modifiers map" Visibility="Collapsed"></Image>
+            </StackPanel>
+        </Button>
     </Grid>
 </UserControl>

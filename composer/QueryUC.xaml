@@ -50,7 +50,7 @@
                 </TabItem>
                 <TabItem x:Name="tiOptions" Header="Options" Height="25" Background="#FFECECEC" Margin="6,0,-9.063,0.089" HorizontalAlignment="Left" Width="70">
                     <Grid >
-                        <GroupBox VerticalAlignment="Bottom" Header="Image depot folder" Height="47">
+                        <GroupBox x:Name="gbFolder" VerticalAlignment="Bottom" Header="Image depot folder"  Height="47">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="1*"/>
@@ -77,7 +77,6 @@
                     </Grid>
                 </TabItem>
             </TabControl>
-            <Image x:Name="imgPreferences" Margin="0,0,38,0" VerticalAlignment="Top" HorizontalAlignment="Right"  Height="23" Width="29" ToolTip="Preferences dialog box" Cursor="Hand" Source="/Scripthea;component/Properties/TripleBarTeal.bmp" MouseDown="imgPreferences_MouseDown"/>
             <Image x:Name="imgCopy" Margin="0,0,7,0" VerticalAlignment="Top" HorizontalAlignment="Right" Height="23" Width="29" ToolTip="Copy to clipboard" Cursor="Hand" MouseDown="imgCopy_MouseDown_1" Source="/Scripthea;component/Properties/copy1a.png"/>
             <GridSplitter x:Name="gridSplitCue" HorizontalAlignment="Stretch" Height="5" Margin="0" Grid.Row="2" VerticalAlignment="Top"/>
             <local:CuePoolUC x:Name="cuePoolUC"  Margin="0,6,0,0" Grid.Row="3"/>

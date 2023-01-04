@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using scripthea.master;
 using UtilsNS;
 using Path = System.IO.Path;
 using Newtonsoft.Json;
@@ -190,29 +191,30 @@ namespace scripthea.viewer
     }
     public class DepotFolder
     {
-        public DepotFolder(string _folder, ImageInfo.ImageGenerator _imageGenerator = ImageInfo.ImageGenerator.FromDescFile) 
+        public DepotFolder(string _folder, ImageInfo.ImageGenerator _imageGenerator = ImageInfo.ImageGenerator.FromDescFile, bool _IsReadOnly = false) 
         {
-            if (!Directory.Exists(_folder)) return;
-            header = new Dictionary<string, string>(); infos = new List<ImageInfo>();
+            if (!Directory.Exists(_folder)) return; isReadOnly = _IsReadOnly;
+            header = new Dictionary<string, string>(); items = new List<ImageInfo>();
 
             if (_imageGenerator == ImageInfo.ImageGenerator.FromDescFile) // read type from file
             {
                 string desc = Path.Combine(_folder, ImgUtils.descriptionFile);
                 if (File.Exists(desc))
                 {
-                    List<string> body = Utils.readList(desc);
+                    List<string> body = Utils.readList(desc,false);
                     if (body.Count == 0) return;
                     if (body[0].StartsWith("#"))
                     {
                         header = JsonConvert.DeserializeObject<Dictionary<string, string>>(body[0].Substring(1));
                         body.RemoveAt(0);
-                        foreach (ImageInfo.ImageGenerator ig in Enum.GetValues(typeof(ImageInfo.ImageGenerator)))
-                        {
-                            if (ig.Equals(header["ImageGenerator"])) imageGenerator = ig;
-                        }
+                        if (header.ContainsKey("ImageGenerator"))
+                            foreach (ImageInfo.ImageGenerator ig in Enum.GetValues(typeof(ImageInfo.ImageGenerator)))
+                            {
+                                if (ig.Equals(header["ImageGenerator"])) imageGenerator = ig;
+                            }
                     }
                     foreach (string ss in body)
-                        infos.Add(new ImageInfo(ss));
+                        items.Add(new ImageInfo(ss));
                 }
             }
             else
@@ -220,31 +222,32 @@ namespace scripthea.viewer
                 imageGenerator = _imageGenerator; header.Add("ImageGenerator", imageGenerator.ToString());
                 header.Add("webui", "AUTOMATIC1111"); header.Add("application", "Scripthea " + Utils.getAppFileVersion);
             }
-            folder = _folder;
+            depotFolder = _folder;
         }
-        public bool IsEnabled
+        public bool isEnabled
         {
-            get { return !(Utils.isNull(header) || Utils.isNull(infos)); }
+            get { return !Utils.isNull(header) && !Utils.isNull(items); }
         }
+        public bool isReadOnly { get; private set; }
         public Dictionary<string, string> header;
-        public List<ImageInfo> infos;
+        public List<ImageInfo> items;
         public List<string> allImages()
         {
-            List<string> pngs = new List<string>(Directory.GetFiles(folder, "*.png"));
-            List<string> jpgs = new List<string>(Directory.GetFiles(folder, "*.jpg"));
+            List<string> pngs = new List<string>(Directory.GetFiles(depotFolder, "*.png"));
+            List<string> jpgs = new List<string>(Directory.GetFiles(depotFolder, "*.jpg"));
             pngs.AddRange(jpgs);
             for (int i = 0; i < pngs.Count; i++)
                 pngs[i] = Path.GetFileName(pngs[i]);
            return new List<string>(pngs);
         }
-        public bool fileMatch(List<string> imgs, out int idxFile, out int idxII) // found match within imgs and infos[*].filename
+        public bool fileMatch(List<string> imgs, out int idxFile, out int idxII) // found match within imgs and items[*].filename
         {
             bool found = false; idxFile = -1; idxII = -1;
             for (int i = 0; i < imgs.Count; i++)
             {            
-                for (int j = 0; j <  infos.Count; j++)
+                for (int j = 0; j <  items.Count; j++)
                 {
-                    found = infos[j].filename.Equals(imgs[i], StringComparison.InvariantCultureIgnoreCase);
+                    found = items[j].filename.Equals(imgs[i], StringComparison.InvariantCultureIgnoreCase);
                     if (found) { idxFile = i; idxII = j; break; }
                 }
                 if (found) break;
@@ -262,66 +265,110 @@ namespace scripthea.viewer
             } while (fnd);
             return new List<string>(imgs);
         } 
-        public string folder { get; private set; }
+        public string depotFolder { get; private set; }
         public ImageInfo.ImageGenerator imageGenerator { get; private set; }
-        public bool Validate(bool correct) // true if no mismatched entries; if correct and mismatched then they are deleted 
+        public bool Validate(bool? correctEntry) // true: if no mismatched entries (OK depot) OR if correctEntry and file is missing then entries are deleted
+                                                 // false: there were missing files with not-corrected entries (unfinished business)
+            // if correctEntry is null ask user
         {
-            List<string> allImgs = allImages(); bool ok = true;             
+            List<string> allImgs = allImages(); bool ok = true;
             /*int idxFile; int idxII; bool fnd;
             do { fnd = fileMatch(allImgs, out idxFile, out idxII); } while (fnd);*/
-            foreach (string img in allImgs)
+            int i = 0; int itemsCount = items.Count;
+            while (i < items.Count)
             {
                 bool found = false; int j = -1;
-                for (int i = 0; i < infos.Count; i++)
+                foreach (string img in allImgs)
                 {
-                    found = infos[i].filename.Equals(img, StringComparison.InvariantCultureIgnoreCase);
+                    j = -1;
+                    found = items[i].filename.Equals(img, StringComparison.InvariantCultureIgnoreCase);
                     if (found) { j = i; break; } 
                 }
-                if (found && correct) infos.RemoveAt(j);
+                if (!found)
+                {
+                    if (correctEntry == null)
+                    {
+                        //Configure the message box
+                        var messageBoxText =
+                            "Image depot entry <"+ items[i].filename+ "> has no corresponding image file.\rClick \"Yes\" to correct entry list, \"No\" to skip this correction, or \"Cancel\" to exit validation.";
+                        //var caption = "Image Depot Validation";
+                        //var button = MessageBoxButton.YesNoCancel;
+                        //var icon = MessageBoxImage.Warning;
+
+                        // Display message box
+                        var messageBoxResult = MessageBox.Show(messageBoxText, "Image Depot Validation", MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
+
+                        // Process message box results
+                        switch (messageBoxResult)
+                        {
+                            case MessageBoxResult.Yes: // correct entry list
+                                items.RemoveAt(i); found = true; continue;                                
+                            case MessageBoxResult.No: // skip this correction
+                                break;
+                            case MessageBoxResult.Cancel: // exit validation
+                                return false;                                
+                        }
+                    }
+                    else
+                    {
+                        if (Convert.ToBoolean(correctEntry)) { items.RemoveAt(j); found = true; continue; }
+                    }                    
+                }
+                i++; ok &= found;
             }
+            if (itemsCount != items.Count) Save(true);
             return ok;
         }
         public void Append(ImageInfo ii)
         {
-            using (StreamWriter w = File.AppendText(Path.Combine(folder, ImgUtils.descriptionFile)))
+            if (isReadOnly) return;
+            using (StreamWriter w = File.AppendText(Path.Combine(depotFolder, ImgUtils.descriptionFile)))
             {
                 w.WriteLine(ii.To_String());
             }
-            infos.Add(ii);
+            items.Add(ii);
         }
-        public void Save()
+        public void Save(bool forced = false)
         {
+            if (!forced)
+                if (isReadOnly) return;
             List<string> ls = new List<string>();
             ls.Add("#"+ JsonConvert.SerializeObject(header));
-            foreach (ImageInfo ii in infos)
+            foreach (ImageInfo ii in items)
                 ls.Add(ii.To_String());
-            Utils.DelayExec(200, 
-                new Action(() => { Utils.writeList(Path.Combine(folder, ImgUtils.descriptionFile), ls); }));            
+            //Utils.DelayExec(20, new Action(() => {  }));       
+            Utils.writeList(Path.Combine(depotFolder, ImgUtils.descriptionFile), ls);
+            Utils.Sleep(200);
         }
         public List<Tuple<int, string, string>> Export2Viewer()
         {
             List<Tuple<int, string, string>> lst = new List<Tuple<int, string, string>>();
-            for (int i = 0; i < infos.Count; i++)
-                lst.Add(new Tuple<int, string, string>(i+1, infos[i].filename, infos[i].prompt));
+            for (int i = 0; i < items.Count; i++)
+                lst.Add(new Tuple<int, string, string>(i+1, items[i].filename, items[i].prompt));
             return lst;
         }
     }
 
     interface iPicList
     {
-        void Init(ref Options _opts);
+        void Init(ref Options _opts, bool _checkable);
         void Finish();
-        string imageFolder { get; }
+        DepotFolder iDepot { get; set; }
+        string loadedDepot { get; set; }
+        bool FeedList(string imageFolder); // the way to load the list
+        bool FeedList(ref DepotFolder _iDepot); // external iDepot; regular use
+        void UpdateVis(); // update visual from iDepot
+        void SetChecked(bool? check); // if null invert; returns checked
         void Clear();
-        void FeedList(List<Tuple<int, string, string>> theList, string imageDepot);  // index, filename, prompt     
-        int selectedIndex { get; set; } // one based index
+        int selectedIndex { get; set; } // one based index in no-checkable mode
         int Count { get; }
-        List<Tuple<int, string, string>> items { get; }
+        List<Tuple<int, string, string>> GetItems(bool check, bool uncheck); // idx, filename, prompt
+
     }
     /// <summary>
     /// Interaction logic for ViewerUC.xaml
     /// </summary>
-    public partial class ViewerUC : UserControl
+    public partial class ViewerUC : UserControl, iFocusControl
     {       
         public ViewerUC()
         {
@@ -331,14 +378,14 @@ namespace scripthea.viewer
             views.Add(gridViewUC);  gridViewUC.SelectEvent += new GridViewUC.PicViewerHandler(picViewerUC.loadPic); 
         }
         iPicList activeView { get { return views[tabCtrlViews.SelectedIndex]; } }
-        Options opts;
+        private Options opts;
         public void Init(ref Options _opts)
         {
             opts = _opts;
             chkAutoRefresh.IsChecked = opts.Autorefresh; imageFolder = opts.ImageDepotFolder; 
             colListWidth.Width = new GridLength(opts.ViewColWidth);
             foreach (iPicList ipl in views)
-                ipl.Init(ref opts);            
+                ipl.Init(ref opts, false);            
         }
         public void Finish()
         {
@@ -347,6 +394,10 @@ namespace scripthea.viewer
             foreach (iPicList ipl in views)
                 ipl.Finish();
         }
+        public UserControl parrent { get { return this; } }
+        public GroupBox groupFolder { get { return gbFolder; } }
+        public TextBox textFolder { get { return tbImageDepot; } }
+
         private string _imageFolder;
         public string imageFolder
         {
@@ -401,7 +452,7 @@ namespace scripthea.viewer
             int k = sender.Equals(btnFindUp) ? -1 : 1;
             if (activeView.selectedIndex.Equals(-1)) activeView.selectedIndex = 1;
             int idx = activeView.selectedIndex + k -1;
-            List<Tuple<int, string, string>> items = activeView.items;
+            List<Tuple<int, string, string>> items = activeView.GetItems(true,true);
             while (idx > -1 && idx < items.Count)
             {
                 string prompt = Convert.ToString(items[idx].Item3);
@@ -427,12 +478,12 @@ namespace scripthea.viewer
                 return; 
             }
             DepotFolder df = new DepotFolder(imageFolder);
-            if (!df.IsEnabled) { Log("Error: This is not an image depot."); return; }
+            if (!df.isEnabled) { Log("Error: This is not an image depot."); return; }
             List<Tuple<int, string, string>> decompImageDepot = df.Export2Viewer(); // DecompImageDepot(imageFolder, true);
             if (!Utils.isNull(decompImageDepot))
             {
                 showing = false;
-                activeView.FeedList(decompImageDepot, imageFolder);
+                activeView.FeedList(imageFolder);
                 showing = true;
             }
             if (!Utils.isNull(e)) e.Handled = true;

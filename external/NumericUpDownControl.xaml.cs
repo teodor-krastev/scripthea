@@ -35,7 +35,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Text.RegularExpressions;
 
-namespace NumericUpDownControl
+namespace UtilsNS
 {
     /// <summary>
     /// Interaction logic for NumericBox.xaml

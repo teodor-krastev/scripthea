@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:scripthea.external" xmlns:NumericUpDownControl="clr-namespace:NumericUpDownControl"
+             xmlns:local="clr-namespace:scripthea.external" xmlns:UtilsNS="clr-namespace:UtilsNS"
              mc:Ignorable="d" d:DesignWidth="800" Height="60" FontSize="13" BorderThickness="0,0,0,1" >
     <Grid>
         <StackPanel Margin="0,0,0.203,0.215" Orientation="Horizontal">
@@ -29,7 +29,7 @@
                     <Label x:Name="lbTmpInfo" Height="25" Margin="0,-8,0.076,0" Content="aver:   max:"/>
                 </StackPanel>
                 <Label VerticalAlignment="Bottom" HorizontalAlignment="Left" Content="next when T &lt;" Height="24"></Label>
-                <NumericUpDownControl:NumericBox x:Name="numGPUThreshold" HorizontalAlignment="Right" Height="25" Margin="0,0,3,0" VerticalAlignment="Bottom" Width="55" FontSize="13" Maximum="100" Minimum="2" Value="60" ValueChanged="numGPUThreshold_ValueChanged"/>
+                <UtilsNS:NumericBox x:Name="numGPUThreshold" HorizontalAlignment="Right" Height="25" Margin="0,0,3,0" VerticalAlignment="Bottom" Width="55" FontSize="13" Maximum="100" Minimum="2" Value="60" ValueChanged="numGPUThreshold_ValueChanged"/>
             </Grid>
 
         </StackPanel>

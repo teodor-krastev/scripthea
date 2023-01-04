@@ -21,10 +21,10 @@ namespace scripthea.viewer
     /// </summary>
     public partial class PicItemUC : UserControl
     {
-        public PicItemUC(ref Options _opts)
+        public PicItemUC(ref Options _opts, bool __checkable)
         {
             InitializeComponent();
-            opts = _opts;
+            opts = _opts; checkable = __checkable;
         }
         Options opts;
         private int _idx;
@@ -33,8 +33,8 @@ namespace scripthea.viewer
         public bool selected
         {
             get { return _selected; }
-            set 
-            { 
+            set
+            {
                 _selected = value;
                 if (value)
                 {
@@ -45,11 +45,28 @@ namespace scripthea.viewer
                 {
                     Background = Brushes.White;
                     tbCue.Foreground = Brushes.Black; lbFile.Foreground = Brushes.Black;
-
                 }
-
             }
         }
+        private bool _checkable;
+        public bool checkable
+        {
+            get { return _checkable; }
+            set
+            { 
+                _checkable = value; VisualUpdate();
+            }
+        }
+        public bool? IsChecked
+        {
+            get 
+            { 
+                if (!checkable) return null;
+                return chkChecked.IsChecked.Value; 
+            }
+            set { chkChecked.IsChecked = value; }
+        }
+
         public event RoutedEventHandler OnSelect;
         /// <summary>
         /// Receive message
@@ -74,10 +91,10 @@ namespace scripthea.viewer
             if (File.Exists(filePath))
             {
                 imageFolder = System.IO.Path.GetDirectoryName(filePath) +"\\";               
-                imgPic.Source = new BitmapImage(new Uri(filePath)).Clone();
+                imgPic.Source = ImgUtils.UnhookedImageLoad(filePath);
             }
             else lbFile.Foreground = Brushes.Tomato;
-            lbFile.Content = filename;
+            lbFile.Text = filename;
             prompt = _prompt; tbCue.Text = prompt;            
             selected = false;
         }
@@ -85,15 +102,26 @@ namespace scripthea.viewer
         {
             Select(this, null);  
         }
-        const int baseWidth = 80; const int baseHeight = 96;
+        const int baseWidth = 100; const int baseHeight = 100;
         public void VisualUpdate() // by opts
         {
             opts.ThumbZoom = Utils.EnsureRange(opts.ThumbZoom, 30, 300);
             this.Width = baseWidth * opts.ThumbZoom / 100; this.Height = baseHeight * opts.ThumbZoom / 100;
-            if (opts.ThumbCue) CueRow.Height = new GridLength(40);
+            // top
+            if (checkable || opts.ThumbCue)
+            {
+                if (opts.ThumbCue) CueRow.Height = new GridLength(40);
+                else CueRow.Height = new GridLength(15);
+            }
             else CueRow.Height = new GridLength(1);
+            if (checkable) { chkChecked.Visibility = Visibility.Visible; tbCue.Margin = new Thickness(15, 0, 0, 0); }
+            else { chkChecked.Visibility = Visibility.Collapsed; tbCue.Margin = new Thickness(0); }
+            if (opts.ThumbCue) tbCue.Visibility = Visibility.Visible;
+            else tbCue.Visibility = Visibility.Collapsed;
+            // bottom
             if (opts.ThumbFilename) FileRow.Height = new GridLength(25);
             else FileRow.Height = new GridLength(1);
+            // frame
             if (!opts.ThumbCue && !opts.ThumbFilename) grid.Margin = new Thickness(6);
             else grid.Margin = new Thickness(3);
         }

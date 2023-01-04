@@ -24,6 +24,7 @@ using System.Management;
 
 using Label = System.Windows.Controls.Label;
 using FontFamily = System.Windows.Media.FontFamily;
+using System.Linq;
 
 //using NationalInstruments.Controls;
 //using Newtonsoft.Json;
@@ -739,6 +740,11 @@ namespace UtilsNS
             if (Value > MaxValue) return MaxValue;
             return Value;
         }
+        public static bool dblEqualsZero(double d, double eps = 1e-12)
+        {
+            if (d.Equals(Double.NaN)) return false;
+            return InRange(d, -eps, eps);
+        }
         /// <summary>
         /// Check if Value is in range[MinValue..MaxValue] (double)
         /// no limits order required
@@ -747,9 +753,10 @@ namespace UtilsNS
         /// <param name="MinValue"></param>
         /// <param name="MaxValue"></param>
         /// <returns></returns>
-        public static bool InRange(double Value, double MinValue, double MaxValue)
+        public static bool InRange(double Value, double MinValue, double MaxValue, bool ordered = false)
         {
-            if (MinValue > MaxValue) return InRange(Value, MaxValue, MinValue);
+            if ((MinValue > MaxValue) && !ordered) return InRange(Value, MaxValue, MinValue);
+            
             return ((MinValue <= Value) && (Value <= MaxValue));
         }
         /// <summary>
@@ -759,9 +766,9 @@ namespace UtilsNS
         /// <param name="Value"></param>
         /// <param name="MinValue"></param>
         /// <param name="MaxValue"></param>
-        public static bool InRange(int Value, int MinValue, int MaxValue)
+        public static bool InRange(int Value, int MinValue, int MaxValue, bool ordered = false)
         {
-            if (MinValue > MaxValue) return InRange(Value, MaxValue, MinValue);
+            if ((MinValue > MaxValue) && !ordered) return InRange(Value, MaxValue, MinValue);
             return ((MinValue <= Value) && (Value <= MaxValue));
         }
         /// <summary>
@@ -994,7 +1001,7 @@ namespace UtilsNS
             }
         }
         /// <summary>
-        /// Random string (for testing purposes)
+        /// Random string (for testing purposes or random fileName)
         /// </summary>
         /// <param name="length"></param>
         /// <returns></returns>
@@ -1021,7 +1028,30 @@ namespace UtilsNS
                 return ss.Remove(length);
             }
         }
-
+        public static bool validFileName(string fileName)
+        {
+            bool isValid = true;        
+            if (string.IsNullOrEmpty(fileName) || Path.GetInvalidFileNameChars().Any(x => fileName.Contains(x)))
+            {
+                isValid = false;
+            }
+            // Check if the file name is too long
+            if (fileName.Length > 260)
+            {
+                isValid = false;
+            }
+            return isValid;
+        }
+        public static string correctFileName(string fileName)
+        {
+            string correctedFileName = string.Join("_", fileName.Split(Path.GetInvalidFileNameChars()));
+            // Truncate the file name if it is too long
+            if (correctedFileName.Length > 260)
+            {
+                correctedFileName = correctedFileName.Substring(0, 260);
+            }
+            return correctedFileName;
+        }
         public static double tick2sec(long ticks)
         {
             TimeSpan interval = TimeSpan.FromTicks(ticks);

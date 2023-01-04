@@ -25,19 +25,19 @@ namespace scripthea.composer
         {
             InitializeComponent();
         }
-        public CueItemUC(string text, bool onoff = false)
+        public CueItemUC(string text, bool _radioChecked = false)
         {
-            InitializeComponent(); radioChecked = onoff;
-            tbSeed.Text = text; ;
+            InitializeComponent(); radioChecked = _radioChecked;
+            tbCue.Text = text; ;
         }
 
-        public CueItemUC(List<string> text, bool onoff = false)
+        public CueItemUC(List<string> text, bool _radioChecked = false)
         {
-            InitializeComponent(); radioChecked = onoff;
-            tbSeed.Text = ""; int k = 0;
+            InitializeComponent(); radioChecked = _radioChecked;
+            tbCue.Text = ""; int k = 0;
             foreach (string line in text)
             {
-                tbSeed.Text += line + (k.Equals(text.Count - 1) ? "": "\r"); k++;
+                tbCue.Text += line + (k.Equals(text.Count - 1) ? "": "\r"); k++;
             }
         }
         public event Utils.LogHandler OnLog;
@@ -76,16 +76,16 @@ namespace scripthea.composer
 
         public string cueText
         {
-            get { return tbSeed.Text; }
+            get { return tbCue.Text; }
         }
 
         public List<string> cueTextAsList(bool noComment = true)
         {
-            List<string> ls = new List<string>(); tbSeed.UpdateLayout();
-            int lineCount = tbSeed.LineCount;
+            List<string> ls = new List<string>(); tbCue.UpdateLayout();
+            int lineCount = tbCue.LineCount;
             for (int line = 0; line < lineCount; line++)
             {
-                string ss = tbSeed.GetLineText(line);
+                string ss = tbCue.GetLineText(line);
                 ss = noComment ? Utils.skimRem(ss) : ss;
                 if (!ss.Equals("")) ls.Add(ss);
             }

@@ -5,15 +5,18 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:scripthea.viewer"
              mc:Ignorable="d" 
-             d:DesignHeight="155.793" d:DesignWidth="169.387" Width="120" Height="200">
+             d:DesignHeight="200" d:DesignWidth="200" Width="200" Height="200">
     <Grid x:Name="grid" Margin="3">
         <Grid.RowDefinitions>
             <RowDefinition Height="100" x:Name="CueRow"/>
             <RowDefinition Height="1*" x:Name="ImageRow"/>
             <RowDefinition Height="60" x:Name="FileRow"/>
         </Grid.RowDefinitions>
-        <TextBox x:Name="tbCue" TextWrapping="Wrap" Text="" Background="{x:Null}" IsReadOnly="True" BorderThickness="1,1,0,0" BorderBrush="{x:Null}" />
-        <Label x:Name="lbFile" Grid.Row="2" Margin="0"></Label>
+        <Grid>
+            <CheckBox x:Name="chkChecked" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0"></CheckBox>
+            <TextBox x:Name="tbCue" TextWrapping="Wrap" Background="{x:Null}" IsReadOnly="True" BorderThickness="1,1,0,0" BorderBrush="{x:Null}" Margin="0,0,0,0.253" />
+        </Grid>
         <Image x:Name="imgPic"  Margin="0" Grid.Row="1" MouseDown="imgPic_MouseDown_1"/>
+        <TextBlock x:Name="lbFile" Grid.Row="2" Margin="0"></TextBlock>
     </Grid>
 </UserControl>

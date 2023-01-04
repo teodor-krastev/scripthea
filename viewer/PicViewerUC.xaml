@@ -26,7 +26,7 @@
         <ScrollViewer x:Name="scrollViewer" Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Visibility="Collapsed">
         </ScrollViewer>
         <Grid x:Name="noscrollGrid" Grid.Row="1">
-            <Image x:Name="image" Margin="5" />
+            <Image x:Name="image" Margin="5" PreviewMouseLeftButtonDown="image_PreviewMouseLeftButtonDown" />
         </Grid>
         <Grid Grid.Row="2" Background="White" Margin="7,0,0,0" >
             <Grid.ColumnDefinitions>

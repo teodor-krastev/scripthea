@@ -17,6 +17,7 @@ using Microsoft.WindowsAPICodePack.Dialogs;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using scripthea.external;
+using scripthea.master;
 using UtilsNS;
 
 namespace scripthea.composer
@@ -28,12 +29,11 @@ namespace scripthea.composer
     /// <summary>
     /// Interaction logic for QueryUC.xaml
     /// </summary>
-    public partial class QueryUC : UserControl
+    public partial class QueryUC : UserControl, iFocusControl
     {
         //public string defaultImageFolder = Utils.basePath + "\\images\\";
+        protected Options opts;
         public ControlAPI API;
-        public Options opts;
-        public PreferencesWindow prefsWnd;
         public QueryUC()
         {
             InitializeComponent();
@@ -68,7 +68,7 @@ namespace scripthea.composer
             if (Utils.TheosComputer()) { cbiDiffusion.Visibility = Visibility.Visible; btnTest.Visibility = Visibility.Visible; }
             else { cbiDiffusion.Visibility = Visibility.Collapsed; btnTest.Visibility = Visibility.Collapsed; }
 
-            prefsWnd = new PreferencesWindow();
+            
         }
         public void Finish()
         {
@@ -78,11 +78,11 @@ namespace scripthea.composer
             {
                API.eCancel = false; API.Close();
             }
-            if (!Utils.isNull(prefsWnd))
-            {
-                prefsWnd.keepOpen = false; prefsWnd.Close();
-            }
         }
+        public UserControl parrent { get { return this; } }
+        public GroupBox groupFolder { get { return gbFolder; } }
+        public TextBox textFolder { get { return tbImageDepot; } }
+
         private Status _status;
         public Status status
         {
@@ -220,8 +220,8 @@ namespace scripthea.composer
         {
             if (Utils.isNull(cuePoolUC) || Utils.isNull(modifiersUC)) return;
             if (Utils.isNull(cuePoolUC.ActiveCueList) && !status.Equals(Status.Undefined)) { Log("Err: no active cue pool."); return; }
-            if (Utils.isNull(cuePoolUC.ActiveCueList?.allSeeds) || Utils.isNull(modifiersUC.modifLists)) return;
-            List<CueItemUC> selectedSeed = cuePoolUC?.ActiveCueList?.selectedSeeds();
+            if (Utils.isNull(cuePoolUC.ActiveCueList?.allCues) || Utils.isNull(modifiersUC.modifLists)) return;
+            List<CueItemUC> selectedSeed = cuePoolUC?.ActiveCueList?.selectedCues();
             if (Utils.isNull(selectedSeed)) { Log("Err: no cue is selected. (35)"); return; }
             if (selectedSeed.Count.Equals(0)) { /*Log("Err: no cue is selected. (58)");*/ return; }
             Compose(sender, selectedSeed[0], modifiersUC.Composite());
@@ -266,7 +266,7 @@ namespace scripthea.composer
 
         private void GetScanPrompts()
         {        
-            List<CueItemUC> selectedSeeds = cuePoolUC?.ActiveCueList?.selectedSeeds(); scanPrompts = new List<string>(); 
+            List<CueItemUC> selectedSeeds = cuePoolUC?.ActiveCueList?.selectedCues(); scanPrompts = new List<string>(); 
             if (Utils.isNull(selectedSeeds)) { Log("Err: no cue is selected (12)"); return; }
             if (selectedSeeds.Count.Equals(0)) { Log("Err: no cue is selected (96)"); return; }
             List<string> ScanModifs = modifiersUC.ModifItemsByType(ModifStatus.Scannable); 
@@ -352,7 +352,7 @@ namespace scripthea.composer
                 Utils.TimedMessageBox("API is busy, try again later...", "Warning"); return;
             }            
             btnCompose_Click(null, null); status = Status.SingeQuery;
-            QueryAPI(Compose(null, cuePoolUC.ActiveCueList?.selectedSeeds()[0], modifiersUC.Composite()));
+            QueryAPI(Compose(null, cuePoolUC.ActiveCueList?.selectedCues()[0], modifiersUC.Composite()));
         }
 
         private void tbCue_TextChanged(object sender, TextChangedEventArgs e)
@@ -480,9 +480,5 @@ namespace scripthea.composer
             Log("time " + (t / ns).ToString("G3") + " [sec] per file");
         }
 
-        private void imgPreferences_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            prefsWnd.ShowDialog();
-        }
     }
 }

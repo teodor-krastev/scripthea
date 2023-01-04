@@ -14,6 +14,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Drawing;
 using UtilsNS;
+using Path = System.IO.Path;
+using System.Drawing.Imaging;
 
 namespace scripthea.viewer
 {
@@ -50,14 +52,13 @@ namespace scripthea.viewer
             tbName.Text = System.IO.Path.GetFileName(filePath);
             if (!File.Exists(filePath))
             {
-                image.Source = new BitmapImage(new Uri(Utils.basePath + "\\Properties\\file_not_found.jpg"));
+                image.Source = ImgUtils.UnhookedImageLoad(Utils.basePath + "\\Properties\\file_not_found.jpg", ImageFormat.Jpeg);
                 tbName.Foreground = System.Windows.Media.Brushes.Red;
                 return;
             }
             tbName.Foreground = System.Windows.Media.Brushes.Navy;
-            var uri = new Uri(filePath);
-            var bitmap = new BitmapImage(uri);
-            image.Source = bitmap.Clone(); image.UpdateLayout(); bitmap = null;
+            if (File.Exists(filePath)) image.Source = ImgUtils.UnhookedImageLoad(filePath, ImageFormat.Png);
+            //var uri = new Uri(filePath); var bitmap = new BitmapImage(uri);  image.Source = bitmap.Clone(); image.UpdateLayout(); bitmap = null;
             tbCue.Text = prompt;
         }
 
@@ -139,6 +140,14 @@ for (int i=1; i <= NumberOfRetries; ++i) {
             lboxMetadata.Visibility = Visibility.Collapsed;
             columnMeta.Width = new GridLength(1);
             rowBottom.Height = new GridLength(42);
+        }
+
+        private void image_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            string filePath = Path.Combine(tbPath.Text, tbName.Text);
+            DataObject data = new DataObject(DataFormats.FileDrop, new string[] { filePath });
+            // Start the drag-and-drop operation
+            DragDrop.DoDragDrop(image, data, DragDropEffects.Copy);
         }
     }
 }

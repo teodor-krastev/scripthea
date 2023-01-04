@@ -110,13 +110,23 @@
     <Compile Include="composer\ScanPreviewUC.xaml.cs">
       <DependentUpon>ScanPreviewUC.xaml</DependentUpon>
     </Compile>
-    <Compile Include="composer\Preferences.xaml.cs">
+    <Compile Include="Preferences.xaml.cs">
       <DependentUpon>Preferences.xaml</DependentUpon>
     </Compile>
     <Compile Include="external\ControlAPI.xaml.cs">
       <DependentUpon>ControlAPI.xaml</DependentUpon>
     </Compile>
-    <Compile Include="external\ImportUtilUC.xaml.cs">
+    <Compile Include="master\DepotMasterUC.xaml.cs">
+      <DependentUpon>DepotMasterUC.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="master\ExportUtilUC.xaml.cs">
+      <DependentUpon>ExportUtilUC.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="master\FocusControl.cs" />
+    <Compile Include="master\ImagePickerUC.xaml.cs">
+      <DependentUpon>ImagePickerUC.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="master\ImportUtilUC.xaml.cs">
       <DependentUpon>ImportUtilUC.xaml</DependentUpon>
     </Compile>
     <Compile Include="external\CraiyonWebUC.xaml.cs">
@@ -128,7 +138,7 @@
     <Compile Include="external\SDiffusionUC.xaml.cs">
       <DependentUpon>SDiffusionUC.xaml</DependentUpon>
     </Compile>
-    <Compile Include="external\DirTreeUC.xaml.cs">
+    <Compile Include="master\DirTreeUC.xaml.cs">
       <DependentUpon>DirTreeUC.xaml</DependentUpon>
     </Compile>
     <Compile Include="external\SDoptions.xaml.cs">
@@ -191,7 +201,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="composer\Preferences.xaml">
+    <Page Include="Preferences.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -199,7 +209,19 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="external\ImportUtilUC.xaml">
+    <Page Include="master\DepotMasterUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="master\ExportUtilUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="master\ImagePickerUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="master\ImportUtilUC.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -215,7 +237,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="external\DirTreeUC.xaml">
+    <Page Include="master\DirTreeUC.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -347,6 +369,25 @@
   <ItemGroup>
     <Resource Include="Properties\TripleBarGrey.bmp" />
     <Resource Include="Properties\TripleBarRusty.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Properties\TripleBarBlack.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Properties\del_left.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Properties\del_right.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Properties\blue_left_arrow.png" />
+    <Resource Include="Properties\blue_right_arrow.png" />
+    <Resource Include="Properties\green_left_arrow.png" />
+    <Resource Include="Properties\green_right_arrow.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Properties\left_black_arrow.png" />
+    <Resource Include="Properties\right_black_arrow.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
