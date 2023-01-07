@@ -86,6 +86,9 @@
     <Compile Include="AboutWin.xaml.cs">
       <DependentUpon>AboutWin.xaml</DependentUpon>
     </Compile>
+    <Compile Include="composer\CueEditorUC.xaml.cs">
+      <DependentUpon>CueEditorUC.xaml</DependentUpon>
+    </Compile>
     <Compile Include="composer\CuePoolUC.xaml.cs">
       <DependentUpon>CuePoolUC.xaml</DependentUpon>
     </Compile>
@@ -166,6 +169,10 @@
       <DependentUpon>ViewerUC.xaml</DependentUpon>
     </Compile>
     <Page Include="AboutWin.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="composer\CueEditorUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

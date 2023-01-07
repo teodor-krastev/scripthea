@@ -28,7 +28,7 @@ namespace scripthea.composer
         public CueItemUC(string text, bool _radioChecked = false)
         {
             InitializeComponent(); radioChecked = _radioChecked;
-            tbCue.Text = text; ;
+            tbCue.Text = text; 
         }
 
         public CueItemUC(List<string> text, bool _radioChecked = false)
@@ -77,6 +77,7 @@ namespace scripthea.composer
         public string cueText
         {
             get { return tbCue.Text; }
+            set { tbCue.Text = value; }
         }
 
         public List<string> cueTextAsList(bool noComment = true)

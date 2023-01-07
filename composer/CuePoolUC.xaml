@@ -35,6 +35,11 @@
                     </GroupBox>
                 </Grid>
             </TabItem>
+            <TabItem x:Name="tiEditor" Header="Editor" Height="27" Width="70" Background="#FFF0EFEF">
+                <local:CueEditorUC x:Name="cueEditor"/>
+            </TabItem>
+            
+
         </TabControl>
     </Grid>
 </UserControl>

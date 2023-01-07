@@ -30,6 +30,7 @@ namespace scripthea.composer
         private List<string> cueFiles; 
         public List<CueItemUC> allCues; // all cues
         public List<List<CueItemUC>> localCues; // cues by tab
+        private List<ScrollViewer> localScrolls;
         public bool isBusy = false;
         public string cuesFolder { get { return Path.Combine(Utils.basePath, "cues"); } } 
         public void Init(List<string> _cueFiles = null)
@@ -40,7 +41,8 @@ namespace scripthea.composer
                 if (Utils.isNull(_cueFiles)) cueFiles = new List<string>(Directory.GetFiles(cuesFolder, "*.cues"));
                 else cueFiles = new List<string>(_cueFiles);
 
-                allCues = new List<CueItemUC>(); localCues = new List<List<CueItemUC>>(); tcLists.Items.Clear();
+                tcLists.Items.Clear(); localScrolls = new List<ScrollViewer>(); 
+                allCues = new List<CueItemUC>(); localCues = new List<List<CueItemUC>>(); 
                 foreach (string sf in _cueFiles)
                 {
                     if (!File.Exists(sf)) { Log("Error: File <" + sf + "> is missing."); continue; }
@@ -54,12 +56,13 @@ namespace scripthea.composer
                         Background = Utils.ToSolidColorBrush("#FFFFFFF8")
                     };
                     tcLists.Items.Add(newTabItem); List<CueItemUC> ocl = new List<CueItemUC>(); localCues.Add(ocl);
-                    ScrollViewer sv = new ScrollViewer(); sv.CanContentScroll = true; newTabItem.Content = sv;
+                    ScrollViewer sv = new ScrollViewer(); sv.CanContentScroll = true; newTabItem.Content = sv; localScrolls.Add(sv);
                     StackPanel sp = new StackPanel(); sv.Content = sp;                
                     AddCues(sp, ref ocl, sf);
-                }
-                if (allCues.Count > 0) allCues[0].radioChecked = true;
-                if (tcLists.SelectedIndex.Equals(-1)) tcLists.SelectedIndex = 0; //???
+                }          
+                if (tcLists.Items.Count > 0) tcLists.SelectedIndex = 0;                
+                tabControl_SelectionChanged(null, null);
+                if (allCues.Count > 0) { allCues[0].radioChecked = true; allCues[0].rbChecked.UpdateLayout(); }
             }
             catch (Exception ex) { Utils.TimedMessageBox(ex.Message); }
             finally { isBusy = false; }
@@ -117,7 +120,7 @@ namespace scripthea.composer
                 }
             }
         }
-        public List<CueItemUC> selectedCues(int tabIdx = -1) // -1 -> allCues in non-radio
+        public List<CueItemUC> selectedCues(int tabIdx = -1) // -1 -> allCues in non-radio mode
         {
             List<CueItemUC> ssd = new List<CueItemUC>();
             if (radioMode)
@@ -180,6 +183,7 @@ namespace scripthea.composer
                 if (!Utils.InRange(value, 0,ssd.Count)) return;
                 ssd[value].radioChecked = true;
                 Change(ssd[value].rbChecked, null);
+                if (value == 0) localScrolls[tcLists.SelectedIndex].ScrollToVerticalOffset(0);
             }
         }
         private bool _radioMode = true;
@@ -222,9 +226,6 @@ namespace scripthea.composer
             localCueIdx = si;
         }
         private readonly string[] miTitles = { "Check All", "Uncheck All", "Invert Checking" };
-        private void imgMenu_ContextMenuOpening(object sender, ContextMenuEventArgs e)
-        {
-        }
         private void mi_Click(object sender, RoutedEventArgs e)
         {            
             MenuItem mi = sender as MenuItem; string header = Convert.ToString(mi.Header);

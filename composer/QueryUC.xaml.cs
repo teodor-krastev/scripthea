@@ -48,7 +48,7 @@ namespace scripthea.composer
             Log("@_Header=loading cues files (*.cues)");            
             cuePoolUC.OnChange += new RoutedEventHandler(ChangeCue);            
             cuePoolUC.OnLog += new Utils.LogHandler(Log);
-            cuePoolUC.Init();
+            cuePoolUC.Init(ref opts);
             
             Log("@_Header=loading modifiers files (*.mdfr)");
             modifiersUC.OnChange += new RoutedEventHandler(ChangeModif);

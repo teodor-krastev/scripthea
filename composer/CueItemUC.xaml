@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:scripthea.composer"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid Margin="0" >
+    <Grid Margin="0" Background="#FFEFF4F4" >
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="20"/>
             <ColumnDefinition Width="1*"/>
@@ -15,6 +15,6 @@
             <RadioButton x:Name="rbChecked" Content="" Margin="0" VerticalAlignment="Center" HorizontalAlignment="Center" GroupName="RadioSeeds" />
             <CheckBox x:Name="checkBox" Content="" Margin="0" VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="Collapsed"/>
         </Grid>
-        <TextBox x:Name="tbCue" Grid.Column="1" Margin="0" TextWrapping="Wrap" IsReadOnly="True" Background="White" Text="□" FontSize="13" FontStyle="Normal"/>
+        <TextBox x:Name="tbCue" Grid.Column="1" Margin="2" TextWrapping="Wrap" IsReadOnly="True" Background="White" Text="□" FontSize="13" FontStyle="Normal" AcceptsReturn="True" BorderThickness="0" BorderBrush="#FFF1F8FD"/>
     </Grid>
 </UserControl>

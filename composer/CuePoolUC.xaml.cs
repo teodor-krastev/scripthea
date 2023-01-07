@@ -27,7 +27,7 @@ namespace scripthea.composer
         }
         public string cuesFolder { get { return Path.Combine(Utils.basePath, "cues"); } }
         public string mapFile { get { return System.IO.Path.Combine(Utils.basePath, "cues", "cue_pools.map"); } }
-        private int poolCount { get { return tabControl.Items.Count - 1; } }
+        private int poolCount { get { return tabControl.Items.Count - 2; } }
         private List<Dictionary<string, bool>> poolMap;
         public List<string> GetLists(int idx) // full path
         {
@@ -43,7 +43,7 @@ namespace scripthea.composer
         {
             get
             {
-                if (Utils.isNull(cueLists) || tabControl.SelectedIndex.Equals(poolCount)) return null;
+                if (Utils.isNull(cueLists) || tabControl.SelectedIndex >= poolCount) return null;
                 return cueLists[tabControl.SelectedIndex];
             }
         }
@@ -58,8 +58,10 @@ namespace scripthea.composer
             }            
             return "";
         }
-        public void Init()
+        private Options opts;
+        public void Init(ref Options _opts)
         {
+            opts = _opts;
             if (File.Exists(mapFile))
             {
                 string json = System.IO.File.ReadAllText(mapFile);
@@ -117,6 +119,8 @@ namespace scripthea.composer
             if (cueLists.Count > 0)
                 if (cueLists[0].allCues.Count > 0)
                     cueLists[0].allCues[0].radioChecked = true;
+            // editor
+            cueEditor.Init(ref opts);
         }
         public event RoutedEventHandler OnChange;
         protected void Change(object sender, RoutedEventArgs e)
@@ -222,6 +226,7 @@ namespace scripthea.composer
             if (Utils.InRange(idx, 0, poolCount-1) && !Utils.isNull(cueLists)) 
                 cueLists[idx].tabControl_SelectionChanged(null, null);
             lastTabIdx = idx; if (Utils.InRange(idx, 0, poolCount-1)) lastPoolIdx = idx;
+            if (tabControl.SelectedItem.Equals(tiEditor)) cueEditor.selected = 0;
             if (!Utils.isNull(e)) e.Handled = true;
         }
     }
