@@ -41,14 +41,14 @@
                         <CheckBox x:Name="chkOneLineCue" Content="One line cue" Width="87" Margin="105,50,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Checked="UpdateToOptions" Unchecked="UpdateToOptions" IsChecked="True" Visibility="Collapsed" />
                     </Grid>
                 </TabItem>
-                <TabItem x:Name="tiScan" Header="Scan" Height="25" Background="#FFECECEC" Margin="4,0,-9.063,0.089" HorizontalAlignment="Left" Width="69" >
+                <TabItem x:Name="tiScan" Header="Scan" Height="25" Background="#FFECECEC" Margin="5,0,-9.063,0.089" HorizontalAlignment="Left" Width="69" >
                     <Grid Background="#FFFAF7ED">
                         <Button x:Name="btnScan" Content="S c a n" Height="30" Width="77" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,7,0,0" FontWeight="Bold" Background="#FFF5FAEB" Click="btnScan_Click" FontSize="13"/>
                         <TextBox HorizontalAlignment="Right" Text="Combine all checked cues + fixed modifiers with one from the scanned modifiers." Width="162" Margin="0,0,-0.228,0" TextWrapping="Wrap" Background="{x:Null}" BorderBrush="{x:Null}" VerticalAlignment="Top" FontSize="12"/>
                         <Button x:Name="btnScanPreview" Content="Scan Preview" Height="30" Width="98" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10,0,0,7" Background="MintCream" FontSize="13" Click="btnScanPreview_Click"/>
                     </Grid>
                 </TabItem>
-                <TabItem x:Name="tiOptions" Header="Options" Height="25" Background="#FFECECEC" Margin="6,0,-9.063,0.089" HorizontalAlignment="Left" Width="70">
+                <TabItem x:Name="tiOptions" Header="Options" Height="25" Background="#FFECECEC" Margin="10,0,-11,0.089" HorizontalAlignment="Left" Width="70">
                     <Grid >
                         <GroupBox x:Name="gbFolder" VerticalAlignment="Bottom" Header="Image depot folder"  Height="47">
                             <Grid>
@@ -85,7 +85,7 @@
         <GridSplitter x:Name="gridSplitRight" Grid.Column="1" HorizontalAlignment="Left" Margin="0" Width="5" Background="#FFF4FAFF"/>
         <Grid Grid.Column="1" >
             <Grid.RowDefinitions>
-                <RowDefinition x:Name="rowAPI" Height="50"/>
+                <RowDefinition x:Name="rowAPI" Height="65"/>
                 <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
             <Grid x:Name="gridAPI" Margin="7,0,0,0"></Grid>

@@ -27,6 +27,8 @@ namespace UtilsNS
         public static string defaultImageDepot
         { get { return System.IO.Path.Combine(Utils.basePath, "images"); } }
 
+        public static BitmapImage file_not_found { get { return UnhookedImageLoad(Utils.basePath + "\\Properties\\file_not_found.jpg", ImageFormat.Jpeg); } }
+
         public static int checkImageDepot(string imageDepot, bool checkDesc = true) 
         {
             string idepot = imageDepot.EndsWith("\\") ? imageDepot : imageDepot + "\\";
@@ -152,10 +154,21 @@ namespace UtilsNS
                     if (bitmapMetadata == null) return false;
                     var metadata = bitmapMetadata.GetQuery(query);
                     string md = metadata?.ToString();
-                    var mda = md.Split((char)10);
-                    if (mda.Length != 2) return false;
-                    itemMap.Add("prompt", mda[0]);
-                    var mdb = mda[1].Split(',');
+                    var mda = md.Split((char)10); string[] mdb; string prompt = "";
+                    if (mda.Length < 2) return false;
+                    if (mda.Length > 2)
+                    {
+                        List<string> ls = new List<string>(mda);
+                        mdb = ls[ls.Count-1].Split(',');
+                        ls.RemoveAt(ls.Count - 1);
+                        prompt = String.Join("_",ls.ToArray());
+                    }
+                    else
+                    { 
+                        prompt = mda[0];
+                        mdb = mda[1].Split(',');
+                    }
+                    itemMap.Add("prompt", prompt);
                     if (mdb.Length.Equals(0)) return false;
                     foreach(var item in mdb)
                     {
@@ -176,7 +189,6 @@ namespace UtilsNS
             catch (Exception e) { Utils.TimedMessageBox("Error (I/O): " + e.Message, "Error message", 3000); return false; }
             return itemMap.Count > 0;
         }
-
     }
     /// <summary>
     /// display folders and subfolders in a treeview wpf c#
@@ -197,9 +209,18 @@ namespace UtilsNS
                 return "";
             }
         }
+        List<string> history; string historyFile;
         public void Init()
         {
             List<string> ld = new List<string>(Directory.GetLogicalDrives());
+            historyFile = Path.Combine(Utils.configPath, "history.lst");
+            if (File.Exists(historyFile))
+            {
+                List<string> ls = Utils.readList(historyFile); history = new List<string>(); 
+                foreach (string ss in ls)
+                    if (Directory.Exists(ss)) history.Add(ss);
+            }
+            else history = new List<string>();           
             ld.Insert(0, AppDataStr);
             foreach (string s in ld)
             {
@@ -214,6 +235,11 @@ namespace UtilsNS
                 tbSelected.Visibility = Visibility.Collapsed; tvFolders.Margin = new Thickness(0);
             }
         }
+        public void Finish() 
+        {
+            Utils.writeList(historyFile, history);
+        }
+
         public delegate void SelectHandler(string path);
         public event SelectHandler OnSelect;
         protected void Select(string path)
@@ -224,8 +250,13 @@ namespace UtilsNS
         protected void Active(string path)
         {
             if (OnActive != null) OnActive(path);
+            if (history.Count > 0)
+            {
+                if (Utils.comparePaths(path, history[0])) return;
+            }
+            history.Insert(0, path);
+            while (history.Count > 12) history.RemoveAt(history.Count - 1);
         }
-
         TreeViewItem dummyNode = null;
         void folder_Expanded(object sender, RoutedEventArgs e)
         {
@@ -390,6 +421,24 @@ namespace UtilsNS
                 default: Utils.TimedMessageBox("internal error #951");
                     break;
             }
+        }
+
+        private void btnHistory_Click(object sender, RoutedEventArgs e)
+        {
+            cmHistory.Items.Clear();
+            for (int i = 0; i < history.Count; i++)
+            {
+                MenuItem hmi = new MenuItem() { Name = "hmi" + i.ToString(), Header = history[i] };                
+                hmi.Click += hmi_Click;
+                cmHistory.Items.Add(hmi);
+            }
+            cmHistory.IsOpen = true;
+        }
+
+        void hmi_Click(object sender, RoutedEventArgs e)
+        {
+            MenuItem hmi = sender as MenuItem; string header = Convert.ToString(hmi.Header);
+            CatchAFolder(header); Active(header);
         }
     }    
 }

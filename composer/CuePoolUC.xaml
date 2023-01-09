@@ -8,11 +8,11 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <TabControl x:Name="tabControl" Margin="0" TabStripPlacement="Bottom" SelectionChanged="tabControl_SelectionChanged" FontSize="14" >
-            <TabItem x:Name="tiA_pool" Header="A-pool" Height="27" Width="70" Background="#FFF0EFEF">
+            <TabItem x:Name="tiA_pool" Header="A-pool" Height="27" Width="70" Background="#FFF0EFEF" Margin="3,0,-9,0">
             </TabItem>
-            <TabItem x:Name="tiB_pool" Header="B-pool" Height="27" Width="70" Background="#FFF0EFEF">
+            <TabItem x:Name="tiB_pool" Header="B-pool" Height="27" Width="70" Background="#FFF0EFEF" Margin="5,0,-9,0">
             </TabItem>
-            <TabItem x:Name="tiPoolMap" Header="Pools Map" Width="100" Background="#FFEEEDED">
+            <TabItem x:Name="tiPoolMap" Header="Pools Map" Width="100" Background="#FFEEEDED" Margin="8,0,-9,0">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="1*"/>
@@ -35,7 +35,7 @@
                     </GroupBox>
                 </Grid>
             </TabItem>
-            <TabItem x:Name="tiEditor" Header="Editor" Height="27" Width="70" Background="#FFF0EFEF">
+            <TabItem x:Name="tiEditor" Header="Editor" Height="27" Width="70" Background="#FFF0EFEF" Margin="15,0,-15,0">
                 <local:CueEditorUC x:Name="cueEditor"/>
             </TabItem>
             

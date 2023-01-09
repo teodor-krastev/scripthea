@@ -13,6 +13,12 @@
             </TreeView.ContextMenu>
         </TreeView>
         <TextBlock x:Name="tbSelected" TextWrapping="Wrap" VerticalAlignment="Bottom" Text="" Margin="0,0,0,3"/>
-        <ComboBox x:Name="cbDrives" Margin="0,0,25.203,0" SelectionChanged="comboBox_SelectionChanged" Background="#FFF0F0F0" HorizontalAlignment="Right" VerticalAlignment="Top" Width="90" Height="25" FontSize="13"/>
+        <ComboBox x:Name="cbDrives" Margin="0,0,30,0" SelectionChanged="comboBox_SelectionChanged" Background="#FFF0F0F0" HorizontalAlignment="Right" VerticalAlignment="Top" Width="90" Height="25" FontSize="13"/>
+        <Button x:Name="btnHistory" HorizontalAlignment="Right" VerticalAlignment="Top" Background="White" Click="btnHistory_Click">
+            <Button.ContextMenu>
+                <ContextMenu x:Name="cmHistory"></ContextMenu>
+            </Button.ContextMenu>
+            <Image Source="/Scripthea;component/Properties/history.png" Width="20" Height="22"></Image>
+        </Button>
     </Grid>
 </UserControl>

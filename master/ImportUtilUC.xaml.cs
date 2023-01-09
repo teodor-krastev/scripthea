@@ -88,19 +88,31 @@ namespace scripthea.master
             }
             LoadImages(imageFolder);
         }
+        public void Clear()
+        {
+            checkBoxes?.Clear(); dTable?.Rows?.Clear(); lstFiles?.Items?.Clear(); lbAdd2Depot.Content = "";
+        }
         private List<CheckBox> checkBoxes = new List<CheckBox>();
         public void LoadImages(string path)
         {
-            //if (!Utils.comparePaths(imageFolder, path)) depotFolder = null; // new folder
+            Clear();
             if (!Directory.Exists(path))
             {
                 Log("Err: Directory <" + imageFolder + "> does not exist. "); return;
-            }
+            }            
+            if (!Utils.isNull(depotFolder))
+            {
+                if (!Utils.comparePaths(depotFolder.path, path)) depotFolder = null; // new folder
+                else lbAdd2Depot.Content = "Add to depot";
+            }                               
             else imageFolder = path;
             List<string> orgFiles = new List<string>();            
             if (Utils.isNull(depotFolder))
-            {               
-                if (ImgUtils.checkImageDepot(path, true) > -1) depotFolder = new DepotFolder(path, ImageInfo.ImageGenerator.FromDescFile);
+            {
+                if (ImgUtils.checkImageDepot(path, true) > -1)
+                {
+                    depotFolder = new DepotFolder(path, ImageInfo.ImageGenerator.FromDescFile); lbAdd2Depot.Content = "Add to depot";
+                }
                 else orgFiles = new List<string>(Directory.GetFiles(imageFolder, "*.png"));
             }
             if (!Utils.isNull(depotFolder)) orgFiles = depotFolder.Extras();     
@@ -108,7 +120,7 @@ namespace scripthea.master
             switch (tcMain.SelectedIndex)
             {
                 case 0: //tiList - redundant
-                    lstFiles.Items.Clear(); 
+                    lstFiles?.Items?.Clear(); 
                     foreach (string ss in orgFiles)
                     {
                         CheckBox chk = new CheckBox(); chk.Content = System.IO.Path.GetFileName(ss); chk.IsChecked = true;
@@ -117,7 +129,7 @@ namespace scripthea.master
                     btnConvertFolder.IsEnabled = lstFiles.Items.Count > 0;
                     break;
                 case 1: //tiGrid
-                    dTable.Rows.Clear();
+                    dTable?.Rows?.Clear();
                     foreach (string ss in orgFiles)
                         dTable.Rows.Add(true, System.IO.Path.GetFileName(ss));
                     BindData();
@@ -142,14 +154,18 @@ namespace scripthea.master
         }       
         private List<string> GetChecked(bool print = true) // list of filenames
         {
+            List<string> ls = new List<string>();
+            if (dTable?.Rows?.Count == 0)
+            {
+                if (print) lbChecked.Content = "0 out of 0"; return ls;
+            }
             int sr = lastSelectedRow; bool cc = false; //dGrid.SelectedIndex
             if (Utils.InRange(sr, 0, dTable.Rows.Count - 1))
             {
                 CheckBox chk = DataGridHelper.GetCellByIndices(dGrid, sr, 0).FindVisualChild<CheckBox>();
                 cc = chk.IsChecked.Value; 
                 dTable.Rows[sr]["on"] = chk.IsChecked.Value;
-            }            
-            List<string> ls = new List<string>();
+            }                       
             for (int i = 0; i < dTable.Rows.Count; i++)
             {
                 if (Convert.ToBoolean(dTable.Rows[i]["on"]))
@@ -191,9 +207,11 @@ namespace scripthea.master
         }
         public bool converting = false; DepotFolder depotFolder =null;
         private void btnConvertFolder_Click(object sender, RoutedEventArgs e)
-        {       
-            if (dTable.Rows.Count == 0) return; int k = 0; converting = true;
-            image.Source = new BitmapImage(new Uri(Path.Combine(Utils.configPath, "file_not_found.jpg"))); image.UpdateLayout();
+        {
+            int rc = dTable.Rows.Count;
+            if (rc == 0) return; int k = 0; int nok = 0; converting = true;
+            image.Source = null; // ImgUtils.file_not_found; 
+            image.UpdateLayout();
             
             if (Utils.isNull(depotFolder))
                 depotFolder = new DepotFolder(imageFolder, ImageInfo.ImageGenerator.StableDiffusion);
@@ -209,11 +227,12 @@ namespace scripthea.master
                         unchk.Add(efn); continue;
                     }
                     ImageInfo ii = new ImageInfo(Path.Combine(imageFolder, efn), ImageInfo.ImageGenerator.StableDiffusion, chkKeepNames.IsChecked.Value);
-                    if (!ii.IsAvailable()) continue;
+                    if (!ii.IsAvailable()) { nok++; continue; }
                     depotFolder.items.Add(ii);                   
                     k++;
                 }
                 depotFolder.Save();
+                if (nok > 0) 
                 if (chkDeleteUnchecked.IsChecked.Value)
                 {
                     foreach(string fn in unchk)
@@ -224,8 +243,13 @@ namespace scripthea.master
             }
             finally
             {
-                LoadImages(imageFolder);
-                Log("Done! Image depot of " + k.ToString() + " images was created.", Brushes.DarkGreen); 
+                if (rc > k) LoadImages(imageFolder);
+                else
+                {
+                    dTable.Rows.Clear(); image.Source = null; GetChecked();
+                }
+                string sk = (nok > 0) ? "\r\r" + nok.ToString() + " images have malformatted or missing metadata!" : "";
+                Log("Done! Image depot of " + k.ToString() + " images was created." + sk , Brushes.DarkGreen); 
                 converting = false;
             }            
         }

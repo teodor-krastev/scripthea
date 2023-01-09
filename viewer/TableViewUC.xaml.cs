@@ -39,7 +39,7 @@ namespace scripthea.viewer
             if (checkable)
                 dTable.Columns.Add(new DataColumn("on", typeof(bool)));
             dTable.Columns.Add(new DataColumn("Prompt", typeof(string)));
-            dTable.Columns.Add(new DataColumn("File", typeof(string)));
+            dTable.Columns.Add(new DataColumn("Image Filename", typeof(string)));
         }
         public void Finish()
         {
@@ -88,12 +88,12 @@ namespace scripthea.viewer
             if (OnLog != null) OnLog(txt, clr);
         }
         
-        public string imageFolder { get { return iDepot?.depotFolder; } }
+        public string imageFolder { get { return iDepot?.path; } }
         public void Clear()
         {
             if (iDepot == null) return;
-            if (iDepot.items.Count == 0) return;
-            dTable.Rows.Clear();            
+            iDepot.items.Clear();
+            dTable?.Rows?.Clear();            
         }
         public bool FeedList(string imageDepot)
         {
@@ -107,14 +107,14 @@ namespace scripthea.viewer
         public bool FeedList(ref DepotFolder _iDepot) // external iDepot
         {
             if ((dTable == null) || (_iDepot == null)) return false;
-            iDepot = _iDepot; loadedDepot = iDepot.depotFolder;
+            iDepot = _iDepot; loadedDepot = iDepot.path;
             UpdateVis();
             if (dTable.Rows.Count > 0) dGrid.SelectedIndex = 0;
             return true;
         }
         public int selectedIndex 
         {
-            get { return dGrid.SelectedIndex+1; }
+            get { return dGrid.SelectedIndex + 1; }
             set { if (Utils.InRange(value-1, 0,dTable.Rows.Count-1)) dGrid.SelectedIndex = value - 1; } 
         }
         public int Count { get { return dTable.Rows.Count; } }
@@ -156,7 +156,6 @@ namespace scripthea.viewer
 
             }
             if (OnChangeContent != null) OnChangeContent(sender, e);
-
         }
         private void DataGrid_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
         {   
@@ -166,8 +165,10 @@ namespace scripthea.viewer
             {
                 case ("#"):
                 case ("on"):
-                case ("File"):
                     col.Width = new DataGridLength(1, DataGridLengthUnitType.Auto);
+                    break;
+                case ("Image Filename"):
+                    col.Width = new DataGridLength(1, DataGridLengthUnitType.SizeToHeader);
                     break;
                 case ("Prompt"):
                     var style = new Style(typeof(TextBlock));

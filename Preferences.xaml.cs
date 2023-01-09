@@ -21,6 +21,7 @@ namespace scripthea
 {
     public class Options
     {
+        // layout 
         public int Left;
         public int Top;
         public int Height;
@@ -30,14 +31,16 @@ namespace scripthea
         public int QueryRowHeight;
         public int QueryColWidth;
         public int ViewColWidth;
-
+        // query single
         public bool SingleAuto;
         public bool OneLineCue;
-
-        public string ImageDepotFolder;
-        public string ModifPrefix;
+        // query 
+        public string ImageDepotFolder;        
         public string API;
-
+        // modufiers
+        public string ModifPrefix;
+        public bool AddEmptyModif;
+        // viewer
         public bool Autorefresh;
         public int ThumbZoom;
         public bool ThumbCue;

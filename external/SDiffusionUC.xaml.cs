@@ -118,13 +118,23 @@ namespace scripthea.external
         }
         private void iTimer_Tick(object sender, EventArgs e)
         {
-        }
+        }       
         private void OnChangeStatus()
         {
             switch (server.status)
             {
-                case AsyncSocketListener.Status.imageReady: imageReady = true;
-                    break;                    
+                case AsyncSocketListener.Status.closed: BorderBrush = Brushes.White; // before server opens 
+                    break;
+                case AsyncSocketListener.Status.waiting: BorderBrush = Brushes.Silver; // waiting the client to call
+                    break;
+                case AsyncSocketListener.Status.connected: BorderBrush = Brushes.Gold; // ... the client called from the Scripthea script   
+                    break;
+                case AsyncSocketListener.Status.promptExpect: BorderBrush = Brushes.RoyalBlue; // the script for the next prompt
+                    break;
+                case AsyncSocketListener.Status.promptSent: BorderBrush = Brushes.LightSeaGreen; // prompt sent, image is expected 
+                    break;
+                case AsyncSocketListener.Status.imageReady: imageReady = true; BorderBrush = Brushes.LimeGreen; // image has been generated
+                    break;
             }
             btnReset.IsEnabled = server.status == AsyncSocketListener.Status.promptExpect;
         }

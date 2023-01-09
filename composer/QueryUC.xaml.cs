@@ -53,7 +53,7 @@ namespace scripthea.composer
             Log("@_Header=loading modifiers files (*.mdfr)");
             modifiersUC.OnChange += new RoutedEventHandler(ChangeModif);
             modifiersUC.OnLog += new Utils.LogHandler(Log);
-            modifiersUC.Init();
+            modifiersUC.Init(ref opts);
 
             scanPreviewUC.OnLog += new Utils.LogHandler(Log);
             scanPreviewUC.btnClose.Click += new RoutedEventHandler(btnScanPreviewProcs_Click);
@@ -121,7 +121,7 @@ namespace scripthea.composer
             get { return _showAPI; }
             set 
             {
-                if (value) rowAPI.Height = new GridLength(60);
+                if (value) rowAPI.Height = new GridLength(68);
                 else rowAPI.Height = new GridLength(1);
                 if (value) imgAPIdialog.Visibility = Visibility.Hidden;
                 else imgAPIdialog.Visibility = Visibility.Visible;
@@ -279,7 +279,7 @@ namespace scripthea.composer
                 else
                     foreach (string sc in ScanModifs)
                     {
-                        scanPrompts.Add(Compose(null, ssd, modifiersUC.FixItemsAsString() + opts.ModifPrefix + sc));                        
+                        scanPrompts.Add(Compose(null, ssd, modifiersUC.FixItemsAsString() + (sc.Equals("") ? "" : opts.ModifPrefix) + sc));                        
                     }
             }            
         }
@@ -318,7 +318,6 @@ namespace scripthea.composer
         private void tbModifSepar_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (!Utils.isNull(opts)) opts.ModifPrefix = tbModifPrefix.Text;
-            if (!Utils.isNull(modifiersUC))  modifiersUC.separator = tbModifPrefix.Text;
         }
         private void cbActiveAPI_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {

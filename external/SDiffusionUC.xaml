@@ -4,20 +4,20 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:scripthea.external" xmlns:UtilsNS="clr-namespace:UtilsNS"
-             mc:Ignorable="d" d:DesignWidth="800" Height="60" FontSize="13" BorderThickness="0,0,0,1" >
+             mc:Ignorable="d" d:DesignWidth="800" Height="64" FontSize="13" BorderThickness="0,1,2,0" BorderBrush="#FFEEEEEE" >
     <Grid>
-        <StackPanel Margin="0,0,0.203,0.215" Orientation="Horizontal">
+        <StackPanel Margin="1,3,1,1" Orientation="Horizontal">
             <Grid Width="150" Height="60">
                 <Label x:Name="lbStatus" Height="28" Content="COMM:" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,0,0,3"/>
                 <Button x:Name="btnReset" Content="Reset" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="26" Width="49" Click="btnReset_Click" Margin="0,0,5,3" Background="#FFFDD07E"/>
                 <Image x:Name="ibtnOpts" Source="/Scripthea;component/Properties/TripleBarGrey.bmp" Margin="5,0,5,5" Width="25" Height="25" HorizontalAlignment="Left" VerticalAlignment="Bottom" Cursor="Hand" MouseDown="ibtnOpts_MouseDown"></Image>
             </Grid>
-            <Grid x:Name="gridSDlog" Width="150" Height="60">
+            <Grid x:Name="gridSDlog" Width="150" Height="58">
                 <TextBox x:Name="tbSDlog" TextWrapping="Wrap" Text="" Margin="0" FontSize="12" ScrollViewer.CanContentScroll="True" Background="White" VerticalScrollBarVisibility="Auto"/>
             </Grid>
             <Grid Width="150" Height="60">
-                <StackPanel>
-                    <Label x:Name="lb1" Content="Stable Diffusion" HorizontalAlignment="Center" Margin="0,-5,0,0" VerticalAlignment="Top" FontSize="15" Height="28" Foreground="Blue" Cursor="Hand" ToolTip="Google 'Stable Diffusion'" MouseDown="lb1_MouseDown"/>
+                <StackPanel Margin="0">
+                    <Label x:Name="lb1" Content="Stable Diffusion" HorizontalAlignment="Center" Margin="0,-5,0,0" VerticalAlignment="Top" FontSize="15" Height="28" Foreground="RoyalBlue" Cursor="Hand" ToolTip="Google 'Stable Diffusion'" MouseDown="lb1_MouseDown"/>
                     <Label x:Name="lb2" Content="by Stability.AI" HorizontalAlignment="Center" Margin="0,-6,0,0" VerticalAlignment="Top" FontSize="14" Height="27" Cursor="Hand" Foreground="Navy" ToolTip="Visit Stability.AI" MouseDown="lb1_MouseDown"/>
                     <Label x:Name="lb3" Content="local server" HorizontalAlignment="Center" Margin="0,-8,0,0" VerticalAlignment="Top" FontSize="14" Height="26" Cursor="Hand" Foreground="Navy" ToolTip="Open the front-end" MouseDown="lb1_MouseDown"/>
                 </StackPanel>

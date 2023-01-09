@@ -43,30 +43,12 @@ namespace scripthea.composer
         {
             InitializeComponent();
         }
-        public event RoutedEventHandler OnChange;
-        protected void Change(object sender, RoutedEventArgs e)
+        Options opts;
+        public void Init(ref Options _opts)
         {
-            if (OnChange != null) OnChange(this, e);
-        }
-        public event Utils.LogHandler OnLog;
-        protected void Log(string txt, SolidColorBrush clr = null)
-        {
-            if (OnLog != null) OnLog(txt, clr);
-        }        
-        protected void CatChange(object sender, RoutedEventArgs e)
-        {
-            foreach (CheckBox chk in listBox.Items)
-                ModifMap[chk.Content.ToString()] = chk.IsChecked.Value;
-            foreach (ModifListUC cmu in modifLists)
-                cmu.isVisible = ModifMap.ContainsKey(cmu.ModifListName) ? ModifMap[cmu.ModifListName] : true;
-        }
-        public string mapFile { get { return System.IO.Path.Combine(Utils.configPath + "modifiers.map"); } }
-        public void Init()
-        {
-            separator = "; ";
+            opts = _opts; chkAddEmpty.IsChecked = opts.AddEmptyModif;
             modifLists = new List<ModifListUC>();
             var files = new List<string>(Directory.GetFiles(Utils.configPath, "*.mdfr"));
-
             if (File.Exists(mapFile))
             {
                 string json = System.IO.File.ReadAllText(mapFile);
@@ -93,6 +75,24 @@ namespace scripthea.composer
             ShowMap = false; // update ModifMap;
             System.IO.File.WriteAllText(mapFile, JsonConvert.SerializeObject(ModifMap));
         }
+        public event RoutedEventHandler OnChange;
+        protected void Change(object sender, RoutedEventArgs e)
+        {
+            if (OnChange != null) OnChange(this, e);
+        }
+        public event Utils.LogHandler OnLog;
+        protected void Log(string txt, SolidColorBrush clr = null)
+        {
+            if (OnLog != null) OnLog(txt, clr);
+        }        
+        protected void CatChange(object sender, RoutedEventArgs e)
+        {
+            foreach (CheckBox chk in listBox.Items)
+                ModifMap[chk.Content.ToString()] = chk.IsChecked.Value;
+            foreach (ModifListUC cmu in modifLists)
+                cmu.isVisible = ModifMap.ContainsKey(cmu.ModifListName) ? ModifMap[cmu.ModifListName] : true;
+        }
+        public string mapFile { get { return System.IO.Path.Combine(Utils.configPath + "modifiers.map"); } }
         private bool _ShowMap;
         public bool ShowMap
         {
@@ -133,17 +133,17 @@ namespace scripthea.composer
                 _ShowMap = value;
             }
         }
-        public string separator { get; set; }
         public string Composite() // for single mode
         {
             string ss = "";
             foreach (string sc in ModifItemsByType(ModifStatus.Scannable))
-                ss += separator + sc + " ";
+                ss += sc.Equals("") ? "" : opts.ModifPrefix + sc + " ";
             return FixItemsAsString() + ss;
         }
         public List<string> ModifItemsByType(ModifStatus ms)
         {
             List<string> ls = new List<string>();
+            if (ms.Equals(ModifStatus.Scannable) && opts.AddEmptyModif) ls.Add("");
             foreach (ModifListUC sm in modifLists)
             {
                 if (!sm.isChecked) continue;
@@ -156,7 +156,7 @@ namespace scripthea.composer
         {
             string ss = "";
             foreach (string sc in ModifItemsByType(ModifStatus.Fixed))
-                ss += separator + sc + " ";
+                ss += opts.ModifPrefix + sc + " ";
             return ss;
         }
         public void SetSingleScanMode(bool singleMode)
@@ -173,8 +173,7 @@ namespace scripthea.composer
             Log("Removing duplicate modifiers... ");
             for (int i = 0; i < modifLists.Count; i++)
             {
-                ModifListUC ml = modifLists[i]; // source
-                
+                ModifListUC ml = modifLists[i]; // source               
                 ml.chkCategory.FontWeight = FontWeights.Bold; ml.chkCategory.UpdateLayout(); Utils.DoEvents();
                 for (int j = 0; j < ml.modifList.Count; j++)
                 {
@@ -188,12 +187,10 @@ namespace scripthea.composer
                 ml.chkCategory.FontWeight = FontWeights.Normal; ml.chkCategory.UpdateLayout();
             }
         }
-
         private void chkRemoveDuplicates_Checked(object sender, RoutedEventArgs e)
         {
             removeDuplicates();
         }
-
         private void chkRemoveDuplicates_Unchecked(object sender, RoutedEventArgs e)
         {
             for (int i = 0; i < modifLists.Count; i++)
@@ -224,6 +221,10 @@ namespace scripthea.composer
         private void tbSearch_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key.Equals(Key.Enter)) btnSearch_Click(sender, e);
+        }
+        private void chkAddEmpty_Checked(object sender, RoutedEventArgs e)
+        {
+            opts.AddEmptyModif = chkAddEmpty.IsChecked.Value;
         }
     }
 }

@@ -59,7 +59,7 @@ namespace scripthea.master
             List<Tuple<int, string, string>> lot = iPicker.ListOfTuples(true, false); // idx, filename, prompt
             if (lot.Count.Equals(0)) { Log("Error: not checked images."); return; }
 
-            string sourceFolder = iPicker.iDepot.depotFolder;  string targetFolder = "";
+            string sourceFolder = iPicker.iDepot.path;  string targetFolder = "";
             CommonOpenFileDialog dialog = new CommonOpenFileDialog();
             dialog.InitialDirectory = ImgUtils.defaultImageDepot;
             dialog.IsFolderPicker = true;

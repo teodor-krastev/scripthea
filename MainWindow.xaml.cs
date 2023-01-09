@@ -77,7 +77,7 @@ namespace scripthea
             Width = opts.Width;
             pnlLog.Width = new GridLength(opts.LogColWidth);
             gridSplitLeft_MouseDoubleClick(null, null);
-            rowLogImage.Height = new GridLength(opts.LogColWidth);
+            rowLogImage.Height = new GridLength(1);
 
             oldTab = tiComposer;
             Title = "Scripthea - text-to-image prompt composer v" + Utils.getAppFileVersion;
@@ -111,11 +111,11 @@ namespace scripthea
                 {
                     if (vl > 70) //partly shown
                     {
-                        gridSplitLog.Visibility = Visibility.Collapsed; rowLogImage.Height = new GridLength(0);
+                        gridSplitLog.Visibility = Visibility.Collapsed; rowLogImage.Height = new GridLength(1);
                     }
                     else
                     {
-                        gridSplitLeft.Visibility = Visibility.Visible; rowLogImage.Height = new GridLength(Utils.EnsureRange(opts.LogColWidth, 100, gridLog.Height * 0.66));
+                        gridSplitLeft.Visibility = Visibility.Visible; //rowLogImage.Height = new GridLength(Utils.EnsureRange(opts.LogColWidth, 1, gridLog.Height * 0.66));
                     }
                 }
             }
@@ -129,6 +129,7 @@ namespace scripthea
             opts.LogColWidth = Convert.ToInt32(pnlLog.ActualWidth);
             queryUC.Finish();
             viewerUC.Finish();
+            dirTreeUC.Finish();
             if (!Utils.isNull(aboutWin)) aboutWin.Close();
 
             string json = JsonConvert.SerializeObject(opts);
@@ -163,10 +164,9 @@ namespace scripthea
                             if (Utils.isNull(dTimer)) return;
                             dTimer.Stop(); lbProcessing.Content = "";
                             string fn = msg.Substring(9);
-                            if (File.Exists(fn)) // success
-                            {
-                                imgLast.Source = (new BitmapImage(new Uri(fn))).Clone();
-                            }
+                            if (rowLogImage.Height.Value < 2) rowLogImage.Height = new GridLength(pnlLog.ActualWidth);
+                            if (File.Exists(fn)) imgLast.Source = ImgUtils.UnhookedImageLoad(fn); // success
+                            else imgLast.Source = ImgUtils.file_not_found;
                             return;
                         case "@WorkDir":
                             if (Directory.Exists(opts.ImageDepotFolder))

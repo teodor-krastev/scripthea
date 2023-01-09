@@ -48,6 +48,7 @@
                 </ComboBox>
                 <CheckBox x:Name="chkKeepNames" Content="Keep the names" Margin="10,6,0,0"></CheckBox>
                 <CheckBox x:Name="chkDeleteUnchecked" Content="Delete unchecked images" Margin="10,6,0,0" Checked="chkDeleteUnchecked_Checked" Unchecked="chkDeleteUnchecked_Unchecked" ></CheckBox>
+                <Label x:Name="lbAdd2Depot" Margin="5,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontWeight="Bold" Foreground="#FF017D35"></Label>
             </StackPanel>
             <Label x:Name="lbChecked" Grid.Column="1" Content="# images" MouseDoubleClick="MCheckUncheck" Foreground="Blue" VerticalAlignment="Center" HorizontalAlignment="Right"/>
         </Grid>
@@ -57,8 +58,7 @@
             </TabItem>
             <TabItem x:Name="tiGrid" Visibility="Collapsed">
                 <DataGrid x:Name="dGrid" Margin="0" SelectionMode="Single" CanUserAddRows="False" SelectionChanged="dGrid_SelectionChanged" HorizontalScrollBarVisibility="Disabled" 
-                          AutoGeneratingColumn="dGrid_AutoGeneratingColumn" MaxColumnWidth="1000" CanUserReorderColumns="False" KeyDown="textBlock_KeyDown"
-                          />
+                          AutoGeneratingColumn="dGrid_AutoGeneratingColumn" MaxColumnWidth="1000" CanUserReorderColumns="False" KeyDown="textBlock_KeyDown"/>
             </TabItem>
         </TabControl>
         <GridSplitter Grid.Row="3" VerticalAlignment="Top" HorizontalAlignment="Stretch" Height="3"></GridSplitter>

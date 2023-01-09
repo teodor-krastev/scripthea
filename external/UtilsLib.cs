@@ -166,7 +166,7 @@ namespace UtilsNS
         public static bool TheosComputer()
         {
             string cn = (string)System.Environment.GetEnvironmentVariables()["COMPUTERNAME"];
-            return (cn == "DESKTOP-U334RMA") || (cn == "THEOS") || (cn == "THEO-PC");
+            return (cn == "DESKTOP-M3GM68M") || (cn == "DESKTOP-U334RMA") || (cn == "THEOS") || (cn == "THEO-PC");
         }
         public static bool isSingleChannelMachine // only in Axel-hub
         {
@@ -755,9 +755,12 @@ namespace UtilsNS
         /// <returns></returns>
         public static bool InRange(double Value, double MinValue, double MaxValue, bool ordered = false)
         {
-            if ((MinValue > MaxValue) && !ordered) return InRange(Value, MaxValue, MinValue);
-            
-            return ((MinValue <= Value) && (Value <= MaxValue));
+            if (ordered) return ((MinValue <= Value) && (Value <= MaxValue));
+            else
+            {
+                if (MinValue > MaxValue) return InRange(Value, MaxValue, MinValue);
+                return ((MinValue <= Value) && (Value <= MaxValue));
+            }                    
         }
         /// <summary>
         /// Check if Value is in range[MinValue..MaxValue] (int)
@@ -768,8 +771,12 @@ namespace UtilsNS
         /// <param name="MaxValue"></param>
         public static bool InRange(int Value, int MinValue, int MaxValue, bool ordered = false)
         {
-            if ((MinValue > MaxValue) && !ordered) return InRange(Value, MaxValue, MinValue);
-            return ((MinValue <= Value) && (Value <= MaxValue));
+            if (ordered) return ((MinValue <= Value) && (Value <= MaxValue));
+            else
+            {
+                if (MinValue > MaxValue) return InRange(Value, MaxValue, MinValue);
+                return ((MinValue <= Value) && (Value <= MaxValue));
+            }
         }
         /// <summary>
         /// Convert string to bool with default value if cannot
@@ -837,7 +844,6 @@ namespace UtilsNS
             }
             return ls;
         }
-
         /// <summary>
         /// Error outlet if no visual logs available
         /// </summary>
@@ -846,12 +852,10 @@ namespace UtilsNS
         {
             Console.WriteLine("Error: " + errorMsg);
         }
-
         public static SolidColorBrush ToSolidColorBrush(string hex_code)
         {
             return (SolidColorBrush)new BrushConverter().ConvertFromString(hex_code);
         }
-
         /// <summary>
         /// Format double to another double with required format (e.g.precision)
         /// </summary>
@@ -879,7 +883,6 @@ namespace UtilsNS
             double test;
             return double.TryParse(Convert.ToString(o), out test);
         }
-
         /// <summary>
         /// Strip line endings
         /// </summary>

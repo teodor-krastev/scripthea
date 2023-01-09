@@ -35,7 +35,12 @@ namespace scripthea.viewer
             switch (imageGenerator) 
             {
                 case ImageGenerator.StableDiffusion:
-                    bb = FromSDFile(fullfilename, out suggestedName); if (!bb) return; // when it is not SD file
+                    bb = FromSDFile(fullfilename, out suggestedName); 
+                    if (!bb) 
+                    {
+                        FromSDFile(fullfilename, out suggestedName); return; // when it is not SD file
+                    }
+                       
                     break;
                 case ImageGenerator.Crayion:
                     if (!FromCraiyonFile(fullfilename, out suggestedName)) return;
@@ -222,7 +227,7 @@ namespace scripthea.viewer
                 imageGenerator = _imageGenerator; header.Add("ImageGenerator", imageGenerator.ToString());
                 header.Add("webui", "AUTOMATIC1111"); header.Add("application", "Scripthea " + Utils.getAppFileVersion);
             }
-            depotFolder = _folder;
+            path = _folder;
         }
         public bool isEnabled
         {
@@ -233,8 +238,8 @@ namespace scripthea.viewer
         public List<ImageInfo> items;
         public List<string> allImages()
         {
-            List<string> pngs = new List<string>(Directory.GetFiles(depotFolder, "*.png"));
-            List<string> jpgs = new List<string>(Directory.GetFiles(depotFolder, "*.jpg"));
+            List<string> pngs = new List<string>(Directory.GetFiles(path, "*.png"));
+            List<string> jpgs = new List<string>(Directory.GetFiles(path, "*.jpg"));
             pngs.AddRange(jpgs);
             for (int i = 0; i < pngs.Count; i++)
                 pngs[i] = Path.GetFileName(pngs[i]);
@@ -265,7 +270,7 @@ namespace scripthea.viewer
             } while (fnd);
             return new List<string>(imgs);
         } 
-        public string depotFolder { get; private set; }
+        public string path { get; private set; }
         public ImageInfo.ImageGenerator imageGenerator { get; private set; }
         public bool Validate(bool? correctEntry) // true: if no mismatched entries (OK depot) OR if correctEntry and file is missing then entries are deleted
                                                  // false: there were missing files with not-corrected entries (unfinished business)
@@ -322,7 +327,7 @@ namespace scripthea.viewer
         public void Append(ImageInfo ii)
         {
             if (isReadOnly) return;
-            using (StreamWriter w = File.AppendText(Path.Combine(depotFolder, ImgUtils.descriptionFile)))
+            using (StreamWriter w = File.AppendText(Path.Combine(path, ImgUtils.descriptionFile)))
             {
                 w.WriteLine(ii.To_String());
             }
@@ -337,7 +342,7 @@ namespace scripthea.viewer
             foreach (ImageInfo ii in items)
                 ls.Add(ii.To_String());
             //Utils.DelayExec(20, new Action(() => {  }));       
-            Utils.writeList(Path.Combine(depotFolder, ImgUtils.descriptionFile), ls);
+            Utils.writeList(Path.Combine(path, ImgUtils.descriptionFile), ls);
             Utils.Sleep(200);
         }
         public List<Tuple<int, string, string>> Export2Viewer()

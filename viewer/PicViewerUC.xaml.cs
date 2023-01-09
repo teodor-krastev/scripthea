@@ -52,7 +52,7 @@ namespace scripthea.viewer
             tbName.Text = System.IO.Path.GetFileName(filePath);
             if (!File.Exists(filePath))
             {
-                image.Source = ImgUtils.UnhookedImageLoad(Utils.basePath + "\\Properties\\file_not_found.jpg", ImageFormat.Jpeg);
+                image.Source = ImgUtils.file_not_found;
                 tbName.Foreground = System.Windows.Media.Brushes.Red;
                 return;
             }

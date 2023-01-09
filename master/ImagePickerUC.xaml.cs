@@ -128,7 +128,7 @@ namespace scripthea.master
             {
                 string _imageDepot;
                 if (iDepot == null) _imageDepot = ImgUtils.defaultImageDepot;
-                else _imageDepot = iDepot.depotFolder;
+                else _imageDepot = iDepot.path;
                 return _imageDepot.EndsWith("\\") ? _imageDepot : _imageDepot + "\\";
             }
         }
@@ -236,11 +236,8 @@ namespace scripthea.master
         }
         public void loadPic(int idx, string filePath, string prompt)
         {
-            //if (!filePath.Equals(""))
-            {
-                if (File.Exists(filePath)) image.Source = ImgUtils.UnhookedImageLoad(filePath, ImageFormat.Png);
-                else image.Source = ImgUtils.UnhookedImageLoad(Utils.basePath + "\\Properties\\file_not_found.jpg", ImageFormat.Jpeg);
-            }
+            if (File.Exists(filePath)) image.Source = ImgUtils.UnhookedImageLoad(filePath, ImageFormat.Png);
+            else image.Source = ImgUtils.file_not_found;
             GetChecked();
         }    
         private void rbList_Checked(object sender, RoutedEventArgs e)
@@ -250,12 +247,11 @@ namespace scripthea.master
             if (rbGrid.IsChecked.Value) tcMain.SelectedIndex = 1;
             if (activeView.iDepot != null)
             {
-                if (!iDepot.depotFolder.Equals(activeView.loadedDepot)) // avoid reload already loaded depot
+                if (!Utils.comparePaths(iDepot.path, activeView.loadedDepot)) // avoid reload already loaded depot
                     activeView.FeedList(ref iDepot); //if (!) Log("Err: fail to create grid image depot(1)");
             }
             else
                 activeView.FeedList(ref iDepot); // if (!) Log("Err: fail to create grid image depot(2)");            
         }
-
     }
 }

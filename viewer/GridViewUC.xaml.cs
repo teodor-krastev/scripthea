@@ -92,7 +92,7 @@ namespace scripthea.viewer
             }            
             picItems.Clear(); wrapPics.Children.Clear(); wrapPics.UpdateLayout();
         }
-        public string imageFolder { get { return iDepot.depotFolder; } }
+        public string imageFolder { get { return iDepot.path; } }
         public void Clear()
         {
             picItemsClear();            
@@ -108,7 +108,7 @@ namespace scripthea.viewer
         public bool FeedList(ref DepotFolder _iDepot) // external iDepot; regular use
         {
             if (_iDepot == null) return false; 
-            iDepot = _iDepot; loadedDepot = iDepot.depotFolder;
+            iDepot = _iDepot; loadedDepot = iDepot.path;
             UpdateVis();
             return true;
         }
