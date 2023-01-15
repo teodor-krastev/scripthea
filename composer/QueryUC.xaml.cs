@@ -31,7 +31,7 @@ namespace scripthea.composer
     /// </summary>
     public partial class QueryUC : UserControl, iFocusControl
     {
-        //public string defaultImageFolder = Utils.basePath + "\\images\\";
+        const string strScan = "S c a n";
         protected Options opts;
         public ControlAPI API;
         public QueryUC()
@@ -66,9 +66,7 @@ namespace scripthea.composer
             API.OnQueryComplete += new ControlAPI.APIEventHandler(QueryComplete);
 
             if (Utils.TheosComputer()) { cbiDiffusion.Visibility = Visibility.Visible; btnTest.Visibility = Visibility.Visible; }
-            else { cbiDiffusion.Visibility = Visibility.Collapsed; btnTest.Visibility = Visibility.Collapsed; }
-
-            
+            else { cbiDiffusion.Visibility = Visibility.Collapsed; btnTest.Visibility = Visibility.Collapsed; }            
         }
         public void Finish()
         {
@@ -197,7 +195,6 @@ namespace scripthea.composer
         {
             get { return tbCue.Text + tbModifier.Text; }
         }
-
         public string Compose(object sender,  CueItemUC selectedSeed, string modifiers, bool OneLineCue = true)
         {
             if (sender == null || sender == btnCompose || sender == tcQuery || sender == cuePoolUC)
@@ -228,35 +225,33 @@ namespace scripthea.composer
         }
         private void QueryAPI(string prompt)
         {   
-            Log("query -> "+ prompt, Brushes.DarkGreen); Log("@StartProc");
-            API.Query(prompt, opts.ImageDepotFolder);
-            if (status.Equals(Status.Scanning) && scanPreviewUC.scanning)
+            Log("query -> "+ prompt, Brushes.DarkGreen);
+            if (status.Equals(Status.Scanning)) Log("@StartProc (" + (scanPromptIdx+1).ToString() + " / " + scanPrompts.Count.ToString() + ")");
+            else Log("@StartProc (single)");
+            if (status.Equals(Status.Scanning) && scanPreviewUC.scanning) // move selection
                 scanPreviewUC.selectByPropmt(prompt);
+            API.Query(prompt, opts.ImageDepotFolder); Log("---", Brushes.DarkOrange); 
         }
         protected void QueryComplete(string imageFilePath, bool success)
         {
-            if (success)
-            {
-                Log("image -> " + imageFilePath, Brushes.Navy); Log("---", Brushes.DarkOrange);                
-            }
-            else Log("Error(API)-> "+ imageFilePath);
-            Log("@EndProc " + imageFilePath);
+            if (!success) Log("Error(API)-> "+ imageFilePath);           
             switch (status)
             {
                 case Status.SingeQuery:
                 case Status.Request2Cancel:
-                    status = Status.Idle;
+                    status = Status.Idle; Log("@EndProc: " + imageFilePath);
                     break;
                 case Status.Scanning:                   
-                    if (scanPromptIdx > (scanPrompts.Count - 1))
+                    Log("@EndProc: "+ imageFilePath);
+                    if (scanPromptIdx == (scanPrompts.Count-1)) // the end of it, back to init state
                     {
-                        status = Status.Idle; btnScan.Content = "S c a n"; btnScan.Background = Brushes.MintCream;
+                        status = Status.Idle; btnScan.Content = strScan; btnScan.Background = Brushes.MintCream;
                         Log("This Scan resulted in " + scanPrompts.Count.ToString()+" images.", Brushes.DarkMagenta);
                         btnScanPreview.IsEnabled = true; scanPreviewUC.scanning = false; btnScanPreview.IsEnabled = true; 
                     }                        
-                    else
+                    else // next image gen
                     {
-                        QueryAPI(scanPrompts[scanPromptIdx]); scanPromptIdx++;
+                        scanPromptIdx++; QueryAPI(scanPrompts[scanPromptIdx]); 
                     }
                     break;
             }
@@ -285,10 +280,10 @@ namespace scripthea.composer
         }
         private void btnScan_Click(object sender, RoutedEventArgs e)
         {
-            if (Convert.ToString(btnScan.Content).Equals("S c a n"))
+            if (Convert.ToString(btnScan.Content).Equals(strScan))
             {
                 if (API.IsBusy) { Log("Err: busy with previous query"); return; }
-                switch (status)
+                switch (status) //if out of place
                 {
                     case Status.SingeQuery:
                         Log("Warning: API is busy, try again later..."); return;
@@ -303,12 +298,12 @@ namespace scripthea.composer
             else
             {
                 if (status == Status.Scanning) Log("Warning: User cancelation!", Brushes.Tomato);
-                status = Status.Request2Cancel; btnScan.Content = "S c a n"; btnScan.Background = Brushes.MintCream;
+                status = Status.Request2Cancel; btnScan.Content = strScan; btnScan.Background = Brushes.MintCream;
                 btnScanPreview.IsEnabled = true; return;
             }
             GetScanPrompts();
             if (scanPrompts.Count == 0) { Log("Err: no prompt generated"); return; }
-            scanPromptIdx = 1; QueryAPI(scanPrompts[0]);
+            scanPromptIdx = 0; QueryAPI(scanPrompts[0]);
         }
         private void chkAutoSingle_Checked(object sender, RoutedEventArgs e)
         {
@@ -450,7 +445,7 @@ namespace scripthea.composer
                     scanPrompts = scanPreviewUC.checkedPrompts();
                     if (scanPrompts.Count == 0) { Log("Err: no prompts checked"); return; }
                     status = Status.Scanning; scanPreviewUC.scanning = true; btnScanPreview.IsEnabled = false;
-                    scanPromptIdx = 1; QueryAPI(scanPrompts[0]);
+                    scanPromptIdx = 0; QueryAPI(scanPrompts[0]);
                 }
             }
             if (sender.Equals(scanPreviewUC.btnQuerySelected))

@@ -425,28 +425,7 @@ namespace UtilsNS
             if (prefix.Equals("")) return DateTime.Now.ToString("yy-MM-dd_H-mm-ss");
             else return DateTime.Now.ToString("yy-MM-dd_H-mm-ss") + "_" + prefix;
         }
-        /*public static void copyGraphToClipboard(Graph gr, string filename)
-        {
-            Rect bounds; RenderTargetBitmap bitmap;
-            bounds = System.Windows.Controls.Primitives.LayoutInformation.GetLayoutSlot(gr);
-            bitmap = new RenderTargetBitmap((int)bounds.Width+50, (int)bounds.Height+50, 96, 96, PixelFormats.Pbgra32);
-            bitmap.Render(gr);
-            if (filename.Equals(""))
-            {
-                Clipboard.SetImage(bitmap);
-                Utils.TimedMessageBox("The image is in the clipboard");
-            }
-            else
-            {
-                var encoder = new PngBitmapEncoder();
-                BitmapFrame frame = BitmapFrame.Create(bitmap);
-                encoder.Frames.Add(frame);
-                using (var stream = File.Create(filename))
-                {
-                    encoder.Save(stream);
-                }
-            }
-        }*/
+       
         private static Dictionary<string,string> FakeBrowserHeaders()
         {
             Dictionary<string, string> webHeaders = new Dictionary<string, string>();
@@ -472,7 +451,7 @@ namespace UtilsNS
             return bb;
         }
 
-        public static Bitmap GetWebImage(string imageUrl, string filename = "", ImageFormat format = null)
+        public static Bitmap GetWebImage(string imageUrl, string filename = "", System.Drawing.Imaging.ImageFormat format = null)
         {
             Bitmap bitmap;
             try

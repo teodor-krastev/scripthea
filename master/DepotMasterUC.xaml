@@ -13,27 +13,27 @@
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
         <local:ImagePickerUC x:Name="iPickerA" Margin="0"/>
-        <StackPanel Grid.Column="1" Margin="5,0">
+        <StackPanel Grid.Column="1" Margin="5,0" Background="White">
             <Label Content="Copy" FontWeight="Bold" Margin="0,5,0,0" Foreground="Blue"></Label>
-            <Button x:Name="btnCopyA2B"  HorizontalAlignment="Center" Margin="0" Height="38" Background="#FFFFFFFF" Click="btnCopyA2B_Click">
+            <Button x:Name="btnCopyA2B"  HorizontalAlignment="Center" Margin="0" Width="38" Height="38" Background="#FFFFFFFF" Click="btnCopyA2B_Click" >
                 <Image Source="/Scripthea;component/Properties/blue_right_arrow.png" ToolTip="Copy all checked from A to B"></Image>
             </Button>
-            <Button x:Name="btnCopyB2A" HorizontalAlignment="Center" Margin="0,5,0,0" Height="38" Background="#FFFFFFFF"  Click="btnCopyA2B_Click">
+            <Button x:Name="btnCopyB2A" HorizontalAlignment="Center" Margin="0,5,0,0" Width="38" Height="38" Background="#FFFFFFFF"  Click="btnCopyA2B_Click">
                 <Image Source="/Scripthea;component/Properties/blue_left_arrow.png" ToolTip="Copy all checked from B to A"></Image>
             </Button>
             <Label Content="Move" FontWeight="Bold" Margin="0,15,0,0" Foreground="Green"></Label>
-            <Button x:Name="btnMoveA2B" HorizontalAlignment="Center" Margin="0" Height="38" Background="#FFFFFFFF" Click="btnMoveA2B_Click">
+            <Button x:Name="btnMoveA2B" HorizontalAlignment="Center" Margin="0" Width="38" Height="38" Background="#FFFFFFFF" Click="btnMoveA2B_Click" >
                 <Image Source="/Scripthea;component/Properties/green_right_arrow.png" ToolTip="Move all checked from A to B"></Image>
             </Button>
-            <Button x:Name="btnMoveB2A" HorizontalAlignment="Center" Margin="0,5,0,0" Height="38" Background="#FFFFFFFF" Click="btnMoveA2B_Click">
+            <Button x:Name="btnMoveB2A" HorizontalAlignment="Center" Margin="0,5,0,0" Width="38" Height="38" Background="#FFFFFFFF" Click="btnMoveA2B_Click">
                 <Image Source="/Scripthea;component/Properties/green_left_arrow.png" ToolTip="Move all checked from B to A"></Image>
             </Button>
             <Label Content="Delete" Margin="0,15,0,0" Foreground="#FFA10000" FontWeight="Bold" FontSize="11"/>
-            <Button x:Name="btnDeleteInA" HorizontalAlignment="Center" Margin="0" Height="38" Background="#FFFFFFFF" Click="btnDeleteInA_Click">
-                <Image Source="/Scripthea;component/Properties/del_left.png" ToolTip="Delete all checked in A"></Image>
+            <Button x:Name="btnDeleteInA" HorizontalAlignment="Center" Margin="0" Width="38" Height="38" Background="#FFFFFFFF" Click="btnDeleteInA_Click">
+                <Image Source="/Scripthea;component/Properties/del_left.png" ToolTip="Delete all checked in A" Width="35" Margin="-3,0,0,0"></Image>
             </Button>
-            <Button x:Name="btnDeleteInB" HorizontalAlignment="Center" Margin="0,5,0,0" Height="38" Background="#FFFFFFFF"  Click="btnDeleteInA_Click">
-                <Image Source="/Scripthea;component/Properties/del_right.png" ToolTip="Delete all checked in B"></Image>
+            <Button x:Name="btnDeleteInB" HorizontalAlignment="Center" Margin="0,5,0,0" Width="38" Height="38" Background="#FFFFFFFF"  Click="btnDeleteInA_Click">
+                <Image Source="/Scripthea;component/Properties/del_right.png" ToolTip="Delete all checked in B" Width="35"></Image>
             </Button>
         </StackPanel>
         <local:ImagePickerUC x:Name="iPickerB" Grid.Column="2" Margin="0"/>

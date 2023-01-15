@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:scripthea" xmlns:viewer="clr-namespace:scripthea.viewer"
-        xmlns:composer="clr-namespace:scripthea.composer" xmlns:UtilsNS="clr-namespace:UtilsNS" xmlns:master="clr-namespace:scripthea.master" 
+        xmlns:composer="clr-namespace:scripthea.composer" xmlns:master="clr-namespace:scripthea.master" 
         x:Name="MainWindow1" x:Class="scripthea.MainWindow"
         mc:Ignorable="d"
         Title="Scripthea - text-to-image prompt composer" Height="450" Width="800" Loaded="MainWindow1_Loaded" Closing="MainWindow1_Closing" Icon="Properties/penzy4.png" FontSize="13" KeyDown="MainWindow1_KeyDown">
@@ -45,7 +45,7 @@
                 <Image x:Name="imgLast" Grid.Row="1" Margin="2,7,2,2"/>
             </Grid>
             <GridSplitter x:Name="gridSplitLog2" Grid.Row="2" HorizontalAlignment="Stretch" Height="5" Margin="0" VerticalAlignment="Top" Background="#FFE0EFFB"/>
-            <UtilsNS:DirTreeUC x:Name="dirTreeUC" Margin="0,5,0,0" Grid.Row="2" BorderBrush="#FF0A16E9" BorderThickness="0,2,1,0"/>
+            <master:DirTreeUC x:Name="dirTreeUC" Margin="0,5,0,0" Grid.Row="2" BorderBrush="#FF0A16E9" BorderThickness="0,2,1,0"/>
         </Grid>
         <TabControl x:Name="tabControl" Margin="17,0" Grid.Column="1" SelectionChanged="tabControl_SelectionChanged" BorderBrush="{x:Null}" >
             <TabItem x:Name="tiComposer"  Header=" Prompt composer " Width="125" Height="28" HorizontalAlignment="Left" Margin="2,0,-2,0" Background="#FFF1F0F0">

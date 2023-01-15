@@ -20,6 +20,7 @@ using System.Net.Sockets;
 using Newtonsoft.Json;
 using UtilsNS;
 using OpenHWMonitor;
+using Path = System.IO.Path;
 
 namespace scripthea.external
 {
@@ -51,6 +52,7 @@ namespace scripthea.external
             server = new AsyncSocketListener(); 
             server.OnLog += new Utils.LogHandler(Log);
             server.OnReceive += new Utils.LogHandler(Receive);
+            server.OnStatusChange += new AsyncSocketListener.StatusChangeHandler(OnChangeStatus);
             
             ThreadStart listenerThreadStart = new ThreadStart(server.StartListening);
             listenerThread = new Thread(listenerThreadStart);
@@ -76,99 +78,101 @@ namespace scripthea.external
         public bool isDocked { get { return true; } }
         public UserControl userControl { get { return this as UserControl; } }
         public bool isEnabled { get; } // connected and working (depends on the API)
-        private void SimulatorImage(string filepath)
+        private void SimulatorImage(string filepath) // copy random simulator file to filepath
         {
             string imageSimulFolder = Utils.basePath + "\\images\\Simulator\\";
-            List<string> orgFiles = new List<string>(Directory.GetFiles(imageSimulFolder, "c*.png"));
+            List<string> orgFiles = new List<string>(Directory.GetFiles(imageSimulFolder, "*.png"));
             if (orgFiles.Count.Equals(0)) throw new Exception("Wrong simulator image folder ->" + imageSimulFolder);
             Random rnd = new Random(Convert.ToInt32(DateTime.Now.TimeOfDay.TotalSeconds));
             string fn = orgFiles[rnd.Next(orgFiles.Count - 1)];
+
             File.Copy(fn, filepath);
         }
-        private bool imageReady = false; 
+        public bool imageReady 
+        { 
+            get 
+            {
+                if (Utils.isNull(server)) return false;
+                if (Utils.isNull(server.workSocket)) return false;
+                return server.status.Equals(AsyncSocketListener.Status.imageReady);                
+            } 
+        }
         public bool GenerateImage(string prompt, string imageDepotFolder, out string filename) // returns the filename of saved/copied in ImageDepoFolder image 
         {
             if (SDopts.opts.GPUtemperature && dTimer.IsEnabled)
             {
                 while ((currentTmp > SDopts.opts.GPUThreshold) || (currentTmp == -1)) { Thread.Sleep(500); }
             }
-            filename = Utils.timeName();
-            opts["folder"] = imageDepotFolder.EndsWith("\\") ? imageDepotFolder : imageDepotFolder + "\\";
-            if (server.status.Equals(AsyncSocketListener.Status.promptExpect) && !Utils.isNull(server.workSocket))
-            { 
-                server.Send(server.workSocket, prompt); //, Utils.basePath + "\\images\\", "imageName"
-                imageReady = false; //iTimer.Start();
-                int k = 0; 
-                while (!imageReady && (k < (2*SDopts.opts.TimeOutImgGen))) { Thread.Sleep(500); k++; }
+            filename = Utils.timeName(); // target image 
+            if (Utils.isNull(server.workSocket)) { Log("Err: communication issue"); return false; }
+            string folder = imageDepotFolder.EndsWith("\\") ? imageDepotFolder : imageDepotFolder + "\\";  opts["folder"] = folder; 
+            string fullFN = Path.Combine(folder,Path.ChangeExtension(filename, ".png"));
+            if (File.Exists(fullFN))
+            {
+                fullFN = Utils.AvoidOverwrite(fullFN); // new name
+                filename = Path.ChangeExtension(Path.GetFileName(fullFN), "");
             }
-
-            //server.SendFields(prompt, opts["folder"], filename);
-
             
+            int k = 0; // wait for expect state
+            while (!server.status.Equals(AsyncSocketListener.Status.promptExpect) && (k < (2 * SDopts.opts.TimeOutImgGen))) { Thread.Sleep(500); k++; }
+            if (!server.status.Equals(AsyncSocketListener.Status.promptExpect)) { Log("Err: time-out at promptExpect"); return false; }
 
-            //string data = server.GetFromClient();
-            //string fn = System.IO.Path.ChangeExtension(filename,".sdj");
-            /* add some custom fields
-            Dictionary<string, object> dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(data);
-            // add to dict HERE 
-            data = JsonConvert.SerializeObject(dict);
-             */
-            //File.WriteAllText(System.IO.Path.Combine(opts["folder"], fn), data);            
-            return imageReady;// !data.Equals("");
+            Dictionary<string, string> jsn = new Dictionary<string, string>();
+            jsn.Add("prompt", prompt); jsn.Add("folder", folder); jsn.Add("filename", filename);
+            filename = Path.ChangeExtension(filename, ".png");
+            server.Send(server.workSocket, JsonConvert.SerializeObject(jsn)); 
+
+            k = 0; bool bir = imageReady; // wait for image gen.
+            while (!bir && (k < (5 * SDopts.opts.TimeOutImgGen))) {  Thread.Sleep(200); k++; if (!bir) bir = imageReady; }                       
+            if (!bir) { Log("Err: time-out at imageReady"); return false; }
+
+            //if (server.debug && bir) SimulatorImage(fullFN);
+            if (!File.Exists(fullFN)) { Log("Err: image file <" + fullFN + "> not found"); return false; }
+            
+            return bir;
         }
         private void iTimer_Tick(object sender, EventArgs e)
         {
-        }       
-        private void OnChangeStatus()
-        {
-            switch (server.status)
-            {
-                case AsyncSocketListener.Status.closed: BorderBrush = Brushes.White; // before server opens 
-                    break;
-                case AsyncSocketListener.Status.waiting: BorderBrush = Brushes.Silver; // waiting the client to call
-                    break;
-                case AsyncSocketListener.Status.connected: BorderBrush = Brushes.Gold; // ... the client called from the Scripthea script   
-                    break;
-                case AsyncSocketListener.Status.promptExpect: BorderBrush = Brushes.RoyalBlue; // the script for the next prompt
-                    break;
-                case AsyncSocketListener.Status.promptSent: BorderBrush = Brushes.LightSeaGreen; // prompt sent, image is expected 
-                    break;
-                case AsyncSocketListener.Status.imageReady: imageReady = true; BorderBrush = Brushes.LimeGreen; // image has been generated
-                    break;
-            }
-            btnReset.IsEnabled = server.status == AsyncSocketListener.Status.promptExpect;
         }
-        protected void Log(String txt, SolidColorBrush clr = null)
+        private void OnChangeStatus(AsyncSocketListener.Status previous, AsyncSocketListener.Status current)
         {
-            if (txt.Length.Equals(0)) return;
-            if (Application.Current == null) return;
             try
             {
                 Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background,
                   new Action(() =>
                   {
-                      if (txt.StartsWith("@"))
-                      {
-                          lbStatus.Content = "COMM: " + txt.Substring(1); lbStatus.UpdateLayout();
-                          OnChangeStatus(); // secondary actions
-                      }
-                      else Utils.log(tbSDlog, txt);
+                        lbStatus.Content = "COMM: " + current.ToString(); lbStatus.UpdateLayout();        
+                        btnReset.IsEnabled = current == AsyncSocketListener.Status.promptExpect;            
+             
+                        switch (current)
+                        {
+                            case AsyncSocketListener.Status.closed: BorderBrush = Brushes.White; // before server opens 
+                                break;
+                            case AsyncSocketListener.Status.waiting: BorderBrush = Brushes.Silver; // waiting the client to call
+                                break;
+                            case AsyncSocketListener.Status.connected: BorderBrush = Brushes.Gold; // ... the client called from the Scripthea script   
+                                break;
+                            case AsyncSocketListener.Status.promptExpect: BorderBrush = Brushes.RoyalBlue; // the script for the next prompt
+                                break;
+                            case AsyncSocketListener.Status.promptSent: BorderBrush = Brushes.Coral; // prompt sent, image is expected 
+                                break;
+                            case AsyncSocketListener.Status.imageReady: BorderBrush = Brushes.LightSeaGreen; // image has been generated
+                                break;
+                        }           
                   }));
             }
             catch { }
         }
+        protected void Log(String txt, SolidColorBrush clr = null)
+        {
+            if (txt.Length.Equals(0)) return;
+            if (Application.Current == null) return;
+            Utils.log(tbSDlog, txt.Trim());
+        }
         protected void Receive(String txt, SolidColorBrush clr = null)
         {
-            if (server.debug)
-            {
-                Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background,
-                    new Action(() =>
-                    {
-                        Utils.log(tbSDlog, ">"+txt);
-                    }));
-            }
+            if (server.debug) Log("> "+txt);
         }
-
         private void btnReset_Click(object sender, RoutedEventArgs e)
         {
             if (server.status.Equals(AsyncSocketListener.Status.promptExpect) && !Utils.isNull(server.workSocket))
@@ -287,7 +291,7 @@ namespace scripthea.external
             status = Status.closed;
         }
 
-        public bool debug = false;
+        public bool debug = true;
         public void Init()
         {
             
@@ -297,9 +301,10 @@ namespace scripthea.external
             closed,         // before server opens 
             waiting,        // waiting the client to call
             connected,      // ... the client called from the Scripthea script          
-            promptExpect, // the script for the next prompt
+            promptExpect,   // the script for the next prompt
             promptSent,     // prompt sent, image is expected 
-            imageReady      // image has been generated
+            imageReady,     // image has been generated
+            imageFailed     // image has failed to be generated
         }
         private Status _status;
         public Status status
@@ -309,7 +314,13 @@ namespace scripthea.external
                 if (listener == null) _status = Status.closed;
                 return _status;
             }
-            private set { _status = value; Log("@" + Convert.ToString(status)); }
+            private set { Status previous = _status; _status = value; StatusChange(previous, value); }
+        }
+        public delegate void StatusChangeHandler(Status previous, Status current);
+        public event StatusChangeHandler OnStatusChange;
+        public void StatusChange(Status previous, Status current)
+        {
+            if (OnStatusChange != null) OnStatusChange(previous, current);
         }
         public event Utils.LogHandler OnLog;
         protected void Log(string txt, SolidColorBrush clr = null)
@@ -319,17 +330,20 @@ namespace scripthea.external
         public event Utils.LogHandler OnReceive;
         protected void Receive(string txt, SolidColorBrush clr = null)
         {
-            if (OnReceive != null) OnReceive(Convert.ToString(txt));
             switch (txt.Trim())
             {
                 case "@next.prompt": status = Status.promptExpect;
                     break;
                 case "@image.ready": status = Status.imageReady;
                     break;
+                case "@image.failed": status = Status.imageFailed;
+                    break;
                 case "@close.session": status = Status.waiting;
                     break;
             }            
+            if (OnReceive != null) OnReceive(Convert.ToString(txt));
         }
+
         private Socket listener;
         public Socket GetSocket()
         {
@@ -371,7 +385,6 @@ namespace scripthea.external
                 Log("Err: " + e.ToString());
             }
         }
-
         public void AcceptCallback(IAsyncResult ar)
         {
             // Signal the main thread to continue.  
@@ -499,10 +512,3 @@ namespace scripthea.external
     }
 }
 
-/* Err: System.Threading.ThreadAbortException: Thread was being aborted.
-   at System.Threading.WaitHandle.WaitOneNative(SafeHandle waitableSafeHandle, UInt32 millisecondsTimeout, Boolean hasThreadAffinity, Boolean exitContext)
-   at System.Threading.WaitHandle.InternalWaitOne(SafeHandle waitableSafeHandle, Int64 millisecondsTimeout, Boolean hasThreadAffinity, Boolean exitContext)
-   at System.Threading.WaitHandle.WaitOne(Int32 millisecondsTimeout, Boolean exitContext)
-   at System.Threading.WaitHandle.WaitOne()
-   at scripthea.external.AsyncSocketListener.StartListening() in F:\Projects\Scripthea\external\SDiffusionUC.xaml.cs:line 351
-*/

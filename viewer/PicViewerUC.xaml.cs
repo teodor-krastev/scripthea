@@ -13,9 +13,10 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Drawing;
+using System.Drawing.Imaging;
+using scripthea.master;
 using UtilsNS;
 using Path = System.IO.Path;
-using System.Drawing.Imaging;
 
 namespace scripthea.viewer
 {

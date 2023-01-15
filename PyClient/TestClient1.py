@@ -1,8 +1,8 @@
 #-------------------------------------------------------------------------------
-# Name:        module1
+# Name:        Test Scripthea client
 # Purpose:
 #
-# Author:      User
+# Author:      TK
 #
 # Created:     15/10/2022
 # Copyright:   (c) User 2022
@@ -24,13 +24,14 @@ def dprint(txt):
 
 def wait4server():
     timeOut = 30 # five min
+
     while (timeOut > 0):
         try:
             client_socket.connect((socket_host, socket_port))  # connect to the server
             break
         except:
             time.sleep(10)
-            dprint('comm attempts left: '+str(timeOut))
+            dprint('comm attempts left (esc to cancel): '+str(timeOut))
             timeOut -= 1
     return (timeOut > 0)
 
@@ -40,6 +41,7 @@ def OneShot():
         client_socket.send(message.encode())
         dprint('out: '+message)
         inData = client_socket.recv(4096).decode()
+
         dprint('in: '+inData)
         if (inData.lower().strip() == '@close.session'):
             return inData
@@ -48,6 +50,7 @@ def OneShot():
 
         message = '@image.ready\n'
         client_socket.send(message.encode())
+        time.sleep(1)
     except:
         return '@close.session'
     return inData
@@ -59,11 +62,12 @@ def client_program():
         return False
     dprint('session started')
     while True:
-        inData = OneShot()
-        dprint('+>'+inData)
-        if (inData.lower().strip() == '@close.session'):
+        jsn_str = OneShot()
+        if (jsn_str.lower().strip() == '@close.session'):
             break
-        time.sleep(5)
+        jsn = json.loads(jsn_str)
+        dprint('+>'+jsn_str)
+        time.sleep(1)
     client_socket.close()  # close the connection
     dprint('session closed')
 

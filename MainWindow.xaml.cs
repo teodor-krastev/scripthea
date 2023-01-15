@@ -29,7 +29,7 @@ namespace scripthea
     public partial class MainWindow : Window
     {
         AboutWin aboutWin;
-
+        private bool debug = Utils.isInVisualStudio;
         public MainWindow()
         {
             aboutWin = new AboutWin();
@@ -158,16 +158,17 @@ namespace scripthea
                                 dTimer.Tick += new EventHandler(dTimer_Tick);
                                 dTimer.Interval = new TimeSpan(200 * 10000);
                             }
-                            dti = 0; dTimer.Start(); return;
+                            dti = 0; dTimer.Start();
+                            break;
 
                         case "@EndProc":
-                            if (Utils.isNull(dTimer)) return;
+                            if (Utils.isNull(dTimer)) { Utils.TimedMessageBox("Err: broken timer", "Warning", 3500); return; }
                             dTimer.Stop(); lbProcessing.Content = "";
-                            string fn = msg.Substring(9);
+                            string fn = msg.Substring(9).Trim();
                             if (rowLogImage.Height.Value < 2) rowLogImage.Height = new GridLength(pnlLog.ActualWidth);
                             if (File.Exists(fn)) imgLast.Source = ImgUtils.UnhookedImageLoad(fn); // success
                             else imgLast.Source = ImgUtils.file_not_found;
-                            return;
+                            break; 
                         case "@WorkDir":
                             if (Directory.Exists(opts.ImageDepotFolder))
                             {
@@ -175,23 +176,28 @@ namespace scripthea
                                 tbImageDepot.Text = "working image depot -> " + opts.ImageDepotFolder;
                             }
                             else tbImageDepot.Text = "working image depot -> <NOT SET>";
-                            return;
+                            break; 
                         case "@Explore":
                             string[] sa = msg.Split('='); if (sa.Length != 2) Utils.TimedMessageBox("Error(#458)");
                             ExplorerPart = Convert.ToInt32(sa[1]);
-                            return;
+                            break; 
                         case "@_Header":
                             string[] sb = msg.Split('='); if (sb.Length != 2) Utils.TimedMessageBox("Error(#459)");
                             Title = "Scripthea - "+sb[1];
-                            return;
+                            break; 
                     }
                 if (chkLog.IsChecked.Value)
+                {                
+                    if (msg.StartsWith("@") && !debug) return; // skips internal messages if not debug    
                     if (ExplorerPart.Equals(100)) Utils.TimedMessageBox(msg,"Warning",3500);
-                    else Utils.log(tbLogger, msg, clr);
+                    else
+                    {
+                        Utils.log(tbLogger, msg, clr);
+                    }
+                }
             }
             finally
             {
-                if (msg.Length > 0 && msg.Substring(0, 1).Equals("@") && Utils.isInVisualStudio && !ExplorerPart.Equals(100)) Utils.log(tbLogger, msg, clr);
                 
             }
         }

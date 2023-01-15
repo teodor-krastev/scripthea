@@ -18,8 +18,9 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using Newtonsoft.Json;
 using Brushes = System.Windows.Media.Brushes;
+using UtilsNS;
 
-namespace UtilsNS
+namespace scripthea.master
 {
     public static class ImgUtils
     {
@@ -153,7 +154,7 @@ namespace UtilsNS
                     BitmapMetadata bitmapMetadata = decoder.Frames[0].Metadata as BitmapMetadata;
                     if (bitmapMetadata == null) return false;
                     var metadata = bitmapMetadata.GetQuery(query);
-                    string md = metadata?.ToString();
+                    string md = metadata?.ToString(); if (md == null) { return false; }
                     var mda = md.Split((char)10); string[] mdb; string prompt = "";
                     if (mda.Length < 2) return false;
                     if (mda.Length > 2)

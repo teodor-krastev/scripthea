@@ -16,6 +16,7 @@ using System.Windows.Shapes;
 using Path = System.IO.Path;
 using UtilsNS;
 using scripthea.viewer;
+using scripthea.master;
 
 namespace scripthea.composer
 {

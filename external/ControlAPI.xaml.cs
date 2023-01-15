@@ -12,6 +12,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Path = System.IO.Path;
+using scripthea.viewer;
+using scripthea.master;
 using UtilsNS;
 
 
@@ -51,6 +54,12 @@ namespace scripthea.external
             backgroundWorker1.RunWorkerCompleted += backgroundWorker1_RunWorkerCompleted;
             backgroundWorker1.WorkerReportsProgress = true;
         }
+        public event Utils.LogHandler OnLog;
+        protected void Log(string txt, SolidColorBrush clr = null)
+        {
+            if (OnLog != null) OnLog(txt, clr);
+        }
+
         protected BackgroundWorker backgroundWorker1;
         public bool IsBusy { get { return backgroundWorker1.IsBusy; } }
 
@@ -90,23 +99,40 @@ namespace scripthea.external
         }
         private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            if (activeAPIname.Equals("Craiyon"))
+            switch (activeAPIname)
             {
-                QueryComplete("", true); return;
-            }
-            if (File.Exists(imageFolder + imageName) && success)
-            {
-                using (StreamWriter sw = File.AppendText(imageFolder + "description.txt"))
-                {
-                    sw.WriteLine(imageName + "=" + prompt2api);
-                }
-                QueryComplete(imageFolder + imageName, true); // hooray !
-            }          
-            else QueryComplete(imageName, false); // sadly...           
+                case "Craiyon":
+                    QueryComplete("", true);
+                    break;
+                case "SDiffusion": // take imageFolder, imageName (filename) and success
+                    if (success)
+                    {
+                        if (!Directory.Exists(imageFolder)) { Log("Error: folder not found"); return; }
+                        if (File.Exists(Path.Combine(imageFolder, imageName)))
+                        {
+                            string desc = Path.Combine(imageFolder, ImgUtils.descriptionFile);
+                            if (!File.Exists(desc)) // create an empty iDepot 
+                            {
+                                DepotFolder df = new DepotFolder(imageFolder, ImageInfo.ImageGenerator.StableDiffusion, true);
+                                df.Save(true); df = null;
+                            }
+                            using (StreamWriter sw = File.AppendText(desc))
+                            {
+                                ImageInfo ii = new ImageInfo(Path.Combine(imageFolder, imageName), ImageInfo.ImageGenerator.StableDiffusion, true);
+                                if (ii.IsEnabled())sw.WriteLine(ii.To_String());
+                                else Log("Error: wrong image file");                                
+                            }
+                            QueryComplete(Path.Combine(imageFolder, imageName), true); // hooray ;)
+                        }
+                        else { Log("Error: image file lost"); return; } 
+                    }
+                    else QueryComplete(Path.Combine(imageFolder, imageName), false); // sadly :(   
+                    break;
+            }        
         }
         public void Query(string prompt, string _imageDepoFolder) // fire event at the end
         {
-            if (IsBusy) return;
+            if (IsBusy) { Log("...I'm busy"); return; }
             if (Directory.Exists(_imageDepoFolder)) imageFolder = _imageDepoFolder.EndsWith("\\") ? _imageDepoFolder : _imageDepoFolder + "\\";
             else Utils.TimedMessageBox("No directory: " + _imageDepoFolder);
             prompt2api = prompt;

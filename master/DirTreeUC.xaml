@@ -1,9 +1,9 @@
-﻿<UserControl x:Class="UtilsNS.DirTreeUC"
+﻿<UserControl x:Class="scripthea.master.DirTreeUC"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:UtilsNS"
+             xmlns:local="clr-namespace:scripthea.master"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800" FontSize="13">
     <Grid>
@@ -13,12 +13,12 @@
             </TreeView.ContextMenu>
         </TreeView>
         <TextBlock x:Name="tbSelected" TextWrapping="Wrap" VerticalAlignment="Bottom" Text="" Margin="0,0,0,3"/>
-        <ComboBox x:Name="cbDrives" Margin="0,0,30,0" SelectionChanged="comboBox_SelectionChanged" Background="#FFF0F0F0" HorizontalAlignment="Right" VerticalAlignment="Top" Width="90" Height="25" FontSize="13"/>
-        <Button x:Name="btnHistory" HorizontalAlignment="Right" VerticalAlignment="Top" Background="White" Click="btnHistory_Click">
+        <ComboBox x:Name="cbDrives" Margin="0,2,32,0" SelectionChanged="comboBox_SelectionChanged" Background="#FFF0F0F0" HorizontalAlignment="Right" VerticalAlignment="Top" Width="90" Height="25" FontSize="13" ToolTip="Logical devices"/>
+        <Button x:Name="btnHistory" HorizontalAlignment="Right" VerticalAlignment="Top" Background="White" Click="btnHistory_Click" Margin="0,2,2,0">
             <Button.ContextMenu>
                 <ContextMenu x:Name="cmHistory"></ContextMenu>
             </Button.ContextMenu>
-            <Image Source="/Scripthea;component/Properties/history.png" Width="20" Height="22"></Image>
+            <Image Source="/Scripthea;component/Properties/history.png" Width="20" Height="22" ToolTip="History of active folders"></Image>
         </Button>
     </Grid>
 </UserControl>

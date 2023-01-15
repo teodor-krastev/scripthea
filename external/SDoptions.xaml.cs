@@ -136,4 +136,37 @@ namespace scripthea.external
             Focus();         // important
         }
     }
+
+    public class SDformat
+    {        
+        public Dictionary<string, Type> args;
+        public SDformat()
+        {
+            args = new Dictionary<string, Type>();
+            args.Add("sd_model", null);
+            args.Add("outpath_samples", typeof(string));
+            args.Add("outpath_grids", typeof(string));
+            args.Add("prompt_for_display", typeof(string));
+            args.Add("prompt", typeof(string));
+            args.Add("negative_prompt", typeof(string));
+            args.Add("styles", typeof(string));
+            args.Add("seed", typeof(int));
+            args.Add("subseed_strength", typeof(double));
+            args.Add("subseed", typeof(int));
+            args.Add("seed_resize_from_h", typeof(int));
+            args.Add("seed_resize_from_w", typeof(int));
+            args.Add("sampler_index", typeof(int));
+            args.Add("batch_size", typeof(int));
+            args.Add("n_iter", typeof(int));
+            args.Add("steps", typeof(int));
+            args.Add("cfg_scale", typeof(double));
+            args.Add("width", typeof(int));
+            args.Add("height", typeof(int));
+            args.Add("restore_faces", typeof(bool));
+            args.Add("tiling", typeof(bool));
+            args.Add("do_not_save_samples", typeof(bool));
+            args.Add("do_not_save_grid", typeof(bool));
+        }
+    }
+
 }

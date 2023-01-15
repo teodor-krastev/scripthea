@@ -39,8 +39,7 @@ namespace scripthea.viewer
                     if (!bb) 
                     {
                         FromSDFile(fullfilename, out suggestedName); return; // when it is not SD file
-                    }
-                       
+                    }                       
                     break;
                 case ImageGenerator.Crayion:
                     if (!FromCraiyonFile(fullfilename, out suggestedName)) return;
