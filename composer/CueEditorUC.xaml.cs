@@ -77,22 +77,34 @@ namespace scripthea.composer
                 if (cues[i].rbChecked.Equals(sender)) { _selected = i; break; }
             }
         }
-
-        private void AddCue(CueItemUC cue) // visual
+        protected void TextChanged(object sender, TextChangedEventArgs e)
+        {
+            bool bb = false;
+            foreach (CueItemUC cue in cues)
+                bb |= cue.empty;
+            if (!bb)
+            {
+                int sel = selected;
+                AddCue(""); selected = sel;
+            }
+        }
+        private int AddCue(CueItemUC cue) // visual
         {
             cue.OnLog += new Utils.LogHandler(Log);
-            cue.rbChecked.Checked += new RoutedEventHandler(Change); 
+            cue.rbChecked.Checked += new RoutedEventHandler(Change);
+            cue.tbCue.TextChanged += new TextChangedEventHandler(TextChanged);
             cue.tbCue.IsReadOnly = false;
             spCues.Children.Add(cue); cues.Add(cue);
+            return cues.Count - 1; 
         }
-        private void AddCue(List<string> cue) // internal
+        private int AddCue(List<string> cue) // internal
         {
-            if (cue == null) { AddCue(new CueItemUC("",radioMode)); return; }
-            AddCue(new CueItemUC(cue, radioMode));
+            if (cue == null) { AddCue(new CueItemUC("",radioMode)); return cues.Count - 1; }
+            return AddCue(new CueItemUC(cue, radioMode));
         }
-        private void AddCue(string cue) // internal
+        private int AddCue(string cue) // internal
         {            
-            AddCue(new CueItemUC(cue, radioMode));
+            return AddCue(new CueItemUC(cue, radioMode));
         }
         private void RemoveAt(int idx)
         {
@@ -107,6 +119,7 @@ namespace scripthea.composer
                 RemoveAt(st);
             if (cues.Count > 0) cues[0].cueText = ""; 
         }
+
         private void cbCommand_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (cues == null) return;
@@ -165,7 +178,7 @@ namespace scripthea.composer
                 }         
                 filename = "";           
             }
-            if (selected == -1) selected = 0;
+            if (selected == -1) selected = 0; TextChanged(null, null);
         }  
         private void Remove()
         {

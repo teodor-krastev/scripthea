@@ -363,7 +363,7 @@ namespace scripthea.viewer
         bool FeedList(ref DepotFolder _iDepot); // external iDepot; regular use
         void UpdateVis(); // update visual from iDepot
         void SetChecked(bool? check); // if null invert; returns checked
-        void Clear();
+        void Clear(bool inclDepotItems = false);
         int selectedIndex { get; set; } // one based index in no-checkable mode
         int Count { get; }
         List<Tuple<int, string, string>> GetItems(bool check, bool uncheck); // idx, filename, prompt

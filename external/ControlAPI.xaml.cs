@@ -101,6 +101,9 @@ namespace scripthea.external
         {
             switch (activeAPIname)
             {
+                case "Simulation":
+                    QueryComplete(Path.Combine(imageFolder, imageName), true);
+                    break;
                 case "Craiyon":
                     QueryComplete("", true);
                     break;

@@ -151,7 +151,8 @@ namespace scripthea.master
                 {
                     iDepot.Save(!IsReadOnly); // save the changes on disk
                     activeView.Clear();
-                    activeView.FeedList(ref iDepot); // update from folder
+                    if (!activeView.FeedList(ref iDepot))  // update from iDepot
+                        { Log("Err: fail to update image depot"); return; }
                     GetChecked();
                 }
                 _isChanging = value;

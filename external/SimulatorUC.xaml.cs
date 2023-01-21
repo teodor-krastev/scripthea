@@ -16,27 +16,38 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using UtilsNS;
 using Path = System.IO.Path;
+using scripthea.master;
 
 namespace scripthea.external
 {
+    public static class SimulFolder
+    {
+        public static string imageSimulFolder
+        {
+            get { return Path.Combine(ImgUtils.defaultImageDepot,"Simulator"); }
+        }   
+        
+        public static string RandomImageFile
+        {
+            get 
+            { 
+                List<string> orgFiles = new List<string>(Directory.GetFiles(imageSimulFolder, "*.png"));
+                if (orgFiles.Count.Equals(0)) throw new Exception("Wrong simulator image folder ->" + imageSimulFolder);
+                Random rnd = new Random(Convert.ToInt32(DateTime.Now.TimeOfDay.TotalSeconds));
+                return orgFiles[rnd.Next(orgFiles.Count - 1)];                 
+            }
+        }
+    }
     /// <summary>
     /// Interaction logic for SimulatorUC.xaml
     /// </summary>
     public partial class SimulatorUC : UserControl, interfaceAPI
     {
-        private string imageSimulFolder
-        {
-            get
-            {               
-                return Utils.basePath + "\\images\\Simulator\\";
-            }
-        }        
         public SimulatorUC()
         {
             InitializeComponent();
             opts = new Dictionary<string, string>();                    
         }
-
         public Dictionary<string, string> opts { get; set; } 
 
         public void Init(string prompt) { }
@@ -46,27 +57,18 @@ namespace scripthea.external
         public bool isEnabled { get { return true; } }
         public bool GenerateImage(string prompt, string imageDepotFolder, out string filename)
         {
-            opts["folder"] = imageDepotFolder; Utils.Sleep(10000);
-            List<string> orgFiles = new List<string>(Directory.GetFiles(imageSimulFolder, "c*.png"));
-            if (orgFiles.Count.Equals(0)) throw new Exception("Wrong simulator image folder ->" + imageSimulFolder);
-            Random rnd = new Random(Convert.ToInt32(DateTime.Now.TimeOfDay.TotalSeconds));
-            string fn = orgFiles[rnd.Next(orgFiles.Count-1)];
-            filename = Utils.timeName() + ".png"; 
-            File.Copy(fn, Path.Combine( imageDepotFolder, filename));       
+            if (Directory.Exists(imageDepotFolder)) opts["folder"] = imageDepotFolder;
+            else opts["folder"] = ImgUtils.defaultImageDepot;
+
+            Utils.Sleep(10000);
+
+            filename = Path.ChangeExtension(Utils.timeName(), ".png");
+            File.Copy(SimulFolder.RandomImageFile, Path.Combine(opts["folder"], filename));       
             return true;
         }        
-
         private void btnGenerate_Click(object sender, RoutedEventArgs e)
         {
-            List<string> orgFiles = new List<string>(Directory.GetFiles(imageSimulFolder, "c*.png"));
-            if (orgFiles.Count.Equals(0)) throw new Exception("Wrong simulator image folder ->" + imageSimulFolder);
-            Random rnd = new Random(Convert.ToInt32(DateTime.Now.TimeOfDay.TotalSeconds));
-            string fn = orgFiles[rnd.Next(orgFiles.Count - 1)];
-            if (File.Exists(fn))
-            {
-                var bitmap = new BitmapImage(new Uri(fn));
-                imgSimul.Source = bitmap;
-            }
+            imgSimul.Source = ImgUtils.UnhookedImageLoad(SimulFolder.RandomImageFile);
         }
     }
 }

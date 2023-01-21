@@ -89,11 +89,10 @@ namespace scripthea.viewer
         }
         
         public string imageFolder { get { return iDepot?.path; } }
-        public void Clear()
+        public void Clear(bool inclDepotItems = false)
         {
-            if (iDepot == null) return;
-            iDepot.items.Clear();
-            dTable?.Rows?.Clear();            
+            dTable?.Rows?.Clear();  
+            if (inclDepotItems) iDepot?.items.Clear();                      
         }
         public bool FeedList(string imageDepot)
         {
@@ -104,10 +103,11 @@ namespace scripthea.viewer
             DepotFolder _iDepot = new DepotFolder(imageDepot, ImageInfo.ImageGenerator.FromDescFile);
             return FeedList(ref _iDepot);        
         }
-        public bool FeedList(ref DepotFolder _iDepot) // external iDepot
+        public bool FeedList(ref DepotFolder _iDepot) // update from existitng iDepot
         {
             if ((dTable == null) || (_iDepot == null)) return false;
-            iDepot = _iDepot; loadedDepot = iDepot.path;
+            if (!Directory.Exists(_iDepot.path)) { Log("Err: no such folder -> " + _iDepot.path); return false; }
+            iDepot = _iDepot; loadedDepot = iDepot.path; 
             UpdateVis();
             if (dTable.Rows.Count > 0) dGrid.SelectedIndex = 0;
             return true;

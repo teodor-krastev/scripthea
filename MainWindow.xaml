@@ -23,12 +23,12 @@
             <StackPanel Margin="0,0,0,0" Orientation="Horizontal" HorizontalAlignment="Left">
                 <CheckBox x:Name="chkLog" Content="Log" VerticalAlignment="Center" Margin="8,0,0,0" IsChecked="True"/>
                 <Button x:Name="btnClear" Content="X" Width="24" Margin="8,6,0,4" Click="btnClear_Click" Background="#FFF7FFFD" Foreground="#FF9E0202" FontWeight="Bold" FontSize="14" ToolTip="Clear log"/>
-                <Label x:Name="lbProcessing" FontSize="14" FontWeight="Bold" Background="{x:Null}" Foreground="Blue" Content="" Margin="20,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
             </StackPanel>
-
-            <Image x:Name="imgPreferences" Margin="0,0,3,0" VerticalAlignment="Center" HorizontalAlignment="Right"  Height="23" Width="29" ToolTip="Edit preferences" Cursor="Hand" Source="/Scripthea;component/Properties/TripleBarBlack.bmp" MouseDown="imgPreferences_MouseDown"/>
-            <Image x:Name="imgAbout" Margin="0,3,40,3" HorizontalAlignment="Right" Source="Properties/penpic1.ico" Cursor="Help" MouseDown="imgAbout_MouseDown" VerticalAlignment="Center"/>
-
+            <StackPanel HorizontalAlignment="Right" VerticalAlignment="Center" Orientation="Horizontal" Height="35" Margin="0" Width="100">
+                <Image x:Name="imgAbout" Margin="0,3,0,0" Source="Properties/penpic1.ico" Cursor="Help" MouseDown="imgAbout_MouseDown" VerticalAlignment="Center" Width="30" Height="30" HorizontalAlignment="Left"/>
+                <Label x:Name="lbProcessing" FontSize="14" FontWeight="Bold" Background="{x:Null}" Margin="3,10,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="40"/>
+                <Image x:Name="imgPreferences" Margin="0,0,3,0" VerticalAlignment="Center" HorizontalAlignment="Left"  Height="23" Width="29" ToolTip="Edit preferences" Cursor="Hand" Source="/Scripthea;component/Properties/TripleBarBlack.bmp" MouseDown="imgPreferences_MouseDown"/>
+            </StackPanel>
             <Grid x:Name = "gridLog" Grid.Row="1" Margin="0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="499*"/>

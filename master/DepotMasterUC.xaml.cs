@@ -146,6 +146,5 @@ namespace scripthea.master
             iPicker1.isChanging = false;
             return true;
         }
-
     }
 }

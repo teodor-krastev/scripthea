@@ -7,13 +7,51 @@ import traceback
 import shlex
 import time
 
+import socket
+import json
+
 import modules.scripts as scripts
 import gradio as gr
 
 from modules.processing import Processed, process_images
 from PIL import Image
 from modules.shared import opts, cmd_opts, state
+import modules.images as simages
 
+
+# MIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIINE
+socket_host = socket.gethostname() #"127.0.0.1"
+socket_port = 5344 # socket server port number
+client_socket = socket.socket()  # instantiate
+debugComm = True
+def dprint(txt):
+    if debugComm:
+        print(txt)
+
+def wait4server():
+    timeOut = 12 # 2 min
+    while (timeOut > 0):
+        try:
+            client_socket.connect((socket_host, socket_port))  # connect to the server
+            break
+        except:
+            time.sleep(10)
+            dprint('comm attempts left: '+str(timeOut))
+            timeOut -= 1
+    return (timeOut > 0)
+
+def OneShot():
+    try:
+        message = '@next.prompt\n'
+        client_socket.send(message.encode())
+        #dprint('out: '+message)
+        inData = client_socket.recv(4096).decode()
+        #dprint('in: '+inData)
+    except:
+        return '@close.session'
+    return inData
+
+# miiiiiiiiiiiiiiiiiiiiiiiiiiiiine
 
 def process_string_tag(tag):
     return tag
@@ -57,7 +95,6 @@ prompt_tags = {
     "do_not_save_grid": process_boolean_tag
 }
 
-
 def cmdargs(line):
     args = shlex.split(line)
     pos = 0
@@ -94,76 +131,65 @@ def load_prompt_file(file):
 
 class Script(scripts.Script):
     def title(self):
-        return "Prompts from Scripthea"
+        return "Prompts from Scripthea (v1.5)"
 
     def ui(self, is_img2img):
-        checkbox_iterate = gr.Checkbox(label="Iterate seed every line", value=False)
+        return []
 
+    def run(self, p):
+        if not wait4server():
+            dprint('TIME OUT !')
+            return
+        dprint('Scripthea session started')
 
-        checkbox_iterate_batch = gr.Checkbox(label="Use same random seed for all lines", value=False)
-
-        prompt_txt = gr.Textbox(label="List of prompt inputs", lines=1)
-        file = gr.File(label="Upload prompt inputs", type='bytes')
-
-        file.change(fn=load_prompt_file, inputs=[file], outputs=[file, prompt_txt, prompt_txt])
-
-        # We start at one line. When the text changes, we jump to seven lines, or two lines if no \n.
-        # We don't shrink back to 1, because that causes the control to ignore [enter], and it may
-        # be unclear to the user that shift-enter is needed.
-        prompt_txt.change(lambda tb: gr.update(lines=7) if ("\n" in tb) else gr.update(lines=2), inputs=[prompt_txt], outputs=[prompt_txt])
-        return [checkbox_iterate, checkbox_iterate_batch, prompt_txt]
-
-    def run(self, p, checkbox_iterate, checkbox_iterate_batch, prompt_txt: str):
-        lines = [x.strip() for x in prompt_txt.splitlines()]
-        lines = [x for x in lines if len(x) > 0]
-
-        p.do_not_save_grid = True
-
-        job_count = 0
-        jobs = []
-
-        for line in lines:
-            if "--" in line:
-                try:
-                    args = cmdargs(line)
-                except Exception:
-                    print(f"Error parsing line [line] as commandline:", file=sys.stderr)
-                    print(traceback.format_exc(), file=sys.stderr)
-                    args = {"prompt": line}
-            else:
-                args = {"prompt": line}
-
-            n_iter = args.get("n_iter", 1)
-            if n_iter != 1:
-                job_count += n_iter
-            else:
-                job_count += 1
-
-            jobs.append(args)
-
-        print(f"Will process {len(lines)} lines in {job_count} jobs.")
-        if (checkbox_iterate or checkbox_iterate_batch) and p.seed == -1:
-            p.seed = int(random.randrange(4294967294))
-
-        state.job_count = job_count
+        proms = []
+        def showPrompt(p1):
+            proms.append(p1)
+            return proms
 
         images = []
         all_prompts = []
         infotexts = []
-        for n, args in enumerate(jobs):
-            state.job = f"{state.job_no + 1} out of {state.job_count}"
+        while True:
+            inData = OneShot()
+            dprint('+>'+inData)
+            if (inData.lower().strip() == '@close.session'):
+                break
+            jsn = json.loads(inData)
+            prom = jsn["prompt"]
 
+            if "--" in prom:
+                try:
+                    args = cmdargs(prom)
+                except Exception:
+                    print(f"Error parsing line [prom] as commandline:", file=sys.stderr)
+                    print(traceback.format_exc(), file=sys.stderr)
+                    args = {"prompt": prom}
+            else:
+                args = {"prompt": prom}
+
+            #interface = gr.Interface(fn = prom, inputs = [], outputs = prompt_txt)
+            #interface.launch()
+            #prompt_txt.join([prom])
             copy_p = copy.copy(p)
             for k, v in args.items():
                 setattr(copy_p, k, v)
 
             proc = process_images(copy_p)
             images += proc.images
-            time.sleep(20)
-
-            if checkbox_iterate:
-                p.seed = p.seed + (p.batch_size * p.n_iter)
             all_prompts += proc.all_prompts
             infotexts += proc.infotexts
+
+            if len(proc.images) > 0:
+                if (jsn["filename"] != ""):
+                    simages.save_image(proc.images[0], jsn["folder"],"",prompt = prom,info = proc.infotexts[0], p=p,  forced_filename = jsn["filename"])
+                time.sleep(1)
+                message = '@image.ready\n'
+            else:
+                message = '@image.failed\n'
+            client_socket.send(message.encode())
+            time.sleep(2)
+        client_socket.close()  # close the connection
+        dprint('Scripthea session closed')
 
         return Processed(p, images, p.seed, "", all_prompts=all_prompts, infotexts=infotexts)

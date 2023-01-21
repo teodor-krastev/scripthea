@@ -19,6 +19,9 @@ using System.Drawing.Imaging;
 using Newtonsoft.Json;
 using Brushes = System.Windows.Media.Brushes;
 using UtilsNS;
+using System.Windows.Media.Animation;
+using Image = System.Windows.Controls.Image;
+using Color = System.Drawing.Color;
 
 namespace scripthea.master
 {
@@ -30,7 +33,7 @@ namespace scripthea.master
 
         public static BitmapImage file_not_found { get { return UnhookedImageLoad(Utils.basePath + "\\Properties\\file_not_found.jpg", ImageFormat.Jpeg); } }
 
-        public static int checkImageDepot(string imageDepot, bool checkDesc = true) 
+        public static int checkImageDepot(string imageDepot, bool checkDesc = true)
         {
             string idepot = imageDepot.EndsWith("\\") ? imageDepot : imageDepot + "\\";
 
@@ -40,7 +43,7 @@ namespace scripthea.master
             if (checkDesc)
             {
                 if (!File.Exists(Path.Combine(idepot, descriptionFile)) && checkDesc) return -1; // no desc file
-                List<string> ls = new List<string>(File.ReadAllLines(Path.Combine(idepot, descriptionFile))); 
+                List<string> ls = new List<string>(File.ReadAllLines(Path.Combine(idepot, descriptionFile)));
                 return ls.Count - 1;
             }
             else
@@ -51,16 +54,16 @@ namespace scripthea.master
         }
 
         public static ImageFormat GetImageFormat(string filePath)
-        {      
+        {
             string extension = Path.GetExtension(filePath).ToLower();
             switch (extension)
             {
                 case ".jpg":
-                case ".jpeg": return ImageFormat.Jpeg;                   
-                case ".png":  return ImageFormat.Png;
-                case ".gif":  return ImageFormat.Gif;
-                case ".bmp":  return ImageFormat.Bmp;
-                default:      return null;
+                case ".jpeg": return ImageFormat.Jpeg;
+                case ".png": return ImageFormat.Png;
+                case ".gif": return ImageFormat.Gif;
+                case ".bmp": return ImageFormat.Bmp;
+                default: return null;
             }
         }
         public static string GetImageExt(ImageFormat iFormat)
@@ -72,6 +75,59 @@ namespace scripthea.master
             return "";
         }
 
+        public static Bitmap ChangeColor(Bitmap scrBitmap, Color newColor) //Color.Red;
+        {
+            //You can change your new color here. Red,Green,LawnGreen any..
+            Color actualColor;
+            //make an empty bitmap the same size as scrBitmap
+            Bitmap newBitmap = new Bitmap(scrBitmap.Width, scrBitmap.Height);
+            for (int i = 0; i < scrBitmap.Width; i++)
+            {
+                for (int j = 0; j < scrBitmap.Height; j++)
+                {
+                    //get the pixel from the scrBitmap image
+                    actualColor = scrBitmap.GetPixel(i, j);
+                    // > 150 because.. Images edges can be of low pixel colr. if we set all pixel color to new then there will be no smoothness left.
+                    if (actualColor.A > 150)
+                        newBitmap.SetPixel(i, j, newColor);
+                    else
+                        newBitmap.SetPixel(i, j, actualColor);
+                }
+            }
+            return newBitmap;
+        }
+
+        public static Color ColorFromHue(double hue)
+        {
+            if (!Utils.InRange(hue, 0, 360)) return new Color();
+            // Convert hue to RGB
+            double H = hue / 60;
+            int i = (int)Math.Floor(H);
+            double f = H - i;
+            double p = 1 - f;
+            double q = f;
+            double t = f;
+            double r, g, b;
+            switch (i)
+            {
+                case 0: r = 1; g = t; b = 0;
+                    break;
+                case 1: r = q; g = 1; b = 0;
+                    break;
+                case 2: r = 0; g = 1; b = t;
+                    break;
+                case 3: r = 0; g = q; b = 1;
+                    break;
+                case 4: r = t; g = 0; b = 1;
+                    break;
+                case 5: r = 1; g = 0; b = q;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("hue", hue, "Hue must be between 0 and 360.");
+            }
+            // Create a Color object from the RGB values
+            return Color.FromArgb((int)(r * 255), (int)(g * 255), (int)(b * 255));
+        }    
         public static BitmapImage BitmapToBitmapImage(System.Drawing.Bitmap bitmap, ImageFormat imageFormat)
         {
             var bitmapImage = new BitmapImage();
@@ -79,13 +135,13 @@ namespace scripthea.master
             {
                 bitmap.Save(memory, imageFormat);
                 memory.Position = 0;
-                
+
                 bitmapImage.BeginInit();
                 bitmapImage.StreamSource = memory;
                 bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
                 bitmapImage.EndInit();
-                bitmapImage.Freeze();                
-            }           
+                bitmapImage.Freeze();
+            }
             return bitmapImage.Clone();
         }
 
@@ -94,7 +150,7 @@ namespace scripthea.master
             ImageFormat iFormat = imageFormat == null ? GetImageFormat(filename) : imageFormat;
             if (iFormat == null) return null; // unrecogn. format; need to specify one
             System.Drawing.Image selectedImage = System.Drawing.Image.FromFile(filename);
-            System.Drawing.Bitmap bitmap = new System.Drawing.Bitmap(selectedImage);            
+            System.Drawing.Bitmap bitmap = new System.Drawing.Bitmap(selectedImage);
             BitmapImage bitmapImage = BitmapToBitmapImage(bitmap, iFormat);
             selectedImage.Dispose(); bitmap.Dispose(); GC.Collect();
             return bitmapImage;
@@ -144,11 +200,11 @@ namespace scripthea.master
         public static bool GetMetaDataItems(string imageFilePath, out Dictionary<string, string> itemMap, bool original = false)
         {
             itemMap = new Dictionary<string, string>();
-            if (!Path.GetExtension(imageFilePath).ToLower().Equals(".png")) return false;           
-            var query = "/tEXt/{str=parameters}"; 
+            if (!Path.GetExtension(imageFilePath).ToLower().Equals(".png")) return false;
+            var query = "/tEXt/{str=parameters}";
             try
             {
-                using (Stream fileStream = File.Open(imageFilePath, FileMode.Open, FileAccess.Read, FileShare.Read))  
+                using (Stream fileStream = File.Open(imageFilePath, FileMode.Open, FileAccess.Read, FileShare.Read))
                 {
                     var decoder = BitmapDecoder.Create(fileStream, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.None);
                     BitmapMetadata bitmapMetadata = decoder.Frames[0].Metadata as BitmapMetadata;
@@ -160,31 +216,31 @@ namespace scripthea.master
                     if (mda.Length > 2)
                     {
                         List<string> ls = new List<string>(mda);
-                        mdb = ls[ls.Count-1].Split(',');
+                        mdb = ls[ls.Count - 1].Split(',');
                         ls.RemoveAt(ls.Count - 1);
-                        prompt = String.Join("_",ls.ToArray());
+                        prompt = String.Join("_", ls.ToArray());
                     }
                     else
-                    { 
+                    {
                         prompt = mda[0];
                         mdb = mda[1].Split(',');
                     }
                     itemMap.Add("prompt", prompt);
                     if (mdb.Length.Equals(0)) return false;
-                    foreach(var item in mdb)
+                    foreach (var item in mdb)
                     {
                         var mdc = item.Split(':');
                         if (mdc.Length != 2) return false;
-                        string nm = mdc[0].Trim(); 
+                        string nm = mdc[0].Trim();
                         if (!original)
-                        {                             
-                            if (nm.Equals("CFG scale")) nm = "scale";                           
+                        {
+                            if (nm.Equals("CFG scale")) nm = "scale";
                             if (nm.Equals("Model hash")) nm = "ModelHash";
-                            else nm = nm.ToLower();                           
-                        }                       
+                            else nm = nm.ToLower();
+                        }
                         itemMap.Add(nm, mdc[1].Trim());
                     }
-                    fileStream.Close();                    
+                    fileStream.Close();
                 }
             }
             catch (Exception e) { Utils.TimedMessageBox("Error (I/O): " + e.Message, "Error message", 3000); return false; }
@@ -203,7 +259,7 @@ namespace scripthea.master
         string AppDataStr = "<AppData>";
         public string AppData
         {
-            get 
+            get
             {
                 if (Directory.Exists(Utils.basePath)) return Utils.basePath.EndsWith("\\") ? Utils.basePath : Utils.basePath + "\\";
                 else Utils.TimedMessageBox("No directory: " + Utils.basePath);
@@ -217,11 +273,11 @@ namespace scripthea.master
             historyFile = Path.Combine(Utils.configPath, "history.lst");
             if (File.Exists(historyFile))
             {
-                List<string> ls = Utils.readList(historyFile); history = new List<string>(); 
+                List<string> ls = Utils.readList(historyFile); history = new List<string>();
                 foreach (string ss in ls)
                     if (Directory.Exists(ss)) history.Add(ss);
             }
-            else history = new List<string>();           
+            else history = new List<string>();
             ld.Insert(0, AppDataStr);
             foreach (string s in ld)
             {
@@ -236,7 +292,7 @@ namespace scripthea.master
                 tbSelected.Visibility = Visibility.Collapsed; tvFolders.Margin = new Thickness(0);
             }
         }
-        public void Finish() 
+        public void Finish()
         {
             Utils.writeList(historyFile, history);
         }
@@ -343,7 +399,7 @@ namespace scripthea.master
             foreach (ComboBoxItem cbi in cbDrives.Items)
                 if (cbi.Content.ToString().Equals(fld[0] + "\\")) { cbf = cbi; break; }
             if (cbf.Equals(null)) Log("Error: no drive: " + fld[0] + "\\");
-            if (pth.Length > AppData.Length) 
+            if (pth.Length > AppData.Length)
                 if (pth.Substring(0, AppData.Length).Equals(AppData, StringComparison.InvariantCultureIgnoreCase))
                     cbf = cbDrives.Items[0] as ComboBoxItem;
             cbDrives.SelectedItem = cbf; // creates root
@@ -396,13 +452,13 @@ namespace scripthea.master
             string input = ""; string dir = ""; string prn1 = "";
             switch (Convert.ToString((sender as MenuItem).Header))
             {
-                case "New folder (inside sel.)":                   
-                    prn1 = prn.Length > maxLen ? "..."+prn.Substring(prn.Length - maxLen) : prn;
+                case "New folder (inside sel.)":
+                    prn1 = prn.Length > maxLen ? "..." + prn.Substring(prn.Length - maxLen) : prn;
                     input = new InputBox("New folder in " + prn1, "", "").ShowDialog();
                     if (input.Equals("")) return;
                     dir = Path.Combine(prn, input);
-                    if (Directory.Exists(dir)) Utils.TimedMessageBox("The folder \"" + dir + "\" already exists","Error message",3000);
-                    else 
+                    if (Directory.Exists(dir)) Utils.TimedMessageBox("The folder \"" + dir + "\" already exists", "Error message", 3000);
+                    else
                     {
                         Directory.CreateDirectory(dir); refreshTree(); CatchAFolder(prn);
                     }
@@ -410,13 +466,13 @@ namespace scripthea.master
                 case "Rename":
                     string lastDir = Path.GetFileName(pth);
                     prn1 = prn.Length > maxLen ? "..." + prn.Substring(prn.Length - maxLen) : prn;
-                    input = new InputBox("Rename <"+ lastDir + "> in " + prn1, lastDir, "").ShowDialog();
+                    input = new InputBox("Rename <" + lastDir + "> in " + prn1, lastDir, "").ShowDialog();
                     if (input.Equals("")) return;
                     dir = Path.Combine(prn, input);
                     if (Directory.Exists(dir)) Utils.TimedMessageBox("The folder \"" + dir + "\" already exists", "Error message", 3000);
                     else
                     {
-                        Directory.Move(pth,dir); refreshTree(); CatchAFolder(prn);
+                        Directory.Move(pth, dir); refreshTree(); CatchAFolder(prn);
                     }
                     break;
                 default: Utils.TimedMessageBox("internal error #951");
@@ -429,7 +485,7 @@ namespace scripthea.master
             cmHistory.Items.Clear();
             for (int i = 0; i < history.Count; i++)
             {
-                MenuItem hmi = new MenuItem() { Name = "hmi" + i.ToString(), Header = history[i] };                
+                MenuItem hmi = new MenuItem() { Name = "hmi" + i.ToString(), Header = history[i] };
                 hmi.Click += hmi_Click;
                 cmHistory.Items.Add(hmi);
             }
@@ -441,5 +497,115 @@ namespace scripthea.master
             MenuItem hmi = sender as MenuItem; string header = Convert.ToString(hmi.Header);
             CatchAFolder(header); Active(header);
         }
-    }    
+    }
+
+
+    /*I post a solution extending the image control and using the Gif Decoder. The gif decoder has a frames property. I animate the FrameIndex property. 
+     * The event ChangingFrameIndex changes the source property to the frame corresponding to the FrameIndex (that is in the decoder). I guess that the gif 
+     * has 10 frames per second.*/
+
+    public class GifImage : Image
+    {
+        private bool _isInitialized;
+        private GifBitmapDecoder _gifDecoder;
+        private Int32Animation _animation;
+
+        public int FrameIndex
+        {
+            get { return (int)GetValue(FrameIndexProperty); }
+            set { SetValue(FrameIndexProperty, value); }
+        }
+
+        private void Initialize()
+        {
+            _gifDecoder = new GifBitmapDecoder(new Uri("pack://application:,,," + this.GifSource), BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.Default);
+            _animation = new Int32Animation(0, _gifDecoder.Frames.Count - 1, new Duration(new TimeSpan(0, 0, 0, _gifDecoder.Frames.Count / 10, (int)((_gifDecoder.Frames.Count / 10.0 - _gifDecoder.Frames.Count / 10) * 1000))));
+            _animation.RepeatBehavior = RepeatBehavior.Forever;
+            this.Source = _gifDecoder.Frames[0];
+
+            _isInitialized = true;
+        }
+
+        public GifImage()
+        {
+            VisibilityProperty.OverrideMetadata(typeof(GifImage),
+                new FrameworkPropertyMetadata(VisibilityPropertyChanged));
+        }
+
+        private void VisibilityPropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            if ((Visibility)e.NewValue == Visibility.Visible)
+            {
+                ((GifImage)sender).StartAnimation();
+            }
+            else
+            {
+                ((GifImage)sender).StopAnimation();
+            }
+        }
+
+        public readonly DependencyProperty FrameIndexProperty =
+            DependencyProperty.Register("FrameIndex", typeof(int), typeof(GifImage), new UIPropertyMetadata(0, new PropertyChangedCallback(ChangingFrameIndex)));
+
+        static void ChangingFrameIndex(DependencyObject obj, DependencyPropertyChangedEventArgs ev)
+        {
+            var gifImage = obj as GifImage;
+            gifImage.Source = gifImage._gifDecoder.Frames[(int)ev.NewValue];
+        }
+
+        /// <summary>
+        /// Defines whether the animation starts on it's own
+        /// </summary>
+        public bool AutoStart
+        {
+            get { return (bool)GetValue(AutoStartProperty); }
+            set { SetValue(AutoStartProperty, value); }
+        }
+
+        public readonly DependencyProperty AutoStartProperty =
+            DependencyProperty.Register("AutoStart", typeof(bool), typeof(GifImage), new UIPropertyMetadata(false, AutoStartPropertyChanged));
+
+        private static void AutoStartPropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            if ((bool)e.NewValue)
+                (sender as GifImage).StartAnimation();
+        }
+
+        public string GifSource
+        {
+            get { return (string)GetValue(GifSourceProperty); }
+            set { SetValue(GifSourceProperty, value); }
+        }
+
+        public readonly DependencyProperty GifSourceProperty =
+            DependencyProperty.Register("GifSource", typeof(string), typeof(GifImage), new UIPropertyMetadata(string.Empty, GifSourcePropertyChanged));
+
+        private static void GifSourcePropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            (sender as GifImage).Initialize();
+        }
+
+        /// <summary>
+        /// Starts the animation
+        /// </summary>
+        public void StartAnimation()
+        {
+            if (!_isInitialized)
+                this.Initialize();
+
+            BeginAnimation(FrameIndexProperty, _animation);
+        }
+
+        /// <summary>
+        /// Stops the animation
+        /// </summary>
+        public void StopAnimation()
+        {
+            BeginAnimation(FrameIndexProperty, null);
+        }
+    }
 }
+/*Usage example (XAML):
+
+<controls:GifImage x:Name="gifImage" Stretch="None" GifSource="/SomeImage.gif" AutoStart="True" />
+*/

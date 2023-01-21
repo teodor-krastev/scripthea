@@ -80,13 +80,7 @@ namespace scripthea.external
         public bool isEnabled { get; } // connected and working (depends on the API)
         private void SimulatorImage(string filepath) // copy random simulator file to filepath
         {
-            string imageSimulFolder = Utils.basePath + "\\images\\Simulator\\";
-            List<string> orgFiles = new List<string>(Directory.GetFiles(imageSimulFolder, "*.png"));
-            if (orgFiles.Count.Equals(0)) throw new Exception("Wrong simulator image folder ->" + imageSimulFolder);
-            Random rnd = new Random(Convert.ToInt32(DateTime.Now.TimeOfDay.TotalSeconds));
-            string fn = orgFiles[rnd.Next(orgFiles.Count - 1)];
-
-            File.Copy(fn, filepath);
+            File.Copy(SimulFolder.RandomImageFile, filepath);
         }
         public bool imageReady 
         { 

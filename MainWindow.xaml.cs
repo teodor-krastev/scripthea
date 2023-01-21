@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using System.Drawing;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using scripthea.viewer;
@@ -20,6 +21,8 @@ using scripthea.composer;
 using scripthea.external;
 using scripthea.master;
 using UtilsNS;
+using Path = System.IO.Path;
+using Color = System.Drawing.Color;
 
 namespace scripthea
 {
@@ -40,6 +43,7 @@ namespace scripthea
         string optionsFile;
         public Options opts;
         public PreferencesWindow prefsWnd;
+        private Bitmap penpic;
 
         public FocusControl focusControl;
         private void MainWindow1_Loaded(object sender, RoutedEventArgs e)
@@ -92,6 +96,8 @@ namespace scripthea
             focusControl.Register(depotMaster.iPickerA);
             focusControl.Register(depotMaster.iPickerB);
 
+            penpic = new Bitmap(Path.Combine(Utils.basePath, "Properties", "penpic1.png"));
+            imgAbout.Source = ImgUtils.BitmapToBitmapImage(penpic, System.Drawing.Imaging.ImageFormat.Png);
             Log("@ExplorerPart=0");
             aboutWin.Hide();
         }
@@ -148,8 +154,9 @@ namespace scripthea
         {
             try
             {
-                if (msg.Length > 7)
-                    switch (msg.Substring(0, 8))
+                string txt = msg.Trim();
+                if (txt.Length > 7)
+                    switch (txt.Substring(0, 8))
                     {
                         case "@StartPr": // StartProc
                             if (Utils.isNull(dTimer))
@@ -158,16 +165,17 @@ namespace scripthea
                                 dTimer.Tick += new EventHandler(dTimer_Tick);
                                 dTimer.Interval = new TimeSpan(200 * 10000);
                             }
-                            dti = 0; dTimer.Start();
+                            dti = 0; dTimer.Start(); txt = msg.Substring(1);
                             break;
-
                         case "@EndProc":
                             if (Utils.isNull(dTimer)) { Utils.TimedMessageBox("Err: broken timer", "Warning", 3500); return; }
-                            dTimer.Stop(); lbProcessing.Content = "";
-                            string fn = msg.Substring(9).Trim();
+                            dTimer.Stop();  lbProcessing.Content = "";
+                            imgAbout.Source = ImgUtils.BitmapToBitmapImage(penpic, System.Drawing.Imaging.ImageFormat.Png); 
+                            string fn = txt.Substring(9).Trim();
                             if (rowLogImage.Height.Value < 2) rowLogImage.Height = new GridLength(pnlLog.ActualWidth);
                             if (File.Exists(fn)) imgLast.Source = ImgUtils.UnhookedImageLoad(fn); // success
                             else imgLast.Source = ImgUtils.file_not_found;
+                            txt = msg.Substring(1);
                             break; 
                         case "@WorkDir":
                             if (Directory.Exists(opts.ImageDepotFolder))
@@ -178,23 +186,20 @@ namespace scripthea
                             else tbImageDepot.Text = "working image depot -> <NOT SET>";
                             break; 
                         case "@Explore":
-                            string[] sa = msg.Split('='); if (sa.Length != 2) Utils.TimedMessageBox("Error(#458)");
+                            string[] sa = txt.Split('='); if (sa.Length != 2) Utils.TimedMessageBox("Error(#458)");
                             ExplorerPart = Convert.ToInt32(sa[1]);
                             break; 
                         case "@_Header":
-                            string[] sb = msg.Split('='); if (sb.Length != 2) Utils.TimedMessageBox("Error(#459)");
+                            string[] sb = txt.Split('='); if (sb.Length != 2) Utils.TimedMessageBox("Error(#459)");
                             Title = "Scripthea - "+sb[1];
                             break; 
                     }
                 if (chkLog.IsChecked.Value)
                 {                
-                    if (msg.StartsWith("@") && !debug) return; // skips internal messages if not debug    
-                    if (ExplorerPart.Equals(100)) Utils.TimedMessageBox(msg,"Warning",3500);
-                    else
-                    {
-                        Utils.log(tbLogger, msg, clr);
-                    }
-                }
+                    if (txt.StartsWith("@") && !debug) return; // skips internal messages if not debug    
+                    if (ExplorerPart.Equals(100)) { if (!txt.StartsWith("@")) Utils.TimedMessageBox(txt, "Warning", 3500); }
+                    else Utils.log(tbLogger, txt, clr);
+                 }
             }
             finally
             {
@@ -205,23 +210,34 @@ namespace scripthea
         private void dTimer_Tick(object sender, EventArgs e)
         {
             string ch = "";
-            switch (dti % 4)
+            switch (dti % 6)
             {
-                case 0:
-                    ch = "--";
+                /*case 0: ch = "--";
                     break;
-                case 1:
-                    ch = " \\";
+                case 1: ch = " \\";
                     break;
-                case 2:
-                    ch = " |";
+                case 2: ch = " |";
                     break;
-                case 3:
-                    ch = " /";
+                case 3: ch = " /";
+                    break;*/
+                case 0: ch = ". ....";
+                    break;
+                case 1: ch = ".. ...";
+                    break;
+                case 2: ch = "... ..";
+                    break;
+                case 3: ch = ".... .";
+                    break;
+                case 4: ch = "... ..";
+                    break;
+                case 5: ch = ".. ...";
                     break;
             }
             dti++;
             lbProcessing.Content = ch;
+           
+            Bitmap clrBitmap = ImgUtils.ChangeColor(penpic, ImgUtils.ColorFromHue((dti % 20) * 18));
+            imgAbout.Source = ImgUtils.BitmapToBitmapImage(clrBitmap, System.Drawing.Imaging.ImageFormat.Png);
         }
         TabItem oldTab;
         private void tabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)

@@ -28,7 +28,7 @@ namespace scripthea.composer
         public CueItemUC(string text, bool _radioChecked = false)
         {
             InitializeComponent(); radioChecked = _radioChecked;
-            tbCue.Text = text; 
+            tbCue.Text = text;
         }
 
         public CueItemUC(List<string> text, bool _radioChecked = false)
@@ -37,7 +37,7 @@ namespace scripthea.composer
             tbCue.Text = ""; int k = 0;
             foreach (string line in text)
             {
-                tbCue.Text += line + (k.Equals(text.Count - 1) ? "": "\r"); k++;
+                tbCue.Text += line + (k.Equals(text.Count - 1) ? "" : "\r"); k++;
             }
         }
         public event Utils.LogHandler OnLog;
@@ -49,8 +49,8 @@ namespace scripthea.composer
         public bool radioMode
         {
             get { return rbChecked.Visibility.Equals(Visibility.Visible); }
-            set 
-            { 
+            set
+            {
                 if (value)
                 {
                     rbChecked.Visibility = Visibility.Visible;
@@ -63,8 +63,8 @@ namespace scripthea.composer
                 }
             }
         }
-        public bool radioChecked 
-        { 
+        public bool radioChecked
+        {
             get { return rbChecked.IsChecked.Value; }
             set { rbChecked.IsChecked = value; }
         }
@@ -79,7 +79,10 @@ namespace scripthea.composer
             get { return tbCue.Text; }
             set { tbCue.Text = value; }
         }
-
+        public bool empty
+        {
+            get { return cueText.Trim().Equals(""); }
+        }
         public List<string> cueTextAsList(bool noComment = true)
         {
             List<string> ls = new List<string>(); tbCue.UpdateLayout();

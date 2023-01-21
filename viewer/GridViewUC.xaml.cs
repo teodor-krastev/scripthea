@@ -93,9 +93,10 @@ namespace scripthea.viewer
             picItems.Clear(); wrapPics.Children.Clear(); wrapPics.UpdateLayout();
         }
         public string imageFolder { get { return iDepot.path; } }
-        public void Clear()
+        public void Clear(bool inclDepotItems = false)
         {
-            picItemsClear();            
+            picItemsClear(); 
+            if (inclDepotItems) iDepot?.items.Clear();                       
         }
         public bool FeedList(string imageDepot) 
         {
@@ -107,7 +108,8 @@ namespace scripthea.viewer
         }
         public bool FeedList(ref DepotFolder _iDepot) // external iDepot; regular use
         {
-            if (_iDepot == null) return false; 
+            if (_iDepot == null) return false;
+            if (!Directory.Exists(_iDepot.path)) { Log("Err: no such folder -> " + _iDepot.path); return false; }
             iDepot = _iDepot; loadedDepot = iDepot.path;
             UpdateVis();
             return true;
