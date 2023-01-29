@@ -31,8 +31,7 @@ namespace scripthea
     /// </summary>
     public partial class MainWindow : Window
     {
-        AboutWin aboutWin;
-        private bool debug = Utils.isInVisualStudio;
+        AboutWin aboutWin;       
         public MainWindow()
         {
             aboutWin = new AboutWin();
@@ -57,6 +56,7 @@ namespace scripthea
                 if (opts.ImageDepotFolder.Equals("<default.image.depot>")) opts.ImageDepotFolder = ImgUtils.defaultImageDepot;
             }
             else opts = new Options();
+            opts.debug = Utils.isInVisualStudio || Utils.localConfig;
             prefsWnd = new PreferencesWindow();
             Title = "Scripthea - options loaded";
             dirTreeUC.Init();
@@ -66,14 +66,17 @@ namespace scripthea
             viewerUC.OnLog += new Utils.LogHandler(Log); viewerUC.tbImageDepot.KeyDown += new KeyEventHandler(MainWindow1_KeyDown);
             importUtilUC.OnLog += new Utils.LogHandler(Log); importUtilUC.tbImageDepot.KeyDown += new KeyEventHandler(MainWindow1_KeyDown);
 
-            Title = "Scripthea - loading text files...";
-            queryUC.Init(ref opts);
-            Title = "Scripthea - text files loaded";
+            Title = "Scripthea - loading text files...";            
             viewerUC.Init(ref opts);
             depotMaster.Init(ref opts);
             importUtilUC.Init();
             exportUtilUC.Init(ref opts);
 
+            oldTab = tiComposer;
+            Log("> Welcome to Scripthea" + "  " + (Utils.isInVisualStudio ? "(within VS)" : "")); Log("");
+            Utils.DelayExec(2000, new Action(() => { aboutWin.Hide(); })); 
+            queryUC.Init(ref opts);            
+            
             Left = opts.Left;
             Top = opts.Top;
             Width = opts.Width;
@@ -83,9 +86,6 @@ namespace scripthea
             gridSplitLeft_MouseDoubleClick(null, null);
             rowLogImage.Height = new GridLength(1);
 
-            oldTab = tiComposer;
-            Title = "Scripthea - text-to-image prompt composer v" + Utils.getAppFileVersion;
-            Log("> Welcome to Scripthea" + "  " + (Utils.isInVisualStudio ? "(within VS)" : "")); Log("");
             if (opts.SingleAuto) queryUC.btnCompose_Click(null, null);
 
             focusControl = new FocusControl();
@@ -99,7 +99,8 @@ namespace scripthea
             penpic = new Bitmap(Path.Combine(Utils.basePath, "Properties", "penpic1.png"));
             imgAbout.Source = ImgUtils.BitmapToBitmapImage(penpic, System.Drawing.Imaging.ImageFormat.Png);
             Log("@ExplorerPart=0");
-            aboutWin.Hide();
+            if (!opts.debug) imgPreferences.Visibility = Visibility.Collapsed;
+            Title = "Scripthea - text-to-image prompt composer v" + Utils.getAppFileVersion;           
         }
         private int _ExplorerPart;
         public int ExplorerPart // from 0 to 100%
@@ -196,10 +197,10 @@ namespace scripthea
                     }
                 if (chkLog.IsChecked.Value)
                 {                
-                    if (txt.StartsWith("@") && !debug) return; // skips internal messages if not debug    
+                    if (txt.StartsWith("@") && !opts.debug) return; // skips internal messages if not debug    
                     if (ExplorerPart.Equals(100)) { if (!txt.StartsWith("@")) Utils.TimedMessageBox(txt, "Warning", 3500); }
                     else Utils.log(tbLogger, txt, clr);
-                 }
+                }
             }
             finally
             {

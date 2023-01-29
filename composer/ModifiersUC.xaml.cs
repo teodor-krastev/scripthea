@@ -46,7 +46,7 @@ namespace scripthea.composer
         Options opts;
         public void Init(ref Options _opts)
         {
-            opts = _opts; chkAddEmpty.IsChecked = opts.AddEmptyModif;
+            opts = _opts; chkAddEmpty.IsChecked = opts.AddEmptyModif; chkConfirmGoogling.IsChecked = opts.ConfirmGoogling;
             modifLists = new List<ModifListUC>();
             var files = new List<string>(Directory.GetFiles(Utils.configPath, "*.mdfr"));
             if (File.Exists(mapFile))
@@ -57,7 +57,7 @@ namespace scripthea.composer
             if (Utils.isNull(ModifMap)) ModifMap = new Dictionary<string, bool>();
             foreach (string fn in files)
             {
-                ModifListUC cmu = new ModifListUC(fn);
+                ModifListUC cmu = new ModifListUC(fn, ref opts);
                 cmu.OnChange += new RoutedEventHandler(Change);
                 cmu.OnLog += new Utils.LogHandler(Log);
                 modifLists.Add(cmu);
@@ -72,6 +72,7 @@ namespace scripthea.composer
 
         public void Finish()
         {
+            opts.ConfirmGoogling = chkConfirmGoogling.IsChecked.Value;
             ShowMap = false; // update ModifMap;
             System.IO.File.WriteAllText(mapFile, JsonConvert.SerializeObject(ModifMap));
         }
@@ -225,6 +226,10 @@ namespace scripthea.composer
         private void chkAddEmpty_Checked(object sender, RoutedEventArgs e)
         {
             opts.AddEmptyModif = chkAddEmpty.IsChecked.Value;
+        }
+        private void chkConfirmGoogling_Checked(object sender, RoutedEventArgs e)
+        {
+            opts.ConfirmGoogling = chkConfirmGoogling.IsChecked.Value;
         }
     }
 }

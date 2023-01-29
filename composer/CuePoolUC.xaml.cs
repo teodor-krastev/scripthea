@@ -62,6 +62,7 @@ namespace scripthea.composer
         public void Init(ref Options _opts)
         {
             opts = _opts;
+            if (!Directory.Exists(cuesFolder)) { Utils.TimedMessageBox("Fatal error: cues folder <" + cuesFolder + "> does not exist.", "Closng application", 4000); Application.Current.Shutdown(); }
             if (File.Exists(mapFile))
             {
                 string json = System.IO.File.ReadAllText(mapFile);

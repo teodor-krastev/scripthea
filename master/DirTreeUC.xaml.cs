@@ -22,6 +22,7 @@ using UtilsNS;
 using System.Windows.Media.Animation;
 using Image = System.Windows.Controls.Image;
 using Color = System.Drawing.Color;
+using scripthea.viewer;
 
 namespace scripthea.master
 {
@@ -30,6 +31,7 @@ namespace scripthea.master
         public const string descriptionFile = "DESCRIPTION.idf";
         public static string defaultImageDepot
         { get { return System.IO.Path.Combine(Utils.basePath, "images"); } }
+        public static ImageInfo.ImageGenerator DefaultImageGenerator = ImageInfo.ImageGenerator.StableDiffusion;
 
         public static BitmapImage file_not_found { get { return UnhookedImageLoad(Utils.basePath + "\\Properties\\file_not_found.jpg", ImageFormat.Jpeg); } }
 

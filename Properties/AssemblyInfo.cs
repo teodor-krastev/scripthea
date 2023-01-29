@@ -12,8 +12,8 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Teodor Krastev")]
 [assembly: AssemblyProduct("Scripthea")]
-[assembly: AssemblyCopyright("Copyright ©  2022")]
-[assembly: AssemblyTrademark("Teodor Krastev")]
+[assembly: AssemblyCopyright("Teodor Krastev ©  2022-2023")]
+[assembly: AssemblyTrademark("Scripthea")]
 [assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible
@@ -51,5 +51,5 @@ using System.Windows;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("0.9.11.43")]
-[assembly: AssemblyFileVersion("0.9.11.43")]
+[assembly: AssemblyVersion("0.9.12.44")]
+[assembly: AssemblyFileVersion("0.9.12.44")]

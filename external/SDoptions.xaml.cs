@@ -60,7 +60,15 @@ namespace scripthea.external
                 opts = JsonConvert.DeserializeObject<SDoptions>(fileJson);                
             }
             else opts = new SDoptions();
+            if (opts.ValidScript) ValidatePyScript();
         }
+        public event Utils.LogHandler OnLog;
+        protected void Log(string txt, SolidColorBrush clr = null)
+        {
+            if (OnLog != null) OnLog(txt, clr);
+            else Utils.TimedMessageBox(txt, "Warning", 3500);
+        }
+
         public string configFilename = Path.Combine(Utils.configPath, "StableDiffusion.cfg");  
         /// <summary>
         /// the point of the dialog, readable everywhere
@@ -120,6 +128,18 @@ namespace scripthea.external
         {
             e.Cancel = keepOpen; Hide();
         }
+        public void ValidatePyScript()
+        {
+            string pyScript = "prompts_from_scripthea_1_5.py";
+            string orgLoc = Path.Combine(Utils.configPath, pyScript);
+            if (!File.Exists(orgLoc)) { Log("Err: file " + orgLoc + " is missing."); return; }
+            if (!Directory.Exists(opts.SDlocation)) { Log("Err: SD folder " + opts.SDlocation + " is missing."); return; }
+            string sdLoc = Path.Combine(opts.SDlocation, "scripts", pyScript);
+            if (Utils.GetMD5Checksum(orgLoc) == Utils.GetMD5Checksum(sdLoc)) return;
+            if (MessageBox.Show("Scripthea py script is missing (or old) from scripts folder of SD\r Copy <prompts_from_scripthea_1_5.py> to SD folder?", "",
+                MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No) return;
+            File.Copy(orgLoc, sdLoc, true);
+        }
 
         private void btnBrowse_Click(object sender, RoutedEventArgs e)
         {
@@ -128,7 +148,7 @@ namespace scripthea.external
             dialog.IsFolderPicker = true;
             if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
             {
-                tbSDlocation.Text = dialog.FileName;
+                tbSDlocation.Text = dialog.FileName; ValidatePyScript();
             }
             Activate();
             Topmost = true;  // important

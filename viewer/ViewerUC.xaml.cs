@@ -20,10 +20,11 @@ using Path = System.IO.Path;
 using Newtonsoft.Json;
 
 namespace scripthea.viewer
-{    
+{
     public class ImageInfo
     {
         public enum ImageGenerator { StableDiffusion, Crayion, FromDescFile}
+        
         public ImageInfo()
         {
 

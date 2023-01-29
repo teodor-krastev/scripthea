@@ -6,6 +6,7 @@
     <Grid Margin="0,0,4.127,0.987">
         <Grid.RowDefinitions>
             <RowDefinition Height="47.429"/>
+            <RowDefinition Height="47.429"/>
             <RowDefinition/>
             <RowDefinition Height="47.429"/>
         </Grid.RowDefinitions>
@@ -14,10 +15,11 @@
             <Label x:Name="lbModifPrefix" Content="Modif.prefix" Width="80" Margin="10,7,0,0" HorizontalAlignment="Right" VerticalAlignment="Top"/>
             <TextBox x:Name="tbModifPrefix" HorizontalAlignment="Right" Height="23" Margin="0,7,0,0" TextWrapping="Wrap" Text=";" VerticalAlignment="Top" Width="30" FontWeight="Bold" FontSize="13"/>
         </StackPanel>
-        <Grid Grid.Row="2">
+        <CheckBox x:Name="chkValidationAsk" Content="Ask before correction in validation" HorizontalAlignment="Left" Margin="10,4.608,0,0" Grid.Row="2" VerticalAlignment="Top"/>
+
+        <Grid Grid.Row="3">
             <Button x:Name="btnOK" Content="OK" HorizontalAlignment="Right" Margin="0,11.143,17.286,11.286" VerticalAlignment="Center" Width="90" Click="OKButton_Click" Grid.Row="1" Height="25" FontWeight="Bold" IsDefault="True" Background="#FFF0F0F0"/>
             <Button x:Name="btnCancel" Content="Cancel" HorizontalAlignment="Right" Margin="0,11.143,127.286,11.286" VerticalAlignment="Center" Width="95" Grid.Row="1" Height="25" RenderTransformOrigin="0.502,0.5" Click="btnCancel_Click" IsCancel="True" Background="#FFF0F0F0"/>
         </Grid>
-        <CheckBox x:Name="chkValidationAsk" Content="Ask before correction in validation" HorizontalAlignment="Left" Margin="10,4.608,0,0" Grid.Row="1" VerticalAlignment="Top"/>
     </Grid>
 </Window>

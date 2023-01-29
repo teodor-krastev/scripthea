@@ -177,6 +177,7 @@ namespace scripthea.master
         }
         private int GetChecked(bool print = true)
         {
+            if (print) lbChecked.Content = "---";
             if (!isEnabled || activeView == null) { Log("Err: No active image depot found."); return -1; }
             List<Tuple<int, string, string>> itms = activeView.GetItems(true, false);
             if (print)
@@ -191,10 +192,16 @@ namespace scripthea.master
             else tbImageDepot.Foreground = Brushes.Red;
             if (ImgUtils.checkImageDepot(tbImageDepot.Text, true) > -1)
             {
-                iDepot = new DepotFolder(tbImageDepot.Text, ImageInfo.ImageGenerator.FromDescFile, IsReadOnly);
-                if (iDepot.isEnabled) ChangeDepot(iDepot, null);
+                iDepot = new DepotFolder(tbImageDepot.Text, ImageInfo.ImageGenerator.FromDescFile, IsReadOnly);                
             }
-            else iDepot = null;
+            else 
+            {
+                if (Directory.Exists(tbImageDepot.Text)) 
+                    iDepot = new DepotFolder(tbImageDepot.Text, ImgUtils.DefaultImageGenerator, IsReadOnly);
+                else iDepot = null;
+            }
+            if (iDepot != null) 
+                if (iDepot.isEnabled) ChangeDepot(iDepot, null);
             rbList_Checked(null, null);
         }
         private void mi_Click(object sender, RoutedEventArgs e)
@@ -243,7 +250,7 @@ namespace scripthea.master
         }    
         private void rbList_Checked(object sender, RoutedEventArgs e)
         {
-            if (tcMain == null) return;
+            if (tcMain == null || iDepot == null) return;
             if (rbList.IsChecked.Value) tcMain.SelectedIndex = 0;            
             if (rbGrid.IsChecked.Value) tcMain.SelectedIndex = 1;
             if (activeView.iDepot != null)

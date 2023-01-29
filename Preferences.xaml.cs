@@ -16,11 +16,14 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UtilsNS;
 using Path = System.IO.Path;
+using Microsoft.WindowsAPICodePack.Dialogs;
 
 namespace scripthea
 {
     public class Options
     {
+        // general 
+        public bool debug;
         // layout 
         public int Left;
         public int Top;
@@ -37,9 +40,10 @@ namespace scripthea
         // query 
         public string ImageDepotFolder;        
         public string API;
-        // modufiers
+        // modifiers
         public string ModifPrefix;
         public bool AddEmptyModif;
+        public bool ConfirmGoogling;
         // viewer
         public bool Autorefresh;
         public int ThumbZoom;
@@ -52,10 +56,12 @@ namespace scripthea
         public Preferences()
         {
 
-        }       
+        }
+        public string test;
         public void save(string configFilename)
         {
-
+            string json = JsonConvert.SerializeObject(this);
+            File.WriteAllText(configFilename, json);
         }
     }
     /// <summary>
@@ -75,14 +81,28 @@ namespace scripthea
                 string fileJson = File.ReadAllText(configFilename);
                 prefs = JsonConvert.DeserializeObject<Preferences>(fileJson);
             }
-            else prefs = new Preferences();           
+            else prefs = new Preferences();
+            prefs2visuals(); 
         }
         public string configFilename = Path.Combine(Utils.configPath, "Scripthea.cfg");  
         /// <summary>
         /// the point of the dialog, readable everywhere
         /// </summary>
         public Preferences prefs;
-
+        public event Utils.LogHandler OnLog;
+        protected void Log(string txt, SolidColorBrush clr = null)
+        {
+            if (OnLog != null) OnLog(txt, clr);
+            else Utils.TimedMessageBox(txt, "Warning", 3500);
+        }
+        public void prefs2visuals()
+        {
+            
+        }
+        public void visuals2prefs()
+        {
+            
+        }
         /// <summary>
         /// Accepting and saving the changes
         /// </summary>
@@ -90,7 +110,7 @@ namespace scripthea
         /// <param name="e"></param>
         private void OKButton_Click(object sender, RoutedEventArgs e) // visual to internal 
         {
-            prefs.save(configFilename);
+            prefs.save(configFilename); Hide();
         }
 
         /// <summary>

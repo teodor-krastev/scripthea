@@ -274,7 +274,6 @@ namespace UtilsNS
             }
             return randomizedList;
         }
-
         public static bool keyStatus(string key) // check for one of Shift; Ctrl; Alt
         {
             bool rslt = false;
@@ -498,9 +497,10 @@ namespace UtilsNS
             string[] txtArr = text.Split('\r');
             List<string> ls = new List<string>(txtArr);                      
             return ls;
-        }         
+        }        
         public static string GetMD5Checksum(string filename) // https://makolyte.com/csharp-get-a-files-checksum-using-any-hashing-algorithm-md5-sha256/
         {
+            if (!File.Exists(filename)) return "";
             using (var md5 = System.Security.Cryptography.MD5.Create())
             {
                 using (var stream = System.IO.File.OpenRead(filename))
@@ -973,6 +973,7 @@ namespace UtilsNS
         }
         public static bool comparePaths(string path1, string path2)
         {
+            if (path1.Equals("") || path2.Equals("")) return false;
             return Path.GetFullPath(path1).TrimEnd('\\').Equals(Path.GetFullPath(path2).TrimEnd('\\'), StringComparison.InvariantCultureIgnoreCase);
         }
         public static int RandomnSeed

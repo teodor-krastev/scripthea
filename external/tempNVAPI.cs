@@ -15,6 +15,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.InteropServices;
 using System.Text;
+using UtilsNS;
 
 namespace OpenHWMonitor
 {   
@@ -25,7 +26,8 @@ namespace OpenHWMonitor
         { 
             handles = new NvPhysicalGpuHandle[NVAPI.MAX_PHYSICAL_GPUS];
             int count;
-            status = NVAPI.NvAPI_EnumPhysicalGPUs(handles, out count);
+            if (IsAvailable())
+                status = NVAPI.NvAPI_EnumPhysicalGPUs(handles, out count);
         }
         NvPhysicalGpuHandle[] handles;
         public bool IsAvailable() 
@@ -47,8 +49,9 @@ namespace OpenHWMonitor
             }
             return settings;
         }
-        public int GetGPUtemperature()
+        public int? GetGPUtemperature()
         {
+            if (!IsAvailable()) return null;
             NvGPUThermalSettings settings = GetThermalSettings();
             if (settings.Sensor.Length == 0) return -1;
             return Convert.ToInt32(settings.Sensor[0].CurrentTemp);

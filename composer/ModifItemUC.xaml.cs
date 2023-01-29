@@ -25,10 +25,12 @@ namespace scripthea.composer
     /// Interaction logic for ModifItemUC.xaml
     /// </summary>
     public partial class ModifItemUC : UserControl
-    {        
-        public ModifItemUC()
+    {
+        private Options opts;
+        public ModifItemUC(ref Options _opts)
         {
             InitializeComponent(); modifStatus = ModifStatus.Off;
+            opts = _opts;
         }
         public event RoutedEventHandler OnChange;
         protected void Change(object sender, RoutedEventArgs e)
@@ -131,7 +133,7 @@ namespace scripthea.composer
         }
         private void tbContent_ContextMenuOpening(object sender, ContextMenuEventArgs e)
         {
-            string input = new InputBox("Ask Google about", tbContent.Text, "").ShowDialog();
+            string input = opts.ConfirmGoogling ? new InputBox("Ask Google about", tbContent.Text, "").ShowDialog() : tbContent.Text;
             if (input.Equals("")) return;
             Utils.AskTheWeb(input, true);
         }

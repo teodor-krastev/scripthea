@@ -8,15 +8,11 @@
 # Copyright:   (c) User 2022
 # Licence:     <your licence>
 #-------------------------------------------------------------------------------
-# https://realpython.com/python-sockets/#echo-client
+import os
+import msvcrt
 
-import time
-import socket
-import json
+pipe = -999999 # os.open("\\\\.\\pipe\\ScriptheaPipe", os.O_RDWR)
 
-socket_host = '192.168.0.174'#socket.gethostname()#"127.0.0.1" #
-socket_port = 11000# 5344 #49448   socket server port number
-client_socket = socket.socket()  # instantiate
 debugComm = True
 def dprint(txt):
     if debugComm:
@@ -24,10 +20,9 @@ def dprint(txt):
 
 def wait4server():
     timeOut = 12 # five min
-
     while (timeOut > 0):
         try:
-            client_socket.connect((socket_host, socket_port))  # connect to the server
+            pipe = os.open("\\\\.\\pipe\\ScriptheaPipe", os.O_RDWR) # connect to the server
             break
         except:
             time.sleep(10)
@@ -38,9 +33,9 @@ def wait4server():
 def OneShot():
     try:
         message = '@next.prompt\n'
-        client_socket.send(message.encode())
+        os.write(pipe, message.encode())
         dprint('out: '+message)
-        inData = client_socket.recv(4096).decode()
+        inData = os.read(pipe, 1024)
 
         dprint('in: '+inData)
         if (inData.lower().strip() == '@close.session'):
@@ -49,7 +44,7 @@ def OneShot():
         time.sleep(10) # processing
 
         message = '@image.ready\n'
-        client_socket.send(message.encode())
+        os.write(pipe, message.encode())
         time.sleep(1)
     except:
         return '@close.session'
@@ -68,9 +63,8 @@ def client_program():
         jsn = json.loads(jsn_str)
         dprint('+>'+jsn_str)
         time.sleep(1)
-    client_socket.close()  # close the connection
+     # close the connection
     dprint('session closed')
 
 if __name__ == '__main__':
-    socket_host
     client_program()

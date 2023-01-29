@@ -25,8 +25,7 @@ namespace scripthea.external
         public static string imageSimulFolder
         {
             get { return Path.Combine(ImgUtils.defaultImageDepot,"Simulator"); }
-        }   
-        
+        }           
         public static string RandomImageFile
         {
             get 

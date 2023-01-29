@@ -40,6 +40,7 @@
                 <StackPanel x:Name="stackOptModifiers" Margin="2" >
                     <CheckBox x:Name="chkAddEmpty" Content="Add empty modifier" Margin="0" ToolTip="Add an empty modfifier to the scan list" Checked="chkAddEmpty_Checked" Unchecked="chkAddEmpty_Checked"></CheckBox>
                     <CheckBox x:Name="chkRemoveDuplicates" Content="Remove duplicates" Margin="0" Checked="chkRemoveDuplicates_Checked" Unchecked="chkRemoveDuplicates_Unchecked" ToolTip="Remove duplicated modifiers"></CheckBox>
+                    <CheckBox x:Name="chkConfirmGoogling" Content="Confirm googling" Margin="0" ToolTip="Remove duplicated modifiers" Checked="chkConfirmGoogling_Checked" Unchecked="chkConfirmGoogling_Checked"></CheckBox>
                 </StackPanel>
             </GroupBox>
         </Grid>

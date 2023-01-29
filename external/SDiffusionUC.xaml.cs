@@ -202,7 +202,9 @@ namespace scripthea.external
         private void dTimer_Tick(object sender, EventArgs e)
         {
             if (!nVidia.IsAvailable()) return;
-            currentTmp = nVidia.GetGPUtemperature();
+            int? primeTmp = nVidia.GetGPUtemperature();
+            if (Utils.isNull(primeTmp)) return;
+            currentTmp = (int)primeTmp;
             if (currentTmp < SDopts.opts.GPUThreshold) chkTmpr.Foreground = Brushes.Blue;
             else chkTmpr.Foreground = Brushes.Red;
             chkTmpr.Content = "GPU temp[°C] = " + currentTmp.ToString();
@@ -348,7 +350,7 @@ namespace scripthea.external
             // Establish the local endpoint for the socket.  
             // The DNS name of the computer  
             // running the listener is "host.contoso.com".  
-            IPHostEntry ipHostInfo = Dns.GetHostEntry(IPAddress.Parse("127.0.0.1")); //Dns.GetHostEntry(Dns.GetHostName()); 
+            IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());  
             IPAddress ipAddress = ipHostInfo.AddressList[3];
             IPEndPoint localEndPoint = new IPEndPoint(ipAddress, 5344); //11000
 

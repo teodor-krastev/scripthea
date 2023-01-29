@@ -1,4 +1,3 @@
-## written and copyright by Angela Abraham, (Daisy)
 
 ---
 

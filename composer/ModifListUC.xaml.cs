@@ -40,9 +40,11 @@ namespace scripthea.composer
             InitializeComponent();
         }
         public string filename;
-        public ModifListUC(string _filename)
+        private Options opts;
+        public ModifListUC(string _filename, ref Options _opts)
         {
             InitializeComponent();
+            opts = _opts;
             OpenCat(_filename);
         }
         public bool isChecked
@@ -103,7 +105,7 @@ namespace scripthea.composer
                         s0 = sa[0].Trim(); s1 = sa[1].Trim();
                         break;
                 }
-                ModifItemUC mi = new ModifItemUC() { Height = 20, Text = s0, FontSize = 13 };
+                ModifItemUC mi = new ModifItemUC(ref opts) { Height = 20, Text = s0, FontSize = 13 };
                 mi.Margin = new Thickness(0, 0, 0, 0); mi.tbContent.MouseRightButtonDown += new System.Windows.Input.MouseButtonEventHandler(chkCategory_MouseRightButtonDown);
                 if (!s1.Equals("")) mi.tbContent.ToolTip = s1; 
                 mi.OnChange += new RoutedEventHandler(Change);
@@ -149,10 +151,9 @@ namespace scripthea.composer
         }
         private void modifListBox_KeyDown(object sender, KeyEventArgs e)
         {
-            //if (e.Key.Equals(Key.Space)) { chkCategory.IsChecked = !chkCategory.IsChecked.Value; }
-            if (!e.Key.Equals(Key.Enter) && !e.Key.Equals(Key.Left) && !e.Key.Equals(Key.Right)) return;
+            if (!e.Key.Equals(Key.Space) && !e.Key.Equals(Key.Enter) && !e.Key.Equals(Key.Left) && !e.Key.Equals(Key.Right)) return;
             if (Utils.isNull(modifListBox.SelectedItem)) return;
-            (modifListBox.SelectedItem as ModifItemUC).SwitchState(e.Key.Equals(Key.Enter) || e.Key.Equals(Key.Left));
+            (modifListBox.SelectedItem as ModifItemUC).SwitchState(e.Key.Equals(Key.Space) || e.Key.Equals(Key.Enter) || e.Key.Equals(Key.Left));
         }
         private static String WildCardToRegular(String value) // If you want to implement both "*" and "?"
         {
