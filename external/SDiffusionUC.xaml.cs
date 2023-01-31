@@ -18,9 +18,10 @@ using System.Net;
 using System.Threading;
 using System.Net.Sockets;
 using Newtonsoft.Json;
-using UtilsNS;
 using OpenHWMonitor;
 using Path = System.IO.Path;
+using System.IO.Pipes;
+using UtilsNS;
 
 namespace scripthea.external
 {
@@ -29,34 +30,36 @@ namespace scripthea.external
     /// </summary>
     public partial class SDiffusionUC : UserControl, interfaceAPI
     {
-        AsyncSocketListener server; NVidia nVidia;
+        PipeServer2S server2s; PipeServer2C server2c; NVidia nVidia;
         public SDiffusionUC()
         {
-            InitializeComponent();
+            InitializeComponent(); localDebug = Utils.isInVisualStudio;
             opts = new Dictionary<string, string>();
             nVidia = new NVidia();
         }
-        SDoptionsWindow SDopts;
+        SDoptionsWindow SDopts;  private bool localDebug = true;
         public Dictionary<string, string> opts { get; set; } // main (non this API specific) options 
-        Thread listenerThread = null; 
+        
         public void Init(string prompt) // init and update visuals from opts
         {
-            SDopts = new SDoptionsWindow(); lbStatus.Content = "COMM: closed"; 
-            bool nVidiaAvailable = nVidia.IsAvailable();
-            SDopts.groupGPUtmpr.IsEnabled = nVidiaAvailable;
-            gridTmpr.IsEnabled = nVidiaAvailable;
-            if (!nVidia.IsAvailable()) SDopts.opts.showGPUtemp = false;
-            opts2Visual(SDopts.opts);
+            lbStatus.Content = "COMM: closed"; server2s = null; server2c = null;
+            if (SDopts == null)
+            {
+                SDopts = new SDoptionsWindow(); 
+                bool nVidiaAvailable = nVidia.IsAvailable();
+                SDopts.groupGPUtmpr.IsEnabled = nVidiaAvailable;
+                gridTmpr.IsEnabled = nVidiaAvailable;
+                if (!nVidia.IsAvailable()) SDopts.opts.showGPUtemp = false;
+                opts2Visual(SDopts.opts);
+            }
+            // (re)create servers          
+            server2s = new PipeServer2S("scripthea_pipe2s");
+            server2s.OnLog += inLog;
+            server2s.TextReceived += Server_TextReceived; // solely for debug
+            server2s.OnStatusChange += new PipeServer2S.StatusChangeHandler(StatusChange);
+            server2s.status = SDServer.Status.waiting;
 
-            // server.Init();
-            server = new AsyncSocketListener(); 
-            server.OnLog += new Utils.LogHandler(Log);
-            server.OnReceive += new Utils.LogHandler(Receive);
-            server.OnStatusChange += new AsyncSocketListener.StatusChangeHandler(OnChangeStatus);
-            
-            ThreadStart listenerThreadStart = new ThreadStart(server.StartListening);
-            listenerThread = new Thread(listenerThreadStart);
-            listenerThread.Start();
+            server2c = new PipeServer2C("scripthea_pipe2c");            
         }
         private void opts2Visual(SDoptions opts)
         {
@@ -69,11 +72,16 @@ namespace scripthea.external
         }
         public void Finish()
         {
-            if (Utils.isNull(server)) return;
-            btnReset_Click(null, null); // close session
-            server.Close(); // close server 
-            listenerThread.Abort(); // clean up the server treading
+            if (Utils.isNull(server2c)) return;
+            
+            server2c.CloseSession(); // close server 
+            server2s = null; server2c = null;
             SDopts.keepOpen = false; SDopts.Close();
+        }       
+        public event Utils.LogHandler OnLog;
+        protected void Log(string txt, SolidColorBrush clr = null)
+        {
+            if (OnLog != null) OnLog(txt, clr);
         }
         public bool isDocked { get { return true; } }
         public UserControl userControl { get { return this as UserControl; } }
@@ -86,9 +94,8 @@ namespace scripthea.external
         { 
             get 
             {
-                if (Utils.isNull(server)) return false;
-                if (Utils.isNull(server.workSocket)) return false;
-                return server.status.Equals(AsyncSocketListener.Status.imageReady);                
+                if (Utils.isNull(server2s) || Utils.isNull(server2c)) return false;
+                return server2s.status.Equals(SDServer.Status.imageReady);                
             } 
         }
         public bool GenerateImage(string prompt, string imageDepotFolder, out string filename) // returns the filename of saved/copied in ImageDepoFolder image 
@@ -98,7 +105,7 @@ namespace scripthea.external
                 while ((currentTmp > SDopts.opts.GPUThreshold) || (currentTmp == -1)) { Thread.Sleep(500); }
             }
             filename = Utils.timeName(); // target image 
-            if (Utils.isNull(server.workSocket)) { Log("Err: communication issue"); return false; }
+            if (Utils.isNull(server2s) || Utils.isNull(server2c)) { inLog("Err: communication issue"); return false; }
             string folder = imageDepotFolder.EndsWith("\\") ? imageDepotFolder : imageDepotFolder + "\\";  opts["folder"] = folder; 
             string fullFN = Path.Combine(folder,Path.ChangeExtension(filename, ".png"));
             if (File.Exists(fullFN))
@@ -108,27 +115,27 @@ namespace scripthea.external
             }
             
             int k = 0; // wait for expect state
-            while (!server.status.Equals(AsyncSocketListener.Status.promptExpect) && (k < (2 * SDopts.opts.TimeOutImgGen))) { Thread.Sleep(500); k++; }
-            if (!server.status.Equals(AsyncSocketListener.Status.promptExpect)) { Log("Err: time-out at promptExpect"); return false; }
+            while (!server2s.status.Equals(SDServer.Status.promptExpect) && (k < (2 * SDopts.opts.TimeOutImgGen))) { Thread.Sleep(500); k++; }
+            if (!server2s.status.Equals(SDServer.Status.promptExpect)) { inLog("Err: time-out at promptExpect"); return false; }
 
             Dictionary<string, string> jsn = new Dictionary<string, string>();
             jsn.Add("prompt", prompt); jsn.Add("folder", folder); jsn.Add("filename", filename);
             filename = Path.ChangeExtension(filename, ".png");
-            server.Send(server.workSocket, JsonConvert.SerializeObject(jsn)); 
+            if (!server2c.Send(JsonConvert.SerializeObject(jsn))) { inLog("Err: fail to send a message to the client"); return false; }
 
             k = 0; bool bir = imageReady; // wait for image gen.
             while (!bir && (k < (5 * SDopts.opts.TimeOutImgGen))) {  Thread.Sleep(200); k++; if (!bir) bir = imageReady; }                       
-            if (!bir) { Log("Err: time-out at imageReady"); return false; }
+            if (!bir) { inLog("Err: time-out at imageReady"); return false; }
 
             //if (server.debug && bir) SimulatorImage(fullFN);
-            if (!File.Exists(fullFN)) { Log("Err: image file <" + fullFN + "> not found"); return false; }
+            if (!File.Exists(fullFN)) { inLog("Err: image file <" + fullFN + "> not found"); return false; }
             
             return bir;
         }
         private void iTimer_Tick(object sender, EventArgs e)
         {
         }
-        private void OnChangeStatus(AsyncSocketListener.Status previous, AsyncSocketListener.Status current)
+        private void StatusChange(SDServer.Status previous, SDServer.Status current)
         {
             try
             {
@@ -136,43 +143,56 @@ namespace scripthea.external
                   new Action(() =>
                   {
                         lbStatus.Content = "COMM: " + current.ToString(); lbStatus.UpdateLayout();        
-                        btnReset.IsEnabled = current == AsyncSocketListener.Status.promptExpect;            
+                        btnReset.IsEnabled = current == SDServer.Status.promptExpect;            
              
                         switch (current)
                         {
-                            case AsyncSocketListener.Status.closed: BorderBrush = Brushes.White; // before server opens 
+                            case SDServer.Status.closed: BorderBrush = Brushes.White; // before server opens 
                                 break;
-                            case AsyncSocketListener.Status.waiting: BorderBrush = Brushes.Silver; // waiting the client to call
+                            case SDServer.Status.waiting: BorderBrush = Brushes.Silver; // waiting the client to call
                                 break;
-                            case AsyncSocketListener.Status.connected: BorderBrush = Brushes.Gold; // ... the client called from the Scripthea script   
+                            case SDServer.Status.connected: BorderBrush = Brushes.Gold; // ... the client called from the Scripthea script   
+                                server2c.OnLog += inLog;
                                 break;
-                            case AsyncSocketListener.Status.promptExpect: BorderBrush = Brushes.RoyalBlue; // the script for the next prompt
+                            case SDServer.Status.promptExpect: BorderBrush = Brushes.RoyalBlue; // the script for the next prompt
                                 break;
-                            case AsyncSocketListener.Status.promptSent: BorderBrush = Brushes.Coral; // prompt sent, image is expected 
+                            case SDServer.Status.promptSent: BorderBrush = Brushes.Coral; // prompt sent, image is expected 
                                 break;
-                            case AsyncSocketListener.Status.imageReady: BorderBrush = Brushes.LightSeaGreen; // image has been generated
+                            case SDServer.Status.imageReady: BorderBrush = Brushes.LightSeaGreen; // image has been generated
                                 break;
                         }           
                   }));
             }
             catch { }
         }
-        protected void Log(String txt, SolidColorBrush clr = null)
+        protected void inLog(String txt, SolidColorBrush clr = null)
         {
             if (txt.Length.Equals(0)) return;
             if (Application.Current == null) return;
-            Utils.log(tbSDlog, txt.Trim());
+            Utils.log(rtbSDlog, txt.Trim(), clr);
         }
-        protected void Receive(String txt, SolidColorBrush clr = null)
+        private void Server_TextReceived(object sender, string txt)
         {
-            if (server.debug) Log("> "+txt);
+            if (localDebug) inLog("> "+txt);
         }
         private void btnReset_Click(object sender, RoutedEventArgs e)
         {
-            if (server.status.Equals(AsyncSocketListener.Status.promptExpect) && !Utils.isNull(server.workSocket))
-            {
-                server.Send(server.workSocket, "@close.session"); 
-            }
+            Log("@CancelRequest");
+            inLog("closing session in client", Brushes.IndianRed);
+            if (!Utils.isNull(server2c))
+                if (server2c.IsConnected) server2c.CloseSession();
+            inLog("to start another session restart Scripthea application", Brushes.Red);
+
+            return;
+            if (!Utils.isNull(server2s)) //&& false
+                if (server2s.IsConnected)
+                    { server2s.reader.Dispose(); server2s.Close(); } //
+            if (!Utils.isNull(server2c))
+                if (server2c.IsConnected) 
+                    {  Utils.Sleep(100); server2c.writer.Dispose(); server2c.Close(); }
+            Utils.Sleep(100);
+
+            Init("");
         }
         private void lb1_MouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -226,7 +246,7 @@ namespace scripthea.external
             SDopts.opts2Visual(); SDopts.ShowDialog(); 
             opts2Visual(SDopts.opts);
         }
-
+        #region Watcher
         // Watcher ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         FileSystemWatcher watcher;
 
@@ -273,27 +293,107 @@ namespace scripthea.external
                 )
             );
         }
+        #endregion Watcher
     }
-
-    /// https://learn.microsoft.com/en-us/dotnet/fundamentals/networking/sockets/socket-services
-    /// </summary>
-    public class AsyncSocketListener
+    #region PipeServers
+    public class PipeServer2S : SDServer // incoming
     {
-        // Thread signal.  
-        public static ManualResetEvent allDone = new ManualResetEvent(false);
-
-        public AsyncSocketListener()
+        public StreamReader reader = null;
+        public event EventHandler<string> TextReceived;
+        private Status _status;
+        public Status status
         {
-            status = Status.closed;
+            get
+            {
+                if (pipeServer == null) _status = Status.closed;
+                return _status;
+            }
+            set { Status previous = _status; _status = value; StatusChange(previous, value); }
+        }
+        public delegate void StatusChangeHandler(Status previous, Status current);
+        public event StatusChangeHandler OnStatusChange;
+        public void StatusChange(Status previous, Status current)
+        {
+            if (OnStatusChange != null) OnStatusChange(previous, current);
         }
 
-        public bool debug = true;
-        public void Init()
+        protected void Receive(string txt)
         {
-            
+            if (txt == null) return;
+            switch (txt.Trim())
+            {
+                case "@next.prompt":
+                    status = Status.promptExpect;
+                    break;
+                case "@image.ready":
+                    status = Status.imageReady;
+                    break;
+                case "@image.failed":
+                    status = Status.imageFailed;
+                    break;
+                case "@close.session":
+                    status = Status.waiting;
+                    break;
+            }
         }
-        public enum Status 
-        { 
+        public PipeServer2S(string pipeName) : base(pipeName, PipeDirection.In)
+        {
+            reader = new StreamReader(pipeServer);
+        }
+        public override void AddAction()
+        {
+            while (IsConnected && !cts.IsCancellationRequested)
+            {
+                string message = reader.ReadLine();
+                if (message == null)
+                {
+                    log("session cut-off by client");
+                    status = Status.closed;
+                    break;
+                }
+                Receive(message);
+                TextReceived?.Invoke(this, message);
+                if (message.Trim() == "@close.session")
+                {
+                    log("session closed by client");
+                    status = Status.closed;
+                    break;
+                }
+            }
+        }
+    }
+    public class PipeServer2C : SDServer // outgoing
+    {
+        public StreamWriter writer = null;
+        public PipeServer2C(string pipeName) : base(pipeName, PipeDirection.Out)
+        {
+            writer = new StreamWriter(pipeServer);          
+        }
+        public bool Send(string message)
+        {            
+            try
+            {
+                if (!IsConnected) return false; ;
+                if (writer == null) { writer = new StreamWriter(pipeServer); }
+                writer.Write(message);
+                if (IsConnected) writer.Flush();
+            }
+            catch(Exception e) { log("problem flushing the write buffer ("+e.Message+")"); return false; }
+            return IsConnected;
+        }
+        public override void AddAction()
+        {
+            //while (IsConnected && !cts.IsCancellationRequested)  { Utils.Sleep(100); }
+        }
+        public void CloseSession()
+        {
+            Send("@close.session");
+        }
+    }
+    public class SDServer
+    {
+        public enum Status
+        {
             closed,         // before server opens 
             waiting,        // waiting the client to call
             connected,      // ... the client called from the Scripthea script          
@@ -302,209 +402,56 @@ namespace scripthea.external
             imageReady,     // image has been generated
             imageFailed     // image has failed to be generated
         }
-        private Status _status;
-        public Status status
+        public bool IsConnected { get { if (pipeServer == null) return false; return pipeServer.IsConnected; } }
+        protected NamedPipeServerStream pipeServer;
+        public Task task;
+        protected CancellationTokenSource cts;
+        protected CancellationToken token;
+        public SDServer(string pipeName, PipeDirection direction)
         {
-            get
-            {
-                if (listener == null) _status = Status.closed;
-                return _status;
-            }
-            private set { Status previous = _status; _status = value; StatusChange(previous, value); }
-        }
-        public delegate void StatusChangeHandler(Status previous, Status current);
-        public event StatusChangeHandler OnStatusChange;
-        public void StatusChange(Status previous, Status current)
-        {
-            if (OnStatusChange != null) OnStatusChange(previous, current);
+            pipeServer = new NamedPipeServerStream(pipeName, direction, 1);
+            cts = new CancellationTokenSource(); token = cts.Token;
+            task = Task.Run(() => PipeServer(), token);
         }
         public event Utils.LogHandler OnLog;
-        protected void Log(string txt, SolidColorBrush clr = null)
+        protected void log(string txt, SolidColorBrush clr = null)
         {
             if (OnLog != null) OnLog(txt, clr);
+            else Console.WriteLine(txt);
         }
-        public event Utils.LogHandler OnReceive;
-        protected void Receive(string txt, SolidColorBrush clr = null)
+        public virtual void AddAction()
         {
-            switch (txt.Trim())
+        }
+        protected void PipeServer()
+        {
+            log("Waiting to connect...");
+            pipeServer.WaitForConnection();
+            log("open session");
+
+            AddAction();
+        }
+        public void Close()
+        {                     
+            if (task.Status.Equals(TaskStatus.Running)  || task.Status.Equals(TaskStatus.RanToCompletion))
             {
-                case "@next.prompt": status = Status.promptExpect;
-                    break;
-                case "@image.ready": status = Status.imageReady;
-                    break;
-                case "@image.failed": status = Status.imageFailed;
-                    break;
-                case "@close.session": status = Status.waiting;
-                    break;
-            }            
-            if (OnReceive != null) OnReceive(Convert.ToString(txt));
-        }
-
-        private Socket listener;
-        public Socket GetSocket()
-        {
-            return this.listener;
-        }
-        public void StartListening()
-        {
-            // Establish the local endpoint for the socket.  
-            // The DNS name of the computer  
-            // running the listener is "host.contoso.com".  
-            IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());  
-            IPAddress ipAddress = ipHostInfo.AddressList[3];
-            IPEndPoint localEndPoint = new IPEndPoint(ipAddress, 5344); //11000
-
-            // Create a TCP/IP socket.  
-            listener = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-
-            // Bind the socket to the local endpoint and listen for incoming connections.  
-            try
-            {
-                listener.Bind(localEndPoint);
-                listener.Listen(100);
-                status = Status.waiting; Log("waiting SD webUI script");
-                while (true)
+                cts.Cancel(); task.Wait(TimeSpan.FromSeconds(3)); 
+               /* try
                 {
-                    // Set the event to nonsignaled state.  
-                    allDone.Reset();
-                    // Start an asynchronous socket to listen for connections.  
-                    //Log("Waiting for Scrpthea script in SD-webui");
-                    listener.BeginAccept(new AsyncCallback(AcceptCallback), listener);
-                    
-                    // Wait until a connection is made before continuing.  
-                    allDone.WaitOne();
-                    Thread.Sleep(100);
-                }
-            }
-            catch (Exception e)
-            {
-                Log("Err: " + e.ToString());
-            }
-        }
-        public void AcceptCallback(IAsyncResult ar)
-        {
-            // Signal the main thread to continue.  
-            allDone.Set();
-            if (status.Equals(Status.waiting) || status.Equals(Status.closed))
-            {
-                status = Status.connected; Log("client connected");
-            }
-            // Get the socket that handles the client request.  
-            Socket listener = (Socket)ar.AsyncState;
-            Socket handler = listener.EndAccept(ar);
-
-            // Create the state object.  
-            ServerStateObject state = new ServerStateObject();
-            state.workSocket = handler;
-            handler.BeginReceive(state.buffer, 0, ServerStateObject.BufferSize, 0, new AsyncCallback(ReadCallback), state);
-        }
-        public Socket workSocket = null;
-
-        public void ReadCallback(IAsyncResult ar)
-        {
-            String content = String.Empty;
-            if (closing) return;
-            // Retrieve the state object and the handler socket  
-            // from the asynchronous state object.  
-            ServerStateObject state = (ServerStateObject)ar.AsyncState;
-            Socket handler = state.workSocket; workSocket = state.workSocket; ;
-            try
-            {            
-                // Read data from the client socket.
-                int bytesRead = handler.EndReceive(ar);
-
-                if (bytesRead > 0)
-                {
-                    // There  might be more data, so store the data received so far.  
-                    state.sb.Append(Encoding.ASCII.GetString(state.buffer, 0, bytesRead));
-
-                    // Check for end-of-file tag. If it is not there, read
-                    // more data.  
-                    content = state.sb.ToString();
-                    if (content.Contains("\n"))
+                    if (!task.Wait(TimeSpan.FromSeconds(1)))
                     {
-                        // All the data has been read from the
-                        // client. Display it on the console.  
-                        //Log("justIn: "+content);
-                        Receive(content);
-                        // Echo the data back to the client.  
-                        //this.Send(handler, content);
-                        content = string.Empty;
-                        state.sb.Clear();
-                        handler.BeginReceive(state.buffer, 0, ServerStateObject.BufferSize, 0, new AsyncCallback(ReadCallback), state);
-                    }
-                    else
-                    {
-                        // Not all data received. Get more.  
-                        handler.BeginReceive(state.buffer, 0, ServerStateObject.BufferSize, 0, new AsyncCallback(ReadCallback), state);
+                        throw new TaskCanceledException("Task did not complete within the timeout.");
                     }
                 }
-            }
-            catch (Exception e) { Log("client force closed -> "+e.Message);  status = Status.closed; }
-        }
-
-        public void Send(Socket handler, String data)
-        {
-            if (handler == null) return;
-            // Convert the string data to byte data using ASCII encoding.  
-            byte[] byteData = Encoding.ASCII.GetBytes(data);
-
-            // Begin sending the data to the remote device.  
-            handler.BeginSend(byteData, 0, byteData.Length, 0, new AsyncCallback(SendCallback), handler);
-            if (data.Equals("@close.session")) status = Status.waiting;
-            else status = Status.promptSent;
-        }
-
-        private void SendCallback(IAsyncResult ar)
-        {
-            try
-            {
-                // Retrieve the socket from the state object.  
-                Socket handler = (Socket)ar.AsyncState;
-
-                // Complete sending the data to the remote device.  
-                int bytesSent = handler.EndSend(ar);
-                if (debug) Log(">" + bytesSent.ToString()+" bytes sent");
-            }
-            catch (Exception e)
-            {
-                Log("Err: "+e.ToString());
-            }
-        }
-        private bool closing = false;
-        public void Close() // complete
-        {
-            closing = true;
-            if (!Utils.isNull(workSocket))
-            {
-                if (status.Equals(Status.promptExpect))
+                catch (TaskCanceledException)
                 {
-                    Send(workSocket, "@close.session"); //, Utils.basePath + "\\images\\", "imageName"
-                }
-                if (workSocket.Connected)
-                {
-                    workSocket.Shutdown(SocketShutdown.Both);
-                    workSocket.Close();
-                }
-                workSocket.Dispose();
+                    Console.WriteLine("Task timed out. Terminating...");
+                    task.Kill();
+                }*/                            
             }
+            if (pipeServer.IsConnected) 
+                { pipeServer.Disconnect(); pipeServer.Dispose(); }
         }
     }
-
-    // State object for reading client data asynchronously  
-    public class ServerStateObject
-    {
-        // Size of receive buffer.  
-        public const int BufferSize = 4096;
-
-        // Receive buffer.  
-        public byte[] buffer = new byte[BufferSize];
-
-        // Received data string.
-        public StringBuilder sb = new StringBuilder();
-
-        // Client socket.
-        public Socket workSocket = null;
-    }
+    #endregion PipeServer
 }
 

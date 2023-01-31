@@ -28,6 +28,7 @@ namespace scripthea.external
         Dictionary<string, string> opts { get; set; } // visual adjustable options to that particular API, keep it in synchro with the visuals 
         void Init(string prompt);
         void Finish();
+        event Utils.LogHandler OnLog;
         bool isDocked { get; }
         UserControl userControl { get; }
         bool isEnabled { get; } // connected and working (depends on the API)
@@ -43,10 +44,10 @@ namespace scripthea.external
         {
             InitializeComponent();
             interfaceAPIs = new Dictionary<string, interfaceAPI>();
-            visualControl("Simulation", new SimulatorUC());
+            visualControl("Simulation", new SimulatorUC()).OnLog += new Utils.LogHandler(Log);
             //visualControl("DeepAI", new DeepAIUC()); Later plugin...
-            visualControl("Craiyon", new CraiyonWebUC());
-            visualControl("SDiffusion", new SDiffusionUC());
+            visualControl("Craiyon", new CraiyonWebUC()).OnLog += new Utils.LogHandler(Log); 
+            visualControl("SDiffusion", new SDiffusionUC()).OnLog += new Utils.LogHandler(Log); 
             _activeAPIname = "Simulation"; tabControl.SelectedIndex = 0;
 
             backgroundWorker1 = new BackgroundWorker();
@@ -69,15 +70,16 @@ namespace scripthea.external
         {
             if ((OnQueryComplete != null)) OnQueryComplete(imageFilePath, success);
         }
-        private void visualControl(string APIname, UserControl uc)
+        private interfaceAPI visualControl(string APIname, UserControl uc)
         {
-            uc.Name = APIname.ToLower() + "UC"; interfaceAPIs[APIname] = (interfaceAPI)uc; 
+            uc.Name = APIname.ToLower() + "UC"; interfaceAPIs.Add(APIname, (interfaceAPI)uc); 
             if (!interfaceAPIs[APIname].isDocked)
             {
                 TabItem ti = new TabItem(); ti.Header = APIname;
                 uc.Height = Double.NaN; uc.Width = Double.NaN; uc.Margin = new Thickness(0, 0, 0, 0);
                 ti.Content = uc; ti.Visibility = Visibility.Collapsed; tabControl.Items.Add(ti);
             }
+            return interfaceAPIs[APIname];
         }
         private string _activeAPIname;
         public string activeAPIname

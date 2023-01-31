@@ -7,7 +7,7 @@ import traceback
 import shlex
 import time
 
-import socket
+import msvcrt
 import json
 
 import modules.scripts as scripts
@@ -20,32 +20,37 @@ import modules.images as simages
 
 
 # MIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIINE
-socket_host = socket.gethostname() #"127.0.0.1"
-socket_port = 5344 # socket server port number
-client_socket = socket.socket()  # instantiate
+named_pipe2s = "\\\\.\\pipe\\scripthea_pipe2s"
+named_pipe2c = "\\\\.\\pipe\\scripthea_pipe2c"
+
 debugComm = True
 def dprint(txt):
     if debugComm:
         print(txt)
 
+def isPipeOpen(named_pipe):
+    return os.path.exists(named_pipe) and os.access(named_pipe, os.R_OK | os.W_OK)
+
 def wait4server():
-    timeOut = 12 # 2 min
+    timeOut = 12 # two min
+    global pipe2s
+    global pipe2c
     while (timeOut > 0):
         try:
-            client_socket.connect((socket_host, socket_port))  # connect to the server
+            pipe2s = os.open(named_pipe2s, os.O_WRONLY)
+            pipe2c = os.open(named_pipe2c, os.O_RDONLY)
             break
         except:
             time.sleep(10)
             dprint('comm attempts left: '+str(timeOut))
             timeOut -= 1
     return (timeOut > 0)
-
 def OneShot():
     try:
         message = '@next.prompt\n'
-        client_socket.send(message.encode())
+        os.write(pipe2s, message.encode())
         #dprint('out: '+message)
-        inData = client_socket.recv(4096).decode()
+        inData = os.read(pipe2c, 4096).decode().strip()
         #dprint('in: '+inData)
     except:
         return '@close.session'
@@ -142,11 +147,6 @@ class Script(scripts.Script):
             return
         dprint('Scripthea session started')
 
-        proms = []
-        def showPrompt(p1):
-            proms.append(p1)
-            return proms
-
         images = []
         all_prompts = []
         infotexts = []
@@ -168,9 +168,6 @@ class Script(scripts.Script):
             else:
                 args = {"prompt": prom}
 
-            #interface = gr.Interface(fn = prom, inputs = [], outputs = prompt_txt)
-            #interface.launch()
-            #prompt_txt.join([prom])
             copy_p = copy.copy(p)
             for k, v in args.items():
                 setattr(copy_p, k, v)
@@ -187,9 +184,15 @@ class Script(scripts.Script):
                 message = '@image.ready\n'
             else:
                 message = '@image.failed\n'
-            client_socket.send(message.encode())
+
+            os.write(pipe2s, message.encode())
             time.sleep(2)
-        client_socket.close()  # close the connection
+
+        # close the connection
+        if isPipeOpen(named_pipe2s):
+            os.close(pipe2s)
+        if isPipeOpen(named_pipe2c):
+            os.close(pipe2c)
         dprint('Scripthea session closed')
 
         return Processed(p, images, p.seed, "", all_prompts=all_prompts, infotexts=infotexts)

@@ -64,6 +64,7 @@ namespace scripthea.composer
 
             API = new ControlAPI(); cbActiveAPI_SelectionChanged(null, null);
             API.OnQueryComplete += new ControlAPI.APIEventHandler(QueryComplete);
+            API.OnLog += new Utils.LogHandler(Log);
 
             if (Utils.TheosComputer()) { cbiDiffusion.Visibility = Visibility.Visible; btnTest.Visibility = Visibility.Visible; }
             else { cbiDiffusion.Visibility = Visibility.Collapsed; btnTest.Visibility = Visibility.Collapsed; }            
@@ -226,8 +227,8 @@ namespace scripthea.composer
         private void QueryAPI(string prompt)
         {   
             Log("query -> "+ prompt, Brushes.DarkGreen);
-            if (status.Equals(Status.Scanning)) Log("@StartProc (" + (scanPromptIdx+1).ToString() + " / " + scanPrompts.Count.ToString() + ")");
-            else Log("@StartProc (single)");
+            if (status.Equals(Status.Scanning)) Log("@StartGeneration (" + (scanPromptIdx+1).ToString() + " / " + scanPrompts.Count.ToString() + ")");
+            else Log("@StartGeneration (single)");
             if (status.Equals(Status.Scanning) && scanPreviewUC.scanning) // move selection
                 scanPreviewUC.selectByPropmt(prompt);
             API.Query(prompt, opts.ImageDepotFolder); Log("---", Brushes.DarkOrange); 
@@ -239,10 +240,10 @@ namespace scripthea.composer
             {
                 case Status.SingeQuery:
                 case Status.Request2Cancel:
-                    status = Status.Idle; Log("@EndProc: " + imageFilePath);
+                    status = Status.Idle; Log("@EndGeneration: " + imageFilePath);
                     break;
                 case Status.Scanning:                   
-                    Log("@EndProc: "+ imageFilePath);
+                    Log("@EndGeneration: " + imageFilePath);
                     if (scanPromptIdx == (scanPrompts.Count-1)) // the end of it, back to init state
                     {
                         status = Status.Idle; btnScan.Content = strScan; btnScan.Background = Brushes.MintCream;
@@ -278,12 +279,17 @@ namespace scripthea.composer
                     }
             }            
         }
+        public void Request2Cancel() 
+        {
+            if (Convert.ToString(btnScan.Content).Equals("Cancel") && status == Status.Scanning) // only if scanning
+                btnScan_Click(btnScan, null);
+        }
         private void btnScan_Click(object sender, RoutedEventArgs e)
         {
             if (Convert.ToString(btnScan.Content).Equals(strScan))
             {
                 if (API.IsBusy) { Log("Err: busy with previous query"); return; }
-                switch (status) //if out of place
+                switch (status) // if out of place
                 {
                     case Status.SingeQuery:
                         Log("Warning: API is busy, try again later..."); return;

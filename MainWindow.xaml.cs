@@ -159,7 +159,7 @@ namespace scripthea
                 if (txt.Length > 7)
                     switch (txt.Substring(0, 8))
                     {
-                        case "@StartPr": // StartProc
+                        case "@StartGe": // StartGeneration
                             if (Utils.isNull(dTimer))
                             {
                                 dTimer = new DispatcherTimer();
@@ -168,16 +168,19 @@ namespace scripthea
                             }
                             dti = 0; dTimer.Start(); txt = msg.Substring(1);
                             break;
-                        case "@EndProc":
+                        case "@EndGene": // EndGeneration
                             if (Utils.isNull(dTimer)) { Utils.TimedMessageBox("Err: broken timer", "Warning", 3500); return; }
                             dTimer.Stop();  lbProcessing.Content = "";
                             imgAbout.Source = ImgUtils.BitmapToBitmapImage(penpic, System.Drawing.Imaging.ImageFormat.Png); 
-                            string fn = txt.Substring(9).Trim();
+                            string fn = txt.Substring(15).Trim();
                             if (rowLogImage.Height.Value < 2) rowLogImage.Height = new GridLength(pnlLog.ActualWidth);
                             if (File.Exists(fn)) imgLast.Source = ImgUtils.UnhookedImageLoad(fn); // success
                             else imgLast.Source = ImgUtils.file_not_found;
                             txt = msg.Substring(1);
-                            break; 
+                            break;
+                        case "@CancelR": // CancelRequest 
+                            queryUC.Request2Cancel();
+                            break;
                         case "@WorkDir":
                             if (Directory.Exists(opts.ImageDepotFolder))
                             {

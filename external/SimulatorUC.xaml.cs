@@ -51,6 +51,11 @@ namespace scripthea.external
 
         public void Init(string prompt) { }
         public void Finish() { }
+        public event Utils.LogHandler OnLog;
+        protected void Log(string txt, SolidColorBrush clr = null)
+        {
+            if (OnLog != null) OnLog(txt, clr);
+        }
         public bool isDocked { get { return false; } }
         public UserControl userControl { get { return this as UserControl; } }
         public bool isEnabled { get { return true; } }

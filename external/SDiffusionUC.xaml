@@ -12,8 +12,8 @@
                 <Button x:Name="btnReset" Content="Reset" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="26" Width="49" Click="btnReset_Click" Margin="0,0,5,3" Background="#FFFDD07E"/>
                 <Image x:Name="ibtnOpts" Source="/Scripthea;component/Properties/TripleBarGrey.bmp" Margin="5,0,5,5" Width="25" Height="25" HorizontalAlignment="Left" VerticalAlignment="Bottom" Cursor="Hand" MouseDown="ibtnOpts_MouseDown"></Image>
             </Grid>
-            <Grid x:Name="gridSDlog" Width="150" Height="58">
-                <TextBox x:Name="tbSDlog" TextWrapping="Wrap" Text="" Margin="0" FontSize="12" ScrollViewer.CanContentScroll="True" Background="White" VerticalScrollBarVisibility="Auto"/>
+            <Grid x:Name="gridSDlog" Width="200" Height="58">
+                <RichTextBox x:Name="rtbSDlog" Margin="0" FontSize="12" ScrollViewer.CanContentScroll="True" Background="White" VerticalScrollBarVisibility="Auto"/>
             </Grid>
             <Grid Width="150" Height="60">
                 <StackPanel Margin="0">
