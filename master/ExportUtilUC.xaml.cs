@@ -93,3 +93,41 @@ namespace scripthea.master
         }
     }
 }
+
+/* <html>
+<head>
+  <script>
+    function displayImages(imageFiles) {
+      // Clear the table
+      document.getElementById("imageTable").innerHTML = "";
+
+      // Create a table row for each image file
+      for (let i = 0; i < imageFiles.length; i++) {
+        let tr = document.createElement("tr");
+        let td = document.createElement("td");
+        let img = document.createElement("img");
+        img.src = URL.createObjectURL(imageFiles[i]);
+        img.style.width = "100px";
+        img.style.height = "100px";
+        td.appendChild(img);
+        tr.appendChild(td);
+        document.getElementById("imageTable").appendChild(tr);
+      }
+    }
+  </script>
+</head>
+<body>
+  <input type="file" multiple onchange="displayImages(this.files)">
+  <table id="imageTable"></table>
+</body>
+</html>
+
+This page contains an input element of type "file" that allows the user to select multiple image files. The onchange event is set to call 
+the displayImages function, passing in the selected files.
+
+The displayImages function first clears the table by setting the innerHTML of the table with id "imageTable" to an empty string. 
+Then, it loops over each image file and creates a table row with a single cell that contains an image element. The source of the 
+image is set to an object URL created from the file. The width and height of the image are set to 100px to ensure that it fits within the cell. 
+Finally, the table row and cell are appended to the table.
+*/
+

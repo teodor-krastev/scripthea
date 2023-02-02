@@ -73,7 +73,7 @@ namespace scripthea
             exportUtilUC.Init(ref opts);
 
             oldTab = tiComposer;
-            Log("> Welcome to Scripthea" + "  " + (Utils.isInVisualStudio ? "(within VS)" : "")); Log("");
+            Log("> Welcome to Scripthea" + "  " + (Utils.isInVisualStudio ? "(in VS)" : "")); Log("");
             Utils.DelayExec(2000, new Action(() => { aboutWin.Hide(); })); 
             queryUC.Init(ref opts);            
             

@@ -72,6 +72,13 @@ namespace scripthea.viewer
             }
             else dGrid.ItemsSource = null;            
         }
+        public void SynchroChecked(List<Tuple<int, string, string>> chks)
+        {
+            if (!checkable) return;
+            SetChecked(false);
+            foreach (Tuple<int, string, string> chk in chks)
+                dTable.Rows[chk.Item1-1]["on"] = true;
+        }
         public void SetChecked(bool? check)
         {
             if (!checkable) return;

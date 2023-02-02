@@ -202,7 +202,8 @@ namespace scripthea.master
             }
             if (iDepot != null) 
                 if (iDepot.isEnabled) ChangeDepot(iDepot, null);
-            rbList_Checked(null, null);
+            lastTab = null;
+            rbList_Checked(null, null); GetChecked();
         }
         private void mi_Click(object sender, RoutedEventArgs e)
         {
@@ -247,7 +248,8 @@ namespace scripthea.master
             if (File.Exists(filePath)) image.Source = ImgUtils.UnhookedImageLoad(filePath, ImageFormat.Png);
             else image.Source = ImgUtils.file_not_found;
             GetChecked();
-        }    
+        }
+        TabItem lastTab = null;
         private void rbList_Checked(object sender, RoutedEventArgs e)
         {
             if (tcMain == null || iDepot == null) return;
@@ -259,7 +261,19 @@ namespace scripthea.master
                     activeView.FeedList(ref iDepot); //if (!) Log("Err: fail to create grid image depot(1)");
             }
             else
-                activeView.FeedList(ref iDepot); // if (!) Log("Err: fail to create grid image depot(2)");            
+                activeView.FeedList(ref iDepot); // if (!) Log("Err: fail to create grid image depot(2)");
+            if (lastTab == null) { lastTab = (TabItem)tcMain.SelectedItem; return; } // first load
+            if (tcMain.SelectedItem.Equals(tiGrid))            
+                gridView.SynchroChecked(listView.GetItems(true, false));
+            if (tcMain.SelectedItem.Equals(tiList))
+                listView.SynchroChecked(gridView.GetItems(true, false));
+            lastTab = (TabItem)tcMain.SelectedItem;
+        }
+
+        private void tcMain_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (tcMain == null || iDepot == null) return;
+            
         }
     }
 }

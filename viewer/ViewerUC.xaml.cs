@@ -23,8 +23,7 @@ namespace scripthea.viewer
 {
     public class ImageInfo
     {
-        public enum ImageGenerator { StableDiffusion, Crayion, FromDescFile}
-        
+        public enum ImageGenerator { StableDiffusion, Crayion, FromDescFile}       
         public ImageInfo()
         {
 
@@ -363,6 +362,7 @@ namespace scripthea.viewer
         bool FeedList(string imageFolder); // the way to load the list
         bool FeedList(ref DepotFolder _iDepot); // external iDepot; regular use
         void UpdateVis(); // update visual from iDepot
+        void SynchroChecked(List<Tuple<int, string, string>> chks);
         void SetChecked(bool? check); // if null invert; returns checked
         void Clear(bool inclDepotItems = false);
         int selectedIndex { get; set; } // one based index in no-checkable mode
@@ -468,18 +468,18 @@ namespace scripthea.viewer
                 idx += k;
             }
         }
-        private bool checkImageDepot(string folder)
+        private int checkImageDepot(string folder)
         {
-            bool bb = ImgUtils.checkImageDepot(tbImageDepot.Text) > 0;
-            if (bb) lbDepotInfo.Content = "";
-            else lbDepotInfo.Content = "This is not an image depot.";
-            return bb;
+            int cnt = ImgUtils.checkImageDepot(tbImageDepot.Text);
+            if (cnt > 0) { lbDepotInfo.Content = cnt.ToString() + " images"; lbDepotInfo.Foreground = Brushes.Blue; }
+            else { lbDepotInfo.Content = "This is not an image depot."; lbDepotInfo.Foreground = Brushes.Tomato; }
+            return cnt;
         }
-        private void btnRefresh_Click(object sender, RoutedEventArgs e)
+        private void btnRefresh_Click(object sender, RoutedEventArgs e) 
         { 
-            if (!checkImageDepot(tbImageDepot.Text))                 
+            if (checkImageDepot(tbImageDepot.Text) == 0)                 
             {                
-                if (sender.Equals(btnRefresh)) Clear();
+                if ((sender == btnRefresh) || (sender == tbImageDepot)) Clear();
                 return; 
             }
             DepotFolder df = new DepotFolder(imageFolder);
@@ -495,13 +495,16 @@ namespace scripthea.viewer
         }
         private void tbImageDepot_TextChanged(object sender, TextChangedEventArgs e)
         {           
-            if (checkImageDepot(tbImageDepot.Text))
+            if (checkImageDepot(tbImageDepot.Text) > 0)
             {
                 tbImageDepot.Foreground = Brushes.Black; 
                 opts.ImageDepotFolder = tbImageDepot.Text; Log("@WorkDir");
-                if (chkAutoRefresh.IsChecked.Value) btnRefresh_Click(sender, e);
             }
-            else { tbImageDepot.Foreground = Brushes.Red; }     
+            else 
+            { 
+                tbImageDepot.Foreground = Brushes.Red;                
+            }     
+            if (chkAutoRefresh.IsChecked.Value) btnRefresh_Click(sender, e);
         }
         private void chkAutoRefresh_Checked(object sender, RoutedEventArgs e)
         {

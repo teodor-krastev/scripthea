@@ -67,8 +67,15 @@ namespace scripthea.viewer
                 ChangeContent(this, null);
             }
             finally { Mouse.OverrideCursor = null; }
-
         }
+        public void SynchroChecked(List<Tuple<int, string, string>> chks)
+        {
+            if (!checkable) return;
+            SetChecked(false);
+            foreach (Tuple<int, string, string> chk in chks)
+                picItems[chk.Item1 - 1].IsChecked = true;
+        }
+
         public void SetChecked(bool? check)
         {
             if (!checkable) return;

@@ -66,8 +66,8 @@ namespace scripthea.composer
             API.OnQueryComplete += new ControlAPI.APIEventHandler(QueryComplete);
             API.OnLog += new Utils.LogHandler(Log);
 
-            if (Utils.TheosComputer()) { cbiDiffusion.Visibility = Visibility.Visible; btnTest.Visibility = Visibility.Visible; }
-            else { cbiDiffusion.Visibility = Visibility.Collapsed; btnTest.Visibility = Visibility.Collapsed; }            
+            if (Utils.TheosComputer()) { btnTest.Visibility = Visibility.Visible; }
+            else { btnTest.Visibility = Visibility.Collapsed; }            
         }
         public void Finish()
         {

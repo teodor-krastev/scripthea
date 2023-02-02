@@ -443,7 +443,7 @@ namespace scripthea.master
         private void tvFolders_ContextMenuOpening(object sender, ContextMenuEventArgs e)
         {
             cmFolders.Items.Clear();
-            MenuItem mi = new MenuItem(); mi.Header = "New folder (inside sel.)"; mi.Click += mi_Click; cmFolders.Items.Add(mi);
+            MenuItem mi = new MenuItem(); mi.Header = "New folder (subfolder to the selected)"; mi.Click += mi_Click; cmFolders.Items.Add(mi);
             MenuItem mj = new MenuItem(); mj.Header = "Rename"; mj.Click += mi_Click; cmFolders.Items.Add(mj);
         }
         void mi_Click(object sender, RoutedEventArgs e)
@@ -454,7 +454,7 @@ namespace scripthea.master
             string input = ""; string dir = ""; string prn1 = "";
             switch (Convert.ToString((sender as MenuItem).Header))
             {
-                case "New folder (inside sel.)":
+                case "New folder (subfolder to the selected)":
                     prn1 = prn.Length > maxLen ? "..." + prn.Substring(prn.Length - maxLen) : prn;
                     input = new InputBox("New folder in " + prn1, "", "").ShowDialog();
                     if (input.Equals("")) return;
@@ -466,15 +466,15 @@ namespace scripthea.master
                     }
                     break;
                 case "Rename":
-                    string lastDir = Path.GetFileName(pth);
-                    prn1 = prn.Length > maxLen ? "..." + prn.Substring(prn.Length - maxLen) : prn;
+                    string lastDir = Path.GetFileName(pth); string parentDir = Path.GetDirectoryName(pth);
+                    prn1 = parentDir.Length > maxLen ? "..." + parentDir.Substring(prn.Length - maxLen) : parentDir;
                     input = new InputBox("Rename <" + lastDir + "> in " + prn1, lastDir, "").ShowDialog();
                     if (input.Equals("")) return;
-                    dir = Path.Combine(prn, input);
-                    if (Directory.Exists(dir)) Utils.TimedMessageBox("The folder \"" + dir + "\" already exists", "Error message", 3000);
+                    dir = Path.Combine(parentDir, input);
+                    if (Directory.Exists(dir)) { Utils.TimedMessageBox("The folder \"" + dir + "\" already exists", "Error message", 3000); return; }
                     else
                     {
-                        Directory.Move(pth, dir); refreshTree(); CatchAFolder(prn);
+                        Directory.Move(pth, dir); refreshTree(); CatchAFolder(dir);
                     }
                     break;
                 default: Utils.TimedMessageBox("internal error #951");

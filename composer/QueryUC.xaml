@@ -82,7 +82,7 @@
             <local:CuePoolUC x:Name="cuePoolUC"  Margin="0,6,0,0" Grid.Row="3"/>
         </Grid>
 
-        <GridSplitter x:Name="gridSplitRight" Grid.Column="1" HorizontalAlignment="Left" Margin="0" Width="5" Background="#FFF4FAFF"/>
+        <GridSplitter x:Name="gridSplitRight" Grid.Column="1" HorizontalAlignment="Left" Margin="0" Width="5" Background="#FFEDFFF6"/>
         <Grid Grid.Column="1" >
             <Grid.RowDefinitions>
                 <RowDefinition x:Name="rowAPI" Height="65"/>

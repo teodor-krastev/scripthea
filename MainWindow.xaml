@@ -65,7 +65,7 @@
                         <ColumnDefinition Width="179*"/>
                     </Grid.ColumnDefinitions>
                     <master:DepotMasterUC x:Name="depotMaster" Margin="0"/>
-                    <GridSplitter x:Name="gridSplitterM" HorizontalAlignment="Left" Grid.Column="1" Margin="0" Width="5" Background="#FFEBFBFB"/>
+                    <GridSplitter x:Name="gridSplitterM" HorizontalAlignment="Left" Grid.Column="1" Margin="0" Width="5" Background="#FFEDFFF6"/>
 
                 </Grid>
             </TabItem>
@@ -77,12 +77,11 @@
                         <ColumnDefinition Width="1*"/>
                     </Grid.ColumnDefinitions>
                     <master:ImportUtilUC x:Name="importUtilUC" Width="Auto"/>
-                    <GridSplitter x:Name="gridSplitterIO1" HorizontalAlignment="Left" Grid.Column="1" Margin="0" Width="5" Background="#FFEBFBFB"/>
+                    <GridSplitter x:Name="gridSplitterIO1" HorizontalAlignment="Left" Grid.Column="1" Margin="0" Width="5" Background="#FFEDFFF6"/>
                     <master:ExportUtilUC x:Name="exportUtilUC" Grid.Column="1" Width="Auto"/>
-                    <GridSplitter x:Name="gridSplitterIO2" HorizontalAlignment="Left" Grid.Column="2" Margin="0" Width="5" Background="#FFEBFBFB"/>
+                    <GridSplitter x:Name="gridSplitterIO2" HorizontalAlignment="Left" Grid.Column="2" Margin="0" Width="5" Background="#FFEDFFF6"/>
                 </Grid>
             </TabItem>
-
         </TabControl>
 
         <GridSplitter x:Name="gridSplitLeft" Grid.Column="1" HorizontalAlignment="Left" Margin="2,0" Width="12" ResizeDirection="Columns" MouseDoubleClick="gridSplitLeft_MouseDoubleClick" Visibility="Hidden">

@@ -148,6 +148,7 @@ namespace scripthea.external
                         switch (current)
                         {
                             case SDServer.Status.closed: BorderBrush = Brushes.White; // before server opens 
+                                if (!previous.Equals(SDServer.Status.closed)) RestartServer();
                                 break;
                             case SDServer.Status.waiting: BorderBrush = Brushes.Silver; // waiting the client to call
                                 break;
@@ -175,6 +176,18 @@ namespace scripthea.external
         {
             if (localDebug) inLog("> "+txt);
         }
+        private void RestartServer()
+        {
+            if (!Utils.isNull(server2s)) //&& false
+                if (server2s.IsConnected)
+                    { server2s.reader.Dispose(); server2s.Close(); } //
+            if (!Utils.isNull(server2c))
+                if (server2c.IsConnected) 
+                    { server2c.writer.Dispose(); server2c.Close(); }
+            Utils.Sleep(100);
+
+            Init("");
+        }
         private void btnReset_Click(object sender, RoutedEventArgs e)
         {
             Log("@CancelRequest");
@@ -182,17 +195,6 @@ namespace scripthea.external
             if (!Utils.isNull(server2c))
                 if (server2c.IsConnected) server2c.CloseSession();
             inLog("to start another session restart Scripthea application", Brushes.Red);
-
-            return;
-            if (!Utils.isNull(server2s)) //&& false
-                if (server2s.IsConnected)
-                    { server2s.reader.Dispose(); server2s.Close(); } //
-            if (!Utils.isNull(server2c))
-                if (server2c.IsConnected) 
-                    {  Utils.Sleep(100); server2c.writer.Dispose(); server2c.Close(); }
-            Utils.Sleep(100);
-
-            Init("");
         }
         private void lb1_MouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -383,7 +385,7 @@ namespace scripthea.external
         }
         public override void AddAction()
         {
-            //while (IsConnected && !cts.IsCancellationRequested)  { Utils.Sleep(100); }
+            while (IsConnected && !cts.IsCancellationRequested)  { Utils.Sleep(200); }
         }
         public void CloseSession()
         {
@@ -403,12 +405,14 @@ namespace scripthea.external
             imageFailed     // image has failed to be generated
         }
         public bool IsConnected { get { if (pipeServer == null) return false; return pipeServer.IsConnected; } }
+        protected string pipeName;
         protected NamedPipeServerStream pipeServer;
         public Task task;
         protected CancellationTokenSource cts;
         protected CancellationToken token;
-        public SDServer(string pipeName, PipeDirection direction)
+        public SDServer(string _pipeName, PipeDirection direction)
         {
+            pipeName = _pipeName;
             pipeServer = new NamedPipeServerStream(pipeName, direction, 1);
             cts = new CancellationTokenSource(); token = cts.Token;
             task = Task.Run(() => PipeServer(), token);
@@ -429,6 +433,7 @@ namespace scripthea.external
             log("open session");
 
             AddAction();
+            log(pipeName + " session");
         }
         public void Close()
         {                     
@@ -448,8 +453,8 @@ namespace scripthea.external
                     task.Kill();
                 }*/                            
             }
-            if (pipeServer.IsConnected) 
-                { pipeServer.Disconnect(); pipeServer.Dispose(); }
+            if (pipeServer.IsConnected) pipeServer.Disconnect();
+            pipeServer.Dispose(); 
         }
     }
     #endregion PipeServer
