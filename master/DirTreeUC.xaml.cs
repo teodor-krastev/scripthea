@@ -149,6 +149,8 @@ namespace scripthea.master
 
         public static BitmapImage UnhookedImageLoad(string filename, ImageFormat imageFormat = null)
         {
+            if (!File.Exists(filename)) 
+                { Utils.TimedMessageBox("File <" + filename + "> is missing.", "Error:", 3000); return null; }
             ImageFormat iFormat = imageFormat == null ? GetImageFormat(filename) : imageFormat;
             if (iFormat == null) return null; // unrecogn. format; need to specify one
             System.Drawing.Image selectedImage = System.Drawing.Image.FromFile(filename);
