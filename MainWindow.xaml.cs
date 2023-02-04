@@ -95,7 +95,9 @@ namespace scripthea
             focusControl.Register(viewerUC);
             focusControl.Register(depotMaster.iPickerA);
             focusControl.Register(depotMaster.iPickerB);
-            imgAbout.Source = ImgUtils.UnhookedImageLoad(Path.Combine(Utils.configPath, "penpic1.png"), System.Drawing.Imaging.ImageFormat.Png);
+            string penpicFile = Path.Combine(Utils.configPath, "penpic1.png");
+            if (!File.Exists(penpicFile)) throw new Exception(penpicFile +" file is missing");
+            penpic = new Bitmap(penpicFile); imgAbout.Source = ImgUtils.BitmapToBitmapImage(penpic, System.Drawing.Imaging.ImageFormat.Png);           
             Log("@ExplorerPart=0");
             if (!opts.debug) imgPreferences.Visibility = Visibility.Collapsed;
             Title = "Scripthea - text-to-image prompt composer v" + Utils.getAppFileVersion;           
