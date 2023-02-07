@@ -271,22 +271,22 @@ namespace scripthea.viewer
         } 
         public string path { get; private set; }
         public ImageInfo.ImageGenerator imageGenerator { get; private set; }
-        public bool Validate(bool? correctEntry) // true: if no mismatched entries (OK depot) OR if correctEntry and file is missing then entries are deleted
-                                                 // false: there were missing files with not-corrected entries (unfinished business)
-            // if correctEntry is null ask user
+        public bool Validate(bool? correctEntry) // argument: if correctEntry is null ask user
+               // return true: if no mismatched entries (OK depot) OR if correctEntry and file is missing then entries are deleted
+               // return false: there were missing files with not-corrected entries (unfinished business)
         {
-            List<string> allImgs = allImages(); bool ok = true;
+            List<string> allImgs = allImages(); // from the folder
+            bool ok = true;
             /*int idxFile; int idxII; bool fnd;
             do { fnd = fileMatch(allImgs, out idxFile, out idxII); } while (fnd);*/
-            int i = 0; int itemsCount = items.Count;
+            int i = 0; int itemsCount = items.Count; 
             while (i < items.Count)
             {
-                bool found = false; int j = -1;
+                bool found = false; 
                 foreach (string img in allImgs)
                 {
-                    j = -1;
                     found = items[i].filename.Equals(img, StringComparison.InvariantCultureIgnoreCase);
-                    if (found) { j = i; break; } 
+                    if (found) break;  
                 }
                 if (!found)
                 {
@@ -295,13 +295,8 @@ namespace scripthea.viewer
                         //Configure the message box
                         var messageBoxText =
                             "Image depot entry <"+ items[i].filename+ "> has no corresponding image file.\rClick \"Yes\" to correct entry list, \"No\" to skip this correction, or \"Cancel\" to exit validation.";
-                        //var caption = "Image Depot Validation";
-                        //var button = MessageBoxButton.YesNoCancel;
-                        //var icon = MessageBoxImage.Warning;
-
                         // Display message box
                         var messageBoxResult = MessageBox.Show(messageBoxText, "Image Depot Validation", MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
-
                         // Process message box results
                         switch (messageBoxResult)
                         {
@@ -315,12 +310,15 @@ namespace scripthea.viewer
                     }
                     else
                     {
-                        if (Convert.ToBoolean(correctEntry)) { items.RemoveAt(j); found = true; continue; }
+                        if (Convert.ToBoolean(correctEntry)) { items.RemoveAt(i); continue; }
                     }                    
                 }
                 i++; ok &= found;
             }
-            if (itemsCount != items.Count) Save(true);
+            if (itemsCount != items.Count)
+            {
+                Save(true); Utils.TimedMessageBox((itemsCount - items.Count).ToString()+" image depot emtries have been removed", "Warining", 3000);
+            }
             return ok;
         }
         public void Append(ImageInfo ii)

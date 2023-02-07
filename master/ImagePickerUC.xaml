@@ -36,6 +36,8 @@
                             <MenuItem Header="Check All" Click="mi_Click"/>
                             <MenuItem Header="Uncheck All" Click="mi_Click"/>
                             <MenuItem Header="Invert Checking"  Click="mi_Click" FontWeight="Bold"/>
+                            <Separator/>
+                            <MenuItem Header="Refresh" Click="mi_Click"/>
                         </ContextMenu>
                     </Image.ContextMenu>
                 </Image>

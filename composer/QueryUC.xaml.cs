@@ -423,7 +423,7 @@ namespace scripthea.composer
                 case "Paste": tbCue.SelectedText = Clipboard.GetText();
                     return;
             }
-            if (header.EndsWith("synonyms") || header.EndsWith("meaning")) Utils.AskTheWeb(header);
+            if (header.EndsWith("synonyms") || header.EndsWith("meaning")) Utils.AskTheWeb(header.Replace("\"", string.Empty));
         }
 
         private void btnScanPreview_Click(object sender, RoutedEventArgs e)

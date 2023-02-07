@@ -202,6 +202,7 @@ namespace scripthea.master
             }
             if (iDepot != null) 
                 if (iDepot.isEnabled) ChangeDepot(iDepot, null);
+            if (chkCustom1.IsChecked.Value) iDepot?.Validate(true);
             lastTab = null;
             rbList_Checked(null, null); GetChecked();
         }
@@ -216,6 +217,8 @@ namespace scripthea.master
                 case "Uncheck All": activeView.SetChecked(false);
                     break;
                 case "Invert Checking": activeView.SetChecked(null);
+                    break;
+                case "Refresh": ReloadDepot();
                     break;
             }
             GetChecked();

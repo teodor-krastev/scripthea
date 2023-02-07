@@ -53,40 +53,44 @@ namespace scripthea.master
         }
         private void btnCopyA2B_Click(object sender, RoutedEventArgs e)
         {
-            bool bb = false;
-            if (sender.Equals(btnCopyA2B)) bb = Copy1to2(iPickerA, iPickerB);
-            if (sender.Equals(btnCopyB2A)) bb = Copy1to2(iPickerB, iPickerA);
-            if (!bb) Log("Err: Issue during copying");
+            int k = -1;
+            if (sender.Equals(btnCopyA2B)) k = Copy1to2(iPickerA, iPickerB); 
+            if (sender.Equals(btnCopyB2A)) k = Copy1to2(iPickerB, iPickerA);
+            if (k == -1) Utils.TimedMessageBox("Err: Issue during copying", "Error", 3000);
+            else Utils.TimedMessageBox(k+" files have been copyied", "Information", 3000);
         }
         private void btnMoveA2B_Click(object sender, RoutedEventArgs e)
         {
-            bool bb = false;
-            if (sender.Equals(btnMoveA2B)) bb = Move1to2(iPickerA, iPickerB);
-            if (sender.Equals(btnMoveB2A)) bb = Move1to2(iPickerB, iPickerA);
-            if (!bb) Log("Err: Issue during moving");
+            int k = -1;
+            if (sender.Equals(btnMoveA2B)) k = Move1to2(iPickerA, iPickerB);
+            if (sender.Equals(btnMoveB2A)) k = Move1to2(iPickerB, iPickerA);
+            if (k == -1) Utils.TimedMessageBox("Err: Issue during moving", "Error", 3000);
+            else Utils.TimedMessageBox(k + " files have been moved", "Information", 3000);
+
         }
         private void btnDeleteInA_Click(object sender, RoutedEventArgs e)
         {
-            bool bb = false; 
-            if (sender.Equals(btnDeleteInA)) bb = DeleteIn1(iPickerA);
-            if (sender.Equals(btnDeleteInB)) bb = DeleteIn1(iPickerB);
-            if (!bb) Log("Err: Issue during deleting");
+            int k = -1; 
+            if (sender.Equals(btnDeleteInA)) k = DeleteIn1(iPickerA);
+            if (sender.Equals(btnDeleteInB)) k = DeleteIn1(iPickerB);
+            if (k == -1) Utils.TimedMessageBox("Err: Issue during deleting", "Error", 3000);
+            else Utils.TimedMessageBox(k + " files have been deleted", "Information", 3000);
         }
 
-        public bool Copy1to2(ImagePickerUC iPicker1, ImagePickerUC iPicker2)
+        public int Copy1to2(ImagePickerUC iPicker1, ImagePickerUC iPicker2)
         {
             if (ImgUtils.checkImageDepot(iPicker2.imageDepot, true) == -1)
             {
-                if (!iPicker1.isEnabled) return false;
+                if (!iPicker1.isEnabled) return -1;
                 List<string> ls = new List<string>(File.ReadAllLines(Path.Combine(iPicker1.imageDepot, ImgUtils.descriptionFile)));
                 File.WriteAllText(Path.Combine(iPicker2.tbImageDepot.Text, ImgUtils.descriptionFile), ls[0]);
                 iPicker2.ReloadDepot();
             }
             if (!iPicker1.isEnabled || !iPicker2.isEnabled)
             {
-                Log("Err: Depot " + iPicker1.letter + " has nothing to offer"); return false;
+                Log("Err: Depot " + iPicker1.letter + " has nothing to offer"); return -1;
             }
-            iPicker2.isChanging = true;
+            iPicker2.isChanging = true; int k = 0;
             List<ImageInfo> lii = iPicker1.imageInfos(true, false);
             foreach (ImageInfo ii in lii)
             {
@@ -113,38 +117,38 @@ namespace scripthea.master
                         case MessageBoxResult.No: // skip this correction
                             continue;
                         case MessageBoxResult.Cancel: // exit validation
-                            return false;
+                            return -1;
                     }
                 }
                 if (!File.Exists(source_path))
                 {
                     Log("File <" + source_path + "> not found."); continue;
                 }
-                File.Copy(source_path, target_path);
+                File.Copy(source_path, target_path); k++;
                 iPicker2.iDepot.Append(ii);
             }
             iPicker2.isChanging = false;
-            return true;
+            return k;
         }
         
-        public bool Move1to2(ImagePickerUC iPicker1, ImagePickerUC iPicker2)
+        public int Move1to2(ImagePickerUC iPicker1, ImagePickerUC iPicker2)
         {
-            bool bb = Copy1to2(iPicker1, iPicker2);
-            if (bb) bb &= DeleteIn1(iPicker1);
-            return bb;
+            int k = Copy1to2(iPicker1, iPicker2);
+            if (k > -1) k = DeleteIn1(iPicker1);
+            return k;
         }
-        public bool DeleteIn1(ImagePickerUC iPicker1)
+        public int DeleteIn1(ImagePickerUC iPicker1)
         {
             iPicker1.isChanging = true;
             List<Tuple<int, string, string>> lot = iPicker1.ListOfTuples(true, false);
-            int k = lot.Count - 1;
+            int k = lot.Count - 1; int j = 0;
             while (k > -1)
             {
                 iPicker1.RemoveAt(lot[k].Item1 - 1);
-                k--;
+                k--; j++;
             }
             iPicker1.isChanging = false;
-            return true;
+            return j;
         }
     }
 }
