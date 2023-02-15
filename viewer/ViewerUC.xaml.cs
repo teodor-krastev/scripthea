@@ -30,6 +30,7 @@ namespace scripthea.viewer
         }
         public ImageInfo(string fullfilename, ImageGenerator imageGenerator, bool keepName) 
         {
+            filename = "";
             if (!File.Exists(fullfilename)) return;
             string suggestedName = ""; bool bb;
             switch (imageGenerator) 
@@ -56,7 +57,7 @@ namespace scripthea.viewer
             }
             catch (System.IO.IOException IOe) { Utils.TimedMessageBox("Error: (" + System.IO.Path.GetFileName(fullfilename) + ") " + IOe.Message);  }
         }
-        public bool IsAvailable() { return !filename.Equals(""); }
+        public bool IsAvailable() { return !filename.Equals(""); } // file hasn't been assinged
         private List<string> SplitFilename(string fn, char sep) // pattern <txt><sep><txt><sep><cue><ext>
         {
             var ls = new List<string>();

@@ -434,12 +434,18 @@ namespace scripthea.master
                 Active(pth); tbSelected.Text = pth;
             }
         }
+        public string selectedPath { 
+            get 
+            {
+                if (tvFolders.SelectedItem == null) return "";
+                else return (tvFolders.SelectedItem as TreeViewItem).Tag.ToString();
+            } 
+        }
         private void tvFolders_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (tvFolders.SelectedItem != null)
+            if (selectedPath != "")
             {
-                string pth = (tvFolders.SelectedItem as TreeViewItem).Tag.ToString();
-                Active(pth); tbSelected.Text = pth;
+                string pth = selectedPath; Active(pth); tbSelected.Text = pth;
             }
         }
         private void tvFolders_ContextMenuOpening(object sender, ContextMenuEventArgs e)

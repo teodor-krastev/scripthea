@@ -434,5 +434,8 @@
   <ItemGroup>
     <Resource Include="Properties\penmanship-pen-writing-gif-1548431.gif" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Properties\refresh.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

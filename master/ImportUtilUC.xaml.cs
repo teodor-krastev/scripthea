@@ -232,7 +232,7 @@ namespace scripthea.master
                     k++;
                 }
                 depotFolder.Save();
-                if (nok > 0) 
+                //if (nok > 0) -> unclear
                 if (chkDeleteUnchecked.IsChecked.Value)
                 {
                     foreach(string fn in unchk)

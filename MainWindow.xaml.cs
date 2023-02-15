@@ -101,14 +101,15 @@ namespace scripthea
             if (!opts.debug) imgPreferences.Visibility = Visibility.Collapsed;
             Title = "Scripthea - text-to-image prompt composer v" + Utils.getAppFileVersion;           
         }
-        private int _ExplorerPart;
-        public int ExplorerPart // from 0 to 100%
+        //private int _ExplorerPart; // directory tree
+        public int ExplorerPart // from 0 to 100% 
         {
-            get { return _ExplorerPart; }
+            get { return (int)(100 * rowExplorer.Height.Value / (rowLog.Height.Value + rowExplorer.Height.Value)); } //_ExplorerPart;
             set
             {
                 int vl = Utils.EnsureRange(value, 0, 100);
-                _ExplorerPart = vl;
+                //_ExplorerPart = vl;
+
                 rowLog.Height = new GridLength(100 - vl, GridUnitType.Star);
                 rowExplorer.Height = new GridLength(vl, GridUnitType.Star);
                 if (vl.Equals(0) || vl.Equals(100)) gridSplitLeft2.Visibility = Visibility.Collapsed;
@@ -124,7 +125,18 @@ namespace scripthea
                         gridSplitLeft.Visibility = Visibility.Visible; //rowLogImage.Height = new GridLength(Utils.EnsureRange(opts.LogColWidth, 1, gridLog.Height * 0.66));
                     }
                 }
+                ExplorerPartChanging();
             }
+        }
+        private void ExplorerPartChanging()
+        {
+            chkLog.Visibility = Visibility.Visible; btnClear.Visibility = Visibility.Visible; btnRefresh.Visibility = Visibility.Visible;
+            if (ExplorerPart.Equals(0)) { btnRefresh.Visibility = Visibility.Collapsed; }
+            if (ExplorerPart.Equals(100)) { chkLog.Visibility = Visibility.Collapsed; btnClear.Visibility = Visibility.Collapsed; }
+        }
+        private void gridSplitLog2_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
+        {
+            ExplorerPartChanging();
         }
         private void MainWindow1_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
@@ -312,6 +324,12 @@ namespace scripthea
         private void imgPreferences_MouseDown(object sender, MouseButtonEventArgs e)
         {
             prefsWnd.ShowDialog();
+        }
+
+        private void btnRefresh_Click(object sender, RoutedEventArgs e)
+        {
+            string sPath = dirTreeUC.selectedPath;
+            dirTreeUC.refreshTree(); dirTreeUC.CatchAFolder(sPath);
         }
 
     }
