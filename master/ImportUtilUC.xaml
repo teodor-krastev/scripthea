@@ -19,7 +19,7 @@
                     <ColumnDefinition/>
                     <ColumnDefinition Width="70"/>
                 </Grid.ColumnDefinitions>
-                <TextBox x:Name="tbImageDepot" Background="#FFFBFBF4" Margin="0,0,2.962,-0.051" IsReadOnly="True" TextChanged="tbImageDepot_TextChanged" >
+                <TextBox x:Name="tbImageDepot" Background="#FFFBFBF4" Margin="0,2,2.962,-2" IsReadOnly="True" BorderThickness="0" TextChanged="tbImageDepot_TextChanged" >
                 </TextBox>
                 <Button x:Name="btnNewFolder" Grid.Column="1" Content="Browse" Click="btnNewFolder_Click" HorizontalAlignment="Left" Margin="5.038,0,0,-0.051" Width="60" Foreground="#FF0F8001" FontWeight="Bold" Background="#FFF4F4F4" Visibility="Collapsed">
                 </Button>
@@ -63,7 +63,7 @@
         </TabControl>
         <GridSplitter Grid.Row="3" VerticalAlignment="Top" HorizontalAlignment="Stretch" Height="3"></GridSplitter>
         <Grid x:Name="gridImage" Grid.Row="3" Margin="0,5,0,0" >
-            <Image x:Name="image" />
+            <Image x:Name="image" PreviewMouseLeftButtonDown="image_PreviewMouseLeftButtonDown"/>
         </Grid>
     </Grid>
 </UserControl>

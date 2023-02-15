@@ -40,12 +40,12 @@ namespace scripthea.viewer
                 if (value)
                 {
                     Background = Brushes.RoyalBlue;
-                    tbCue.Foreground = Brushes.White; lbFile.Foreground = Brushes.White;
+                    tbCue.Foreground = Brushes.White; tbFile.Foreground = Brushes.White;
                 }
                 else
                 {
                     Background = Brushes.White;
-                    tbCue.Foreground = Brushes.Black; lbFile.Foreground = Brushes.Black;
+                    tbCue.Foreground = Brushes.Black; tbFile.Foreground = Brushes.Black;
                 }
             }
         }
@@ -94,9 +94,9 @@ namespace scripthea.viewer
                 imageFolder = System.IO.Path.GetDirectoryName(filePath) +"\\";               
                 imgPic.Source = ImgUtils.UnhookedImageLoad(filePath);
             }
-            else lbFile.Foreground = Brushes.Tomato;
-            lbFile.Text = filename;
-            prompt = _prompt; tbCue.Text = prompt;            
+            else tbFile.Foreground = Brushes.Tomato;
+            tbFile.Text = filename; tbFile.ToolTip = filePath;
+            prompt = _prompt; tbCue.Text = prompt; tbCue.ToolTip = prompt;
             selected = false;
         }
         private void imgPic_MouseDown_1(object sender, MouseButtonEventArgs e)

@@ -20,7 +20,7 @@
                     <ColumnDefinition/>
                     <ColumnDefinition x:Name="colButton" Width="66.835"/>
                 </Grid.ColumnDefinitions>
-                <TextBox x:Name="tbImageDepot" Background="#FFFBFBF4" Margin="0,0,2.962,-0.051" IsReadOnly="True" TextChanged="tbImageDepot_TextChanged" />
+                <TextBox x:Name="tbImageDepot" Background="#FFFBFBF4" Margin="0,2,2.962,-2" IsReadOnly="True" TextChanged="tbImageDepot_TextChanged" BorderThickness="0" />
                 <Button x:Name="btnCustom" Grid.Column="1" Content="btnCustom" HorizontalAlignment="Right" Margin="0,0,2.797,-0.051" Width="60" Foreground="#FF0049BB" FontWeight="Bold" Background="#FFF4F4F4"/>
             </Grid>
         </GroupBox>
@@ -64,7 +64,7 @@
         </TabControl>
         <GridSplitter Grid.Row="3" VerticalAlignment="Top" HorizontalAlignment="Stretch" Height="3"/>
         <Grid x:Name="gridImage" Grid.Row="3" Margin="5" >
-            <Image x:Name="image" />
+            <Image x:Name="image" PreviewMouseLeftButtonDown="image_PreviewMouseLeftButtonDown"/>
         </Grid>
     </Grid>
 </UserControl>

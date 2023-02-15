@@ -82,6 +82,12 @@ namespace scripthea.master
             }
             return btnCustom;
         }
+        public MenuItem AddMenuItem(string header)
+        {
+            MenuItem mi = new MenuItem() { Header = header };
+            cmCue.Items.Add(mi);
+            return mi;
+        }
         public UserControl parrent { get { return this; } }
         public GroupBox groupFolder { get { return gbFolder; } }
         public TextBox textFolder { get { return tbImageDepot; } }
@@ -147,14 +153,19 @@ namespace scripthea.master
             get { return _isChanging; }
             set
             {
-                if (!value && _isChanging) // end of chaging/editing in iDepot
+                try
                 {
-                    iDepot.Save(!IsReadOnly); // save the changes on disk
-                    activeView.Clear();
-                    if (!activeView.FeedList(ref iDepot))  // update from iDepot
-                        { Log("Err: fail to update image depot"); return; }
-                    GetChecked();
+                    if (value) Mouse.OverrideCursor = Cursors.Wait;
+                    if (!value && _isChanging) // end of chaging/editing in iDepot
+                    {
+                        iDepot.Save(!IsReadOnly); // save the changes on disk
+                        activeView.Clear();
+                        if (!activeView.FeedList(ref iDepot))  // update from iDepot
+                            { Log("Err: fail to update image depot"); return; }
+                        GetChecked();
+                    }
                 }
+                finally { Mouse.OverrideCursor = null; }
                 _isChanging = value;
             }
         }
@@ -178,7 +189,7 @@ namespace scripthea.master
         private int GetChecked(bool print = true)
         {
             if (print) lbChecked.Content = "---";
-            if (!isEnabled || activeView == null) { Log("Err: No active image depot found."); return -1; }
+            if (!isEnabled || activeView == null) { /*Log("Err: No active image depot found.");*/ return -1; }
             List<Tuple<int, string, string>> itms = activeView.GetItems(true, false);
             if (print)
                 lbChecked.Content = itms.Count.ToString() + " out of " + activeView.Count.ToString();
@@ -208,7 +219,7 @@ namespace scripthea.master
         }
         private void mi_Click(object sender, RoutedEventArgs e)
         {
-            if (!isEnabled) { Log("Err: No active image depot found."); return; }
+            if (!isEnabled) { return; }
             MenuItem mi = sender as MenuItem; string header = Convert.ToString(mi.Header);           
             switch (header)
             {
@@ -226,7 +237,11 @@ namespace scripthea.master
         bool inverting = false;
         private void imgMenu_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (!isEnabled) { Log("Err: No active image depot found."); return; }
+            for (int i = 0; i < 5; i++)
+            {
+                if (cmCue.Items[i] is MenuItem)
+                    (cmCue.Items[i] as MenuItem).IsEnabled = isEnabled;
+            } 
             inverting = false;
             if (e.ChangedButton == MouseButton.Left)
             {
@@ -246,10 +261,11 @@ namespace scripthea.master
         {
             GetChecked();
         }
+        string lastLoadedPic = "";
         public void loadPic(int idx, string filePath, string prompt)
         {
-            if (File.Exists(filePath)) image.Source = ImgUtils.UnhookedImageLoad(filePath, ImageFormat.Png);
-            else image.Source = ImgUtils.file_not_found;
+            if (File.Exists(filePath)) { image.Source = ImgUtils.UnhookedImageLoad(filePath, ImageFormat.Png); lastLoadedPic = filePath; }
+            else { image.Source = ImgUtils.file_not_found; lastLoadedPic = ""; }
             GetChecked();
         }
         TabItem lastTab = null;
@@ -277,6 +293,13 @@ namespace scripthea.master
         {
             if (tcMain == null || iDepot == null) return;
             
+        }
+        private void image_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (lastLoadedPic.Equals("")) return;
+            DataObject data = new DataObject(DataFormats.FileDrop, new string[] { lastLoadedPic });
+            // Start the drag-and-drop operation
+            DragDrop.DoDragDrop(image, data, DragDropEffects.Copy);
         }
     }
 }

@@ -24,7 +24,7 @@
                         <ColumnDefinition x:Name="colRefresh"  Width="70"/>
                         <ColumnDefinition Width="97"/>
                     </Grid.ColumnDefinitions>
-                    <TextBox x:Name="tbImageDepot" Background="#FFFBFBF4" TextChanged="tbImageDepot_TextChanged" Margin="0,0,1.987,-0.051" >
+                    <TextBox x:Name="tbImageDepot" Background="#FFFBFBF4" TextChanged="tbImageDepot_TextChanged" Margin="0,2,2.962,-2" BorderThickness="0">
                     </TextBox>
                     <Button x:Name="btnRefresh" Grid.Column="1" Content="Refresh" Foreground="#FF0F8001" HorizontalAlignment="Center" Width="65" FontWeight="Bold" Background="#FFF4F4F4" Margin="0,0,-0.354,-0.051" RenderTransformOrigin="0.5,0.501" Click="btnRefresh_Click"/>
                     <CheckBox x:Name="chkAutoRefresh" Grid.Column="2" Content="Auto-refresh" Foreground="#FF2963BE" HorizontalAlignment="Left"  Background="#FFF4F4F4" Margin="5,0,0,-0.051" VerticalAlignment="Center" Checked="chkAutoRefresh_Checked" Unchecked="chkAutoRefresh_Checked" />

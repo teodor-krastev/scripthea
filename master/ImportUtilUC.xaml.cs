@@ -210,7 +210,7 @@ namespace scripthea.master
         {
             int rc = dTable.Rows.Count;
             if (rc == 0) return; int k = 0; int nok = 0; converting = true;
-            image.Source = null; // ImgUtils.file_not_found; 
+            image.Source = null; lastLoadedPic = "";// ImgUtils.file_not_found; 
             image.UpdateLayout();
             
             if (Utils.isNull(depotFolder))
@@ -246,7 +246,7 @@ namespace scripthea.master
                 if (rc > k) LoadImages(imageFolder);
                 else
                 {
-                    dTable.Rows.Clear(); image.Source = null; GetChecked();
+                    dTable.Rows.Clear(); image.Source = null; lastLoadedPic = ""; GetChecked();
                 }
                 string sk = (nok > 0) ? "\r\r" + nok.ToString() + " images have malformatted or missing metadata!" : "";
                 Log("Done! Image depot of " + k.ToString() + " images was created." + sk , Brushes.DarkGreen); 
@@ -271,7 +271,7 @@ namespace scripthea.master
                     break;
             }
         }
-        int lastSelectedRow = -1;
+        int lastSelectedRow = -1; string lastLoadedPic = "";
         private void dGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (converting) return;
@@ -283,8 +283,8 @@ namespace scripthea.master
                 dGrid.ScrollIntoView(dGrid.SelectedItem, null);
             });
             string fn = System.IO.Path.Combine(imageFolder,System.IO.Path.ChangeExtension(Convert.ToString(dataRow.Row.ItemArray[1]), ".png"));
-            if (File.Exists(fn)) image.Source = ImgUtils.UnhookedImageLoad(fn, ImageFormat.Png);
-            else Log("Error: file not found-> " + fn);
+            if (File.Exists(fn)) { image.Source = ImgUtils.UnhookedImageLoad(fn, ImageFormat.Png); lastLoadedPic = fn; }
+            else { Log("Error: file not found-> " + fn); lastLoadedPic = ""; }
             if (!Utils.isNull(e)) e.Handled = true;
             // int sr = dGrid.SelectedIndex; 
             // TextBlock textBlock = DataGridHelper.GetCellByIndices(dGrid, sr, 1).FindVisualChild<TextBlock>();
@@ -362,5 +362,13 @@ namespace scripthea.master
             }
             GetChecked();
         }
+        private void image_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (lastLoadedPic.Equals("")) return;
+            DataObject data = new DataObject(DataFormats.FileDrop, new string[] { lastLoadedPic });
+            // Start the drag-and-drop operation
+            DragDrop.DoDragDrop(image, data, DragDropEffects.Copy);
+        }
+
     }
 }

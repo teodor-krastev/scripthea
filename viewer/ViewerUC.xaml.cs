@@ -235,7 +235,24 @@ namespace scripthea.viewer
         public bool isReadOnly { get; private set; }
         public Dictionary<string, string> header;
         public List<ImageInfo> items;
-        public List<string> allImages()
+        public DepotFolder VirtualClone(string targetPath, List<Tuple<int,string,string>> filter = null) // int -> index; string -> filename (may differ); string -> prompt (for consistency)
+        {
+            if (!Directory.Exists(targetPath)) return null;
+            DepotFolder dp = new DepotFolder(targetPath, imageGenerator, isReadOnly);
+            if (Utils.isNull(filter)) dp.items.AddRange(items);
+            else
+            {
+                foreach (var itm in filter)
+                {
+                    ImageInfo ii = items[itm.Item1 - 1];
+                    if (ii.prompt != itm.Item3) { Utils.TimedMessageBox("Error: broken filter"); break; }
+                    ii.filename = itm.Item2; 
+                    dp.items.Add(ii);
+                }
+            } 
+            return dp;
+        }
+        public List<string> allImages() // in this folder 
         {
             List<string> pngs = new List<string>(Directory.GetFiles(path, "*.png"));
             List<string> jpgs = new List<string>(Directory.GetFiles(path, "*.jpg"));
@@ -355,6 +372,7 @@ namespace scripthea.viewer
     {
         void Init(ref Options _opts, bool _checkable);
         void Finish();
+        bool IsAvailable { get; }
         DepotFolder iDepot { get; set; }
         string loadedDepot { get; set; }
         bool FeedList(string imageFolder); // the way to load the list
@@ -496,7 +514,7 @@ namespace scripthea.viewer
             if (checkImageDepot(tbImageDepot.Text) > 0)
             {
                 tbImageDepot.Foreground = Brushes.Black; 
-                opts.ImageDepotFolder = tbImageDepot.Text; Log("@WorkDir");
+                //opts.ImageDepotFolder = tbImageDepot.Text; Log("@WorkDir");
             }
             else 
             { 

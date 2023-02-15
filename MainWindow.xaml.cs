@@ -36,7 +36,6 @@ namespace scripthea
         {
             aboutWin = new AboutWin();
             aboutWin.Show();
-            //Utils.baseLocation = Utils.BaseLocation.appData;
             InitializeComponent();
         }
         string optionsFile;
@@ -47,7 +46,7 @@ namespace scripthea
         public FocusControl focusControl;
         private void MainWindow1_Loaded(object sender, RoutedEventArgs e)
         {
-            optionsFile = Utils.configPath + "options.json";
+            optionsFile = Path.Combine(Utils.configPath, "options.json");
             if (!Directory.Exists(Utils.configPath)) throw new Exception("Fatal error: Directory <" + Utils.configPath + "> does not exist.");
             if (File.Exists(optionsFile))
             {
@@ -307,8 +306,7 @@ namespace scripthea
                 if (sender.Equals(queryUC.tbImageDepot) && tabControl.SelectedItem.Equals(tiComposer)) fld = queryUC.tbImageDepot.Text;
                 if (sender.Equals(viewerUC.tbImageDepot) && tabControl.SelectedItem.Equals(tiViewer)) fld = viewerUC.tbImageDepot.Text;
                 if (sender.Equals(importUtilUC.tbImageDepot) && tabControl.SelectedItem.Equals(tiUtils)) fld = importUtilUC.tbImageDepot.Text;
-                if (ImgUtils.checkImageDepot(fld) > 0) 
-                    dirTreeUC.CatchAFolder(fld);
+                if (ImgUtils.checkImageDepot(fld) > 0) dirTreeUC.CatchAFolder(fld);
             }
         }
         private void imgPreferences_MouseDown(object sender, MouseButtonEventArgs e)

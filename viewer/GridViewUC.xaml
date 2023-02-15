@@ -32,7 +32,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="25"/>
                 <ColumnDefinition/>
-                <ColumnDefinition Width="43.747"/>
+                <ColumnDefinition Width="35"/>
             </Grid.ColumnDefinitions>
             <Image x:Name="ibtnTumbOpt" Source="/Scripthea;component/Properties/TripleBarTeal.bmp" MouseDown="ibtnTumbOpt_MouseDown" Margin="0"></Image>
             <StackPanel Margin="0"  Orientation="Horizontal" HorizontalAlignment="Center" Grid.Column="1" Width="197">
@@ -43,7 +43,7 @@
                 <Image x:Name="btnPageDown" Width="30" HorizontalAlignment="Left" Source="/Scripthea;component/Properties/right_dbl_arrow.png" Margin="3,0,0,0" Cursor="Hand" MouseDown="btnHome_MouseDown" ToolTip="Page Down"/>
                 <Image x:Name="btnEnd" Width="30" HorizontalAlignment="Left" Source="/Scripthea;component/Properties/end_arrow.png" Margin="3,0,0,0" Cursor="Hand" MouseDown="btnHome_MouseDown" ToolTip="End"/>
             </StackPanel>
-            <Label x:Name="labelNum" Content="" Grid.Column="2" HorizontalAlignment="Center" Margin="0" VerticalAlignment="Center"/>
+            <Label x:Name="labelNum" Content="" Grid.Column="2" HorizontalAlignment="Center" Margin="0" VerticalAlignment="Center" Foreground="#FFCD4B1B"/>
         </Grid>
     </Grid>
 </UserControl>

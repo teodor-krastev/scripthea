@@ -424,7 +424,39 @@ namespace UtilsNS
             if (prefix.Equals("")) return DateTime.Now.ToString("yy-MM-dd_H-mm-ss");
             else return DateTime.Now.ToString("yy-MM-dd_H-mm-ss") + "_" + prefix;
         }
-       
+        // template (usually html) with fields $fct$ to be replaced by res depending of the dict.type 
+        // if the type is List<string> -> multiline substitution
+        public static List<string> CreateFromTemplate(List<string> templ, Dictionary<string, object> rep)
+        {
+            List<string> singleLine(string sl, Dictionary<string, object> rp)
+            {
+                List<string> rs = new List<string>(); string s = sl; bool found = false;
+                foreach (var pair in rp)
+                {
+                    string brKey = "$" + pair.Key + "$";
+                    string rp1 = "";
+                    if (sl.IndexOf(brKey) > -1)
+                    {
+                        Type t = pair.Value.GetType();
+                        if (Object.ReferenceEquals(t, typeof(List<string>))) // list must be alone in line and all caps
+                            { rs.AddRange((List<string>)pair.Value); break; }
+                        if (Object.ReferenceEquals(t, typeof(int))) { rp1 = ((int)pair.Value).ToString(); found = true; }
+                        if (Object.ReferenceEquals(t, typeof(double))) { rp1 = ((double)pair.Value).ToString("G5"); found = true; }
+                        if (Object.ReferenceEquals(t, typeof(string))) { rp1 = (string)pair.Value; found = true; }
+                        if (found) s = s.Replace(brKey, rp1);
+                        else TimedMessageBox("Error: " + s);
+                    }
+                }
+                if (found) rs.Add(s);
+                return rs;
+            }
+            List<string> res = new List<string>();
+            foreach (string ss in templ)
+                if (ss.IndexOf("$") > -1) res.AddRange(singleLine(ss, rep));
+                else res.Add(ss);
+            return res;
+        }
+
         private static Dictionary<string,string> FakeBrowserHeaders()
         {
             Dictionary<string, string> webHeaders = new Dictionary<string, string>();
@@ -930,31 +962,49 @@ namespace UtilsNS
         public static bool localConfig = File.Exists(Path.ChangeExtension(System.Reflection.Assembly.GetEntryAssembly().Location, ".PDB"));
         //public bool 
         public enum BaseLocation { oneUp, twoUp, appData, auto }
-        public static BaseLocation baseLocation = BaseLocation.auto;        
-        public static string basePath
-        { 
-            get 
+        public static BaseLocation baseLocation = BaseLocation.auto;
+        private static string GetBaseLOcation(BaseLocation bl)
+        {
+
+
+
+
+
+
+
+
+            switch (bl)
             {
-                BaseLocation bl = baseLocation;
-                if (bl == BaseLocation.auto)
-                {                    
-                    if (localConfig) bl = BaseLocation.oneUp; // twoUp later !!!
-                    else bl = BaseLocation.appData; 
-                }
-                switch (bl)
-                {               
-                    case BaseLocation.oneUp:
-                        return Directory.GetParent(appFullPath).Parent.FullName;
-                    case BaseLocation.twoUp:
-                        return Directory.GetParent(Directory.GetParent(appFullPath).Parent.FullName).FullName;
-                    case BaseLocation.appData:
-                        return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), appName);
-                    default:
-                        return "";
-                }
-            }           
+                case BaseLocation.oneUp:
+                    return Directory.GetParent(appFullPath).Parent.FullName;
+                case BaseLocation.twoUp:
+                    return Directory.GetParent(Directory.GetParent(appFullPath).Parent.FullName).FullName;
+                case BaseLocation.appData:
+                    return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), appName);
+                default:
+                    return "";
+            }
         }
-           
+        public static string basePath
+        {
+            get
+            {
+                string requiredFolder = "Config"; // or maybe "bin"
+                if (baseLocation == BaseLocation.auto)
+                {
+                    if (localConfig)
+                    {
+                        if (Directory.Exists(Path.Combine(GetBaseLOcation(BaseLocation.oneUp), requiredFolder))) baseLocation = BaseLocation.oneUp;
+                        if (Directory.Exists(Path.Combine(GetBaseLOcation(BaseLocation.twoUp), requiredFolder))) baseLocation = BaseLocation.twoUp;
+                    }
+                    else baseLocation = BaseLocation.appData;
+                }
+                if (!Directory.Exists(Path.Combine(GetBaseLOcation(baseLocation), requiredFolder)))
+                    TimedMessageBox(Path.Combine(GetBaseLOcation(baseLocation), requiredFolder) + " is expected but does not exist.", "Error", 3000);
+                return GetBaseLOcation(baseLocation);
+            }
+        }
+
         public static string configPath { get { return Path.Combine(basePath,"Config")+"\\"; } }
 
         public static bool extendedDataPath { get; set; } // defaults are: in AH - true / in MM2 - false

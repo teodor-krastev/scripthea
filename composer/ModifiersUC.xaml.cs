@@ -93,7 +93,7 @@ namespace scripthea.composer
             foreach (ModifListUC cmu in modifLists)
                 cmu.isVisible = ModifMap.ContainsKey(cmu.ModifListName) ? ModifMap[cmu.ModifListName] : true;
         }
-        public string mapFile { get { return System.IO.Path.Combine(Utils.configPath + "modifiers.map"); } }
+        public string mapFile { get { return System.IO.Path.Combine(Utils.configPath, "modifiers.map"); } }
         private bool _ShowMap;
         public bool ShowMap
         {

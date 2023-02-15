@@ -142,7 +142,6 @@ for (int i=1; i <= NumberOfRetries; ++i) {
             columnMeta.Width = new GridLength(1);
             rowBottom.Height = new GridLength(42);
         }
-
         private void image_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             string filePath = Path.Combine(tbPath.Text, tbName.Text);

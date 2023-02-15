@@ -34,23 +34,35 @@ namespace scripthea.viewer
             lbZoom.Content = opts.ThumbZoom.ToString() + "%";
             chkShowCue.IsChecked = opts.ThumbCue; chkShowFilename.IsChecked = opts.ThumbFilename;
         }
+        private bool ShuttingDown = false;
         public void Finish()
         {
-
+            ShuttingDown = true;
         }
         public DepotFolder iDepot { get; set; }
+        public bool IsAvailable { 
+            get 
+            {
+                if (Utils.isNull(iDepot)) return false;
+                else return iDepot.isEnabled;
+            } 
+        }
         public string loadedDepot { get; set; }
 
         public void UpdateVis()
         {
             try
             {                
-                Mouse.OverrideCursor = Cursors.Wait;
-                picItemsClear();
+                Mouse.OverrideCursor = Cursors.Wait; Utils.DoEvents();
+                if (!IsAvailable) Clear(); 
+                picItemsClear(); int cnt = iDepot.items.Count; 
                 foreach (var itm in iDepot.Export2Viewer())
                 {
+                    if (ShuttingDown) return;
                     PicItemUC piUC = new PicItemUC(ref opts, checkable); piUC.IsChecked = true;
-                    picItems.Add(piUC); Utils.DoEvents();
+                    picItems.Add(piUC); labelNum.Content = (int)(100.0 * picItems.Count / cnt) + "%";
+                    if ((picItems.Count % 3) == 1)
+                        { scroller.ScrollToEnd(); Utils.DoEvents(); }
                     piUC.ContentUpdate(itm.Item1, Path.Combine(imageFolder, itm.Item2), itm.Item3); piUC.VisualUpdate();
                     piUC.OnSelect += new RoutedEventHandler(SelectTumb); wrapPics.Children.Add(piUC);
                     if (checkable)
@@ -64,9 +76,10 @@ namespace scripthea.viewer
                     }
                 }
                 if (picItems.Count > 0) picItems[0].selected = true;
-                ChangeContent(this, null);
+                ChangeContent(this, null); 
             }
-            finally { Mouse.OverrideCursor = null; }
+            finally 
+            { Mouse.OverrideCursor = null; labelNum.Content = ""; selectedIndex = 1; scrollToIdx(); }
         }
         public void SynchroChecked(List<Tuple<int, string, string>> chks)
         {
@@ -136,15 +149,15 @@ namespace scripthea.viewer
                 foreach (PicItemUC piUC in picItems) // reset all            
                     if (piUC.selected) piUC.selected = false;
                 PicItemUC piUC2 = picItems[value - 1];
-                piUC2.selected = true;
+                piUC2.selected = true; scrollToIdx(value);
                 OnSelect(piUC2.idx, piUC2.imageFolder + piUC2.filename, piUC2.prompt);
             }
         }
         public int Count { get { return picItems.Count; } }
         public List<Tuple<int, string, string>> GetItems(bool check, bool uncheck)
         {
+            if (!checkable && iDepot.isEnabled) { return iDepot.Export2Viewer(); }
             List<Tuple<int, string, string>> itms = new List<Tuple<int, string, string>>();
-            if (!checkable) return itms;
             foreach (PicItemUC piUC in picItems)
             {
                 if (piUC.IsChecked == null) continue;
@@ -211,25 +224,33 @@ namespace scripthea.viewer
             lbZoom.Content = opts.ThumbZoom.ToString() + "%";
             UpdatePicItems();            
         }
-        private void btnItemUp_MouseDown(object sender, MouseButtonEventArgs e)
+        private void btnItemUp_MouseDown(object sender, MouseButtonEventArgs e) // Left/Right
         {
             if (Count == 0) return;
             int k = sender.Equals(btnItemUp) ? -1 : 1;
             selectedIndex = Utils.EnsureRange(selectedIndex + k, 1, Count);
         }
-        private void btnHome_MouseDown(object sender, MouseButtonEventArgs e)
+        const int rows4page = 4;
+        private void btnHome_MouseDown(object sender, MouseButtonEventArgs e) // PgUp/PgDown  Home/End
         {
             if (Count == 0) return;
-            if (sender.Equals(btnHome)) { selectedIndex = 1; scroller.ScrollToHome(); return; }
-            if (sender.Equals(btnEnd)) { selectedIndex = Count; scroller.ScrollToEnd(); return; }
-            int k = sender.Equals(btnPageUp) ? -5 : 5; k *= thumbsPerRow;
+            if (sender.Equals(btnHome)) { selectedIndex = 1; scrollToIdx(); return; }
+            if (sender.Equals(btnEnd)) { selectedIndex = Count; scrollToIdx(); return; }
+            int k = sender.Equals(btnPageUp) ? -rows4page : rows4page; k *= thumbsPerRow;
             selectedIndex = Utils.EnsureRange(selectedIndex + k, 1, Count);
-            if (wrapPics.ActualHeight < rowTumbs.ActualHeight) return;           
-            double selectedPos = (double)selectedIndex / Count; 
-            scroller.ScrollToVerticalOffset(selectedPos * wrapPics.ActualHeight - rowTumbs.ActualHeight/3);
+            scrollToIdx();
         }
-        private int thumbsPerRow { get { return (int)Math.Floor(wrapPics.ActualWidth / picItems[0].ActualWidth); } }
-        private int RowsCount { get { return (int)Math.Ceiling((double)Count / thumbsPerRow); } }
+        private void scrollToIdx(int selectedIdx = -1) // -1 for selectedIndex
+        {            
+            int si = selectedIdx == -1 ? selectedIndex : selectedIdx; si--;
+            if (wrapPics.ActualHeight < rowTumbs.ActualHeight) return;                         
+            int targetRow = (int)Math.Floor((double)si / thumbsPerRow); 
+            if (targetRow.Equals(0)) { scroller.ScrollToHome(); return; }
+            if (targetRow.Equals(rowsCount)) { scroller.ScrollToEnd(); return; }
+            scroller.ScrollToVerticalOffset(wrapPics.ActualHeight * (targetRow - 2) / rowsCount); 
+        }
+        private int thumbsPerRow { get { if (Count.Equals(0)) return -1; return (int)Math.Floor(wrapPics.ActualWidth / picItems[0].ActualWidth); } }
+        private int rowsCount { get { return (int)Math.Ceiling((double)Count / thumbsPerRow); } }
         private void scroller_KeyDown(object sender, KeyEventArgs e)
         {           
             switch (e.Key)
@@ -238,6 +259,12 @@ namespace scripthea.viewer
                     btnItemUp_MouseDown(btnItemUp, null);
                     break;
                 case Key.Space:
+                    if (selectedIndex > -1)
+                    {
+                        if (picItems[selectedIndex-1].checkable) picItems[selectedIndex-1].IsChecked = !picItems[selectedIndex-1].IsChecked;
+                        else btnItemUp_MouseDown(btnItemDown, null);
+                    }
+                    break;
                 case Key.Right:
                     btnItemUp_MouseDown(btnItemDown, null);
                     break;

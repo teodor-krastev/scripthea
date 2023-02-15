@@ -148,7 +148,7 @@ namespace scripthea.external
                         switch (current)
                         {
                             case SDServer.Status.closed: BorderBrush = Brushes.White; // before server opens 
-                                if (!previous.Equals(SDServer.Status.closed)) RestartServer();
+                                //if (!previous.Equals(SDServer.Status.closed)) RestartServer();
                                 break;
                             case SDServer.Status.waiting: BorderBrush = Brushes.Silver; // waiting the client to call
                                 break;

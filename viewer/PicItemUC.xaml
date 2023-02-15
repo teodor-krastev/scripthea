@@ -17,6 +17,6 @@
             <TextBox x:Name="tbCue" TextWrapping="Wrap" Background="{x:Null}" IsReadOnly="True" BorderThickness="1,1,0,0" BorderBrush="{x:Null}" Margin="0,0,0,0.253" />
         </Grid>
         <Image x:Name="imgPic"  Margin="0" Grid.Row="1" MouseDown="imgPic_MouseDown_1"/>
-        <TextBlock x:Name="lbFile" Grid.Row="2" Margin="0"></TextBlock>
+        <TextBlock x:Name="tbFile" Grid.Row="2" Margin="0"></TextBlock>
     </Grid>
 </UserControl>

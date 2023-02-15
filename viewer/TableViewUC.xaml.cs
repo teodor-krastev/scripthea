@@ -45,6 +45,14 @@ namespace scripthea.viewer
         {
 
         }
+        public bool IsAvailable
+        {
+            get
+            {
+                if (Utils.isNull(iDepot)) return false;
+                else return iDepot.isEnabled;
+            }
+        }
         public void BindData()
         {
             Binding binding = new Binding("."); //ItemsSource="{Binding Path=., Mode=TwoWay}"  SourceUpdated="OnTargetUpdated"
@@ -53,14 +61,13 @@ namespace scripthea.viewer
             binding.Source = dTable;
             dGrid.SetBinding(DataGrid.ItemsSourceProperty, binding);
         }
-
         public DepotFolder iDepot { get; set; }
         public string loadedDepot { get; set; }
         public void UpdateVis()
         {
             if (dTable == null) return;
             dTable.Rows.Clear(); 
-            if (iDepot == null) return;
+            if (!IsAvailable) return;
             if (iDepot.items.Count > 0)
             {
                 foreach (var itm in iDepot.Export2Viewer())
@@ -127,8 +134,9 @@ namespace scripthea.viewer
         public int Count { get { return dTable.Rows.Count; } }
         public List<Tuple<int, string, string>> GetItems(bool check, bool uncheck) 
         {
+            if (!checkable && iDepot.isEnabled) { return iDepot.Export2Viewer(); }
             List<Tuple<int, string, string>> itms = new List<Tuple<int, string, string>>();
-            if (!checkable || dTable.Rows.Count == 0) return itms;
+            if (dTable.Rows.Count == 0) return itms;
 
             int sr = lastSelectedRow; 
             if (Utils.InRange(sr, 0, dTable.Rows.Count - 1))
@@ -212,12 +220,17 @@ namespace scripthea.viewer
                 if (chk != null) chk.IsChecked = !chk.IsChecked.Value;      
                 OnSelect(sr, Path.Combine(imageFolder, Convert.ToString(dTable.Rows[sr].ItemArray[3])), ""); 
             }
+            
         }
-
         private void dGrid_BeginningEdit(object sender, DataGridBeginningEditEventArgs e)  // TO BE FINISHED !!!
         {
             //ChangeContent(this, null);
             //bool bb = Convert.ToBoolean(e.Row.ItemArray[1]);
+        }
+        private void dGrid_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key.Equals(Key.Home)) { dGrid.SelectedIndex = 0; e.Handled = true; }
+            if (e.Key.Equals(Key.End)) { dGrid.SelectedIndex = Count-1; e.Handled = true; }
         }
     }
 }

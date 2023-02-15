@@ -8,6 +8,6 @@
              d:DesignHeight="450" d:DesignWidth="388.06">
     <Grid>
         <DataGrid x:Name="dGrid" Margin="0" SelectionChanged="dGrid_SelectionChanged" AutoGeneratingColumn="DataGrid_AutoGeneratingColumn" MaxColumnWidth="1000" 
-           CanUserReorderColumns="False" BorderBrush="{x:Null}" SelectionMode="Single" Background="{x:Null}" CanUserAddRows="False" BorderThickness="0" KeyDown="dGrid_KeyDown" BeginningEdit="dGrid_BeginningEdit"/>
+           CanUserReorderColumns="False" BorderBrush="{x:Null}" SelectionMode="Single" Background="{x:Null}" CanUserAddRows="False" BorderThickness="0" KeyDown="dGrid_KeyDown" BeginningEdit="dGrid_BeginningEdit" PreviewKeyDown="dGrid_PreviewKeyDown"/>
     </Grid>
 </UserControl>
