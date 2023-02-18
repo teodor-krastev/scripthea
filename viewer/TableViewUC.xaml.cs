@@ -232,5 +232,11 @@ namespace scripthea.viewer
             if (e.Key.Equals(Key.Home)) { dGrid.SelectedIndex = 0; e.Handled = true; }
             if (e.Key.Equals(Key.End)) { dGrid.SelectedIndex = Count-1; e.Handled = true; }
         }
+
+        public void SortTableByIndex()
+        {
+            if (dGrid.Columns.Count == 0) return;
+            if (dGrid.Columns[0].SortDirection == null) DataGridHelper.SortDataGrid(dGrid);
+        }
     }
 }

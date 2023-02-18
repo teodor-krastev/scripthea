@@ -96,15 +96,23 @@ namespace scripthea
             focusControl.Register(depotMaster.iPickerB);
             string penpicFile = Path.Combine(Utils.configPath, "penpic1.png");
             if (!File.Exists(penpicFile)) throw new Exception(penpicFile +" file is missing");
-            penpic = new Bitmap(penpicFile); imgAbout.Source = ImgUtils.BitmapToBitmapImage(penpic, System.Drawing.Imaging.ImageFormat.Png);           
-            Log("@ExplorerPart=0");
+            penpic = new Bitmap(penpicFile); imgAbout.Source = ImgUtils.BitmapToBitmapImage(penpic, System.Drawing.Imaging.ImageFormat.Png);
+            SwitchExplorer(false);
             if (!opts.debug) imgPreferences.Visibility = Visibility.Collapsed;
             Title = "Scripthea - text-to-image prompt composer v" + Utils.getAppFileVersion;           
         }
-        //private int _ExplorerPart; // directory tree
-        public int ExplorerPart // from 0 to 100% 
+        private void SwitchExplorer(bool on) // 
         {
-            get { return (int)(100 * rowExplorer.Height.Value / (rowLog.Height.Value + rowExplorer.Height.Value)); } //_ExplorerPart;
+            if (on)
+            {
+                if (ExplorerPart == 0) { ExplorerPart = 100; return; } // on/off situation
+                if (ExplorerPart < 70) { ExplorerPart = 70; return; } // more fluid case; if it's small increase size
+            }
+            else ExplorerPart = 0;
+        }
+        public int ExplorerPart // from 0 to 100% directory tree
+        {
+            get { return (int)(100 * rowExplorer.Height.Value / (rowLog.Height.Value + rowExplorer.Height.Value)); } 
             set
             {
                 int vl = Utils.EnsureRange(value, 0, 100);

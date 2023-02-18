@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Threading;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Windows.Data;
 using System.Windows.Documents;
@@ -19,7 +20,7 @@ using UtilsNS;
 using Path = System.IO.Path;
 using Newtonsoft.Json;
 
-namespace scripthea.viewer
+namespace scripthea.viewer 
 {
     public class ImageInfo
     {
@@ -395,13 +396,14 @@ namespace scripthea.viewer
         public ViewerUC()
         {
             InitializeComponent();
-            views = new List<iPicList>();
+            views = new List<iPicList>(); 
             views.Add(tableViewUC); tableViewUC.SelectEvent += new TableViewUC.PicViewerHandler(picViewerUC.loadPic); 
             views.Add(gridViewUC);  gridViewUC.SelectEvent += new GridViewUC.PicViewerHandler(picViewerUC.loadPic); 
         }
         iPicList activeView { get { return views[tabCtrlViews.SelectedIndex]; } }
+        private DispatcherTimer timer;
         private Options opts;
-        public void Init(ref Options _opts)
+        public void Init(ref Options _opts) // ■▬►
         {
             opts = _opts;
             chkAutoRefresh.IsChecked = opts.Autorefresh; imageFolder = opts.ImageDepotFolder; 
@@ -471,9 +473,10 @@ namespace scripthea.viewer
         }
         private void btnFindUp_MouseDown(object sender, MouseButtonEventArgs e)
         {
+            if (tabCtrlViews.SelectedIndex.Equals(0)) tableViewUC.SortTableByIndex();
             int k = sender.Equals(btnFindUp) ? -1 : 1;
             if (activeView.selectedIndex.Equals(-1)) activeView.selectedIndex = 1;
-            int idx = activeView.selectedIndex + k -1;
+            int idx = activeView.selectedIndex + k - 1;
             List<Tuple<int, string, string>> items = activeView.GetItems(true,true);
             while (idx > -1 && idx < items.Count)
             {
@@ -508,6 +511,7 @@ namespace scripthea.viewer
                 activeView.FeedList(imageFolder);
                 showing = true;
             }
+            animation = false; btnPlay.IsEnabled = decompImageDepot.Count > 0; 
             if (!Utils.isNull(e)) e.Handled = true;
         }
         private void tbImageDepot_TextChanged(object sender, TextChangedEventArgs e)
@@ -531,8 +535,44 @@ namespace scripthea.viewer
         }
         private void tabCtrlViews_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (chkAutoRefresh.IsChecked.Value && showing) btnRefresh_Click(sender, e); 
+            if (chkAutoRefresh.IsChecked.Value && showing) btnRefresh_Click(sender, e);
+            animation = false;
             if (!Utils.isNull(e)) e.Handled = true;
+        }        
+        public bool animation
+        {
+            get { return btnStop.Visibility.Equals(Visibility.Visible); }
+            set 
+            { 
+                if (value) { btnStop.Visibility = Visibility.Visible; btnPlay.Visibility = Visibility.Collapsed; }
+                else { btnStop.Visibility = Visibility.Collapsed; btnPlay.Visibility = Visibility.Visible; }
+                if (value)
+                {
+                    if (timer == null) timer = new DispatcherTimer(TimeSpan.FromSeconds(numDly.Value), DispatcherPriority.Normal, OnTimerTick, Dispatcher);
+                    timer?.Start();
+                }
+                else
+                {
+                    timer?.Stop();
+                }
+            }
         }
+        private void OnTimerTick(object sender, EventArgs e)
+        {
+            if (activeView.iDepot == null) return;
+            int cnt = activeView.iDepot.items.Count;
+            if (activeView.selectedIndex.Equals(cnt)) animation = false;
+            if (Utils.InRange(activeView.selectedIndex, 1,cnt-1)) activeView.selectedIndex += 1;
+        }
+        private void numDly_ValueChanged(object sender, RoutedEventArgs e)
+        {
+            if (timer == null) return;
+            timer.Interval = TimeSpan.FromSeconds(numDly.Value);
+        }
+        private void btnPlay_Click(object sender, RoutedEventArgs e)
+        {
+            animation = sender.Equals(btnPlay); 
+        }
+
     }
 }

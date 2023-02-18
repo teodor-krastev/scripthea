@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using System.IO;
+using System.ComponentModel;
 
 namespace UtilsNS
 {   
@@ -242,6 +243,27 @@ namespace UtilsNS
         {
             if (rowIndex >= dataGrid.Items.Count)
                 throw new IndexOutOfRangeException("rowIndex out of range");
+        }
+
+        public static void SortDataGrid(DataGrid dataGrid, int columnIndex = 0, ListSortDirection sortDirection = ListSortDirection.Ascending)
+        {
+            var column = dataGrid.Columns[columnIndex];
+
+            // Clear current sort descriptions
+            dataGrid.Items.SortDescriptions.Clear();
+
+            // Add the new sort description
+            dataGrid.Items.SortDescriptions.Add(new SortDescription(column.SortMemberPath, sortDirection));
+
+            // Apply sort
+            foreach (var col in dataGrid.Columns)
+            {
+                col.SortDirection = null;
+            }
+            column.SortDirection = sortDirection;
+
+            // Refresh items to display sort
+            dataGrid.Items.Refresh();
         }
     }
     public class ExtendedDataGrid : DataGrid

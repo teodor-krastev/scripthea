@@ -17,17 +17,29 @@
                         <StackPanel Orientation="Horizontal" Height="28" Margin="0,5,0,0">
                             <Label Content="Time out for image gen.[s]" Height="27" ></Label>
                             <UtilsNS:NumericBox x:Name="numTimeOutImgGen" HorizontalAlignment="Left" Height="25" Margin="0,3,0,-0.051" VerticalAlignment="Top" Width="52" FontSize="13" Maximum="1000" Minimum="2" Value="60"/>
-
                         </StackPanel>
                     </StackPanel>
                     <GroupBox x:Name="groupBox1" Header="Panes visible" HorizontalAlignment="Right" Margin="5" VerticalAlignment="Top">
-                            <StackPanel Margin="2,5,2,2">
-                                <CheckBox x:Name="chkCommLog" Content="Comm.Log" Height="20"/>
-                                <CheckBox x:Name="chkGPUtemp" Content="GPU temperature" Height="20"/>
-                            </StackPanel>
-                        
+                        <StackPanel Margin="2,5,2,2">
+                            <CheckBox x:Name="chkCommLog" Content="Comm.Log" Height="20"/>
+                            <CheckBox x:Name="chkGPUtemp" Content="GPU temperature" Height="20"/>
+                        </StackPanel>
                     </GroupBox>
-                    <GroupBox x:Name="groupGPUtmpr" Header="      nVidia GPU temperature feedack (set initially)" Margin="0" VerticalAlignment="Bottom" >
+                </Grid>
+            </TabItem>
+            <TabItem x:Name="tiMEMS" Header="Initial setting" Height="24" Margin="-0.286,-1,0,1" HorizontalAlignment="Left" Width="130" Background="#FFF0F0F0">
+                <StackPanel >
+                    <GroupBox x:Name="groupBox" Header="Stable Diffusion webUI location" Height="57" Margin="0,0,-0.456,0">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="70"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox x:Name="tbSDlocation" Background="#FFFBFBF4"  Margin="4"/>
+                            <Button x:Name="btnBrowse" Content=" Browse " Grid.Column="1" Foreground="#FF0F8001" FontWeight="Bold" Background="#FFF4F4F4" Margin="3" HorizontalAlignment="Center" VerticalAlignment="Center" Height="25" Click="btnBrowse_Click" />
+                        </Grid>
+                    </GroupBox>
+                    <GroupBox x:Name="groupGPUtmpr" Header="      nVidia GPU temperature feedack" Margin="0,8,0,0" VerticalAlignment="Bottom">
                         <Grid>
                             <CheckBox x:Name="chkGPUtemperature" Margin="5,-14,0,0"></CheckBox>
                             <StackPanel Margin="2,5,2,2" Orientation="Horizontal">
@@ -38,24 +50,8 @@
                             </StackPanel>
                         </Grid>
                     </GroupBox>
-
-                </Grid>
-            </TabItem>
-            <TabItem x:Name="tiMEMS" Header="Initial setting" Height="24" Margin="-0.286,-1,0,1" HorizontalAlignment="Left" Width="130" Background="#FFF0F0F0">
-                <StackPanel >
-                    <GroupBox x:Name="groupBox" Header="Stable Diffusion location" Height="57" Margin="0,0,-0.456,0">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="1*"/>
-                                <ColumnDefinition Width="70"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBox x:Name="tbSDlocation" Background="#FFFBFBF4"  Margin="4"/>
-                            <Button x:Name="btnBrowse" Content=" Browse " Grid.Column="1" Foreground="#FF0F8001" FontWeight="Bold" Background="#FFF4F4F4" Margin="3" HorizontalAlignment="Center" VerticalAlignment="Center" Height="25" Click="btnBrowse_Click" />
-                        </Grid>
-                    </GroupBox>
                     <StackPanel Margin="0,8,0,0">
-                        <CheckBox x:Name="chkValidScript" Content="Validate Scripthea script in SD-webui scripts folder" Margin="4,0,0,0"></CheckBox>
-
+                        <CheckBox x:Name="chkValidScript" Content="Validate Scripthea client script (.py) in SD-webUI scripts dir." Margin="4,0,0,0"></CheckBox>
                     </StackPanel>
                 </StackPanel>
             </TabItem>

@@ -437,5 +437,11 @@
   <ItemGroup>
     <Resource Include="Properties\refresh.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Properties\stop.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Properties\play.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
