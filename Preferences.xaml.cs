@@ -44,6 +44,7 @@ namespace scripthea
         public string ModifPrefix;
         public bool AddEmptyModif;
         public bool ConfirmGoogling;
+        public int ModifSample;
         // viewer
         public bool Autorefresh;
         public int ThumbZoom;

@@ -3,13 +3,13 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:scripthea"
+             xmlns:local="clr-namespace:scripthea" xmlns:UtilsNS="clr-namespace:UtilsNS"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Name="colMap" Width="150"/>
+            <ColumnDefinition Name="colMap" Width="155"/>
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
 
@@ -18,7 +18,7 @@
                 <RowDefinition Height="27"/>
                 <RowDefinition Height="1*"/>
                 <RowDefinition Height="1*"/>
-                <RowDefinition Height="120"/>
+                <RowDefinition Height="150"/>
             </Grid.RowDefinitions>
             <Label Content="Modifiers Map" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="DarkGreen"></Label>
             <ListBox x:Name="listBox" Grid.Row="1"  Margin="2,0,2,2" />
@@ -39,6 +39,12 @@
             </StackPanel>
             <GroupBox Header="Modifiers Options" Grid.Row="3" Margin="2">
                 <StackPanel x:Name="stackOptModifiers" Margin="2" >
+                    <Label Content="Scan. modif. sample #" ToolTip="Number of scanable modifiers in a prompt" FontWeight="Bold"></Label>
+                    <StackPanel Orientation="Horizontal" Margin="0,-3,0,5">
+                        <Label x:Name="lbSample" Content="in a prompt  " FontWeight="Bold"></Label>
+                        <UtilsNS:NumericBox x:Name="numSample" Width="40" Maximum="9" Minimum="1" ValueChanged="numSample_ValueChanged" FontWeight="Bold"></UtilsNS:NumericBox>
+                                            
+                    </StackPanel>
                     <CheckBox x:Name="chkAddEmpty" Content="Add empty modifier" Margin="0" ToolTip="Add an empty modfifier to the scan list" Checked="chkAddEmpty_Checked" Unchecked="chkAddEmpty_Checked"></CheckBox>
                     <CheckBox x:Name="chkRemoveDuplicates" Content="Remove duplicates" Margin="0" Checked="chkRemoveDuplicates_Checked" Unchecked="chkRemoveDuplicates_Unchecked" ToolTip="Remove duplicated modifiers"></CheckBox>
                     <CheckBox x:Name="chkConfirmGoogling" Content="Confirm googling" Margin="0" ToolTip="Remove duplicated modifiers" Checked="chkConfirmGoogling_Checked" Unchecked="chkConfirmGoogling_Checked"></CheckBox>

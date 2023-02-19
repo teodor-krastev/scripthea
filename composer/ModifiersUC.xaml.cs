@@ -46,7 +46,7 @@ namespace scripthea.composer
         Options opts;
         public void Init(ref Options _opts)
         {
-            opts = _opts; chkAddEmpty.IsChecked = opts.AddEmptyModif; chkConfirmGoogling.IsChecked = opts.ConfirmGoogling;
+            opts = _opts; chkAddEmpty.IsChecked = opts.AddEmptyModif; chkConfirmGoogling.IsChecked = opts.ConfirmGoogling; numSample.Value = opts.ModifSample;
             modifLists = new List<ModifListUC>();
             var files = new List<string>(Directory.GetFiles(Utils.configPath, "*.mdfr"));
             if (File.Exists(mapFile))
@@ -230,6 +230,11 @@ namespace scripthea.composer
         private void chkConfirmGoogling_Checked(object sender, RoutedEventArgs e)
         {
             opts.ConfirmGoogling = chkConfirmGoogling.IsChecked.Value;
+        }
+
+        private void numSample_ValueChanged(object sender, RoutedEventArgs e)
+        {
+            opts.ModifSample = numSample.Value; 
         }
     }
 }

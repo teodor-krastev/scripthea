@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -66,7 +67,7 @@ namespace scripthea.composer
             API.OnQueryComplete += new ControlAPI.APIEventHandler(QueryComplete);
             API.OnLog += new Utils.LogHandler(Log);
 
-            if (Utils.TheosComputer()) { btnTest.Visibility = Visibility.Visible; }
+            if (Utils.TheosComputer() && Utils.isInVisualStudio) { btnTest.Visibility = Visibility.Visible; }
             else { btnTest.Visibility = Visibility.Collapsed; }            
         }
         public void Finish()
@@ -265,7 +266,7 @@ namespace scripthea.composer
             List<CueItemUC> selectedSeeds = cuePoolUC?.ActiveCueList?.selectedCues(); scanPrompts = new List<string>(); 
             if (Utils.isNull(selectedSeeds)) { Log("Err: no cue is selected (12)"); return; }
             if (selectedSeeds.Count.Equals(0)) { Log("Err: no cue is selected (96)"); return; }
-            List<string> ScanModifs = modifiersUC.ModifItemsByType(ModifStatus.Scannable); 
+            List<string> ScanModifs = CombiModifs(modifiersUC.ModifItemsByType(ModifStatus.Scannable), opts.ModifPrefix, opts.ModifSample); 
             foreach (CueItemUC ssd in selectedSeeds)
             {
                 if (ScanModifs.Count.Equals(0))
@@ -279,6 +280,55 @@ namespace scripthea.composer
                     }
             }            
         }
+        public List<string> CombiModifs(List<string> ScanModifs, string separator, int sample = 1) 
+        {
+            if (sample == 1) return ScanModifs; List<string> rslt = new List<string>();
+            if (ScanModifs.Count == 0) return rslt;
+            if (sample >= ScanModifs.Count)
+                { Log("Error: number of scanable modifiers: " + ScanModifs.Count.ToString() + " must be bigger than modifiers sample: " +sample.ToString()); return rslt; }
+            List<string> line = new List<string>();
+            IEnumerable<IEnumerable<int>> combinations = CombiIndexes(sample, ScanModifs.Count);
+            foreach (var combination in combinations)
+            {
+                line.Clear();
+                foreach (int i in combination)
+                {
+                    line.Add(ScanModifs[i]);
+                }
+                rslt.Add(string.Join(separator,line.ToArray()));
+            }
+            return rslt;
+        }
+        private IEnumerable<IEnumerable<int>> CombiIndexes(int sample, int total) 
+        { 
+            int BitCount(int x)
+            {
+                int count = 0;
+                while (x != 0)
+                {
+                    count++;
+                    x &= x - 1;
+                }
+                return count;
+            }
+            int[] indexes = Enumerable.Range(0, total).ToArray();
+            
+            return from subset in Enumerable.Range(0, 1 << indexes.Length)
+                                where BitCount(subset) == sample
+                                select
+                                    from i in Enumerable.Range(0, indexes.Length)
+                                    where (subset & (1 << i)) != 0
+                                    select indexes[i];
+         }
+     
+/*      In this example, we start with an array of m numbers (numbers) and a value n specifying the size of each combination we want to generate.
+
+        We use LINQ to generate all possible subsets of numbers. We iterate over the range of integers from 0 to 1 << numbers.Length (exclusive), 
+        which gives us all possible bit patterns of length numbers.Length. We filter the subsets to only include those with exactly n set bits, 
+        which corresponds to a subset of size n. We then use another LINQ expression to convert each subset into a sequence of its elements, 
+        using a bitwise AND to determine whether each element is included in the subset.
+         */
+
         public void Request2Cancel() 
         {
             if (Convert.ToString(btnScan.Content).Equals("Cancel") && status == Status.Scanning) // only if scanning
@@ -468,7 +518,7 @@ namespace scripthea.composer
 
         private void btnTest_Click(object sender, RoutedEventArgs e)
         {
-            List<string> files = new List<string>(Directory.GetFiles(tbImageDepot.Text, "*.png"));
+            /*List<string> files = new List<string>(Directory.GetFiles(tbImageDepot.Text, "*.png"));
             Log(files.Count.ToString()+" files"); DateTime t0 = DateTime.Now;
             Dictionary<string, string> meta; int ns = 0;
             foreach (string fn in files)
@@ -477,7 +527,8 @@ namespace scripthea.composer
             }
             double t = (DateTime.Now - t0).TotalSeconds;
             Log("time taken = "+t.ToString("G3")+" [sec]  "+ns.ToString()+" files OK");
-            Log("time " + (t / ns).ToString("G3") + " [sec] per file");
+            Log("time " + (t / ns).ToString("G3") + " [sec] per file");*/
+            CombiIndexes(3, 5);
         }
 
     }
