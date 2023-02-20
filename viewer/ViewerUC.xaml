@@ -43,12 +43,12 @@
             <StackPanel Grid.Row="1" Orientation="Horizontal" Height="27" HorizontalAlignment="Right" VerticalAlignment="Top" >
                 <Button x:Name="btnPlay" Width="40" Margin="0,0,4,0" Background="White" HorizontalAlignment="Left" VerticalAlignment="Center" Click="btnPlay_Click" IsEnabled="False" ToolTip="Start animation" Cursor="Hand">
                     <ContentControl>
-                        <Image Source="/Scripthea;component/Properties/play.png" ></Image>
+                        <Image Source="/Scripthea;component/Properties/play.png"  Cursor="Hand"></Image>
                     </ContentControl>
                 </Button>
                 <Button x:Name="btnStop" Width="40" Margin="0,0,4,0" Background="White" HorizontalAlignment="Left" VerticalAlignment="Center" Click="btnPlay_Click" Visibility="Collapsed" ToolTip="Stop animation" Cursor="Hand">
                     <ContentControl>
-                        <Image Source="/Scripthea;component/Properties/stop.png" ></Image>
+                        <Image Source="/Scripthea;component/Properties/stop.png"  Cursor="Hand"></Image>
                     </ContentControl>
                 </Button>
                 <UtilsNS:NumericBox x:Name="numDly" HorizontalAlignment="Left" Height="25" Margin="0,0,8,0" VerticalAlignment="Center" Width="47" Value="5" Minimum="1" Maximum="99" ValueChanged="numDly_ValueChanged" ToolTip="Interval for animation [s]"/>

@@ -266,7 +266,7 @@ namespace scripthea.composer
             List<CueItemUC> selectedSeeds = cuePoolUC?.ActiveCueList?.selectedCues(); scanPrompts = new List<string>(); 
             if (Utils.isNull(selectedSeeds)) { Log("Err: no cue is selected (12)"); return; }
             if (selectedSeeds.Count.Equals(0)) { Log("Err: no cue is selected (96)"); return; }
-            List<string> ScanModifs = CombiModifs(modifiersUC.ModifItemsByType(ModifStatus.Scannable), opts.ModifPrefix, opts.ModifSample); 
+            List<string> ScanModifs = CombiModifs(modifiersUC.ModifItemsByType(ModifStatus.Scannable), opts.ModifPrefix, Utils.EnsureRange(opts.ModifSample, 1, 9));
             foreach (CueItemUC ssd in selectedSeeds)
             {
                 if (ScanModifs.Count.Equals(0))
@@ -285,17 +285,15 @@ namespace scripthea.composer
             if (sample == 1) return ScanModifs; List<string> rslt = new List<string>();
             if (ScanModifs.Count == 0) return rslt;
             if (sample >= ScanModifs.Count)
-                { Log("Error: number of scanable modifiers: " + ScanModifs.Count.ToString() + " must be bigger than modifiers sample: " +sample.ToString()); return rslt; }
-            List<string> line = new List<string>();
+                { Log("Error: number of scannable modifiers: " + ScanModifs.Count.ToString() + " must be bigger than modifiers sample: " +sample.ToString()); return rslt; }
+            List<string> line = new List<string>(); string ss = "";
             IEnumerable<IEnumerable<int>> combinations = CombiIndexes(sample, ScanModifs.Count);
             foreach (var combination in combinations)
             {
                 line.Clear();
                 foreach (int i in combination)
-                {
-                    line.Add(ScanModifs[i]);
-                }
-                rslt.Add(string.Join(separator,line.ToArray()));
+                    if (!ScanModifs[i].Equals("")) line.Add(ScanModifs[i]);
+                rslt.Add(string.Join(separator, line.ToArray()));
             }
             return rslt;
         }

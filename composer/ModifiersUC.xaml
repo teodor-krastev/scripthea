@@ -39,11 +39,10 @@
             </StackPanel>
             <GroupBox Header="Modifiers Options" Grid.Row="3" Margin="2">
                 <StackPanel x:Name="stackOptModifiers" Margin="2" >
-                    <Label Content="Scan. modif. sample #" ToolTip="Number of scanable modifiers in a prompt" FontWeight="Bold"></Label>
+                    <Label Content="Scan. modif. sample #" ToolTip="Number of scanable modifiers in a prompt" FontWeight="Bold" Margin="0,-4,0,0"></Label>
                     <StackPanel Orientation="Horizontal" Margin="0,-3,0,5">
                         <Label x:Name="lbSample" Content="in a prompt  " FontWeight="Bold"></Label>
                         <UtilsNS:NumericBox x:Name="numSample" Width="40" Maximum="9" Minimum="1" ValueChanged="numSample_ValueChanged" FontWeight="Bold"></UtilsNS:NumericBox>
-                                            
                     </StackPanel>
                     <CheckBox x:Name="chkAddEmpty" Content="Add empty modifier" Margin="0" ToolTip="Add an empty modfifier to the scan list" Checked="chkAddEmpty_Checked" Unchecked="chkAddEmpty_Checked"></CheckBox>
                     <CheckBox x:Name="chkRemoveDuplicates" Content="Remove duplicates" Margin="0" Checked="chkRemoveDuplicates_Checked" Unchecked="chkRemoveDuplicates_Unchecked" ToolTip="Remove duplicated modifiers"></CheckBox>

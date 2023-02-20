@@ -535,8 +535,8 @@ namespace scripthea.viewer
         }
         private void tabCtrlViews_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (chkAutoRefresh.IsChecked.Value && showing) btnRefresh_Click(sender, e);
             animation = false;
+            if (chkAutoRefresh.IsChecked.Value && showing) btnRefresh_Click(sender, e);           
             if (!Utils.isNull(e)) e.Handled = true;
         }        
         public bool animation

@@ -16,7 +16,7 @@
         <StackPanel Grid.Column="1" Margin="5,0" Background="White">
             <Label Content="Copy" FontWeight="Bold" Margin="0,5,0,0" Foreground="Blue"></Label>
             <Button x:Name="btnCopyA2B"  HorizontalAlignment="Center" Margin="0" Width="38" Height="38" Background="#FFFFFFFF" Click="btnCopyA2B_Click" >
-                <Image Source="/Scripthea;component/Properties/blue_right_arrow.png" ToolTip="Copy all checked from A to B" Cursor="No"></Image>
+                <Image Source="/Scripthea;component/Properties/blue_right_arrow.png" ToolTip="Copy all checked from A to B"></Image>
             </Button>
             <Button x:Name="btnCopyB2A" HorizontalAlignment="Center" Margin="0,5,0,0" Width="38" Height="38" Background="#FFFFFFFF"  Click="btnCopyA2B_Click" Cursor="Hand">
                 <Image Source="/Scripthea;component/Properties/blue_left_arrow.png" ToolTip="Copy all checked from B to A"></Image>

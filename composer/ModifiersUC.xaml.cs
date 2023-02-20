@@ -46,7 +46,8 @@ namespace scripthea.composer
         Options opts;
         public void Init(ref Options _opts)
         {
-            opts = _opts; chkAddEmpty.IsChecked = opts.AddEmptyModif; chkConfirmGoogling.IsChecked = opts.ConfirmGoogling; numSample.Value = opts.ModifSample;
+            opts = _opts; chkAddEmpty.IsChecked = opts.AddEmptyModif; chkConfirmGoogling.IsChecked = opts.ConfirmGoogling; 
+            numSample.Value = Utils.EnsureRange(opts.ModifSample, 1,9);
             modifLists = new List<ModifListUC>();
             var files = new List<string>(Directory.GetFiles(Utils.configPath, "*.mdfr"));
             if (File.Exists(mapFile))
