@@ -10,6 +10,7 @@ namespace scripthea.master
 {
     public interface iFocusControl // attached to all UC with folder needs
     {
+        
         UserControl parrent { get; }
         GroupBox groupFolder { get; }
         TextBox textFolder { get; }        
@@ -18,13 +19,13 @@ namespace scripthea.master
     {
         public FocusControl()
         {
-            iFoci = new List<iFocusControl>(); 
+            iFoci = new Dictionary<string, iFocusControl>(); 
         }
-        private List<iFocusControl> iFoci; 
-        public void Register(iFocusControl iFocus)
+        private Dictionary<string, iFocusControl> iFoci; 
+        public void Register(string name, iFocusControl iFocus)
         {
             if (iFocus == null) throw new Exception("null focusable component");
-            iFoci.Add(iFocus);
+            iFoci.Add(name,iFocus);
             iFocus.parrent.GotFocus += new RoutedEventHandler(GotTheFocus);
         }
         private void Refocus(iFocusControl ifc, bool focus)
@@ -34,11 +35,26 @@ namespace scripthea.master
             ifc.groupFolder.BorderThickness = new Thickness(1.5);
         }
         public iFocusControl ifc; // the one with the focus
+        public string ifcName 
+        {
+            get
+            {
+                string nm = "";
+                foreach (var pair in iFoci)
+                {
+                    if (ifc.Equals(pair.Value)) { nm = pair.Key; break; }
+                }
+                return nm;
+            }
+        }
         private void GotTheFocus(object sender, EventArgs e)
         {
             ifc = sender as iFocusControl;        
-            foreach (iFocusControl foc in iFoci)
+            foreach (var pair in iFoci)
+            {
+                iFocusControl foc = pair.Value;
                 Refocus(foc, foc.Equals(ifc));
+            }               
         }
     }
 }

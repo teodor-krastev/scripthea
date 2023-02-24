@@ -88,12 +88,12 @@ namespace scripthea
             if (opts.SingleAuto) queryUC.btnCompose_Click(null, null);
 
             focusControl = new FocusControl();
-            focusControl.Register(importUtilUC);
-            focusControl.Register(exportUtilUC.iPicker);
-            focusControl.Register(queryUC);
-            focusControl.Register(viewerUC);
-            focusControl.Register(depotMaster.iPickerA);
-            focusControl.Register(depotMaster.iPickerB);
+            focusControl.Register("import",importUtilUC);
+            focusControl.Register("export",exportUtilUC.iPicker);
+            focusControl.Register("query",queryUC);
+            focusControl.Register("viewer",viewerUC);
+            focusControl.Register("idmA",depotMaster.iPickerA);
+            focusControl.Register("idmB",depotMaster.iPickerB);
             string penpicFile = Path.Combine(Utils.configPath, "penpic1.png");
             if (!File.Exists(penpicFile)) throw new Exception(penpicFile +" file is missing");
             penpic = new Bitmap(penpicFile); imgAbout.Source = ImgUtils.BitmapToBitmapImage(penpic, System.Drawing.Imaging.ImageFormat.Png);
@@ -286,7 +286,14 @@ namespace scripthea
             }
             if (tabControl.SelectedItem.Equals(tiUtils))
             {
-                ExplorerPart = 100; dirTreeUC.CatchAFolder(exportUtilUC?.iPicker?.tbImageDepot.Text);
+                ExplorerPart = 100;
+                if (focusControl.ifc != null)
+                {
+                    if (focusControl.ifcName.Equals("import")) 
+                        dirTreeUC.CatchAFolder(importUtilUC?.imageFolder);
+                    if (focusControl.ifcName.Equals("export")) 
+                        dirTreeUC.CatchAFolder(exportUtilUC?.iPicker?.tbImageDepot.Text);
+                }
             }
             oldTab = (TabItem)tabControl.SelectedItem;
             e.Handled = true;
