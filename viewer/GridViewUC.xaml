@@ -43,7 +43,7 @@
                 <Image x:Name="btnPageDown" Width="30" HorizontalAlignment="Left" Source="/Scripthea;component/Properties/right_dbl_arrow.png" Margin="3,0,0,0" Cursor="Hand" MouseDown="btnHome_MouseDown" ToolTip="Page Down"/>
                 <Image x:Name="btnEnd" Width="30" HorizontalAlignment="Left" Source="/Scripthea;component/Properties/end_arrow.png" Margin="3,0,0,0" Cursor="Hand" MouseDown="btnHome_MouseDown" ToolTip="End"/>
             </StackPanel>
-            <Label x:Name="labelNum" Content="" Grid.Column="2" HorizontalAlignment="Center" Margin="0" VerticalAlignment="Center" Foreground="#FFCD4B1B"/>
+            <Label x:Name="labelNum" Content="" Grid.Column="2" HorizontalAlignment="Center" Margin="0" VerticalAlignment="Center" Foreground="#FFCD4B1B" FontSize="14"/>
         </Grid>
     </Grid>
 </UserControl>

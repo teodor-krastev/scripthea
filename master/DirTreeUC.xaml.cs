@@ -38,10 +38,10 @@ namespace scripthea.master
         public static int checkImageDepot(string imageDepot, bool checkDesc = true)
         {
             string idepot = imageDepot.EndsWith("\\") ? imageDepot : imageDepot + "\\";
+            if (!Directory.Exists(idepot)) return -1;
 
             DirectoryInfo di = new DirectoryInfo(idepot);
-            if ((di.Attributes & FileAttributes.System) == FileAttributes.System) return -1; // system dir
-            if (!Directory.Exists(idepot)) return -1;
+            if ((di.Attributes & FileAttributes.System) == FileAttributes.System) return -1; // system dir            
             if (checkDesc)
             {
                 if (!File.Exists(Path.Combine(idepot, descriptionFile)) && checkDesc) return -1; // no desc file
@@ -397,6 +397,7 @@ namespace scripthea.master
         public bool CatchAFolder(string pth)
         {
             bool bb = false;
+            if (pth == null) return bb;
             if (!Directory.Exists(pth)) return bb;
             List<string> fld = new List<string>(pth.Split('\\'));
             ComboBoxItem cbf = null;

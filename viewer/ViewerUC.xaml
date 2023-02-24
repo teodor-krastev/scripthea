@@ -40,7 +40,7 @@
                 <Image x:Name="btnFindUp" Grid.Column="1" Width="25" HorizontalAlignment="Left" Source="/Scripthea;component/Properties/find_up.png" Margin="0,0,0,0" Cursor="Hand" ToolTip="Find Up" MouseDown="btnFindUp_MouseDown" Height="25"/>
                 <Image x:Name="btnFindDown"  Grid.Column="1" Width="25" HorizontalAlignment="Left" Source="/Scripthea;component/Properties/find_down.png" Margin="27,0,0,0" Cursor="Hand" ToolTip="Find Down" MouseDown="btnFindUp_MouseDown" Height="25"/>
             </Grid>
-            <StackPanel Grid.Row="1" Orientation="Horizontal" Height="27" HorizontalAlignment="Right" VerticalAlignment="Top" >
+            <StackPanel Grid.Row="1" Orientation="Horizontal" Height="27" HorizontalAlignment="Right" VerticalAlignment="Top" Panel.ZIndex="20">
                 <Button x:Name="btnPlay" Width="40" Margin="0,0,4,0" Background="White" HorizontalAlignment="Left" VerticalAlignment="Center" Click="btnPlay_Click" IsEnabled="False" ToolTip="Start animation" Cursor="Hand">
                     <ContentControl>
                         <Image Source="/Scripthea;component/Properties/play.png"  Cursor="Hand"></Image>
@@ -51,7 +51,7 @@
                         <Image Source="/Scripthea;component/Properties/stop.png"  Cursor="Hand"></Image>
                     </ContentControl>
                 </Button>
-                <UtilsNS:NumericBox x:Name="numDly" HorizontalAlignment="Left" Height="25" Margin="0,0,8,0" VerticalAlignment="Center" Width="47" Value="5" Minimum="1" Maximum="99" ValueChanged="numDly_ValueChanged" ToolTip="Interval for animation [s]"/>
+                <UtilsNS:NumericBox x:Name="numDly" HorizontalAlignment="Left" Height="25" Margin="0,0,8,0" VerticalAlignment="Center" Width="47" Value="5" Minimum="1" Maximum="99" ValueChanged="numDly_ValueChanged" ToolTip="Delay to next image in animation [s]"/>
                 <Label x:Name="lbDepotInfo" Content="" VerticalAlignment="Top" Margin="0,0,5,0" HorizontalAlignment="Left" ></Label>
             </StackPanel>
             <TabControl x:Name="tabCtrlViews" Grid.Row="1" SelectedIndex="0" BorderBrush="{x:Null}" Panel.ZIndex="10" SelectionChanged="tabCtrlViews_SelectionChanged">

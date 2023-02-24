@@ -33,7 +33,7 @@ namespace scripthea.master
             else ifc.groupFolder.BorderBrush = Utils.ToSolidColorBrush("#FFD5DFE5");
             ifc.groupFolder.BorderThickness = new Thickness(1.5);
         }
-        public iFocusControl ifc; // the one with focus
+        public iFocusControl ifc; // the one with the focus
         private void GotTheFocus(object sender, EventArgs e)
         {
             ifc = sender as iFocusControl;        

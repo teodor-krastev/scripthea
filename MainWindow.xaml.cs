@@ -286,7 +286,7 @@ namespace scripthea
             }
             if (tabControl.SelectedItem.Equals(tiUtils))
             {
-                ExplorerPart = 100; dirTreeUC.CatchAFolder(importUtilUC.imageFolder);
+                ExplorerPart = 100; dirTreeUC.CatchAFolder(exportUtilUC?.iPicker?.tbImageDepot.Text);
             }
             oldTab = (TabItem)tabControl.SelectedItem;
             e.Handled = true;
@@ -326,6 +326,7 @@ namespace scripthea
                 if (sender.Equals(queryUC.tbImageDepot) && tabControl.SelectedItem.Equals(tiComposer)) fld = queryUC.tbImageDepot.Text;
                 if (sender.Equals(viewerUC.tbImageDepot) && tabControl.SelectedItem.Equals(tiViewer)) fld = viewerUC.tbImageDepot.Text;
                 if (sender.Equals(importUtilUC.tbImageDepot) && tabControl.SelectedItem.Equals(tiUtils)) fld = importUtilUC.tbImageDepot.Text;
+                if (sender.Equals(exportUtilUC.iPicker.tbImageDepot) && tabControl.SelectedItem.Equals(tiUtils)) fld = exportUtilUC.iPicker.tbImageDepot.Text; 
                 if (ImgUtils.checkImageDepot(fld) > 0) dirTreeUC.CatchAFolder(fld);
             }
         }
@@ -340,5 +341,14 @@ namespace scripthea
             dirTreeUC.refreshTree(); dirTreeUC.CatchAFolder(sPath);
         }
 
+        private void MainWindow1_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (tabControl.SelectedItem.Equals(tiViewer))
+            {
+                if (viewerUC == null) return;
+                if (e.Key.Equals(Key.F11)) viewerUC.animation = true;
+                if (e.Key.Equals(Key.Escape)) viewerUC.animation = false;
+            }
+        }
     }
 }

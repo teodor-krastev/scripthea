@@ -89,7 +89,8 @@ namespace scripthea.master
 
                 string sourceFolder = iPicker.iDepot.path; string targetFolder = "";
                 CommonOpenFileDialog dialog = new CommonOpenFileDialog();
-                dialog.InitialDirectory = ImgUtils.defaultImageDepot;
+                //dialog.InitialDirectory = ImgUtils.defaultImageDepot;
+                dialog.Title = "Select a folder for the exported image depot";
                 dialog.IsFolderPicker = true;
                 if (dialog.ShowDialog() == CommonFileDialogResult.Ok) targetFolder = dialog.FileName;
                 else return;

@@ -529,8 +529,7 @@ namespace scripthea.viewer
         }
         private void chkAutoRefresh_Checked(object sender, RoutedEventArgs e)
         {
-            if (chkAutoRefresh.IsChecked.Value)
-            { colRefresh.Width = new GridLength(0); btnRefresh.Visibility = Visibility.Collapsed; btnRefresh_Click(sender, e); }
+            if (chkAutoRefresh.IsChecked.Value) { colRefresh.Width = new GridLength(0); btnRefresh.Visibility = Visibility.Collapsed; btnRefresh_Click(sender, e); }
             else { colRefresh.Width = new GridLength(70); btnRefresh.Visibility = Visibility.Visible; }
         }
         private void tabCtrlViews_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -543,10 +542,13 @@ namespace scripthea.viewer
         {
             get { return btnStop.Visibility.Equals(Visibility.Visible); }
             set 
-            { 
-                if (value) { btnStop.Visibility = Visibility.Visible; btnPlay.Visibility = Visibility.Collapsed; }
+            {
+                if (value.Equals(animation)) return;
+                bool vl = value;
+                if (activeView.iDepot == null) vl = false;
+                if (vl) { btnStop.Visibility = Visibility.Visible; btnPlay.Visibility = Visibility.Collapsed; }
                 else { btnStop.Visibility = Visibility.Collapsed; btnPlay.Visibility = Visibility.Visible; }
-                if (value)
+                if (vl)
                 {
                     if (timer == null) timer = new DispatcherTimer(TimeSpan.FromSeconds(numDly.Value), DispatcherPriority.Normal, OnTimerTick, Dispatcher);
                     timer?.Start();
