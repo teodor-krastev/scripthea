@@ -155,7 +155,7 @@ namespace scripthea.composer
             chkAutoSingle.IsChecked = opts.SingleAuto; btnCompose.IsEnabled = !opts.SingleAuto;              
             chkOneLineCue.IsChecked = opts.OneLineCue;           
 
-            cbActiveAPI.Text = opts.API; tbModifPrefix.Text = opts.ModifPrefix; 
+            cbActiveAPI.Text = opts.API; 
             if (Directory.Exists(opts.ImageDepotFolder)) tbImageDepot.Text = opts.ImageDepotFolder;
             else
             {
@@ -173,7 +173,7 @@ namespace scripthea.composer
             opts.SingleAuto = chkAutoSingle.IsChecked.Value; btnCompose.IsEnabled = !opts.SingleAuto;           
             opts.OneLineCue = chkOneLineCue.IsChecked.Value;           
 
-            opts.API = cbActiveAPI.Text; opts.ModifPrefix = tbModifPrefix.Text;
+            opts.API = cbActiveAPI.Text; 
             opts.ImageDepotFolder = tbImageDepot.Text;           
         }
         private void tbImageDepot_TextChanged(object sender, TextChangedEventArgs e)
@@ -363,10 +363,6 @@ namespace scripthea.composer
         {
             UpdateToOptions(sender, e);
             btnCompose_Click(sender, e);
-        }
-        private void tbModifSepar_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            if (!Utils.isNull(opts)) opts.ModifPrefix = tbModifPrefix.Text;
         }
         private void cbActiveAPI_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {

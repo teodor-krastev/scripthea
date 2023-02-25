@@ -67,7 +67,7 @@ namespace scripthea.composer
                     if (ModifMap.ContainsKey(cmu.ModifListName))
                         cmu.isVisible = ModifMap[cmu.ModifListName];
             }
-            ShowMap = true; ShowMap = false;
+            ShowMap = true; ShowMap = false; tbModifPrefix.Text = opts.ModifPrefix;
             SetSingleScanMode(true);
         }
 
@@ -236,6 +236,11 @@ namespace scripthea.composer
         private void numSample_ValueChanged(object sender, RoutedEventArgs e)
         {
             opts.ModifSample = numSample.Value; 
+        }
+
+        private void tbModifPrefix_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (!Utils.isNull(opts)) opts.ModifPrefix = tbModifPrefix.Text;
         }
     }
 }

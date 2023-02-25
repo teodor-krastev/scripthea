@@ -18,7 +18,7 @@
                 <RowDefinition Height="27"/>
                 <RowDefinition Height="1*"/>
                 <RowDefinition Height="1*"/>
-                <RowDefinition Height="150"/>
+                <RowDefinition Height="180"/>
             </Grid.RowDefinitions>
             <Label Content="Modifiers Map" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="DarkGreen"></Label>
             <ListBox x:Name="listBox" Grid.Row="1"  Margin="2,0,2,2" />
@@ -44,7 +44,11 @@
                         <Label x:Name="lbSample" Content="in a prompt  " FontWeight="Bold"></Label>
                         <UtilsNS:NumericBox x:Name="numSample" Width="40" Maximum="9" Minimum="1" ValueChanged="numSample_ValueChanged" FontWeight="Bold"></UtilsNS:NumericBox>
                     </StackPanel>
-                    <CheckBox x:Name="chkAddEmpty" Content="Add empty modifier" Margin="0" ToolTip="Add an empty modfifier to the scan list" Checked="chkAddEmpty_Checked" Unchecked="chkAddEmpty_Checked"></CheckBox>
+                    <CheckBox x:Name="chkAddEmpty" Content="Add an empty modifier" Margin="0,0,0,7" ToolTip="Add an empty modfifier to the scan list" Checked="chkAddEmpty_Checked" Unchecked="chkAddEmpty_Checked"></CheckBox>
+                    <StackPanel Orientation="Horizontal" Margin="-2,0,0,7">
+                        <Label x:Name="lbSeparator" Content="Modif. Separator" FontWeight="Bold"></Label>
+                        <TextBox x:Name="tbModifPrefix" Height="23" Margin="0,3,0,0" TextWrapping="Wrap" Text=";" VerticalAlignment="Top" Width="30" FontWeight="Bold" FontSize="13" TextChanged="tbModifPrefix_TextChanged"/>
+                    </StackPanel>
                     <CheckBox x:Name="chkRemoveDuplicates" Content="Remove duplicates" Margin="0" Checked="chkRemoveDuplicates_Checked" Unchecked="chkRemoveDuplicates_Unchecked" ToolTip="Remove duplicated modifiers"></CheckBox>
                     <CheckBox x:Name="chkConfirmGoogling" Content="Confirm googling" Margin="0" ToolTip="Remove duplicated modifiers" Checked="chkConfirmGoogling_Checked" Unchecked="chkConfirmGoogling_Checked"></CheckBox>
                 </StackPanel>

@@ -129,7 +129,7 @@ namespace scripthea.master
                     List<string> ls = Utils.readList(Path.Combine(Utils.configPath, "export-template.xhml"), false);
                     Dictionary<string, string> opts = Utils.readDict(Path.Combine(Utils.configPath, "export-template.opts"));
                     Dictionary<string, object> rep = new Dictionary<string, object>();
-                    foreach (var pair in opts) rep.Add(pair.Key, Convert.ToInt32(pair.Value));
+                    foreach (var pair in opts) rep.Add(pair.Key, Convert.ToString(pair.Value));
                     List<string> li = new List<string>();
                     foreach (ImageInfo ii in vdf.items)
                         li.Add(ii.To_String() + ",");

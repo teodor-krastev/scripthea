@@ -56,6 +56,7 @@ namespace scripthea
             }
             else opts = new Options();
             opts.debug = Utils.isInVisualStudio || Utils.localConfig;
+            if (!opts.debug) imgPreferences.Visibility = Visibility.Collapsed;
             prefsWnd = new PreferencesWindow();
             Title = "Scripthea - options loaded";
             dirTreeUC.Init();

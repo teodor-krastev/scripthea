@@ -1,6 +1,6 @@
 # Export webpage template options
 showPrompt=0  
 showFilename=0
-imgWidth=300
+imgWidth=100%
 imgPerRow=5
-showWebpage=0
+showWebpage=1
