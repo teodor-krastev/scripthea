@@ -46,10 +46,11 @@ namespace scripthea.composer
             UpdateFromOptions();
             status = Status.Idle;
 
-            Log("@_Header=loading cues files (*.cues)");            
-            cuePoolUC.OnChange += new RoutedEventHandler(ChangeCue);            
+            Log("@_Header=loading cues files (*.cues)");              
             cuePoolUC.OnLog += new Utils.LogHandler(Log);
             cuePoolUC.Init(ref opts);
+            foreach (Courier cr in cuePoolUC.couriers)
+                cr.OnCueSelection += new Courier.CueSelectionHandler(ChangeCue);            
             
             Log("@_Header=loading modifiers files (*.mdfr)");
             modifiersUC.OnChange += new RoutedEventHandler(ChangeModif);
@@ -101,7 +102,8 @@ namespace scripthea.composer
                         tiScan.IsEnabled = false;
                         tiOptions.IsEnabled = false;
                         break;
-                    case Status.Scanning: case Status.Request2Cancel:
+                    case Status.Scanning: 
+                    case Status.Request2Cancel:
                         tiSingle.IsEnabled = false;
                         tiScan.IsEnabled = true;
                         tiOptions.IsEnabled = false;
@@ -134,10 +136,16 @@ namespace scripthea.composer
         /// </summary>
         /// <param name="msg"></param>
         /// <returns></returns>
-        protected void ChangeCue(object sender, RoutedEventArgs e)
+        /*protected void ChangeCue(object sender, RoutedEventArgs e)
         {
             //Log("conditions changed");
             if (opts.SingleAuto && cuePoolUC.radioMode) btnCompose_Click(sender,e);
+        }*/
+
+        protected void ChangeCue(List<string> selCues)
+        {
+            //Log("conditions changed");
+            if (opts.SingleAuto && cuePoolUC.radioMode) Compose(null, selCues, modifiersUC.Composite());
         }
         protected void ChangeModif(object sender, RoutedEventArgs e)
         {
@@ -197,13 +205,12 @@ namespace scripthea.composer
         {
             get { return tbCue.Text + tbModifier.Text; }
         }
-        public string Compose(object sender,  CueItemUC selectedSeed, string modifiers, bool OneLineCue = true)
+        public string Compose(object sender, List<string> selectedCue, string modifiers) // redundant , bool OneLineCue = true
         {
             if (sender == null || sender == btnCompose || sender == tcQuery || sender == cuePoolUC)
             {
                 tbCue.Text = "";
-                List<string> ls = selectedSeed.cueTextAsList(true);
-                foreach (string line in ls)
+                foreach (string line in selectedCue)
                 {
                     if (line.Equals("")) continue;
                     if (line.Length > 1)
@@ -215,6 +222,7 @@ namespace scripthea.composer
                 tbModifier.Text = modifiers;
             return propmt;
         }
+
         public void btnCompose_Click(object sender, RoutedEventArgs e)
         {
             if (Utils.isNull(cuePoolUC) || Utils.isNull(modifiersUC)) return;
@@ -223,7 +231,7 @@ namespace scripthea.composer
             List<CueItemUC> selectedSeed = cuePoolUC?.ActiveCueList?.selectedCues();
             if (Utils.isNull(selectedSeed)) { Log("Err: no cue is selected. (35)"); return; }
             if (selectedSeed.Count.Equals(0)) { /*Log("Err: no cue is selected. (58)");*/ return; }
-            Compose(sender, selectedSeed[0], modifiersUC.Composite());
+            Compose(sender, selectedSeed[0].cueTextAsList(), modifiersUC.Composite());
         }
         private void QueryAPI(string prompt)
         {   
@@ -260,23 +268,23 @@ namespace scripthea.composer
         }
         private List<string> scanPrompts = new List<string>();
         private int scanPromptIdx;
-
         private void GetScanPrompts()
         {        
-            List<CueItemUC> selectedSeeds = cuePoolUC?.ActiveCueList?.selectedCues(); scanPrompts = new List<string>(); 
-            if (Utils.isNull(selectedSeeds)) { Log("Err: no cue is selected (12)"); return; }
-            if (selectedSeeds.Count.Equals(0)) { Log("Err: no cue is selected (96)"); return; }
+            scanPrompts = new List<string>(); 
+            if (cuePoolUC.activeCourier == null) { Log("Err: no cue is selected (err.code:12)"); return; }
+            List<List<string>> lls = cuePoolUC.activeCourier.GetCues();
+            if (lls.Count.Equals(0)) { Log("Err: no cue is selected (err.code:96)"); return; }
             List<string> ScanModifs = CombiModifs(modifiersUC.ModifItemsByType(ModifStatus.Scannable), opts.ModifPrefix, Utils.EnsureRange(opts.ModifSample, 1, 9));
-            foreach (CueItemUC ssd in selectedSeeds)
+            foreach (List<string> ls in lls)
             {
                 if (ScanModifs.Count.Equals(0))
                 {
-                    scanPrompts.Add(Compose(null, ssd, modifiersUC.FixItemsAsString()));                    
+                    scanPrompts.Add(Compose(null, ls, modifiersUC.FixItemsAsString()));                    
                 }
                 else
                     foreach (string sc in ScanModifs)
                     {
-                        scanPrompts.Add(Compose(null, ssd, modifiersUC.FixItemsAsString() + (sc.Equals("") ? "" : opts.ModifPrefix) + sc));                        
+                        scanPrompts.Add(Compose(null, ls, modifiersUC.FixItemsAsString() + (sc.Equals("") ? "" : opts.ModifPrefix) + sc));                        
                     }
             }            
         }
@@ -386,7 +394,6 @@ namespace scripthea.composer
             API.about2Show(propmt);
             API.ShowDialog();
         }
-
         private void btnQuery_Click(object sender, RoutedEventArgs e)
         {
             if (Utils.isNull(API)) { Log("Err: no API is selected. (56)"); return; }
@@ -396,9 +403,8 @@ namespace scripthea.composer
                 Utils.TimedMessageBox("API is busy, try again later...", "Warning"); return;
             }            
             btnCompose_Click(null, null); status = Status.SingeQuery;
-            QueryAPI(Compose(null, cuePoolUC.ActiveCueList?.selectedCues()[0], modifiersUC.Composite()));
+            QueryAPI(Compose(null, cuePoolUC.ActiveCueList?.selectedCues()[0].cueTextAsList(), modifiersUC.Composite()));
         }
-
         private void tbCue_TextChanged(object sender, TextChangedEventArgs e)
         {
             btnQuery.IsEnabled = !tbCue.Text.Trim().Equals("");
@@ -469,7 +475,6 @@ namespace scripthea.composer
             }
             if (header.EndsWith("synonyms") || header.EndsWith("meaning")) Utils.AskTheWeb(header.Replace("\"", string.Empty));
         }
-
         private void btnScanPreview_Click(object sender, RoutedEventArgs e)
         {
             GetScanPrompts();
@@ -480,7 +485,6 @@ namespace scripthea.composer
             scanPreviewUC.LoadPrompts(ls);
             btnScan.IsEnabled = false;
         }
-
         private void btnScanPreviewProcs_Click(object sender, RoutedEventArgs e)
         {
             if (sender.Equals(scanPreviewUC.btnScanChecked))

@@ -55,7 +55,9 @@ namespace scripthea.viewer
             get { return _checkable; }
             set
             { 
-                _checkable = value; VisualUpdate();
+                _checkable = value;
+                if (_checkable) { chkChecked.Visibility = Visibility.Visible; tbCue.Margin = new Thickness(15, 0, 0, 0); }
+                else { chkChecked.Visibility = Visibility.Collapsed; tbCue.Margin = new Thickness(0); }
             }
         }
         public bool? IsChecked

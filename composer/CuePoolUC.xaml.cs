@@ -11,7 +11,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using Newtonsoft.Json;
+using scripthea.master;
 using UtilsNS;
 
 namespace scripthea.composer
@@ -27,7 +29,7 @@ namespace scripthea.composer
         }
         public string cuesFolder { get { return Path.Combine(Utils.basePath, "cues"); } }
         public string mapFile { get { return System.IO.Path.Combine(Utils.basePath, "cues", "cue_pools.map"); } }
-        private int poolCount { get { return tabControl.Items.Count - 2; } }
+        private int poolCount { get { return tabControl.Items.Count - 3; } }
         private List<Dictionary<string, bool>> poolMap;
         public List<string> GetLists(int idx) // full path
         {
@@ -63,6 +65,8 @@ namespace scripthea.composer
         {
             opts = _opts;
             if (!Directory.Exists(cuesFolder)) { Utils.TimedMessageBox("Fatal error: cues folder <" + cuesFolder + "> does not exist.", "Closng application", 4000); Application.Current.Shutdown(); }
+            iPickerX.Init(ref _opts); iPickerX.Configure('X', new List<string>(), "Including the modifiers", "", "Browse", true).Click += new RoutedEventHandler(Browse_Click); 
+
             if (File.Exists(mapFile))
             {
                 string json = System.IO.File.ReadAllText(mapFile);
@@ -87,8 +91,7 @@ namespace scripthea.composer
             // check for new cues
             List<string> files = new List<string>(Directory.GetFiles(cuesFolder, "*.cues"));
             for (int j = 0; j < files.Count; j++) // strip all but the name
-                files[j] = System.IO.Path.GetFileNameWithoutExtension(files[j]);
-
+                files[j] = System.IO.Path.GetFileNameWithoutExtension(files[j]);            
             for (int i = 0; i < poolCount; i++ )
             {
                 foreach (var pair in poolMap[i])
@@ -108,25 +111,31 @@ namespace scripthea.composer
                 poolMap[0].Add(fn, true);
             UpdateVisualsFromPoolMap();
             // go for visuals
-            cueLists = new List<CueListUC>();
+            cueLists = new List<CueListUC>(); couriers = new List<Courier>();
             for (int i = 0; i < poolCount; i++)
             {
                 CueListUC clu = new CueListUC(); cueLists.Add(clu); 
                 clu.OnLog += new Utils.LogHandler(Log);
                 clu.Init(GetLists(i));
-                clu.OnChange += new RoutedEventHandler(Change);                   
+                couriers.Add(new Courier(ref clu));
                 (tabControl.Items[i] as TabItem).Content = clu;
             }
             if (cueLists.Count > 0)
                 if (cueLists[0].allCues.Count > 0)
                     cueLists[0].allCues[0].radioChecked = true;
+            // ImageDepot
+            couriers.Add(new Courier(ref iPickerX)); 
             // editor
             cueEditor.Init(ref opts);
         }
-        public event RoutedEventHandler OnChange;
-        protected void Change(object sender, RoutedEventArgs e)
+        protected void Browse_Click(object sender, RoutedEventArgs e)
         {
-            if (OnChange != null) OnChange(this, e);
+            CommonOpenFileDialog dialog = new CommonOpenFileDialog();
+            //dialog.InitialDirectory = ImgUtils.defaultImageDepot;
+            dialog.Title = "Select an image depot folder ";
+            dialog.IsFolderPicker = true;
+            if (dialog.ShowDialog() == CommonFileDialogResult.Ok) iPickerX.tbImageDepot.Text = dialog.FileName;
+            else return;
         }
         public event Utils.LogHandler OnLog;
         protected void Log(string txt, SolidColorBrush clr = null)
@@ -229,6 +238,71 @@ namespace scripthea.composer
             lastTabIdx = idx; if (Utils.InRange(idx, 0, poolCount-1)) lastPoolIdx = idx;
             if (tabControl.SelectedItem.Equals(tiEditor)) cueEditor.selected = 0;
             if (!Utils.isNull(e)) e.Handled = true;
+        }
+
+        public List<Courier> couriers;
+        public Courier activeCourier
+        { 
+            get 
+            {
+                if (couriers.Count != (poolCount + 1)) return null;
+                if (tabControl.SelectedIndex <= poolCount) return couriers[tabControl.SelectedIndex];
+                if (tabControl.SelectedIndex == (poolCount + 1)) return couriers[couriers.Count - 1];
+                return null;
+            } 
+        }
+    }
+
+    public class Courier // both ways messanger between (the active pool or image depot) and queryUC
+    {
+        public bool cueSrc { get; private set; }
+        private CueListUC cueList = null; ImagePickerUC iPicker = null;
+        
+        public Courier(ref CueListUC _cueList)
+        {
+            cueList = _cueList; cueSrc = true;
+            cueList.OnChange += new RoutedEventHandler(Change);
+        }
+        public Courier(ref ImagePickerUC _iPicker)
+        {
+            iPicker = _iPicker; cueSrc = false;
+            iPicker.OnPicSelect += new RoutedEventHandler(Change);
+        }
+        public delegate void CueSelectionHandler(List<string> cueSelection);
+        public event CueSelectionHandler OnCueSelection;        
+        protected void Change(object sender, RoutedEventArgs e) // only for radioMode
+        {           
+            List<string> cueSel = new List<string>();
+            if (cueSrc)
+            { 
+                if (!cueList.radioMode) return;
+                cueSel.AddRange(cueList.selectedCues()[0].cueTextAsList());
+            }
+            else
+            {
+                //if (!iPicker.checkable) return;
+                cueSel.Add(Convert.ToString(sender));
+            }
+            if (OnCueSelection != null) OnCueSelection(cueSel);
+        }
+        public List<List<string>> GetCues()
+        {
+            List<List<string>> lls = new List<List<string>>();
+            if (cueSrc)
+            {
+                if (cueList.radioMode) return lls;
+                foreach (CueItemUC ci in cueList.selectedCues())
+                    lls.Add(new List<string>(ci.cueTextAsList()));
+            }
+            else
+            {
+                //if (iPicker.checkable) return lls;
+                foreach(Tuple<int, string, string> tpl in iPicker.ListOfTuples(true, false))
+                {
+                    string[] pa = { tpl.Item3 }; lls.Add(new List<string>(pa));
+                }
+            }
+            return lls;
         }
     }
 }

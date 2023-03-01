@@ -39,20 +39,22 @@ def wait4server():
             timeOut -= 1
     return (timeOut > 0)
 
+def send(message):
+    os.write(pipe2s, (message+'\n').encode())
+
 def OneShot():
     try:
-        message = '@next.prompt\n'
-        os.write(pipe2s, message.encode())
+        #message =
+        send('@next.prompt')
         #dprint('out: '+message)
         inData = os.read(pipe2c, 4096).decode().strip()
         #dprint('in: '+inData)
         if inData == "@close.session":
+            send('exit')
             return inData
 
-        time.sleep(5) # processing
-
-        message = '@image.ready\n'
-        os.write(pipe2s, message.encode())
+        time.sleep(3) # processing
+        send('@image.ready')
         time.sleep(1)
     except:
         return '@close.session'

@@ -34,14 +34,20 @@ namespace scripthea.master
             views = new List<iPicList>(); views.Add(listView); views.Add(gridView); 
         }
         private Options opts;
+        private bool _checkable;
+        public bool checkable 
+        { 
+            get { return _checkable; }
+            set { _checkable = value; listView.SetChecked(value); } 
+        }
         private bool IsReadOnly; 
         public char letter { get; private set; }
-        public void Init(ref Options _opts)
+        public void Init(ref Options _opts, bool __checkable = true)
         {
-            opts = _opts;
-            listView.Init(ref _opts, true); 
+            opts = _opts; _checkable = __checkable;
+            listView.Init(ref _opts, checkable); 
             listView.SelectEvent += new TableViewUC.PicViewerHandler(loadPic); listView.OnChangeContent += new RoutedEventHandler(ChangeContent);
-            gridView.Init(ref _opts, true); 
+            gridView.Init(ref _opts, checkable); 
             gridView.SelectEvent += new GridViewUC.PicViewerHandler(loadPic); gridView.OnChangeContent += new RoutedEventHandler(ChangeContent);
         }
         public Button Configure(char _letter, List<string> cbItems, string checkBox1, string checkBox2, string buttonExecute, bool _IsReadOnly) // configure the extras
@@ -179,6 +185,7 @@ namespace scripthea.master
         protected void ChangeContent(object sender, RoutedEventArgs e)
         {
             GetChecked();
+
         }
         public event Utils.LogHandler OnLog;
         protected void Log(string txt, SolidColorBrush clr = null)
@@ -261,11 +268,13 @@ namespace scripthea.master
         {
             GetChecked();
         }
+        public event RoutedEventHandler OnPicSelect;
         string lastLoadedPic = "";
         public void loadPic(int idx, string filePath, string prompt)
         {
             if (File.Exists(filePath)) { image.Source = ImgUtils.UnhookedImageLoad(filePath, ImageFormat.Png); lastLoadedPic = filePath; }
             else { image.Source = ImgUtils.file_not_found; lastLoadedPic = ""; }
+            if (OnPicSelect != null) OnPicSelect(prompt, null);
             GetChecked();
         }
         TabItem lastTab = null;

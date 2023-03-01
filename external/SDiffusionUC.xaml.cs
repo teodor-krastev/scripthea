@@ -42,7 +42,7 @@ namespace scripthea.external
         
         public void Init(string prompt) // init and update visuals from opts
         {
-            lbStatus.Content = "COMM: closed"; server2s = null; server2c = null;
+            lbStatus.Content = "COMM: closed"; server2s = null; server2c = null; GC.Collect();
             if (SDopts == null)
             {
                 SDopts = new SDoptionsWindow(); 
@@ -178,23 +178,19 @@ namespace scripthea.external
         }
         private void RestartServer()
         {
-            if (!Utils.isNull(server2s)) //&& false
-                if (server2s.IsConnected)
-                    { server2s.reader.Dispose(); server2s.Close(); } //
-            if (!Utils.isNull(server2c))
-                if (server2c.IsConnected) 
-                    { server2c.writer.Dispose(); server2c.Close(); }
-            Utils.Sleep(100);
-
-            Init("");
+            server2c.CloseSession(); Utils.Sleep(500);
+            server2s.reader.Close(); server2s.reader = null; GC.Collect();
+            server2s.Dispose(); 
+            server2c.Dispose(); inLog("Scripthea server restarting...", Brushes.Red);
+            Utils.Sleep(500);
+            Init("");            
+            
         }
         private void btnReset_Click(object sender, RoutedEventArgs e)
         {
             Log("@CancelRequest");
             inLog("closing session in client", Brushes.IndianRed);
-            if (!Utils.isNull(server2c))
-                if (server2c.IsConnected) server2c.CloseSession();
-            inLog("to start another session restart Scripthea application", Brushes.Red);
+            RestartServer();
         }
         private void lb1_MouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -333,8 +329,8 @@ namespace scripthea.external
                 case "@image.failed":
                     status = Status.imageFailed;
                     break;
-                case "@close.session":
-                    status = Status.waiting;
+                case "exit":
+                    status = Status.closed;
                     break;
             }
         }
@@ -355,9 +351,8 @@ namespace scripthea.external
                 }
                 Receive(message);
                 TextReceived?.Invoke(this, message);
-                if (message.Trim() == "@close.session")
-                {
-                    log("session closed by client");
+                if (message.Trim() == "exit")
+                {                    
                     status = Status.closed;
                     break;
                 }
@@ -392,7 +387,7 @@ namespace scripthea.external
             Send("@close.session");
         }
     }
-    public class SDServer
+    public class SDServer : IDisposable
     {
         public enum Status
         {
@@ -409,14 +404,22 @@ namespace scripthea.external
         protected NamedPipeServerStream pipeServer;
         public Task task;
         protected CancellationTokenSource cts;
-        protected CancellationToken token;
+        
         public SDServer(string _pipeName, PipeDirection direction)
         {
             pipeName = _pipeName;
             pipeServer = new NamedPipeServerStream(pipeName, direction, 1);
-            cts = new CancellationTokenSource(); token = cts.Token;
-            task = Task.Run(() => PipeServer(), token);
+            cts = new CancellationTokenSource(); 
+            task = Task.Run(() => PipeServer(), cts.Token);
         }
+        public void Dispose()
+        {
+            cts.Cancel();
+            pipeServer.Close(); pipeServer.Dispose(); GC.Collect();
+            try { task.Wait(); }
+            catch (AggregateException ex) { Utils.TimedMessageBox(ex.Message); }
+        }
+
         public event Utils.LogHandler OnLog;
         protected void log(string txt, SolidColorBrush clr = null)
         {

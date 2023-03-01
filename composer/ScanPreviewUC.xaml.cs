@@ -47,7 +47,7 @@ namespace scripthea.composer
             dTable.Columns.Add(new DataColumn("Prompt", typeof(string)));
             for (int i = 0; i < prompts.Count; i++)
                 dTable.Rows.Add(i + 1, true, prompts[i]);
-            dGrid.ItemsSource = dTable.DefaultView; lbCheckCount.Content = "Checked: " + prompts.Count.ToString();
+            dGrid.ItemsSource = dTable.DefaultView; 
             if (!this.IsVisible) return;
             Utils.DoEvents(); 
             for (int i = 0; i < prompts.Count; i++)
@@ -59,7 +59,7 @@ namespace scripthea.composer
                 chk.Checked += new RoutedEventHandler(chkTable_Checked); chk.Unchecked += new RoutedEventHandler(chkTable_Checked);
                 checks.Add(chk);
             }                            
-            if (dTable.Rows.Count > 0) dGrid.SelectedIndex = 0;
+            if (dTable.Rows.Count > 0) dGrid.SelectedIndex = 0; chkTable_Checked(null, null);
         }
         private bool _scanning = false;
         public bool scanning
@@ -87,7 +87,7 @@ namespace scripthea.composer
         }
         private void chkTable_Checked(object sender, RoutedEventArgs e)
         {
-            lbCheckCount.Content = "Checked: " + checkedPrompts().Count.ToString();
+            lbCheckCount.Content = checkedPrompts().Count.ToString() + " out of " + dTable.Rows.Count.ToString();
         }        
         private void dGrid_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
         {

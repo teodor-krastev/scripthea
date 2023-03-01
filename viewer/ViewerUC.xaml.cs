@@ -369,7 +369,6 @@ namespace scripthea.viewer
             return lst;
         }
     }
-
     interface iPicList
     {
         void Init(ref Options _opts, bool _checkable);
@@ -386,7 +385,6 @@ namespace scripthea.viewer
         int selectedIndex { get; set; } // one based index in no-checkable mode
         int Count { get; }
         List<Tuple<int, string, string>> GetItems(bool check, bool uncheck); // idx, filename, prompt
-
     }
     /// <summary>
     /// Interaction logic for ViewerUC.xaml

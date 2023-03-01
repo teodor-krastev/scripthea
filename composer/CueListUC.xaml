@@ -9,7 +9,6 @@
     <Grid>
         <Grid>
             <TabControl x:Name="tcLists" Margin="0" SelectionChanged="tabControl_SelectionChanged" BorderBrush="{x:Null}" FontStyle="Italic">
-
             </TabControl>
         </Grid>
         <Image x:Name="imgRandom" HorizontalAlignment="Right" Margin="0,0,5,0" VerticalAlignment="Top" Width="30" Source="/Scripthea;component/Properties/random.png" ToolTip="Random select" Cursor="Hand" MouseDown="imgRandom_MouseDown"/>

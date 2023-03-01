@@ -45,10 +45,13 @@ def wait4server():
             dprint('comm attempts left: '+str(timeOut))
             timeOut -= 1
     return (timeOut > 0)
+
+def send(message):
+    return os.write(pipe2s, (message+'\n').encode())
+
 def OneShot():
     try:
-        message = '@next.prompt\n'
-        os.write(pipe2s, message.encode())
+        send('@next.prompt')
         #dprint('out: '+message)
         inData = os.read(pipe2c, 4096).decode().strip()
         #dprint('in: '+inData)
@@ -154,6 +157,7 @@ class Script(scripts.Script):
             inData = OneShot()
             dprint('+>'+inData)
             if (inData.lower().strip() == '@close.session'):
+                send('exit')
                 break
             jsn = json.loads(inData)
             prom = jsn["prompt"]
@@ -181,11 +185,10 @@ class Script(scripts.Script):
                 if (jsn["filename"] != ""):
                     simages.save_image(proc.images[0], jsn["folder"],"",prompt = prom,info = proc.infotexts[0], p=p,  forced_filename = jsn["filename"])
                 time.sleep(1)
-                message = '@image.ready\n'
+                send('@image.ready')
             else:
-                message = '@image.failed\n'
+                send('@image.failed')
 
-            os.write(pipe2s, message.encode())
             time.sleep(2)
 
         # close the connection

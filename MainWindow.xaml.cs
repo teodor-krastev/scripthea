@@ -95,6 +95,7 @@ namespace scripthea
             focusControl.Register("viewer",viewerUC);
             focusControl.Register("idmA",depotMaster.iPickerA);
             focusControl.Register("idmB",depotMaster.iPickerB);
+            //focusControl.Register("idfX", queryUC.cuePoolUC.iPickerX);
             string penpicFile = Path.Combine(Utils.configPath, "penpic1.png");
             if (!File.Exists(penpicFile)) throw new Exception(penpicFile +" file is missing");
             penpic = new Bitmap(penpicFile); imgAbout.Source = ImgUtils.BitmapToBitmapImage(penpic, System.Drawing.Imaging.ImageFormat.Png);

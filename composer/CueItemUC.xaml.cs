@@ -73,7 +73,6 @@ namespace scripthea.composer
             get { return checkBox.IsChecked.Value; }
             set { checkBox.IsChecked = value; }
         }
-
         public string cueText
         {
             get { return tbCue.Text; }
