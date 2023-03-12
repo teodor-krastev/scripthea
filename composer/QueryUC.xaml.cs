@@ -402,8 +402,8 @@ namespace scripthea.composer
             {
                 Utils.TimedMessageBox("API is busy, try again later...", "Warning"); return;
             }            
-            btnCompose_Click(null, null); status = Status.SingeQuery;
-            QueryAPI(Compose(null, cuePoolUC.ActiveCueList?.selectedCues()[0].cueTextAsList(), modifiersUC.Composite()));
+            if (opts.SingleAuto) btnCompose_Click(null, null); status = Status.SingeQuery;
+            QueryAPI(Compose(sender, cuePoolUC.ActiveCueList?.selectedCues()[0].cueTextAsList(), modifiersUC.Composite()));
         }
         private void tbCue_TextChanged(object sender, TextChangedEventArgs e)
         {

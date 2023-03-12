@@ -68,7 +68,25 @@ namespace scripthea.external
             if (OnLog != null) OnLog(txt, clr);
             else Utils.TimedMessageBox(txt, "Warning", 3500);
         }
-
+        private bool _nVidiaAvailable;
+        public bool nVidiaAvailable
+        {
+            get { return _nVidiaAvailable; }
+            set
+            {
+                if (value) // same controls different labels
+                {
+                    groupGPUtmpr.Header = "      nVidia GPU temperature feedack"; lbGPUvalue.Content = "Threshold ";
+                    lbGPUvalueDepth.Visibility = Visibility.Visible; numGPUstackDepth.Visibility = Visibility.Visible;
+                }
+                else 
+                {
+                    groupGPUtmpr.Header = "      non-nVidia GPU temperature control"; lbGPUvalue.Content = "Delay ";
+                    lbGPUvalueDepth.Visibility = Visibility.Collapsed; numGPUstackDepth.Visibility = Visibility.Collapsed; 
+                }
+                _nVidiaAvailable = value;
+            }
+        }
         public string configFilename = Path.Combine(Utils.configPath, "StableDiffusion.cfg");  
         /// <summary>
         /// the point of the dialog, readable everywhere
@@ -94,7 +112,7 @@ namespace scripthea.external
             chkCommLog.IsChecked = opts.showCommLog;
             chkGPUtemp.IsChecked = opts.showGPUtemp;
             chkGPUtemperature.IsChecked = opts.GPUtemperature;
-            numGPUThreshold.Value = opts.GPUThreshold;
+            numGPUThreshold.Value = opts.GPUThreshold; 
             numGPUstackDepth.Value = opts.GPUstackDepth;
 
             if (Directory.Exists(opts.SDlocation)) tbSDlocation.Text = opts.SDlocation;

@@ -49,7 +49,6 @@ namespace scripthea.composer
         {
             if (OnLog != null) OnLog(txt, clr);
         }
-
         private int _selected; 
         public int selected
         {
@@ -97,13 +96,14 @@ namespace scripthea.composer
             spCues.Children.Add(cue); cues.Add(cue);
             return cues.Count - 1; 
         }
-        private int AddCue(List<string> cue) // internal
+        private int AddCue(List<string> cue) // multiline cue / internal
         {
             if (cue == null) { AddCue(new CueItemUC("",radioMode)); return cues.Count - 1; }
             return AddCue(new CueItemUC(cue, radioMode));
         }
-        private int AddCue(string cue) // internal
-        {            
+        private int AddCue(string cue) // one-line cue / internal 
+        {
+            if (cue.Trim().Equals("")) return -1;
             return AddCue(new CueItemUC(cue, radioMode));
         }
         private void RemoveAt(int idx)
@@ -119,7 +119,6 @@ namespace scripthea.composer
                 RemoveAt(st);
             if (cues.Count > 0) cues[0].cueText = ""; 
         }
-
         private void cbCommand_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (cues == null) return;
@@ -130,11 +129,21 @@ namespace scripthea.composer
         }
         private void AppendFile()
         {
+            CommonOpenFileDialog dialog = new CommonOpenFileDialog(); dialog.Multiselect = false;
+            if (cbOption.SelectedIndex == 3) // text file
+            {
+                dialog.DefaultExtension = ".txt";
+                dialog.Filters.Add(new CommonFileDialogFilter("Text file", "txt"));
+                if (dialog.ShowDialog() != CommonFileDialogResult.Ok) return;
+                List<string> ls = Utils.readList(dialog.FileName);
+                foreach (string cue in ls)
+                    AddCue(cue);
+                if (selected == -1) selected = 0; TextChanged(null, null);
+                return;
+            }
             bool inputKind = cbOption.SelectedIndex == 0;
-            CommonOpenFileDialog dialog = new CommonOpenFileDialog();
             if (inputKind) dialog.InitialDirectory = Path.Combine(Utils.basePath, "cues");
-            else dialog.InitialDirectory = ImgUtils.defaultImageDepot;
-            dialog.Multiselect = false;
+            else dialog.InitialDirectory = ImgUtils.defaultImageDepot;            
             if (inputKind) // .cues
             { 
                 dialog.DefaultExtension = ".cues";
@@ -228,7 +237,6 @@ namespace scripthea.composer
                 else Log("err: index out of range");
             }
         }
-
         private void btnDoIt_Click(object sender, RoutedEventArgs e)
         {
             switch (mode)
@@ -245,6 +253,5 @@ namespace scripthea.composer
                     break;
             }
         }
-
     }
 }

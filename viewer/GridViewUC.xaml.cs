@@ -49,6 +49,15 @@ namespace scripthea.viewer
         }
         public string loadedDepot { get; set; }
 
+        protected ImageInfo SelectedItem (int idx)
+        {
+            ImageInfo ii = null;
+            if (iDepot != null)
+                if (iDepot.isEnabled && Utils.InRange(idx, 0, iDepot.items.Count - 1))
+                    ii = iDepot.items[idx];
+            return ii;
+        }
+
         public void UpdateVis()
         {
             try
@@ -88,7 +97,6 @@ namespace scripthea.viewer
             foreach (Tuple<int, string, string> chk in chks)
                 picItems[chk.Item1 - 1].IsChecked = true;
         }
-
         public void SetChecked(bool? check)
         {
             if (!checkable) return;

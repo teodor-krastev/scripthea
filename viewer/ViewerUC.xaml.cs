@@ -506,7 +506,7 @@ namespace scripthea.viewer
             if (!Utils.isNull(decompImageDepot))
             {
                 showing = false;
-                activeView.FeedList(imageFolder);
+                activeView.FeedList(ref df); picViewerUC.iDepot = df;
                 showing = true;
             }
             animation = false; btnPlay.IsEnabled = decompImageDepot.Count > 0; 

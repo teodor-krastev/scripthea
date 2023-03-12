@@ -32,9 +32,8 @@ namespace OpenHWMonitor
         NvPhysicalGpuHandle[] handles;
         public bool IsAvailable() 
         {            
-            return NVAPI.IsAvailable && status.Equals(NvStatus.OK); 
+            return (NVAPI.IsAvailable && status.Equals(NvStatus.OK)); 
         }
-
         private NvGPUThermalSettings GetThermalSettings()
         {
             NvGPUThermalSettings settings = new NvGPUThermalSettings();

@@ -31,6 +31,7 @@
                 <ComboBoxItem Content="Cue file"/>
                 <ComboBoxItem Content="Image Depot no mdfr"/>
                 <ComboBoxItem Content="Image Depot incl mdfr"/>
+                <ComboBoxItem Content="Text file"/>
             </ComboBox>
             <Button x:Name="btnDoIt" Content="Do it !" Background="#FFFFF2E5" Width="60" Margin="15,0,0,0" FontSize="14" Click="btnDoIt_Click"/>
         </StackPanel>

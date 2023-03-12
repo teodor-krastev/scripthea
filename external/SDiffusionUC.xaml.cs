@@ -37,19 +37,37 @@ namespace scripthea.external
             opts = new Dictionary<string, string>();
             nVidia = new NVidia();
         }
-        SDoptionsWindow SDopts;  private bool localDebug = true;
+        SDoptionsWindow SDopts; private bool localDebug = true;
         public Dictionary<string, string> opts { get; set; } // main (non this API specific) options 
-        
+        private bool _nVidiaAvailable;
+        private bool nVidiaAvailable 
+        { 
+            get { return _nVidiaAvailable; }
+            set 
+            {
+                if (SDopts == null) return;
+                if (value) 
+                { 
+                    if (SDopts.opts.showGPUtemp) gridTmpr.Visibility = Visibility.Visible; 
+                    else gridTmpr.Visibility = Visibility.Collapsed;
+                    gridTmprDly.Visibility = Visibility.Collapsed; 
+                }
+                else
+                { 
+                    gridTmpr.Visibility = Visibility.Collapsed;
+                    if (SDopts.opts.showGPUtemp) gridTmprDly.Visibility = Visibility.Visible;
+                    else gridTmprDly.Visibility = Visibility.Collapsed;
+                }
+                _nVidiaAvailable = value;
+            }  
+        }
         public void Init(string prompt) // init and update visuals from opts
         {
             lbStatus.Content = "COMM: closed"; server2s = null; server2c = null; GC.Collect();
             if (SDopts == null)
             {
-                SDopts = new SDoptionsWindow(); 
-                bool nVidiaAvailable = nVidia.IsAvailable();
-                SDopts.groupGPUtmpr.IsEnabled = nVidiaAvailable;
-                gridTmpr.IsEnabled = nVidiaAvailable;
-                if (!nVidia.IsAvailable()) SDopts.opts.showGPUtemp = false;
+                SDopts = new SDoptionsWindow();   
+                nVidiaAvailable = nVidia.IsAvailable(); SDopts.nVidiaAvailable = nVidiaAvailable;
                 opts2Visual(SDopts.opts);
             }
             // (re)create servers          
@@ -65,10 +83,15 @@ namespace scripthea.external
         {
             if (opts.showCommLog) gridSDlog.Visibility = Visibility.Visible;
             else gridSDlog.Visibility = Visibility.Collapsed;
-            if (opts.showGPUtemp) gridTmpr.Visibility = Visibility.Visible;
-            else gridTmpr.Visibility = Visibility.Collapsed;
-            chkTmpr.IsChecked = opts.GPUtemperature;
-            numGPUThreshold.Value = opts.GPUThreshold;
+            if (nVidiaAvailable)
+            {
+                chkTmpr.IsChecked = opts.GPUtemperature; numGPUThreshold.Value = opts.GPUThreshold;
+            }
+            else
+            {
+                chkTmprDly.IsChecked = opts.GPUtemperature; dTimer?.Stop(); 
+                numDly.Value = opts.GPUThreshold;
+            }                        
         }
         public void Finish()
         {
@@ -98,12 +121,23 @@ namespace scripthea.external
                 return server2s.status.Equals(SDServer.Status.imageReady);                
             } 
         }
+        int timeLeft = 0;
         public bool GenerateImage(string prompt, string imageDepotFolder, out string filename) // returns the filename of saved/copied in ImageDepoFolder image 
         {
-            if (SDopts.opts.GPUtemperature && dTimer.IsEnabled)
+            if (SDopts.opts.GPUtemperature)
             {
-                while ((currentTmp > SDopts.opts.GPUThreshold) || (currentTmp == -1)) { Thread.Sleep(500); }
+                if (!dTimer.IsEnabled) dTimer.Start();
+                if (nVidiaAvailable)
+                {
+                    while (((currentTmp > SDopts.opts.GPUThreshold) || (currentTmp == -1)) && SDopts.opts.GPUtemperature) { Thread.Sleep(500); }
+                }
+                else
+                {
+                    timeLeft = SDopts.opts.GPUThreshold;
+                    while ((timeLeft > 0) && SDopts.opts.GPUtemperature) { Thread.Sleep(500); }
+                }
             }
+            else { timeLeft = 0; dTimer.Stop(); }
             filename = Utils.timeName(); // target image 
             if (Utils.isNull(server2s) || Utils.isNull(server2c)) { inLog("Err: communication issue"); return false; }
             string folder = imageDepotFolder.EndsWith("\\") ? imageDepotFolder : imageDepotFolder + "\\";  opts["folder"] = folder; 
@@ -131,10 +165,7 @@ namespace scripthea.external
             if (!File.Exists(fullFN)) { inLog("Err: image file <" + fullFN + "> not found"); return false; }
             
             return bir;
-        }
-        private void iTimer_Tick(object sender, EventArgs e)
-        {
-        }
+        }        
         private void StatusChange(SDServer.Status previous, SDServer.Status current)
         {
             try
@@ -203,23 +234,33 @@ namespace scripthea.external
         DispatcherTimer dTimer;
         private void chkTemp_Checked(object sender, RoutedEventArgs e)
         {
-            if (chkTmpr.IsChecked.Value)
+            if ((sender as CheckBox).IsChecked.Value)
             {
                 if (Utils.isNull(dTimer))
                 {
                     dTimer = new DispatcherTimer();
                     dTimer.Tick += new EventHandler(dTimer_Tick);
-                    dTimer.Interval = new TimeSpan(2000 * 10000); // 2 [sec]
+                    dTimer.Interval = new TimeSpan(1000 * 10000); // 1 [sec]
                     tmpStack = new List<int>();
                 }
+                if (SDopts.opts.GPUtemperature) timeLeft = SDopts.opts.GPUThreshold;
+                else timeLeft = 0;
                 dTimer.Start();
             }
-            else { dTimer.Stop(); chkTmpr.Foreground = Brushes.Black; }
-            SDopts.opts.GPUtemperature = chkTmpr.IsChecked.Value;
+            else 
+            { 
+                dTimer.Stop(); timeLeft = 0; lbTimeLeft.Content = "";
+                chkTmpr.Foreground = Brushes.Black; 
+            }
         }
         private void dTimer_Tick(object sender, EventArgs e)
         {
-            if (!nVidia.IsAvailable()) return;
+            if (!nVidiaAvailable)
+            {
+                lbTimeLeft.Content = "Time left: " + timeLeft.ToString()+ "[s]"; 
+                if (timeLeft > 0 ) timeLeft--;
+                return;
+            }
             int? primeTmp = nVidia.GetGPUtemperature();
             if (Utils.isNull(primeTmp)) return;
             currentTmp = (int)primeTmp;
@@ -237,7 +278,7 @@ namespace scripthea.external
         private void numGPUThreshold_ValueChanged(object sender, RoutedEventArgs e)
         {
             if (SDopts != null)
-                SDopts.opts.GPUThreshold = numGPUThreshold.Value;
+                SDopts.opts.GPUThreshold = (sender as NumericBox).Value;
         }
         private void ibtnOpts_MouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -345,7 +386,7 @@ namespace scripthea.external
                 string message = reader.ReadLine();
                 if (message == null)
                 {
-                    log("session cut-off by client");
+                    log("session close by client(SD)");
                     status = Status.closed;
                     break;
                 }

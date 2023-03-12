@@ -63,7 +63,6 @@
                                 </Button>
                             </Grid>
                         </GroupBox>
-                        <Label x:Name="lbModifPrefix" Content="Modif.prefix" Width="80" Margin="0,7,29.772,0" HorizontalAlignment="Right" VerticalAlignment="Top"/>
                         <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
                             <Label x:Name="lbAPI" Content="API" Width="32" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                             <ComboBox x:Name="cbActiveAPI" HorizontalAlignment="Left" VerticalAlignment="Top" SelectedIndex="0" Width="90" FontSize="12" Background="White" Margin="3,3,0,0" SelectionChanged="cbActiveAPI_SelectionChanged" FontWeight="Bold">

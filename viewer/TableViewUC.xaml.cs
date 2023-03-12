@@ -194,6 +194,15 @@ namespace scripthea.viewer
                     break;                
             }
         }
+        protected ImageInfo SelectedItem(int idx)
+        {
+            ImageInfo ii = null;
+            if (iDepot != null)
+                if (iDepot.isEnabled && Utils.InRange(idx, 0, iDepot.items.Count-1))
+                    ii = iDepot.items[idx];
+            return ii;
+        }
+
         int lastSelectedRow = -1;
         private void dGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -205,6 +214,10 @@ namespace scripthea.viewer
                 dGrid.ScrollIntoView(dGrid.SelectedItem, null);
             });
             int iRow = Convert.ToInt32(dataRow.Row.ItemArray[0]) - 1;
+            ImageInfo ii = null;
+            if (iDepot != null)
+                if (iDepot.isEnabled && iDepot.items.Count > iRow)
+                    ii = iDepot.items[iRow];
             if (checkable) OnSelect(iRow + 1, Path.Combine(imageFolder, Convert.ToString(dTable.Rows[iRow].ItemArray[3])), Convert.ToString(dTable.Rows[iRow].ItemArray[2]));
             else OnSelect(iRow + 1, Path.Combine(imageFolder, Convert.ToString(dTable.Rows[iRow].ItemArray[2])), Convert.ToString(dTable.Rows[iRow].ItemArray[1]));
             if (!Utils.isNull(e)) e.Handled = true;

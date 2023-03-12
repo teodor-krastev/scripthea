@@ -43,9 +43,9 @@
                         <Grid>
                             <CheckBox x:Name="chkGPUtemperature" Margin="5,-14,0,0"></CheckBox>
                             <StackPanel Margin="2,5,2,2" Orientation="Horizontal">
-                                <Label Content="Threshold "></Label>
+                                <Label x:Name="lbGPUvalue" Content="Threshold "></Label>
                                 <UtilsNS:NumericBox x:Name="numGPUThreshold" HorizontalAlignment="Left" Height="25" Margin="0" VerticalAlignment="Top" Width="59" FontSize="13" Maximum="100" Minimum="2" Value="60"/>
-                                <Label Content="Aver/Max stack depth " Margin="6,0,0,0"></Label>
+                                <Label x:Name="lbGPUvalueDepth" Content="Aver/Max stack depth " Margin="6,0,0,0"></Label>
                                 <UtilsNS:NumericBox x:Name="numGPUstackDepth" HorizontalAlignment="Left" Height="25" Margin="0" VerticalAlignment="Top" Width="59" FontSize="13" Maximum="100" Minimum="2" Value="10"/>
                             </StackPanel>
                         </Grid>

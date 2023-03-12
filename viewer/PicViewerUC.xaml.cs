@@ -27,14 +27,14 @@ namespace scripthea.viewer
     {
         public PicViewerUC()
         {
-            InitializeComponent();
+            InitializeComponent(); iDepot = null;
         }
         public event Utils.LogHandler OnLog;
         protected void Log(string txt, SolidColorBrush clr = null)
         {
             if (OnLog != null) OnLog(txt, clr);
         }
-
+        public DepotFolder iDepot { get; set; }
         private string _imagePath;
         public string imagePath { get { return _imagePath; }  private set { _imagePath = value; } }
         public void Clear()
@@ -46,7 +46,8 @@ namespace scripthea.viewer
         public void loadPic(int idx, string filePath, string prompt)
         {
             if (File.Exists(filePath)) imagePath = filePath;
-            if (chkExtra.IsChecked.Value) UpdateMeta();
+            bool modified = false;
+            if (chkExtra.IsChecked.Value) UpdateMeta(modified);
             
             lbIndex.Content = "[" + idx.ToString() + "]";
             tbPath.Text = System.IO.Path.GetDirectoryName(filePath)+"\\";
@@ -61,26 +62,19 @@ namespace scripthea.viewer
             if (File.Exists(filePath)) image.Source = ImgUtils.UnhookedImageLoad(filePath, ImageFormat.Png);
             //var uri = new Uri(filePath); var bitmap = new BitmapImage(uri);  image.Source = bitmap.Clone(); image.UpdateLayout(); bitmap = null;
             tbCue.Text = prompt;
+            // iDepot compare
+            if (iDepot == null) return;
+            if (!iDepot.isEnabled) return;
+            if (idx > iDepot.items.Count) return;
+            ImageInfo ii = iDepot.items[idx - 1];
+            if (!ii.prompt.Equals(prompt, StringComparison.InvariantCultureIgnoreCase)) return;
+            if (!ii.filename.Equals(tbName.Text, StringComparison.InvariantCultureIgnoreCase)) return;
+            modified = !Utils.GetMD5Checksum(filePath).Equals(ii.MD5Checksum);
+            if (chkExtra.IsChecked.Value && modified) UpdateMeta(modified);
         }
-
-/*        private const int NumberOfRetries = 3;
-        private const int DelayOnRetry = 1000;
-
-for (int i=1; i <= NumberOfRetries; ++i) {
-    try {
-        // Do stuff with file
-        break; // When done we can break loop
-    }
-    catch (IOException e) when(i <= NumberOfRetries)
-        {
-            // You may check error code to filter some exceptions, not every error
-            // can be recovered.
-            Thread.Sleep(DelayOnRetry);
-        }
-    }*/
 
         private int attemptCount = 0;
-        private void UpdateMeta()
+        private void UpdateMeta(bool? modified)
         {
             if (!File.Exists(imagePath)) return;
             Dictionary<string, string> meta;
@@ -88,10 +82,23 @@ for (int i=1; i <= NumberOfRetries; ++i) {
             else
             {
                 if (attemptCount < 2)
-                    Utils.DelayExec(1000, new Action(() => { attemptCount++; UpdateMeta(); }));
+                    Utils.DelayExec(1000, new Action(() => { attemptCount++; UpdateMeta(modified); }));
                 meta.Add("No access to Meta data: ", ""); meta.Add(" the info is missing or ", ""); meta.Add("file is opened by a process.", "");
+            }           
+            Utils.dict2ListBox(meta, lboxMetadata);
+            bool modif = false;
+            if (modified == null) // get it here (later)
+            {
+
             }
-            Utils.dict2ListBox(meta, lboxMetadata); Utils.Sleep(200);
+            else modif = (bool)modified;
+            if (modif)
+            {
+                ListBoxItem lbi = new ListBoxItem();
+                lbi.Content = "--MODIFIED--"; lbi.Foreground = System.Windows.Media.Brushes.Red;
+                lboxMetadata.Items.Add(lbi);
+            }                               
+            Utils.Sleep(200);
         }
         private void imageMove(double h, double v) // ?
         {
@@ -127,13 +134,12 @@ for (int i=1; i <= NumberOfRetries; ++i) {
             Clipboard.SetImage((BitmapSource)image.Source);
             Utils.TimedMessageBox("The image is in the clipboard");
         }
-
         private void chkExtra_Checked(object sender, RoutedEventArgs e)
         {
             lboxMetadata.Visibility = Visibility.Visible;
             columnMeta.Width = new GridLength(150);
-            rowBottom.Height = new GridLength(120);
-            UpdateMeta();
+            rowBottom.Height = new GridLength(140);
+            UpdateMeta(false);
         }
 
         private void chkExtra_Unchecked(object sender, RoutedEventArgs e)
