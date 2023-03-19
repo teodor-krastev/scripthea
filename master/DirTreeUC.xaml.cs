@@ -76,7 +76,6 @@ namespace scripthea.master
             if (iFormat == ImageFormat.Bmp) return ".bmp";
             return "";
         }
-
         public static Bitmap ChangeColor(Bitmap scrBitmap, Color newColor) //Color.Red;
         {
             //You can change your new color here. Red,Green,LawnGreen any..
@@ -98,7 +97,6 @@ namespace scripthea.master
             }
             return newBitmap;
         }
-
         public static Color ColorFromHue(double hue)
         {
             if (!Utils.InRange(hue, 0, 360)) return new Color();
@@ -159,6 +157,38 @@ namespace scripthea.master
             selectedImage.Dispose(); bitmap.Dispose(); GC.Collect();
             return bitmapImage;
         }
+
+        public static async Task<BitmapImage> LoadBitmapImageFromFileAsync(string filePath)
+        {
+            return await Task.Run(() =>
+            {
+                BitmapImage bitmapImage = new BitmapImage();
+                using (FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+                {
+                    bitmapImage.BeginInit();
+                    bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmapImage.StreamSource = fileStream;
+                    bitmapImage.EndInit();
+                }
+                bitmapImage.Freeze(); // Necessary for cross-thread operations
+                return bitmapImage;
+            });
+        }
+        /* how to call it
+        private async void LoadAndDisplayBitmapImageFromFileAsync(string filePath, ref Image imageComp)
+        {
+            BitmapImage bitmapImage = await LoadBitmapImageFromFileAsync(filePath);
+
+            if (bitmapImage != null)
+            {
+                // Display the image in an Image control, for example
+                image1.Source = bitmapImage;
+            }
+            else
+            {
+                MessageBox.Show("Failed to load the image.");
+            }
+        }*/
 
         public static bool CopyToImageFormat(string sourceImage, string targetImage, ImageFormat targetImageFormat = null) // if null use source imageFormat 
         {

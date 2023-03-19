@@ -180,15 +180,41 @@ namespace UtilsNS
         {
             get
             {
-                var myId = Process.GetCurrentProcess().Id;
-                var query = $"SELECT ParentProcessId FROM Win32_Process WHERE ProcessId = {myId}";
-                var search = new ManagementObjectSearcher("root\\CIMV2", query);
-                var results = search.Get().GetEnumerator();
-                results.MoveNext();
-                var queryObj = results.Current;
-                var parentId = (uint)queryObj["ParentProcessId"];
-                var parent = Process.GetProcessById((int)parentId);
-                return parent.ProcessName.ToLower().EndsWith("devenv"); //"msvsmon";
+                /* var myId = Process.GetCurrentProcess().Id;
+                 var query = $"SELECT ParentProcessId FROM Win32_Process WHERE ProcessId = {myId}";
+                 var search = new ManagementObjectSearcher("root\\CIMV2", query);
+                 var results = search.Get().GetEnumerator();
+                 results.MoveNext();
+                 var queryObj = results.Current;
+                 var parentId = (uint)queryObj["ParentProcessId"];
+                 var parent = Process.GetProcessById((int)parentId);
+                 return parent.ProcessName.ToLower().EndsWith("devenv"); //"msvsmon";
+                */
+                
+                // Check if the debugger is attached
+                if (Debugger.IsAttached)
+                {
+                    // Check for Visual Studio process
+                    var visualStudioProcessName = "devenv";
+                    var visualStudioProcesses = Process.GetProcessesByName(visualStudioProcessName);
+
+                    if (visualStudioProcesses.Any())
+                    {
+                        return true;
+                    }
+
+                    // Check for Visual Studio Code process
+                    var vscodeProcessName = "Code";
+                    var vscodeProcesses = Process.GetProcessesByName(vscodeProcessName);
+
+                    if (vscodeProcesses.Any())
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+                
             }
         }
 
@@ -571,7 +597,7 @@ namespace UtilsNS
             int found = line.IndexOf("#");
             if (found > -1)
                 rslt = line.Substring(0, found);
-            return rslt.Trim();
+            return rslt;
         }
         public static List<string> skimRem(List<string> text)
         {
@@ -579,6 +605,18 @@ namespace UtilsNS
             foreach (string ss in text)
                 ls.Add(skimRem(ss));
             return ls;
+        }
+        public static string flattenTextBox(TextBox textBox, bool noComment)
+        {
+            int lineCount = textBox.LineCount; string st = "";
+            for (int line = 0; line < lineCount; line++)
+            {
+                string ss = textBox.GetLineText(line).Trim();
+                if (noComment) ss = Utils.skimRem(ss);
+                if (ss.Equals("")) continue;
+                st += " " + ss;
+            }
+            return st.Replace("  ", " ").Trim();
         }
         /// <summary>
         /// Read text file in List of string

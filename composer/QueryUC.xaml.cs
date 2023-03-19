@@ -203,7 +203,7 @@ namespace scripthea.composer
         }
         public string propmt
         {
-            get { return tbCue.Text + tbModifier.Text; }
+            get { return Utils.flattenTextBox(tbCue, true) + Utils.flattenTextBox(tbModifier,true); }
         }
         public string Compose(object sender, List<string> selectedCue, string modifiers) // redundant , bool OneLineCue = true
         {
@@ -226,12 +226,12 @@ namespace scripthea.composer
         public void btnCompose_Click(object sender, RoutedEventArgs e)
         {
             if (Utils.isNull(cuePoolUC) || Utils.isNull(modifiersUC)) return;
-            if (Utils.isNull(cuePoolUC.ActiveCueList) && !status.Equals(Status.Undefined)) { Log("Err: no active cue pool."); return; }
+            if (Utils.isNull(cuePoolUC.ActiveCueList) && !status.Equals(Status.Undefined)) return; // { Log("Err: no active cue pool.");  }
             if (Utils.isNull(cuePoolUC.ActiveCueList?.allCues) || Utils.isNull(modifiersUC.modifLists)) return;
             List<CueItemUC> selectedSeed = cuePoolUC?.ActiveCueList?.selectedCues();
             if (Utils.isNull(selectedSeed)) { Log("Err: no cue is selected. (35)"); return; }
             if (selectedSeed.Count.Equals(0)) { /*Log("Err: no cue is selected. (58)");*/ return; }
-            Compose(sender, selectedSeed[0].cueTextAsList(), modifiersUC.Composite());
+            Compose(sender, selectedSeed[0].cueTextAsList(true), modifiersUC.Composite());
         }
         private void QueryAPI(string prompt)
         {   
@@ -403,7 +403,7 @@ namespace scripthea.composer
                 Utils.TimedMessageBox("API is busy, try again later...", "Warning"); return;
             }            
             if (opts.SingleAuto) btnCompose_Click(null, null); status = Status.SingeQuery;
-            QueryAPI(Compose(sender, cuePoolUC.ActiveCueList?.selectedCues()[0].cueTextAsList(), modifiersUC.Composite()));
+            QueryAPI(Compose(sender, cuePoolUC.ActiveCueList?.selectedCues()[0].cueTextAsList(true), modifiersUC.Composite()));
         }
         private void tbCue_TextChanged(object sender, TextChangedEventArgs e)
         {

@@ -20,12 +20,13 @@
                 <TextBlock Text=" -" Width="22" Height="40" FontSize="26" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#FF0239B7" Margin="-2,0,0,0"/>
             </Button>
             <Label VerticalAlignment="Center" Margin="20,0,0,0" Content="Command"></Label>
-            <ComboBox x:Name="cbCommand" Background="White" SelectedIndex="0" SelectionChanged="cbCommand_SelectionChanged">
+            <ComboBox x:Name="cbCommand" Background="White" SelectedIndex="0" SelectionChanged="cbCommand_SelectionChanged" DropDownOpened="cbCommand_DropDownOpened">
                 <ComboBoxItem Content="Open"/>
                 <ComboBoxItem Content="Append"/>
                 <ComboBoxItem Content="Remove Chk"/>                
                 <ComboBoxItem Content="Clear"/>
                 <ComboBoxItem Content="Save As"/>
+                <ComboBoxItem x:Name="cbiSaveFlat" Content="Save flat As"/>
             </ComboBox>
             <ComboBox x:Name="cbOption" Background="White" SelectedIndex="0" Margin="10,0,0,0">
                 <ComboBoxItem Content="Cue file"/>
@@ -35,6 +36,7 @@
             </ComboBox>
             <Button x:Name="btnDoIt" Content="Do it !" Background="#FFFFF2E5" Width="60" Margin="15,0,0,0" FontSize="14" Click="btnDoIt_Click"/>
         </StackPanel>
+        <Label x:Name="lbCount" Width="60" HorizontalAlignment="Right" Content="# cues"></Label>
         <ScrollViewer x:Name="scrollViewer"  Margin="0,10,0,0" Grid.Row="1">
             <StackPanel x:Name="spCues"></StackPanel>
         </ScrollViewer>

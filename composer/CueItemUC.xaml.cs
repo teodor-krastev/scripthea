@@ -82,15 +82,27 @@ namespace scripthea.composer
         {
             get { return cueText.Trim().Equals(""); }
         }
-        public List<string> cueTextAsList(bool noComment = true)
+        public string cueTextAsString(bool noComment)
         {
-            List<string> ls = new List<string>(); tbCue.UpdateLayout();
-            int lineCount = tbCue.LineCount;
+            return Utils.flattenTextBox(tbCue, noComment);
+        }
+        public List<string> cueTextAsList(bool noComment)
+        {
+            List<string> ls = new List<string>();
+            cueText = cueText.Trim(); tbCue.UpdateLayout();
+            int lineCount = tbCue.LineCount; string st = "";
             for (int line = 0; line < lineCount; line++)
-            {
+            {                
                 string ss = tbCue.GetLineText(line);
-                ss = noComment ? Utils.skimRem(ss) : ss;
-                if (!ss.Equals("")) ls.Add(ss);
+                bool bb = ss.EndsWith("\r\n");
+                if (noComment) ss = Utils.skimRem(ss);
+                if (ss.Trim().Equals("")) continue;
+                if (bb || (line == lineCount - 1))
+                {
+                    ls.Add((st + " " + ss).Replace("  ", " ").Trim()); st = ""; 
+                }                                 
+                else 
+                    st += " " + ss;                 
             }
             return ls;
         }

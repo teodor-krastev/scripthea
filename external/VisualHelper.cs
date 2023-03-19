@@ -121,6 +121,34 @@ namespace UtilsNS
     }
     public static class DataGridHelper
     {
+        public static DataGridRow SetFocusOnRow(this DataGrid dataGrid, int rowIndex)
+        {
+            // Check if the rowIndex is within the range of the DataGrid items
+            if (rowIndex >= 0 && rowIndex < dataGrid.Items.Count)
+            {
+                // Select the row
+                dataGrid.SelectedIndex = rowIndex;
+
+                // Get the DataGridRow object
+                DataGridRow row = GetRowByIndex(dataGrid, rowIndex);
+
+                // If the row is not yet generated, scroll into view and wait for it to be generated
+                if (row == null)
+                {
+                    dataGrid.ScrollIntoView(dataGrid.Items[rowIndex]);
+                    dataGrid.UpdateLayout();
+                    row = (DataGridRow)dataGrid.ItemContainerGenerator.ContainerFromIndex(rowIndex);
+                }
+                // Set focus on the row
+                if (row != null)
+                {
+                    row.Focus();
+                }
+                return row;
+            }
+            return null;
+        }
+
         public static DataGridColumn GetColumnByIndices(this DataGrid dataGrid, int rowIndex, int columnIndex)
         {
             if (dataGrid == null)

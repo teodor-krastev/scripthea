@@ -327,16 +327,19 @@ namespace scripthea
         }
         private void MainWindow1_KeyDown(object sender, KeyEventArgs e)
         {
-            if (sender.Equals(MainWindow1))
-                if (e.Key.Equals(Key.F1)) Utils.CallTheWeb("https://scripthea.com");
-            if (e.Key.Equals(Key.Enter))
+            switch (e.Key)
             {
-                string fld = "";
-                if (sender.Equals(queryUC.tbImageDepot) && tabControl.SelectedItem.Equals(tiComposer)) fld = queryUC.tbImageDepot.Text;
-                if (sender.Equals(viewerUC.tbImageDepot) && tabControl.SelectedItem.Equals(tiViewer)) fld = viewerUC.tbImageDepot.Text;
-                if (sender.Equals(importUtilUC.tbImageDepot) && tabControl.SelectedItem.Equals(tiUtils)) fld = importUtilUC.tbImageDepot.Text;
-                if (sender.Equals(exportUtilUC.iPicker.tbImageDepot) && tabControl.SelectedItem.Equals(tiUtils)) fld = exportUtilUC.iPicker.tbImageDepot.Text; 
-                if (ImgUtils.checkImageDepot(fld) > 0) dirTreeUC.CatchAFolder(fld);
+                case Key.F1: 
+                    if (sender.Equals(MainWindow1)) Utils.CallTheWeb("https://scripthea.com");
+                    break;
+                case Key.Enter: 
+                    string fld = "";
+                    if (sender.Equals(queryUC.tbImageDepot) && tabControl.SelectedItem.Equals(tiComposer)) fld = queryUC.tbImageDepot.Text;
+                    if (sender.Equals(viewerUC.tbImageDepot) && tabControl.SelectedItem.Equals(tiViewer)) fld = viewerUC.tbImageDepot.Text;
+                    if (sender.Equals(importUtilUC.tbImageDepot) && tabControl.SelectedItem.Equals(tiUtils)) fld = importUtilUC.tbImageDepot.Text;
+                    if (sender.Equals(exportUtilUC.iPicker.tbImageDepot) && tabControl.SelectedItem.Equals(tiUtils)) fld = exportUtilUC.iPicker.tbImageDepot.Text; 
+                    if (ImgUtils.checkImageDepot(fld) > 0) dirTreeUC.CatchAFolder(fld);
+                    break;
             }
         }
         private void imgPreferences_MouseDown(object sender, MouseButtonEventArgs e)

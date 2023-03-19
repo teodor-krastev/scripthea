@@ -237,6 +237,19 @@ namespace scripthea.viewer
         public bool isReadOnly { get; private set; }
         public Dictionary<string, string> header;
         public List<ImageInfo> items;
+        public bool RemoveAt(int idx, bool inclFile)
+        {
+            if (!isEnabled) return false;
+            if (!Utils.InRange(idx, 0, items.Count - 1)) return false; 
+            if (inclFile)
+            {
+                string fn = Path.Combine(path, items[idx].filename);
+                if (!File.Exists(fn)) return false;
+                File.Delete(fn);
+            }
+            items.RemoveAt(idx);
+            return true;
+        }
         public DepotFolder VirtualClone(string targetPath, List<Tuple<int,string,string>> filter = null) // int -> index; string -> filename (may differ); string -> prompt (for consistency)
         {
             if (!Directory.Exists(targetPath)) return null;
@@ -336,7 +349,7 @@ namespace scripthea.viewer
             }
             if (itemsCount != items.Count)
             {
-                Save(true); Utils.TimedMessageBox((itemsCount - items.Count).ToString()+" image depot emtries have been removed", "Warining", 3000);
+                Save(true); Utils.TimedMessageBox((itemsCount - items.Count).ToString()+" image depot entries have been removed", "Warining", 3000);
             }
             return ok;
         }
@@ -398,6 +411,7 @@ namespace scripthea.viewer
             views.Add(tableViewUC); tableViewUC.SelectEvent += new TableViewUC.PicViewerHandler(picViewerUC.loadPic); 
             views.Add(gridViewUC);  gridViewUC.SelectEvent += new GridViewUC.PicViewerHandler(picViewerUC.loadPic); 
         }
+        private DepotFolder iDepot;
         iPicList activeView { get { return views[tabCtrlViews.SelectedIndex]; } }
         private DispatcherTimer timer;
         private Options opts;
@@ -440,6 +454,23 @@ namespace scripthea.viewer
         {
             if (OnLog != null) OnLog(txt, clr);
         }
+        public int RemoveSelected(bool inclFile = false)
+        {
+            string ss = inclFile ? "and file" : ""; bool anim = animation; animation = false;
+            Log("Deleting image #" + activeView.selectedIndex.ToString()+ " entry "+ ss, Brushes.Tomato);
+            if (iDepot == null) { Log("no active image depot found"); return -1; }
+            if (!iDepot.isEnabled) { Log("current image depot - not active"); return -1; }
+            int idx = activeView.selectedIndex - 1;
+            if (!Utils.InRange(idx, 0, iDepot.items.Count - 1)) { Log("index out of limits"); return -1; }                           
+            if (iDepot.RemoveAt(idx, inclFile)) iDepot.Save();
+            else { Log("Unsuccessful delete operation"); return -1; }
+            btnRefresh_Click(null, null);
+            if (!iDepot.isEnabled) { Log("current image depot - not active"); return -1; }
+            activeView.selectedIndex = Utils.EnsureRange(idx + 1, 1, iDepot.items.Count);
+            if (anim) animation = true;
+            //if (tabCtrlViews.SelectedIndex == 0) 
+            return idx;
+        } 
         public void Clear() 
         {
             activeView.Clear(); picViewerUC.Clear();
@@ -454,21 +485,7 @@ namespace scripthea.viewer
             updating = false; showing = true;
         }
         List<iPicList> views;
-        private List<Tuple<int, string, string>> DecompImageDepot(string imageDepot, bool checkFileAndOut)
-        {
-            if (ImgUtils.checkImageDepot(imageDepot, true) < 1) return null;
-            List<Tuple<int, string, string>> lt = new List<Tuple<int, string, string>>();
-            List<string> ls = new List<string>(File.ReadAllLines(imageDepot + "description.txt")); int k = 1;
-            foreach (string ss in ls)
-            {               
-                string[] sa = ss.Split('=');
-                if (sa.Length != 2) { Log("Err: wrong line format <" + ss + ">. "); return null; }
-                if (checkFileAndOut)
-                    if (!File.Exists(imageDepot + sa[0])) continue;
-                lt.Add(new Tuple<int, string, string>(k, sa[0], sa[1])); k++;
-            }
-            return lt;
-        }
+        
         private void btnFindUp_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (tabCtrlViews.SelectedIndex.Equals(0)) tableViewUC.SortTableByIndex();
@@ -500,13 +517,13 @@ namespace scripthea.viewer
                 if ((sender == btnRefresh) || (sender == tbImageDepot)) Clear();
                 return; 
             }
-            DepotFolder df = new DepotFolder(imageFolder);
-            if (!df.isEnabled) { Log("Error: This is not an image depot."); return; }
-            List<Tuple<int, string, string>> decompImageDepot = df.Export2Viewer(); // DecompImageDepot(imageFolder, true);
+            iDepot = new DepotFolder(imageFolder);
+            if (!iDepot.isEnabled) { Log("Error: This is not an image depot."); return; }
+            List<Tuple<int, string, string>> decompImageDepot = iDepot.Export2Viewer(); 
             if (!Utils.isNull(decompImageDepot))
             {
                 showing = false;
-                activeView.FeedList(ref df); picViewerUC.iDepot = df;
+                activeView.FeedList(ref iDepot); picViewerUC.iDepot = iDepot;
                 showing = true;
             }
             animation = false; btnPlay.IsEnabled = decompImageDepot.Count > 0; 
@@ -572,7 +589,20 @@ namespace scripthea.viewer
         private void btnPlay_Click(object sender, RoutedEventArgs e)
         {
             animation = sender.Equals(btnPlay); 
+        }        
+        private void ucViewer_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key.Equals(Key.Delete) && !tbImageDepot.IsFocused && !numDlyIsFocused) 
+            Utils.DelayExec(100, () => { RemoveSelected(); } );
         }
-
+        private bool numDlyIsFocused = false;
+        private void numDly_GotFocus(object sender, RoutedEventArgs e)
+        {
+            numDlyIsFocused = true;
+        }
+        private void numDly_LostFocus(object sender, RoutedEventArgs e)
+        {
+            numDlyIsFocused = false;
+        }
     }
 }

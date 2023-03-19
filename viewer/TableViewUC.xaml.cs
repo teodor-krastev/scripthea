@@ -128,8 +128,17 @@ namespace scripthea.viewer
         }
         public int selectedIndex 
         {
-            get { return dGrid.SelectedIndex + 1; }
-            set { if (Utils.InRange(value-1, 0,dTable.Rows.Count-1)) dGrid.SelectedIndex = value - 1; } 
+            get 
+            {
+                if ((dTable.Rows.Count == 0) || (dGrid.SelectedIndex == -1)) return - 1;
+                return Convert.ToInt32(dTable.Rows[dGrid.SelectedIndex]["#"]);
+            }
+            set 
+            {
+                if (!Utils.InRange(value - 1, 0, dTable.Rows.Count - 1)) return;
+                dGrid.Focus(); DataGridHelper.SetFocusOnRow(dGrid, value - 1);               
+                //dGrid.SelectedIndex = value - 1; DataRowView drv = (DataRowView)dGrid.SelectedItem; 
+            } 
         }
         public int Count { get { return dTable.Rows.Count; } }
         public List<Tuple<int, string, string>> GetItems(bool check, bool uncheck) 

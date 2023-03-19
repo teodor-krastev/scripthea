@@ -17,6 +17,8 @@ using Path = System.IO.Path;
 using UtilsNS;
 using scripthea.viewer;
 using scripthea.master;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 
 namespace scripthea.composer
 {
@@ -25,21 +27,22 @@ namespace scripthea.composer
     /// </summary>
     public partial class CueEditorUC : UserControl
     {
-        List<CueItemUC> cues;
-        public enum Mode { open, append, remove, clear, save}
+        ObservableCollection<CueItemUC> cues;
+        public enum Mode { open, append, remove, clear, save, saveFlat}
         Mode mode { get { int k = Utils.EnsureRange(cbCommand.SelectedIndex, 0, cbCommand.Items.Count - 1);  return (Mode)k; } }
         public bool radioMode { get { return !mode.Equals(Mode.remove); } }
         public CueEditorUC()
         {
             InitializeComponent();
-            cues = new List<CueItemUC>();
+            cues = new ObservableCollection<CueItemUC>();
+            cues.CollectionChanged += new NotifyCollectionChangedEventHandler(NotifyCollectionChanged);
             AddCue(new CueItemUC("", radioMode));
         }
         private string filename = "";
         private Options opts;
         public void Init(ref Options _opts)
         {
-            opts = _opts;
+            opts = _opts; 
             if (cues.Count.Equals(0))
                 AddCue(new CueItemUC("", radioMode));
             cues[0].radioChecked = true;
@@ -87,6 +90,10 @@ namespace scripthea.composer
                 AddCue(""); selected = sel;
             }
         }
+        private void NotifyCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            lbCount.Content = cues.Count.ToString() + " cues";
+        }
         private int AddCue(CueItemUC cue) // visual
         {
             cue.OnLog += new Utils.LogHandler(Log);
@@ -103,7 +110,6 @@ namespace scripthea.composer
         }
         private int AddCue(string cue) // one-line cue / internal 
         {
-            if (cue.Trim().Equals("")) return -1;
             return AddCue(new CueItemUC(cue, radioMode));
         }
         private void RemoveAt(int idx)
@@ -135,7 +141,7 @@ namespace scripthea.composer
                 dialog.DefaultExtension = ".txt";
                 dialog.Filters.Add(new CommonFileDialogFilter("Text file", "txt"));
                 if (dialog.ShowDialog() != CommonFileDialogResult.Ok) return;
-                List<string> ls = Utils.readList(dialog.FileName);
+                List<string> ls = Utils.readList(dialog.FileName, true);
                 foreach (string cue in ls)
                     AddCue(cue);
                 if (selected == -1) selected = 0; TextChanged(null, null);
@@ -202,23 +208,22 @@ namespace scripthea.composer
                 RemoveAt(idx);
             }
         }
-        private void SaveAs()
+        private void SaveAs(bool flat)
         {
-            CommonSaveFileDialog dialog = new CommonSaveFileDialog();
-            dialog.InitialDirectory = Path.Combine(Utils.basePath, "cues");
-            dialog.DefaultExtension = ".cues";
-            dialog.Filters.Add(new CommonFileDialogFilter("Cues text", "cues"));
-            if (!filename.Equals("")) // cues file 
-                dialog.DefaultFileName = filename;
-            if (dialog.ShowDialog() != CommonFileDialogResult.Ok) return;
             var ls = new List<string>();
             for (int i = 0; i < cues.Count; i++)
             {
                 if (cues[i].cueText.Trim().Equals("")) continue;
-                ls.AddRange(cues[i].cueTextAsList());
+                if (flat) ls.Add(cues[i].cueTextAsString(false));
+                else ls.AddRange(cues[i].cueTextAsList(false));
                 ls.Add("---");
             }
-            Utils.writeList(Path.ChangeExtension(dialog.FileName,".cues"), ls);
+            string fn = Path.GetFileName(Path.ChangeExtension(filename, null)); 
+            filename = new InputBox("Cues filename", fn, "").ShowDialog();
+            if (filename.Equals("")) return;
+            filename = Path.Combine(Utils.basePath, "cues", filename);
+            Utils.writeList(Path.ChangeExtension(filename, ".cues"), ls);
+            Log("Saved in " + filename, Brushes.Tomato);
         }
         private void btnAddCue_Click(object sender, RoutedEventArgs e)
         {
@@ -227,7 +232,7 @@ namespace scripthea.composer
                 AddCue(""); selected = cues.Count - 1;
                 scrollViewer.ScrollToVerticalOffset(spCues.ActualHeight);
             }
-            else
+            else // remove
             {
                 if (Utils.InRange(selected, 0, cues.Count - 1))
                 {
@@ -249,9 +254,15 @@ namespace scripthea.composer
                     break;
                 case Mode.remove: Remove(); selected = 0;
                     break;
-                case Mode.save: SaveAs();
+                case Mode.save: SaveAs(false);
+                    break;
+                case Mode.saveFlat: SaveAs(true);
                     break;
             }
+        }
+        private void cbCommand_DropDownOpened(object sender, EventArgs e)
+        {
+            if (!Utils.isInVisualStudio) cbiSaveFlat.Visibility = Visibility.Collapsed;
         }
     }
 }

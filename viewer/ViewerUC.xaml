@@ -1,11 +1,11 @@
-﻿<UserControl x:Class="scripthea.viewer.ViewerUC"
+﻿<UserControl x:Name="ucViewer" x:Class="scripthea.viewer.ViewerUC"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:scripthea.viewer" xmlns:UtilsNS="clr-namespace:UtilsNS"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800" PreviewKeyDown="ucViewer_PreviewKeyDown">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition x:Name="colListWidth" Width="400" MinWidth="200" MaxWidth="1000"/>
@@ -51,7 +51,7 @@
                         <Image Source="/Scripthea;component/Properties/stop.png"  Cursor="Hand"></Image>
                     </ContentControl>
                 </Button>
-                <UtilsNS:NumericBox x:Name="numDly" HorizontalAlignment="Left" Height="25" Margin="0,0,8,0" VerticalAlignment="Center" Width="47" Value="5" Minimum="1" Maximum="99" ValueChanged="numDly_ValueChanged" ToolTip="Delay to next image in animation [s]"/>
+                <UtilsNS:NumericBox x:Name="numDly" HorizontalAlignment="Left" Height="25" Margin="0,0,8,0" VerticalAlignment="Center" Width="47" Value="5" Minimum="1" Maximum="99" ValueChanged="numDly_ValueChanged" ToolTip="Delay to next image in animation [s]" GotFocus="numDly_GotFocus" LostFocus="numDly_LostFocus"/>
                 <Label x:Name="lbDepotInfo" Content="" VerticalAlignment="Top" Margin="0,0,5,0" HorizontalAlignment="Left" ></Label>
             </StackPanel>
             <TabControl x:Name="tabCtrlViews" Grid.Row="1" SelectedIndex="0" BorderBrush="{x:Null}" Panel.ZIndex="10" SelectionChanged="tabCtrlViews_SelectionChanged">

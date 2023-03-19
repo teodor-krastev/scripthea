@@ -276,7 +276,7 @@ namespace scripthea.composer
             if (cueSrc)
             { 
                 if (!cueList.radioMode) return;
-                cueSel.AddRange(cueList.selectedCues()[0].cueTextAsList());
+                cueSel.AddRange(cueList.selectedCues()[0].cueTextAsList(true));
             }
             else
             {
@@ -292,7 +292,7 @@ namespace scripthea.composer
             {
                 if (cueList.radioMode) return lls;
                 foreach (CueItemUC ci in cueList.selectedCues())
-                    lls.Add(new List<string>(ci.cueTextAsList()));
+                    lls.Add(new List<string>(ci.cueTextAsList(true)));
             }
             else
             {

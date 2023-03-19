@@ -192,7 +192,6 @@ namespace scripthea.viewer
         {
             if (OnChangeContent != null) OnChangeContent(sender, e);
         }
-
         protected void SelectTumb(object sender, RoutedEventArgs e)
         {
             if (Count == 0) return;
@@ -214,7 +213,6 @@ namespace scripthea.viewer
             if (rowTumbOpt.Height.Value.Equals(1)) rowTumbOpt.Height = new GridLength(30);
             else rowTumbOpt.Height = new GridLength(1);
         }
-
         private void UpdatePicItems()
         {
             if (Count == 0) return;
@@ -252,13 +250,14 @@ namespace scripthea.viewer
         {            
             int si = selectedIdx == -1 ? selectedIndex : selectedIdx; si--;
             if (wrapPics.ActualHeight < rowTumbs.ActualHeight) return;                         
-            int targetRow = (int)Math.Floor((double)si / thumbsPerRow); 
+            int targetRow = thumbsPerRow > 0 ? (int)Math.Floor((double)si / thumbsPerRow) : 0; 
             if (targetRow.Equals(0)) { scroller.ScrollToHome(); return; }
             if (targetRow.Equals(rowsCount)) { scroller.ScrollToEnd(); return; }
-            scroller.ScrollToVerticalOffset(wrapPics.ActualHeight * (targetRow - 2) / rowsCount); 
+            if (rowsCount > 0)
+                scroller.ScrollToVerticalOffset(wrapPics.ActualHeight * (targetRow - 2) / rowsCount); 
         }
         private int thumbsPerRow { get { if (Count.Equals(0)) return -1; return (int)Math.Floor(wrapPics.ActualWidth / picItems[0].ActualWidth); } }
-        private int rowsCount { get { return (int)Math.Ceiling((double)Count / thumbsPerRow); } }
+        private int rowsCount { get { return thumbsPerRow > 0 ? (int)Math.Ceiling((double)Count / thumbsPerRow) : 5; } }
         private void scroller_KeyDown(object sender, KeyEventArgs e)
         {           
             switch (e.Key)

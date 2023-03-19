@@ -17,6 +17,7 @@ using System.Windows.Shapes;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using scripthea.viewer;
 using UtilsNS;
+using Brushes = System.Windows.Media.Brushes;
 using Path = System.IO.Path;
 
 namespace scripthea.master
@@ -82,7 +83,7 @@ namespace scripthea.master
             if (!iPicker.isEnabled) return;
             try
             {
-                Mouse.OverrideCursor = Cursors.Wait;
+                Mouse.OverrideCursor = Cursors.Wait; iPicker.btnCustom.Background = Brushes.Coral; Utils.DoEvents();
 
                 List<Tuple<int, string, string>> lot = iPicker.ListOfTuples(true, false); // idx (1 based), filename, prompt
                 if (lot.Count.Equals(0)) { Log("Error: not checked images."); return; }
@@ -142,7 +143,7 @@ namespace scripthea.master
                 }
                 Log(lot.Count.ToString() + " images have been exported to " + targetFolder);
             }
-            finally { Mouse.OverrideCursor = null; }
+            finally { Mouse.OverrideCursor = null; iPicker.btnCustom.Background = Brushes.White; }
         }    
     }
 }
