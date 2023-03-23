@@ -292,6 +292,7 @@ namespace scripthea.composer
         {
             if (sample == 1) return ScanModifs; List<string> rslt = new List<string>();
             if (ScanModifs.Count == 0) return rslt;
+            if ((ScanModifs.Count == 1) && ScanModifs[0].Equals("")) return rslt;
             if (sample >= ScanModifs.Count)
                 { Log("Error: number of scannable modifiers: " + ScanModifs.Count.ToString() + " must be bigger than modifiers sample: " +sample.ToString()); return rslt; }
             List<string> line = new List<string>(); string ss = "";

@@ -409,7 +409,8 @@ namespace scripthea.viewer
             InitializeComponent();
             views = new List<iPicList>(); 
             views.Add(tableViewUC); tableViewUC.SelectEvent += new TableViewUC.PicViewerHandler(picViewerUC.loadPic); 
-            views.Add(gridViewUC);  gridViewUC.SelectEvent += new GridViewUC.PicViewerHandler(picViewerUC.loadPic); 
+            views.Add(gridViewUC);  gridViewUC.SelectEvent += new GridViewUC.PicViewerHandler(picViewerUC.loadPic);
+            gridViewUC.OnLog += new Utils.LogHandler(Log); picViewerUC.OnLog += new Utils.LogHandler(Log);
         }
         private DepotFolder iDepot;
         iPicList activeView { get { return views[tabCtrlViews.SelectedIndex]; } }
@@ -464,9 +465,16 @@ namespace scripthea.viewer
             if (!Utils.InRange(idx, 0, iDepot.items.Count - 1)) { Log("index out of limits"); return -1; }                           
             if (iDepot.RemoveAt(idx, inclFile)) iDepot.Save();
             else { Log("Unsuccessful delete operation"); return -1; }
-            btnRefresh_Click(null, null);
-            if (!iDepot.isEnabled) { Log("current image depot - not active"); return -1; }
-            activeView.selectedIndex = Utils.EnsureRange(idx + 1, 1, iDepot.items.Count);
+            if (tabCtrlViews.SelectedIndex == 0) // tableView
+            {
+                btnRefresh_Click(null, null);
+                if (!iDepot.isEnabled) { Log("current image depot - not active"); return -1; }
+                activeView.selectedIndex = Utils.EnsureRange(idx + 1, 1, iDepot.items.Count);
+            }
+            else // gridView
+            {
+                gridViewUC.RemoveAt(); 
+            }
             if (anim) animation = true;
             //if (tabCtrlViews.SelectedIndex == 0) 
             return idx;
@@ -547,10 +555,13 @@ namespace scripthea.viewer
             if (chkAutoRefresh.IsChecked.Value) { colRefresh.Width = new GridLength(0); btnRefresh.Visibility = Visibility.Collapsed; btnRefresh_Click(sender, e); }
             else { colRefresh.Width = new GridLength(70); btnRefresh.Visibility = Visibility.Visible; }
         }
+        private int lastIdx = 0;
         private void tabCtrlViews_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             animation = false;
-            if (chkAutoRefresh.IsChecked.Value && showing) btnRefresh_Click(sender, e);           
+            if ((lastIdx == 1) && (tabCtrlViews.SelectedIndex == 0) && gridViewUC.OutOfResources) gridViewUC.Clear();
+            lastIdx = tabCtrlViews.SelectedIndex;
+            if (chkAutoRefresh.IsChecked.Value && showing) btnRefresh_Click(sender, e);             
             if (!Utils.isNull(e)) e.Handled = true;
         }        
         public bool animation
@@ -592,8 +603,8 @@ namespace scripthea.viewer
         }        
         private void ucViewer_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key.Equals(Key.Delete) && !tbImageDepot.IsFocused && !numDlyIsFocused) 
-            Utils.DelayExec(100, () => { RemoveSelected(); } );
+            if (e.Key.Equals(Key.Delete) && !tbImageDepot.IsFocused && !numDlyIsFocused) RemoveSelected();
+                //Utils.DelayExec(100, () => {  } );
         }
         private bool numDlyIsFocused = false;
         private void numDly_GotFocus(object sender, RoutedEventArgs e)

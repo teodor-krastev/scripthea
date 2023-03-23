@@ -155,16 +155,12 @@ namespace scripthea.composer
             if (Utils.isNull(modifListBox.SelectedItem)) return;
             (modifListBox.SelectedItem as ModifItemUC).SwitchState(e.Key.Equals(Key.Space) || e.Key.Equals(Key.Enter) || e.Key.Equals(Key.Left));
         }
-        private static String WildCardToRegular(String value) // If you want to implement both "*" and "?"
-        {
-          return "^" + Regex.Escape(value).Replace("\\?", ".").Replace("\\*", ".*") + "$"; 
-        }
         public int markWithWildcard(string searchPattern)
         {
             int cnt = 0;
             foreach (ModifItemUC mdf in modifList)
             {
-                mdf.marked = Regex.IsMatch(mdf.Text, WildCardToRegular(searchPattern));
+                mdf.marked = Utils.IsWildCardMatch(mdf.Text, searchPattern);
                 if (mdf.marked) cnt++;
             } 
             return cnt;

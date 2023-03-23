@@ -20,7 +20,8 @@ namespace scripthea.viewer
     /// </summary>
     public partial class GridViewUC : UserControl, iPicList
     {
-        List<PicItemUC> picItems;
+        protected List<PicItemUC> picItems; 
+        public bool OutOfResources = false;
         public GridViewUC() 
         {
             InitializeComponent();
@@ -40,7 +41,8 @@ namespace scripthea.viewer
             ShuttingDown = true;
         }
         public DepotFolder iDepot { get; set; }
-        public bool IsAvailable { 
+        public bool IsAvailable 
+        { 
             get 
             {
                 if (Utils.isNull(iDepot)) return false;
@@ -49,15 +51,20 @@ namespace scripthea.viewer
         }
         public string loadedDepot { get; set; }
 
-        protected ImageInfo SelectedItem (int idx)
+        protected ImageInfo DepotItem(int idx) // idx -> iDepot index
         {
-            ImageInfo ii = null;
-            if (iDepot != null)
-                if (iDepot.isEnabled && Utils.InRange(idx, 0, iDepot.items.Count - 1))
-                    ii = iDepot.items[idx];
-            return ii;
+            if (!IsAvailable) return null;            
+            if (Utils.InRange(idx, 0, iDepot.items.Count - 1))
+               return iDepot.items[idx];
+            return null;
         }
-
+        protected PicItemUC SelectedPicItem() // idx from inside PicItem
+        {
+            if (!IsAvailable) return null;
+            foreach (PicItemUC ps in picItems)
+                if (ps.selected) return ps;
+            return null;
+        }
         public void UpdateVis()
         {
             try
@@ -70,9 +77,15 @@ namespace scripthea.viewer
                     if (ShuttingDown) return;
                     PicItemUC piUC = new PicItemUC(ref opts, checkable); piUC.IsChecked = true;
                     picItems.Add(piUC); labelNum.Content = (int)(100.0 * picItems.Count / cnt) + "%";
-                    if ((picItems.Count % 3) == 1)
-                        { scroller.ScrollToEnd(); Utils.DoEvents(); }
-                    piUC.ContentUpdate(itm.Item1, Path.Combine(imageFolder, itm.Item2), itm.Item3); piUC.VisualUpdate();
+                    int k = Utils.InRange(thumbsPerRow, 2,20) ? thumbsPerRow : 4;
+                    if ((picItems.Count % k) == 1) 
+                    {
+                        if (scroller.VerticalOffset > 0) scroller.ScrollToHome(); 
+                        Utils.DoEvents(); 
+                    }
+                    if (!piUC.ContentUpdate(itm.Item1, Path.Combine(imageFolder, itm.Item2), itm.Item3))
+                        { Log("Exhausted resources - use table view instead", Brushes.Red); OutOfResources = true; break; }
+                    piUC.VisualUpdate();
                     piUC.OnSelect += new RoutedEventHandler(SelectTumb); wrapPics.Children.Add(piUC);
                     if (checkable)
                     {
@@ -112,13 +125,30 @@ namespace scripthea.viewer
         {
             if (OnLog != null) OnLog(txt, clr);
         }
-        public void picItemsClear()
+        public void RemoveAt(int idx = -1) // default selected
+        {
+            int j = idx.Equals(-1) ? selectedIndex - 1 : idx;
+            if (Utils.InRange(j, 0, picItems.Count - 1))
+            {
+                wrapPics.Children.Remove(picItems[j]);
+                picItems[j] = null;
+                picItems.RemoveAt(j);
+            }    
+            GC.Collect(); wrapPics.UpdateLayout();
+            // renumber picItems
+            for (int i = 0; i < picItems.Count; i++)
+            {
+                picItems[i].idx = i + 1; 
+            }           
+            selectedIndex = Utils.EnsureRange(j, 0, picItems.Count - 1) + 1;               
+        }
+        private void picItemsClear()
         {
             for(int i = 0; i < picItems.Count; i++)
             {
-                picItems[i] = null;
+                picItems[i].Clear();
             }            
-            picItems.Clear(); wrapPics.Children.Clear(); wrapPics.UpdateLayout();
+            picItems.Clear(); GC.Collect(); wrapPics.Children.Clear(); wrapPics.UpdateLayout();
         }
         public string imageFolder { get { return iDepot.path; } }
         public void Clear(bool inclDepotItems = false)
@@ -142,7 +172,6 @@ namespace scripthea.viewer
             UpdateVis();
             return true;
         }
-
         public int selectedIndex // 1 based index
         {
             get 
@@ -154,11 +183,15 @@ namespace scripthea.viewer
             set
             {
                 if (!Utils.InRange(value, 1, Count) || Count == 0) return;
-                foreach (PicItemUC piUC in picItems) // reset all            
-                    if (piUC.selected) piUC.selected = false;
-                PicItemUC piUC2 = picItems[value - 1];
-                piUC2.selected = true; scrollToIdx(value);
-                OnSelect(piUC2.idx, piUC2.imageFolder + piUC2.filename, piUC2.prompt);
+                PicItemUC piUC2 = null;
+                foreach (PicItemUC piUC in picItems) // reset all
+                {
+                    piUC.selected = piUC.idx.Equals(value);
+                    if (piUC.selected) piUC2 = picItems[value - 1];
+                }                                                                          
+                scrollToIdx(value);
+                if (piUC2 != null)
+                    OnSelect(piUC2.idx, piUC2.imageFolder + piUC2.filename, piUC2.prompt);
             }
         }
         public int Count { get { return picItems.Count; } }
@@ -298,3 +331,65 @@ namespace scripthea.viewer
 
     }
 }
+
+/*
+ * using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+
+class MainWindow : Window
+{
+    private StackPanel stackPanel;
+    private List<string> imageUrls = new List<string>()
+    {
+        "https://example.com/image1.jpg",
+        "https://example.com/image2.jpg",
+        "https://example.com/image3.jpg",
+        "https://example.com/image4.jpg",
+        "https://example.com/image5.jpg",
+    };
+
+    public MainWindow()
+    {
+        stackPanel = new StackPanel();
+        this.Content = stackPanel;
+
+        // start loading images on multiple threads
+        LoadImagesAsync();
+    }
+
+    private async void LoadImagesAsync()
+    {
+        // create tasks to load images
+        var tasks = new List<Task<ImageSource>>();
+        foreach (var url in imageUrls)
+        {
+            tasks.Add(Task.Run(() => LoadImage(url)));
+        }
+
+        // wait for all tasks to complete
+        var results = await Task.WhenAll(tasks);
+
+        // add loaded images to stack panel
+        foreach (var image in results)
+        {
+            stackPanel.Children.Add(new Image { Source = image });
+        }
+    }
+
+    private ImageSource LoadImage(string url)
+    {
+        // load image from URL
+        var bitmap = new BitmapImage(new Uri(url));
+
+        // set decode pixel width to improve performance
+        bitmap.DecodePixelWidth = 200;
+
+        return bitmap;
+    }
+}
+*/

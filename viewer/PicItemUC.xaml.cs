@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -27,9 +28,8 @@ namespace scripthea.viewer
             InitializeComponent();
             opts = _opts; checkable = __checkable;
         }
-        Options opts;
-        private int _idx;
-        public int idx { get { return _idx; } }
+        Options opts;      
+        public int idx { get; set; }
         private bool _selected;
         public bool selected
         {
@@ -87,19 +87,24 @@ namespace scripthea.viewer
         {
             if (OnLog != null) OnLog(txt, clr);
         }
-        public void ContentUpdate(int index, string filePath, string _prompt)
+        public void Clear()
         {
-            _idx = index;
+            imgPic.Source = null;   
+        }
+        public bool ContentUpdate(int index, string filePath, string _prompt)
+        {
+            idx = index;
             filename = System.IO.Path.GetFileName(filePath);
             if (File.Exists(filePath))
             {
-                imageFolder = System.IO.Path.GetDirectoryName(filePath) +"\\";               
+                imageFolder = System.IO.Path.GetDirectoryName(filePath) +"\\";
                 imgPic.Source = ImgUtils.UnhookedImageLoad(filePath);
+                if (imgPic.Source == null) return false;                
             }
-            else tbFile.Foreground = Brushes.Tomato;
+            else tbFile.Foreground = Brushes.Tomato; 
             tbFile.Text = filename; tbFile.ToolTip = filePath;
             prompt = _prompt; tbCue.Text = prompt; tbCue.ToolTip = prompt;
-            selected = false;
+            selected = false; return true;
         }
         private void imgPic_MouseDown_1(object sender, MouseButtonEventArgs e)
         {

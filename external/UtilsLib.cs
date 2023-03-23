@@ -7,6 +7,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
@@ -15,12 +16,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Threading.Tasks.Dataflow;
-//using System.Deployment.Application;
 using System.Reflection;
 using System.Drawing;
 using System.Net;
-using System.Drawing.Imaging;
-using System.Management;
 
 using Label = System.Windows.Controls.Label;
 using FontFamily = System.Windows.Media.FontFamily;
@@ -114,7 +112,7 @@ namespace UtilsNS
         {
             DispatcherTimer timer = null;
             timer = new DispatcherTimer(new TimeSpan(0, 0, 0, 0, Delay),
-                DispatcherPriority.Normal, (snd, ea) => { action(); timer.Stop(); }, Dispatcher.CurrentDispatcher);
+                DispatcherPriority.Normal, (snd, ea) => { timer.Stop(); action(); }, Dispatcher.CurrentDispatcher); 
         }
         public static void CallTheWeb(string query)
         {
@@ -618,6 +616,21 @@ namespace UtilsNS
             }
             return st.Replace("  ", " ").Trim();
         }
+
+        private static String WildCardToRegular(String value) // If you want to implement both "*" and "?"
+        {
+            return "^" + Regex.Escape(value).Replace("\\?", ".").Replace("\\*", ".*") + "$";
+        }
+        public static bool IsWildCardMatch(string text, string searchPattern, bool strict = false)
+        {
+            string sp = searchPattern;
+            if (!strict)
+            {
+                if (sp.IndexOf('*').Equals(-1) && sp.IndexOf('?').Equals(-1)) sp = '*' + sp + '*';
+            }
+            return Regex.IsMatch(text, WildCardToRegular(sp));
+        }
+        
         /// <summary>
         /// Read text file in List of string
         /// </summary>

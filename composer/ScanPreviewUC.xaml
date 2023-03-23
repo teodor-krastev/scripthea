@@ -11,12 +11,12 @@
             <RowDefinition Height="5*"/>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal">
-            <Button x:Name="btnScanChecked" Content="Scan All Checked" HorizontalAlignment="Left" Margin="10,2,0,2" Width="137" FontSize="13" Background="MintCream" Height="25"/>
-            <Button x:Name="btnQuerySelected" Content="Query Selected" HorizontalAlignment="Left" Margin="10,2,0,2.025" Width="126" FontSize="13" Background="#FFFAFAEB" IsEnabled="False" Height="25"/>
+            <Button x:Name="btnScanChecked" Content="Scan All Checked" HorizontalAlignment="Left" Margin="10,0,0,0" Width="137" FontSize="13" Background="MintCream" Height="25"/>
+            <Button x:Name="btnQuerySelected" Content="Query Selected" HorizontalAlignment="Left" Margin="5,0,0,0" Width="126" FontSize="13" Background="#FFFAFAEB" IsEnabled="False" Height="25"/>
             <Label x:Name="lbCheckCount" Content="Checked: " VerticalAlignment="Center" Margin="10,0,0,0"></Label>
-            <Button x:Name="btnCopy" Content="Copy" HorizontalAlignment="Left" Margin="20,2,0,2.025" Width="91" FontSize="13" Background="#FFEBF7FA" Click="btnCopy_Click" Height="25"/>
-            <Button x:Name="btnSaveAs" Content="Save As..." HorizontalAlignment="Left" Margin="20,2,0,2.025" Width="91" FontSize="13" Background="#FFEBF7FA" Click="btnSaveAs_Click" Height="25"/>
-            <Button x:Name="btnClose" Content="Close" HorizontalAlignment="Left" Margin="20,2,0,2.025" Width="91" FontSize="13" Background="#FFFAFAEB" Height="25"/>
+            <Button x:Name="btnCopy" Content="Copy" HorizontalAlignment="Left" Margin="10,0,0,0" Width="91" FontSize="13" Background="#FFEBF7FA" Click="btnCopy_Click" Height="25"/>
+            <Button x:Name="btnSaveAs" Content="Save As..." HorizontalAlignment="Left" Margin="5,0,0,0" Width="91" FontSize="13" Background="#FFEBF7FA" Click="btnSaveAs_Click" Height="25"/>
+            <Button x:Name="btnClose" Content="Close" HorizontalAlignment="Left" Margin="10,0,0,0" Width="91" FontSize="13" Background="#FFFAFAEB" Height="25"/>
         </StackPanel>
         <DataGrid x:Name="dGrid" Margin="0" Grid.Row="1" AutoGeneratingColumn="dGrid_AutoGeneratingColumn" SelectionMode="Single" MaxColumnWidth="1000" CanUserReorderColumns="False" SelectionChanged="dGrid_SelectionChanged" CanUserAddRows="False" VerticalScrollBarVisibility="Visible"/>
 

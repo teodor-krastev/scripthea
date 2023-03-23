@@ -17,6 +17,7 @@ using System.Drawing.Imaging;
 using scripthea.master;
 using UtilsNS;
 using Path = System.IO.Path;
+using Brushes = System.Windows.Media.Brushes;
 
 namespace scripthea.viewer
 {
@@ -59,7 +60,12 @@ namespace scripthea.viewer
                 return;
             }
             tbName.Foreground = System.Windows.Media.Brushes.Navy;
-            if (File.Exists(filePath)) image.Source = ImgUtils.UnhookedImageLoad(filePath, ImageFormat.Png);
+            if (File.Exists(filePath))
+            {
+                image.Source = ImgUtils.UnhookedImageLoad(filePath, ImageFormat.Png);
+                if (image.Source == null)
+                    { Log("Exhausted resources - use table view instead", Brushes.Red); return; }
+            }
             //var uri = new Uri(filePath); var bitmap = new BitmapImage(uri);  image.Source = bitmap.Clone(); image.UpdateLayout(); bitmap = null;
             tbCue.Text = prompt;
             // iDepot compare

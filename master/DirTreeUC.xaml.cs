@@ -65,7 +65,7 @@ namespace scripthea.master
                 case ".png": return ImageFormat.Png;
                 case ".gif": return ImageFormat.Gif;
                 case ".bmp": return ImageFormat.Bmp;
-                default: return null;
+                default: return null; // other
             }
         }
         public static string GetImageExt(ImageFormat iFormat)
@@ -130,33 +130,83 @@ namespace scripthea.master
         }    
         public static BitmapImage BitmapToBitmapImage(System.Drawing.Bitmap bitmap, ImageFormat imageFormat)
         {
-            var bitmapImage = new BitmapImage();
-            using (var memory = new MemoryStream())
-            {
-                bitmap.Save(memory, imageFormat);
-                memory.Position = 0;
+            try
+            {           
+                var bitmapImage = new BitmapImage();
+                using (var memory = new MemoryStream())
+                {
+                    bitmap.Save(memory, imageFormat);
+                    memory.Position = 0;
 
-                bitmapImage.BeginInit();
-                bitmapImage.StreamSource = memory;
-                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                bitmapImage.EndInit();
-                bitmapImage.Freeze();
+                    bitmapImage.BeginInit();
+                    bitmapImage.StreamSource = memory;
+                    bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmapImage.EndInit();
+                    bitmapImage.Freeze();
+                }
+                return bitmapImage.Clone();
             }
-            return bitmapImage.Clone();
+            catch { return null; }
         }
 
         public static BitmapImage UnhookedImageLoad(string filename, ImageFormat imageFormat = null)
         {
-            if (!File.Exists(filename)) 
-                { Utils.TimedMessageBox("File <" + filename + "> is missing.", "Error:", 3000); return null; }
-            ImageFormat iFormat = imageFormat == null ? GetImageFormat(filename) : imageFormat;
-            if (iFormat == null) return null; // unrecogn. format; need to specify one
-            System.Drawing.Image selectedImage = System.Drawing.Image.FromFile(filename);
-            System.Drawing.Bitmap bitmap = new System.Drawing.Bitmap(selectedImage);
-            BitmapImage bitmapImage = BitmapToBitmapImage(bitmap, iFormat);
-            selectedImage.Dispose(); bitmap.Dispose(); GC.Collect();
-            return bitmapImage;
+            try
+            {
+                if (!File.Exists(filename)) 
+                    { Utils.TimedMessageBox("File <" + filename + "> is missing.", "Error:", 3000); return null; }
+                ImageFormat iFormat = imageFormat == null ? GetImageFormat(filename) : imageFormat;
+                if (iFormat == null) return null; // unrecogn. format; need to specify one
+                System.Drawing.Image selectedImage = System.Drawing.Image.FromFile(filename);
+                System.Drawing.Bitmap bitmap = new System.Drawing.Bitmap(selectedImage);
+                BitmapImage bitmapImage = BitmapToBitmapImage(bitmap, iFormat);
+                selectedImage.Dispose(); bitmap.Dispose(); GC.Collect();
+                return bitmapImage;
+            }
+            catch { return null; }
+
         }
+        /*
+public System.Drawing.Color GetTriadicColors(System.Drawing.Color rgbColor, double turnColorWheel) // turnColorWheel [0..360]
+{
+    // Convert the base color to HSL            
+
+    float hue = rgbColor.GetHue();
+    float saturation = rgbColor.GetSaturation();
+    float lightness = rgbColor.GetBrightness();
+
+    float h1 = (hue + (float)turnColorWheel) % 360;
+
+    System.Drawing.Color.RGBtoHSL(baseColor.R, baseColor.G, baseColor.B, out h, out s, out l);
+
+    // Calculate the three triadic hues
+    float h1 = (h + 120) % 360;
+    float h2 = (h + 240) % 360;
+
+    // Convert the hues back to RGB colors
+    Color triadic1 = ColorExtensions.FromAhsb(baseColor.A, h1, s, l);
+    Color triadic2 = ColorExtensions.FromAhsb(baseColor.A, h2, s, l);
+
+    // Return the three triadic colors
+    return new Color { baseColor, triadic1, triadic2 };
+}
+
+public static System.Windows.Media.Color turnColorWheel(System.Windows.Media.Color baseColor, double turn2degree = 180) // turn2degree 
+{
+
+}
+double h = 120; // Hue value (0-360)
+double s = 0.5; // Saturation value (0-1)
+double l = 0.5; // Lightness value (0-1)
+
+System.Windows.Media.Color color = ColorHelper.FromHsl(h, s, l);
+byte r = color.R; // Red component value (0-255)
+byte g = color.G; // Green component value (0-255)
+byte b = color.B; // Blue component value (0-255)
+
+// Use the RGB values to create a new Color object
+Color rgbColor = Color.FromRgb(r, g, b);
+*/
 
         public static async Task<BitmapImage> LoadBitmapImageFromFileAsync(string filePath)
         {

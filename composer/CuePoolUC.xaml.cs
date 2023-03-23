@@ -217,12 +217,16 @@ namespace scripthea.composer
             lBoxBpool.Items.Remove(lBoxBpool.SelectedItem);
             lBoxApool.Items.Add(newChk); lBoxApool.SelectedItem = newChk;
         }
-        private int lastTabIdx = -1; private int lastPoolIdx = -1;
+        private TabItem lastTab = null; private int lastPoolIdx = -1;
         private void tabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!(sender as TabControl).Name.Equals("tabControl")) return;
             int idx = tabControl.SelectedIndex;
-            if (lastTabIdx.Equals(poolCount) && Utils.InRange(idx, 0,poolCount-1)) // out of map tab
+            if (tiEditor.Equals(lastTab) && Utils.InRange(idx, 0, poolCount+1) && cueEditor.newCues) // out of editor tab
+            {
+                Init(ref opts); cueEditor.newCues = false;
+            }
+            if (tiPoolMap.Equals(lastTab) && Utils.InRange(idx, 0,poolCount-1)) // out of map tab
             {
                 UpdatePoolMapFromVisuals();
                 for (int i = 0; i < poolCount; i++)
@@ -235,7 +239,7 @@ namespace scripthea.composer
             }
             if (Utils.InRange(idx, 0, poolCount-1) && !Utils.isNull(cueLists)) 
                 cueLists[idx].tabControl_SelectionChanged(null, null);
-            lastTabIdx = idx; if (Utils.InRange(idx, 0, poolCount-1)) lastPoolIdx = idx;
+            lastTab = (TabItem)tabControl.SelectedItem; if (Utils.InRange(idx, 0, poolCount-1)) lastPoolIdx = idx;
             if (tabControl.SelectedItem.Equals(tiEditor)) cueEditor.selected = 0;
             if (!Utils.isNull(e)) e.Handled = true;
         }

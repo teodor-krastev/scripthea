@@ -208,7 +208,8 @@ namespace scripthea.composer
                 RemoveAt(idx);
             }
         }
-        private void SaveAs(bool flat)
+        public bool newCues = false; 
+        private void SaveAs(bool flat) // flat is one line cue
         {
             var ls = new List<string>();
             for (int i = 0; i < cues.Count; i++)
@@ -223,7 +224,7 @@ namespace scripthea.composer
             if (filename.Equals("")) return;
             filename = Path.Combine(Utils.basePath, "cues", filename);
             Utils.writeList(Path.ChangeExtension(filename, ".cues"), ls);
-            Log("Saved in " + filename, Brushes.Tomato);
+            Log("Saved in " + filename, Brushes.Tomato); newCues = true;
         }
         private void btnAddCue_Click(object sender, RoutedEventArgs e)
         {
