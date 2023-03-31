@@ -40,7 +40,7 @@ namespace scripthea
         }
         string optionsFile;
         public Options opts;
-        public PreferencesWindow prefsWnd;
+        public PreferencesWindow preferencesWindow;
         private Bitmap penpic;
 
         public FocusControl focusControl;
@@ -56,8 +56,9 @@ namespace scripthea
             }
             else opts = new Options();
             opts.debug = Utils.isInVisualStudio || Utils.localConfig;
+            
             if (!opts.debug) imgPreferences.Visibility = Visibility.Collapsed;
-            prefsWnd = new PreferencesWindow();
+            preferencesWindow = new PreferencesWindow();
             Title = "Scripthea - options loaded";
             dirTreeUC.Init();
             dirTreeUC.OnActive += new DirTreeUC.SelectHandler(Active);
@@ -73,7 +74,7 @@ namespace scripthea
             exportUtilUC.Init(ref opts);
 
             oldTab = tiComposer;
-            Log("> Welcome to Scripthea" + "  " + (Utils.isInVisualStudio ? "(in VS)" : "")); Log("");
+            Log("> Welcome to Scripthea" + "  " + (opts.debug ? "(in debug mode)" : "")); Log("");
             Utils.DelayExec(2000, new Action(() => { aboutWin.Hide(); })); 
             queryUC.Init(ref opts);            
             
@@ -162,9 +163,9 @@ namespace scripthea
 
             string json = JsonConvert.SerializeObject(opts);
             System.IO.File.WriteAllText(optionsFile, json);
-            if (!Utils.isNull(prefsWnd))
+            if (!Utils.isNull(preferencesWindow))
             {
-                prefsWnd.keepOpen = false; prefsWnd.Close();
+                preferencesWindow.keepOpen = false; preferencesWindow.Close();
             }
         }
         private DispatcherTimer dTimer;
@@ -222,7 +223,11 @@ namespace scripthea
                 if (chkLog.IsChecked.Value)
                 {                
                     if (txt.StartsWith("@") && !opts.debug) return; // skips internal messages if not debug    
-                    if (ExplorerPart.Equals(100)) { if (!txt.StartsWith("@")) Utils.TimedMessageBox(txt, "Warning", 3500); }
+                    if (ExplorerPart.Equals(100)) 
+                    { 
+                        if (!txt.StartsWith("@") && !txt.StartsWith("StartGe") && !txt.Equals("---")) 
+                            Utils.TimedMessageBox(txt, "Warning", 2500); 
+                    }
                     else Utils.log(tbLogger, txt, clr);
                 }
             }
@@ -344,15 +349,14 @@ namespace scripthea
         }
         private void imgPreferences_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            prefsWnd.ShowDialog();
+            if (Utils.isInVisualStudio) preferencesWindow.ShowWindow(tabControl.SelectedIndex);
+            else Utils.TimedMessageBox("Preferences dialog is under development.","", 3000);
         }
-
         private void btnRefresh_Click(object sender, RoutedEventArgs e)
         {
             string sPath = dirTreeUC.selectedPath;
             dirTreeUC.refreshTree(); dirTreeUC.CatchAFolder(sPath);
         }
-
         private void MainWindow1_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (tabControl.SelectedItem.Equals(tiViewer))

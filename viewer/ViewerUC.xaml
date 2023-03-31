@@ -33,12 +33,16 @@
             <Grid Grid.Row="2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="55"/>
+                    <ColumnDefinition Width="135"/>
                 </Grid.ColumnDefinitions>
                 <Label Content="Find" HorizontalAlignment="Left"></Label>
                 <TextBox x:Name="tbFind" Margin="34,3,5,3"/>
-                <Image x:Name="btnFindUp" Grid.Column="1" Width="25" HorizontalAlignment="Left" Source="/Scripthea;component/Properties/find_up.png" Margin="0,0,0,0" Cursor="Hand" ToolTip="Find Up" MouseDown="btnFindUp_MouseDown" Height="25"/>
-                <Image x:Name="btnFindDown"  Grid.Column="1" Width="25" HorizontalAlignment="Left" Source="/Scripthea;component/Properties/find_down.png" Margin="27,0,0,0" Cursor="Hand" ToolTip="Find Down" MouseDown="btnFindUp_MouseDown" Height="25"/>
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <Image x:Name="btnFindUp"  Width="25" Source="/Scripthea;component/Properties/find_up.png" Margin="0,0,0,0" Cursor="Hand" ToolTip="Find Up" MouseDown="btnFindUp_MouseDown" Height="25"/>
+                    <Image x:Name="btnFindDown"  Width="25" Source="/Scripthea;component/Properties/find_down.png" Margin="0,0,0,0" Cursor="Hand" ToolTip="Find Down" MouseDown="btnFindUp_MouseDown" Height="25"/>
+                    <Button x:Name="btnMark" FontWeight="Bold" Content=" Mark " Background="MintCream" Margin="5,0,5,0" Foreground="#FF058402" Click="btnMark_Click" ></Button>
+                    <Button x:Name="btnClearMark" FontWeight="Bold" Content=" X " Background="White" Margin="0,0,0,0" Foreground="#FFA80303"   Click="btnMark_Click" ></Button>
+                </StackPanel>
             </Grid>
             <StackPanel Grid.Row="1" Orientation="Horizontal" Height="27" HorizontalAlignment="Right" VerticalAlignment="Top" Panel.ZIndex="20">
                 <Button x:Name="btnPlay" Width="40" Margin="0,0,4,0" Background="White" HorizontalAlignment="Left" VerticalAlignment="Center" Click="btnPlay_Click" IsEnabled="False" ToolTip="Start animation" Cursor="Hand">

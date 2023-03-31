@@ -35,7 +35,7 @@ namespace scripthea.viewer
         {
             if (OnLog != null) OnLog(txt, clr);
         }
-        public DepotFolder iDepot { get; set; }
+        public ImageDepot iDepot { get; set; }
         private string _imagePath;
         public string imagePath { get { return _imagePath; }  private set { _imagePath = value; } }
         public void Clear()

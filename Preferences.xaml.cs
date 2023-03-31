@@ -20,6 +20,33 @@ using Microsoft.WindowsAPICodePack.Dialogs;
 
 namespace scripthea
 {
+
+
+    /*
+     * using System;
+
+public class OuterClass
+{
+    public string OuterProperty { get; set; }
+
+    public class NestedClass
+    {
+        public string NestedProperty { get; set; }
+    }
+}
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        OuterClass outer = new OuterClass { OuterProperty = "Outer Property Value" };
+        OuterClass.NestedClass nested = new OuterClass.NestedClass { NestedProperty = "Nested Property Value" };
+
+        Console.WriteLine($"Outer class property: {outer.OuterProperty}");
+        Console.WriteLine($"Nested class property: {nested.NestedProperty}");
+    }
+}
+     */
     public class Options
     {
         // general 
@@ -103,6 +130,11 @@ namespace scripthea
         public void visuals2prefs()
         {
             
+        }
+        public void ShowWindow(int tabIdx)
+        {
+            tabControl.SelectedIndex = Utils.EnsureRange(tabIdx, 0, 3);
+            ShowDialog();
         }
         /// <summary>
         /// Accepting and saving the changes

@@ -111,7 +111,7 @@ namespace scripthea.master
             {
                 if (ImgUtils.checkImageDepot(path, true) > -1)
                 {
-                    depotFolder = new DepotFolder(path, ImageInfo.ImageGenerator.FromDescFile); lbAdd2Depot.Content = "Add to depot";
+                    depotFolder = new ImageDepot(path, ImageInfo.ImageGenerator.FromDescFile); lbAdd2Depot.Content = "Add to depot";
                 }
                 else orgFiles = new List<string>(Directory.GetFiles(imageFolder, "*.png"));
             }
@@ -205,7 +205,7 @@ namespace scripthea.master
             }
             return true;
         }
-        public bool converting = false; DepotFolder depotFolder =null;
+        public bool converting = false; ImageDepot depotFolder =null;
         private void btnConvertFolder_Click(object sender, RoutedEventArgs e)
         {
             int rc = dTable.Rows.Count;
@@ -214,7 +214,7 @@ namespace scripthea.master
             image.UpdateLayout();
             
             if (Utils.isNull(depotFolder))
-                depotFolder = new DepotFolder(imageFolder, ImageInfo.ImageGenerator.StableDiffusion);
+                depotFolder = new ImageDepot(imageFolder, ImageInfo.ImageGenerator.StableDiffusion);
             try
             {
                 GetChecked();

@@ -88,6 +88,7 @@ namespace scripthea.composer
             {
                 int sel = selected;
                 AddCue(""); selected = sel;
+                scrollViewer.ScrollToEnd();
             }
         }
         private void NotifyCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -183,7 +184,7 @@ namespace scripthea.composer
             }
             else // .idf
             {                
-                DepotFolder iDepot = new DepotFolder(Path.GetDirectoryName(filename));
+                ImageDepot iDepot = new ImageDepot(Path.GetDirectoryName(filename));
                 foreach (ImageInfo ii in iDepot.items)
                 {
                     string prompt = ii.prompt;

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using scripthea.master;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
@@ -52,7 +53,8 @@ namespace scripthea.viewer
                 if (Utils.isNull(iDepot)) return false;
                 else return iDepot.isEnabled;
             }
-        }
+        }       
+        public bool HasTheFocus { get; set; }
         public void BindData()
         {
             Binding binding = new Binding("."); //ItemsSource="{Binding Path=., Mode=TwoWay}"  SourceUpdated="OnTargetUpdated"
@@ -61,7 +63,7 @@ namespace scripthea.viewer
             binding.Source = dTable;
             dGrid.SetBinding(DataGrid.ItemsSourceProperty, binding);
         }
-        public DepotFolder iDepot { get; set; }
+        public ImageDepot iDepot { get; set; }
         public string loadedDepot { get; set; }
         public void UpdateVis()
         {
@@ -103,6 +105,29 @@ namespace scripthea.viewer
         }
         
         public string imageFolder { get { return iDepot?.path; } }
+        public void SetRowColor(int idx0, bool bb)
+        {
+            if (!Utils.InRange(idx0, 0, dTable.Rows.Count - 1)) return;
+            DataGridRow dRow = DataGridHelper.GetRowByIndex(dGrid, idx0);
+            if (dRow == null) return;
+            if (bb) dRow.Background = Brushes.MintCream;  //ImgUtils.ToSolidColorBrush("#FFE6FFF3");
+            else dRow.Background = Brushes.White;
+        }
+        private string _markMask = "";
+        public string markMask { get { return _markMask; } }
+        public void Mark(string mask) // mask = "" unmask all 
+        {
+            _markMask = mask;
+            foreach (DataRow row in dTable.Rows)
+            {
+                string prompt = Convert.ToString(row["Prompt"]); int idx0 = Convert.ToInt32(row["#"])-1;
+                bool bb = mask.Equals("") ? false :  Utils.IsWildCardMatch(prompt, mask);
+                DataGridRow dRow = DataGridHelper.GetRowByIndex(dGrid, idx0);
+                if (dRow == null) return;
+                if (bb) dRow.Background = Brushes.MintCream; // ImgUtils.ToSolidColorBrush("#FFEBFFF5");
+                else dRow.Background = Brushes.White;
+            }
+        }
         public void Clear(bool inclDepotItems = false)
         {
             dTable?.Rows?.Clear();  
@@ -114,10 +139,10 @@ namespace scripthea.viewer
             Clear();
             if (!Directory.Exists(imageDepot)) { Log("Err: no such folder -> " + imageDepot); return false; }
             //if (ImgUtils.checkImageDepot(imageDepot) == 0) { Log("Err: not image depot folder -> " + imageDepot); return false; }
-            DepotFolder _iDepot = new DepotFolder(imageDepot, ImageInfo.ImageGenerator.FromDescFile);
+            ImageDepot _iDepot = new ImageDepot(imageDepot, ImageInfo.ImageGenerator.FromDescFile);
             return FeedList(ref _iDepot);        
         }
-        public bool FeedList(ref DepotFolder _iDepot) // update from existitng iDepot
+        public bool FeedList(ref ImageDepot _iDepot) // update from existitng iDepot
         {
             if ((dTable == null) || (_iDepot == null)) return false;
             if (!Directory.Exists(_iDepot.path)) { Log("Err: no such folder -> " + _iDepot.path); return false; }
@@ -136,9 +161,9 @@ namespace scripthea.viewer
             set 
             {
                 if (!Utils.InRange(value - 1, 0, dTable.Rows.Count - 1)) return;
-                dGrid.Focus(); DataGridHelper.SetFocusOnRow(dGrid, value - 1);               
+                dGrid.Focus(); DataGridHelper.SetFocusOnRow(dGrid, value - 1);
                 //dGrid.SelectedIndex = value - 1; DataRowView drv = (DataRowView)dGrid.SelectedItem; 
-            } 
+            }
         }
         public int Count { get { return dTable.Rows.Count; } }
         public List<Tuple<int, string, string>> GetItems(bool check, bool uncheck) 
@@ -175,10 +200,6 @@ namespace scripthea.viewer
         public event RoutedEventHandler OnChangeContent;
         protected void ChangeContent(object sender, RoutedEventArgs e)
         {
-            if (sender is DataRow)
-            {
-
-            }
             if (OnChangeContent != null) OnChangeContent(sender, e);
         }
         private void DataGrid_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
@@ -211,11 +232,10 @@ namespace scripthea.viewer
                     ii = iDepot.items[idx];
             return ii;
         }
-
         int lastSelectedRow = -1;
         private void dGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            DataRowView dataRow = (DataRowView)dGrid.SelectedItem;
+        {           
+            DataRowView dataRow = (DataRowView)dGrid.SelectedItem; 
             if (Utils.isNull(dataRow)) return;
             dGrid.Dispatcher.InvokeAsync(() =>
             {
@@ -232,7 +252,6 @@ namespace scripthea.viewer
             if (!Utils.isNull(e)) e.Handled = true;
             lastSelectedRow = dGrid.SelectedIndex;
         }
-
         private void dGrid_KeyDown(object sender, KeyEventArgs e)
         {
             int sr = dGrid.SelectedIndex;
@@ -241,8 +260,7 @@ namespace scripthea.viewer
                 var chk = DataGridHelper.GetCellByIndices(dGrid, sr, 1).FindVisualChild<CheckBox>();
                 if (chk != null) chk.IsChecked = !chk.IsChecked.Value;      
                 OnSelect(sr, Path.Combine(imageFolder, Convert.ToString(dTable.Rows[sr].ItemArray[3])), ""); 
-            }
-            
+            }           
         }
         private void dGrid_BeginningEdit(object sender, DataGridBeginningEditEventArgs e)  // TO BE FINISHED !!!
         {
@@ -254,11 +272,19 @@ namespace scripthea.viewer
             if (e.Key.Equals(Key.Home)) { dGrid.SelectedIndex = 0; e.Handled = true; }
             if (e.Key.Equals(Key.End)) { dGrid.SelectedIndex = Count-1; e.Handled = true; }
         }
-
         public void SortTableByIndex()
         {
             if (dGrid.Columns.Count == 0) return;
             if (dGrid.Columns[0].SortDirection == null) DataGridHelper.SortDataGrid(dGrid);
+        }
+
+        private void tableViewUC_GotFocus(object sender, RoutedEventArgs e)
+        {
+            HasTheFocus = true;
+        }
+        private void tableViewUC_LostFocus(object sender, RoutedEventArgs e)
+        {
+            HasTheFocus = false;
         }
     }
 }

@@ -52,7 +52,7 @@ namespace scripthea.master
         private void OnChangeDepot(object sender, RoutedEventArgs e)
         {
             iPicker.btnCustom.IsEnabled = iPicker.isEnabled; 
-            DepotFolder df = sender as DepotFolder;
+            ImageDepot df = sender as ImageDepot;
             df?.Validate(null);
         }
         private void ConvertPNG2JPG(object sender, RoutedEventArgs e)
@@ -125,7 +125,7 @@ namespace scripthea.master
                 }
                 if (iPicker.chkCustom2.IsChecked.Value)
                 {
-                    DepotFolder vdf = iPicker.iDepot.VirtualClone(targetFolder, filter);
+                    ImageDepot vdf = iPicker.iDepot.VirtualClone(targetFolder, filter);
                     if (Utils.isNull(vdf)) return;
                     List<string> ls = Utils.readList(Path.Combine(Utils.configPath, "export-template.xhml"), false);
                     Dictionary<string, string> opts = Utils.readDict(Path.Combine(Utils.configPath, "export-template.opts"));

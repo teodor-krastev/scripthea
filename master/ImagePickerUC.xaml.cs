@@ -91,7 +91,7 @@ namespace scripthea.master
         public MenuItem AddMenuItem(string header)
         {
             MenuItem mi = new MenuItem() { Header = header };
-            cmCue.Items.Add(mi);
+            cmImgMenu.Items.Add(mi);
             return mi;
         }
         public UserControl parrent { get { return this; } }
@@ -203,19 +203,19 @@ namespace scripthea.master
             if (activeView.Count == 0) image.Source = null;
             return itms.Count;
         }
-        public bool converting = false; public DepotFolder iDepot = null;
+        public bool converting = false; public ImageDepot iDepot = null;
         private void tbImageDepot_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (ImgUtils.checkImageDepot(tbImageDepot.Text, false) > 0) tbImageDepot.Foreground = Brushes.Black;
             else tbImageDepot.Foreground = Brushes.Red;
             if (ImgUtils.checkImageDepot(tbImageDepot.Text, true) > -1)
             {
-                iDepot = new DepotFolder(tbImageDepot.Text, ImageInfo.ImageGenerator.FromDescFile, IsReadOnly);                
+                iDepot = new ImageDepot(tbImageDepot.Text, ImageInfo.ImageGenerator.FromDescFile, IsReadOnly);                
             }
             else 
             {
                 if (Directory.Exists(tbImageDepot.Text)) 
-                    iDepot = new DepotFolder(tbImageDepot.Text, ImgUtils.DefaultImageGenerator, IsReadOnly);
+                    iDepot = new ImageDepot(tbImageDepot.Text, ImgUtils.DefaultImageGenerator, IsReadOnly);
                 else iDepot = null;
             }
             if (iDepot != null) 
@@ -244,10 +244,10 @@ namespace scripthea.master
         bool inverting = false;
         private void imgMenu_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < cmImgMenu.Items.Count; i++)
             {
-                if (cmCue.Items[i] is MenuItem)
-                    (cmCue.Items[i] as MenuItem).IsEnabled = isEnabled;
+                if (cmImgMenu.Items[i] is MenuItem)
+                    (cmImgMenu.Items[i] as MenuItem).IsEnabled = isEnabled;
             } 
             inverting = false;
             if (e.ChangedButton == MouseButton.Left)

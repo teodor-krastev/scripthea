@@ -32,7 +32,7 @@
             <StackPanel Orientation="Horizontal" Grid.ColumnSpan="2" Margin="0" VerticalAlignment="Center">
                 <Image x:Name="imgMenu" Margin="5,2,7,0" VerticalAlignment="Top" Width="25" Source="/Scripthea;component/Properties/TripleBarTeal.bmp" ToolTip="Single click - menu; Double left - invert" Cursor="Hand" MouseDown="imgMenu_MouseDown" >
                     <Image.ContextMenu>
-                        <ContextMenu x:Name="cmCue">
+                        <ContextMenu x:Name="cmImgMenu">
                             <MenuItem Header="Check All" Click="mi_Click"/>
                             <MenuItem Header="Uncheck All" Click="mi_Click"/>
                             <MenuItem Header="Invert Checking"  Click="mi_Click" FontWeight="Bold"/>

@@ -34,6 +34,10 @@ namespace scripthea.master
         public static ImageInfo.ImageGenerator DefaultImageGenerator = ImageInfo.ImageGenerator.StableDiffusion;
 
         public static BitmapImage file_not_found { get { return UnhookedImageLoad(Utils.basePath + "\\Properties\\file_not_found.jpg", ImageFormat.Jpeg); } }
+        public static SolidColorBrush ToSolidColorBrush(string hex_code)
+        {
+            return (SolidColorBrush)new BrushConverter().ConvertFromString(hex_code);
+        }
 
         public static int checkImageDepot(string imageDepot, bool checkDesc = true)
         {
@@ -148,7 +152,29 @@ namespace scripthea.master
             }
             catch { return null; }
         }
-
+        public static Bitmap ResizeImage(Bitmap originalImage, int newWidth, int newHeight)
+        {
+            Bitmap resizedImage = new Bitmap(newWidth, newHeight);
+            using (Graphics graphics = Graphics.FromImage(resizedImage))
+            {
+                graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                graphics.DrawImage(originalImage, 0, 0, newWidth, newHeight);
+            }
+            return resizedImage;
+        }
+        /* Example 
+        string inputImagePath = "path/to/your/input/image.jpg";
+        string outputImagePath = "path/to/your/output/image.jpg";
+        using (Bitmap originalImage = new Bitmap(inputImagePath))
+        {
+            int newWidth = originalImage.Width / 2; // Decrease the width by 50%
+            int newHeight = originalImage.Height / 2; // Decrease the height by 50%
+            using (Bitmap resizedImage = ResizeImage(originalImage, newWidth, newHeight))
+            {
+                resizedImage.Save(outputImagePath, ImageFormat.Jpeg);
+            }
+        }         
+         */
         public static BitmapImage UnhookedImageLoad(string filename, ImageFormat imageFormat = null)
         {
             try
@@ -164,7 +190,6 @@ namespace scripthea.master
                 return bitmapImage;
             }
             catch { return null; }
-
         }
         /*
 public System.Drawing.Color GetTriadicColors(System.Drawing.Color rgbColor, double turnColorWheel) // turnColorWheel [0..360]

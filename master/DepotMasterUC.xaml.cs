@@ -31,11 +31,17 @@ namespace scripthea.master
         public void Init(ref Options _opts)
         {
             opts = _opts;
-            iPickerA.Init(ref _opts); iPickerA.Configure('A', new List<string>(), "Validate on open", "", "", false);
-            iPickerA.OnChangeDepot += new RoutedEventHandler(ChangeDepot);  
-            iPickerB.Init(ref _opts); iPickerB.Configure('B', new List<string>(), "Validate on open", "", "",  false);
-            iPickerB.OnChangeDepot += new RoutedEventHandler(ChangeDepot); ;
+            SetIPicker(ref iPickerA, 'A'); SetIPicker(ref iPickerB, 'B');
             ChangeDepot(null,null);
+        }
+        private void SetIPicker(ref ImagePickerUC iPicker, char letter)
+        {
+            iPicker.Init(ref opts); iPicker.Configure(letter, new List<string>(), "Validate on open", "", "", false);
+            iPicker.OnChangeDepot += new RoutedEventHandler(ChangeDepot);
+            iPicker.cmImgMenu.Items.Add(new Separator());
+            MenuItem mi = new MenuItem() { Header = "Synchronize image depot", Tag = letter };
+            mi.Click += new RoutedEventHandler(miSynchronize_Click);
+            iPicker.cmImgMenu.Items.Add(mi);
         }
         public event Utils.LogHandler OnLog;
         protected void Log(string txt, SolidColorBrush clr = null)
@@ -157,6 +163,44 @@ namespace scripthea.master
             }
             iPicker1.isChanging = false;
             return j;
+        }
+        ImagePickerUC iPickerByName(char letter) 
+        { 
+            switch (letter) {
+                case 'A': return iPickerA;
+                case 'B': return iPickerB;
+                default: return null;
+            }
+        }
+        private void miSynchronize_Click(object sender, RoutedEventArgs e)
+        {
+            bool bb = false;
+            try
+            {            
+                if (!(sender is MenuItem)) return;
+                ImagePickerUC iPicker = iPickerByName(Convert.ToChar((sender as MenuItem).Tag));
+                ImageDepot df = iPicker?.iDepot;
+                if (df == null) { Log("Error: Invalid image depot! (11)", Brushes.Red); return; }
+                if (!df.isEnabled) { Log("Error: Invalid image depot! (12)", Brushes.Red); return; }
+                iPicker.isChanging = true;
+                bb = df.Validate(true);
+                iPicker.isChanging = true;
+                if (df.Extras().Count == 0) return;
+                MessageBoxResult result = MessageBox.Show("All the files without entry (" + df.Extras().Count.ToString() + ") will be deleted. Continue?",
+                    "Confirmation", MessageBoxButton.OKCancel, MessageBoxImage.Question);
+                if (result == MessageBoxResult.Cancel) return;
+                foreach (string fn in df.Extras())
+                {
+                    string ffn = Path.Combine(df.path, fn);
+                    if (!File.Exists(ffn)) { bb = false; Log("A file is missing: "+ffn);  continue; }
+                    File.Delete(ffn);
+                }
+            }    
+            finally
+            {
+                if (bb) Log("The image depot is synchronized");
+                else Log("Error: Problem with the image depot synchronization.", Brushes.Red);
+            }
         }
     }
 }

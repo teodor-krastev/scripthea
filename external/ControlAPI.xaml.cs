@@ -118,7 +118,7 @@ namespace scripthea.external
                             string desc = Path.Combine(imageFolder, ImgUtils.descriptionFile);
                             if (!File.Exists(desc)) // create an empty iDepot 
                             {
-                                DepotFolder df = new DepotFolder(imageFolder, ImageInfo.ImageGenerator.StableDiffusion, true);
+                                ImageDepot df = new ImageDepot(imageFolder, ImageInfo.ImageGenerator.StableDiffusion, true);
                                 df.Save(true); df = null;
                             }
                             using (StreamWriter sw = File.AppendText(desc))

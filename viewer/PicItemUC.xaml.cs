@@ -23,30 +23,58 @@ namespace scripthea.viewer
     /// </summary>
     public partial class PicItemUC : UserControl
     {
+        public enum statusStates { Selected, Focused, Marked }
+        public HashSet<statusStates> status;
         public PicItemUC(ref Options _opts, bool __checkable)
         {
             InitializeComponent();
             opts = _opts; checkable = __checkable;
+            status = new HashSet<statusStates>();
         }
         Options opts;      
         public int idx { get; set; }
-        private bool _selected;
+
         public bool selected
         {
-            get { return _selected; }
+            get { return status.Contains(statusStates.Selected); }
             set
-            {
-                _selected = value;
+            {               
                 if (value)
                 {
-                    Background = Brushes.RoyalBlue;
-                    tbCue.Foreground = Brushes.White; tbFile.Foreground = Brushes.White;
+                    status.Add(statusStates.Selected);
+                    focused = focused;                    
                 }
                 else
                 {
-                    Background = Brushes.White;
-                    tbCue.Foreground = Brushes.Black; tbFile.Foreground = Brushes.Black;
+                    status.Remove(statusStates.Selected);
+                    marked = marked;                     
                 }
+            }
+        }
+        public bool focused
+        {
+            get { return status.Contains(statusStates.Focused);  }
+            set
+            {
+                if (value) status.Add(statusStates.Focused);
+                else status.Remove(statusStates.Focused);
+                if (!selected) return; 
+                if (focused) Background = Brushes.RoyalBlue;  
+                else Background = Brushes.Gray;
+                tbCue.Foreground = Brushes.White; tbFile.Foreground = Brushes.White;
+            }
+        }
+        public bool marked
+        {
+            get { return status.Contains(statusStates.Marked); }
+            set
+            {
+                if (value) status.Add(statusStates.Marked);
+                else status.Remove(statusStates.Marked);
+                if (selected) return;      
+                if (value) Background = ImgUtils.ToSolidColorBrush("#FFE6FFF3"); //Brushes.MintCream;
+                else Background = Brushes.White;                        
+                tbCue.Foreground = Brushes.Black; tbFile.Foreground = Brushes.Black;
             }
         }
         private bool _checkable;
@@ -69,7 +97,6 @@ namespace scripthea.viewer
             }
             set { chkChecked.IsChecked = value; }
         }
-
         public event RoutedEventHandler OnSelect;
         /// <summary>
         /// Receive message
@@ -80,7 +107,6 @@ namespace scripthea.viewer
         {
             if (OnSelect != null) OnSelect(this, e);
         }
-
         public string imageFolder, filename, prompt;
         public event Utils.LogHandler OnLog;
         protected void Log(string txt, SolidColorBrush clr = null)
@@ -97,9 +123,12 @@ namespace scripthea.viewer
             filename = System.IO.Path.GetFileName(filePath);
             if (File.Exists(filePath))
             {
-                imageFolder = System.IO.Path.GetDirectoryName(filePath) +"\\";
-                imgPic.Source = ImgUtils.UnhookedImageLoad(filePath);
-                if (imgPic.Source == null) return false;                
+                //imgPic.Dispatcher.InvokeAsync(() => // slower for some reason !
+                //{
+                    imageFolder = System.IO.Path.GetDirectoryName(filePath) +"\\";
+                    imgPic.Source = ImgUtils.UnhookedImageLoad(filePath);                              
+                //});
+                if (imgPic.Source == null) return false;  
             }
             else tbFile.Foreground = Brushes.Tomato; 
             tbFile.Text = filename; tbFile.ToolTip = filePath;
@@ -110,7 +139,9 @@ namespace scripthea.viewer
         {
             Select(this, null);  
         }
-        const int baseWidth = 100; const int baseHeight = 100;
+        const int baseWidth = 100;
+       
+        const int baseHeight = 100;
         public void VisualUpdate() // by opts
         {
             opts.ThumbZoom = Utils.EnsureRange(opts.ThumbZoom, 30, 300);

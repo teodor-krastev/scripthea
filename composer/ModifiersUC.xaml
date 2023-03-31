@@ -24,12 +24,17 @@
             <ListBox x:Name="listBox" Grid.Row="1"  Margin="2,0,2,2" />
             <GridSplitter  Grid.Row="2" Cursor="SizeNS" VerticalAlignment="Top" HorizontalAlignment="Stretch" Height="3"></GridSplitter>
             <StackPanel Grid.Row="2" Margin="0,5,0,0">
-                <Label Content="Search (use ? * wildcards)"></Label>
-                <StackPanel x:Name="gridSearch" Height="23" Orientation="Horizontal">
-                    <TextBox x:Name="tbSearch" Margin="3,0,0,0.089" TextWrapping="Wrap" Text="" KeyDown="tbSearch_KeyDown" Width="110"/>
-                    <Button x:Name="btnSearch" Content="Mark" Click="btnSearch_Click" Background="#FFFEFBFB" Foreground="#FF0162A6" Margin="3,0,0.025,0" Width="35"/>
-                    <Button x:Name="btnClear" Content="X" Click="btnClear_Click" Foreground="#FFCB0202" FontWeight="Bold" Background="#FFFAFAFA" Margin="2,0" Width="18"/>
-                </StackPanel>
+                <Label Content="Mark (use ? * wildcards)"></Label>
+                <Grid x:Name="gridSearch" Height="23" >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="Auto" MinWidth="70"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBox x:Name="tbSearch" Grid.Column="0" Margin="3,0,0,0" TextWrapping="Wrap" Text="" KeyDown="tbSearch_KeyDown"/>
+                    <Button x:Name="btnSearch" Grid.Column="1" Content=" Mark " Click="btnSearch_Click" Background="#FFFEFBFB" Foreground="#FF009515" Margin="3.076,0,0,0" HorizontalAlignment="Left" FontWeight="Bold" />
+                    <Button x:Name="btnClear" Grid.Column="1" Content=" X " Click="btnClear_Click" Foreground="#FFCB0202" FontWeight="Bold" Background="#FFFAFAFA" Margin="4,0,0,0" HorizontalAlignment="Right"/>
+                </Grid>
                 <ListBox x:Name="lbCategories" Margin="0,3,0,0" ScrollViewer.VerticalScrollBarVisibility="Visible" VerticalAlignment="Top"></ListBox>
             </StackPanel>
             <GroupBox Header="Modifiers Options" Grid.Row="3" Margin="2">

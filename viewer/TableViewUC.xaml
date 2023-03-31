@@ -1,11 +1,11 @@
-﻿<UserControl x:Class="scripthea.viewer.TableViewUC"
+﻿<UserControl x:Name="tableViewNm" x:Class="scripthea.viewer.TableViewUC"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:scripthea.viewer"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="388.06">
+             d:DesignHeight="450" d:DesignWidth="388.06" Focusable="True" GotFocus="tableViewUC_GotFocus" LostFocus="tableViewUC_LostFocus">
     <Grid>
         <DataGrid x:Name="dGrid" Margin="0" SelectionChanged="dGrid_SelectionChanged" AutoGeneratingColumn="DataGrid_AutoGeneratingColumn" MaxColumnWidth="1000" 
            CanUserReorderColumns="False" BorderBrush="{x:Null}" SelectionMode="Single" Background="{x:Null}" CanUserAddRows="False" BorderThickness="0" KeyDown="dGrid_KeyDown" BeginningEdit="dGrid_BeginningEdit" PreviewKeyDown="dGrid_PreviewKeyDown"/>

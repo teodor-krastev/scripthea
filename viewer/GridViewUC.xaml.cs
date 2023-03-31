@@ -38,9 +38,9 @@ namespace scripthea.viewer
         private bool ShuttingDown = false;
         public void Finish()
         {
-            ShuttingDown = true;
+            ShuttingDown = true; 
         }
-        public DepotFolder iDepot { get; set; }
+        public ImageDepot iDepot { get; set; }
         public bool IsAvailable 
         { 
             get 
@@ -48,6 +48,19 @@ namespace scripthea.viewer
                 if (Utils.isNull(iDepot)) return false;
                 else return iDepot.isEnabled;
             } 
+        }
+        private bool _HasTheFocus;
+        public bool HasTheFocus 
+        { 
+            get { return _HasTheFocus; } 
+            set
+            { 
+                _HasTheFocus = value;
+                foreach (PicItemUC piUC in picItems)
+                {
+                    piUC.focused = value;
+                }              
+            }
         }
         public string loadedDepot { get; set; }
 
@@ -126,7 +139,7 @@ namespace scripthea.viewer
             if (OnLog != null) OnLog(txt, clr);
         }
         public void RemoveAt(int idx = -1) // default selected
-        {
+        {            
             int j = idx.Equals(-1) ? selectedIndex - 1 : idx;
             if (Utils.InRange(j, 0, picItems.Count - 1))
             {
@@ -151,6 +164,11 @@ namespace scripthea.viewer
             picItems.Clear(); GC.Collect(); wrapPics.Children.Clear(); wrapPics.UpdateLayout();
         }
         public string imageFolder { get { return iDepot.path; } }
+        public void Mark(string mask)
+        {
+            foreach (PicItemUC piUC in picItems)
+                piUC.marked = mask.Equals("") ? false : Utils.IsWildCardMatch(piUC.prompt, mask);
+        }
         public void Clear(bool inclDepotItems = false)
         {
             picItemsClear(); 
@@ -161,10 +179,10 @@ namespace scripthea.viewer
             Clear();
             if (!Directory.Exists(imageDepot)) { Log("Err: no such folder -> " + imageDepot); return false; }
             //if (ImgUtils.checkImageDepot(imageDepot) == 0) { Log("Err: not image depot folder -> " + imageDepot); return false; }
-            DepotFolder _iDepot = new DepotFolder(imageDepot, ImageInfo.ImageGenerator.FromDescFile);
+            ImageDepot _iDepot = new ImageDepot(imageDepot, ImageInfo.ImageGenerator.FromDescFile);
             return FeedList(ref _iDepot);
         }
-        public bool FeedList(ref DepotFolder _iDepot) // external iDepot; regular use
+        public bool FeedList(ref ImageDepot _iDepot) // external iDepot; regular use
         {
             if (_iDepot == null) return false;
             if (!Directory.Exists(_iDepot.path)) { Log("Err: no such folder -> " + _iDepot.path); return false; }
@@ -187,7 +205,7 @@ namespace scripthea.viewer
                 foreach (PicItemUC piUC in picItems) // reset all
                 {
                     piUC.selected = piUC.idx.Equals(value);
-                    if (piUC.selected) piUC2 = picItems[value - 1];
+                    if (piUC.selected) { piUC.focused = true; piUC2 = picItems[value - 1]; }
                 }                                                                          
                 scrollToIdx(value);
                 if (piUC2 != null)
@@ -328,7 +346,16 @@ namespace scripthea.viewer
                     break;
             }
         }
-
+        private void gridViewUC_GotFocus(object sender, RoutedEventArgs e)
+        {
+            if (!IsAvailable || picItems.Count.Equals(0) || selectedIndex.Equals(-1)) return;
+            HasTheFocus = true;
+        }
+        private void gridViewUC_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (!IsAvailable || picItems.Count.Equals(0) || selectedIndex.Equals(-1)) return;
+            HasTheFocus = false;
+        }
     }
 }
 

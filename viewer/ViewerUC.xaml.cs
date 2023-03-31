@@ -195,9 +195,9 @@ namespace scripthea.viewer
         // clone 1. target.FromString(source.To_String())
         //       2. target.FromDictionary(Source.ToDictionary())
     }
-    public class DepotFolder
+    public class ImageDepot
     {
-        public DepotFolder(string _folder, ImageInfo.ImageGenerator _imageGenerator = ImageInfo.ImageGenerator.FromDescFile, bool _IsReadOnly = false) 
+        public ImageDepot(string _folder, ImageInfo.ImageGenerator _imageGenerator = ImageInfo.ImageGenerator.FromDescFile, bool _IsReadOnly = false) 
         {
             if (!Directory.Exists(_folder)) return; isReadOnly = _IsReadOnly;
             header = new Dictionary<string, string>(); items = new List<ImageInfo>();
@@ -250,10 +250,10 @@ namespace scripthea.viewer
             items.RemoveAt(idx);
             return true;
         }
-        public DepotFolder VirtualClone(string targetPath, List<Tuple<int,string,string>> filter = null) // int -> index; string -> filename (may differ); string -> prompt (for consistency)
+        public ImageDepot VirtualClone(string targetPath, List<Tuple<int,string,string>> filter = null) // int -> index; string -> filename (may differ); string -> prompt (for consistency)
         {
             if (!Directory.Exists(targetPath)) return null;
-            DepotFolder dp = new DepotFolder(targetPath, imageGenerator, isReadOnly);
+            ImageDepot dp = new ImageDepot(targetPath, imageGenerator, isReadOnly);
             if (Utils.isNull(filter)) dp.items.AddRange(items);
             else
             {
@@ -349,7 +349,7 @@ namespace scripthea.viewer
             }
             if (itemsCount != items.Count)
             {
-                Save(true); Utils.TimedMessageBox((itemsCount - items.Count).ToString()+" image depot entries have been removed", "Warining", 3000);
+                Save(true); Utils.TimedMessageBox((itemsCount - items.Count).ToString()+" image depot entries have been removed", "Warning");
             }
             return ok;
         }
@@ -387,13 +387,15 @@ namespace scripthea.viewer
         void Init(ref Options _opts, bool _checkable);
         void Finish();
         bool IsAvailable { get; }
-        DepotFolder iDepot { get; set; }
+        bool HasTheFocus { get; set; }
+        ImageDepot iDepot { get; set; }
         string loadedDepot { get; set; }
         bool FeedList(string imageFolder); // the way to load the list
-        bool FeedList(ref DepotFolder _iDepot); // external iDepot; regular use
+        bool FeedList(ref ImageDepot _iDepot); // external iDepot; regular use
         void UpdateVis(); // update visual from iDepot
         void SynchroChecked(List<Tuple<int, string, string>> chks);
         void SetChecked(bool? check); // if null invert; returns checked
+        void Mark(string mask); // mark some items; if "" unmark all 
         void Clear(bool inclDepotItems = false);
         int selectedIndex { get; set; } // one based index in no-checkable mode
         int Count { get; }
@@ -412,7 +414,7 @@ namespace scripthea.viewer
             views.Add(gridViewUC);  gridViewUC.SelectEvent += new GridViewUC.PicViewerHandler(picViewerUC.loadPic);
             gridViewUC.OnLog += new Utils.LogHandler(Log); picViewerUC.OnLog += new Utils.LogHandler(Log);
         }
-        private DepotFolder iDepot;
+        private ImageDepot iDepot;
         iPicList activeView { get { return views[tabCtrlViews.SelectedIndex]; } }
         private DispatcherTimer timer;
         private Options opts;
@@ -457,31 +459,36 @@ namespace scripthea.viewer
         }
         public int RemoveSelected(bool inclFile = false)
         {
+            if (!activeView.HasTheFocus) return -1;
             string ss = inclFile ? "and file" : ""; bool anim = animation; animation = false;
             Log("Deleting image #" + activeView.selectedIndex.ToString()+ " entry "+ ss, Brushes.Tomato);
             if (iDepot == null) { Log("no active image depot found"); return -1; }
             if (!iDepot.isEnabled) { Log("current image depot - not active"); return -1; }
-            int idx = activeView.selectedIndex - 1;
-            if (!Utils.InRange(idx, 0, iDepot.items.Count - 1)) { Log("index out of limits"); return -1; }                           
-            if (iDepot.RemoveAt(idx, inclFile)) iDepot.Save();
+            int idx0 = activeView.selectedIndex - 1;
+            if (!Utils.InRange(idx0, 0, iDepot.items.Count - 1)) { Log("index out of limits"); return -1; }    
+            
+            if (iDepot.RemoveAt(idx0, inclFile)) iDepot.Save(); // iDepot correction
             else { Log("Unsuccessful delete operation"); return -1; }
+            
             if (tabCtrlViews.SelectedIndex == 0) // tableView
             {
+                string markMask = tableViewUC.markMask;
                 btnRefresh_Click(null, null);
-                if (!iDepot.isEnabled) { Log("current image depot - not active"); return -1; }
-                activeView.selectedIndex = Utils.EnsureRange(idx + 1, 1, iDepot.items.Count);
+                if (!iDepot.isEnabled) { Log("current image depot - not active"); return -1; }                
+                tableViewUC.selectedIndex = Utils.EnsureRange(idx0, 0, iDepot.items.Count - 1) + 1;
+                tableViewUC.Mark(markMask);
             }
             else // gridView
             {
                 gridViewUC.RemoveAt(); 
             }
             if (anim) animation = true;
-            //if (tabCtrlViews.SelectedIndex == 0) 
-            return idx;
+            if (iDepot.isEnabled) lbDepotInfo.Content = iDepot.items.Count.ToString() + " images";
+            return idx0;
         } 
         public void Clear() 
         {
-            activeView.Clear(); picViewerUC.Clear();
+            activeView.Clear(); picViewerUC.Clear(); activeView.Mark("");
         }
         private bool updating = false; private bool showing = false;
         public void ShowImageDepot(string imageDepot)
@@ -503,8 +510,8 @@ namespace scripthea.viewer
             List<Tuple<int, string, string>> items = activeView.GetItems(true,true);
             while (idx > -1 && idx < items.Count)
             {
-                string prompt = Convert.ToString(items[idx].Item3);
-                if ((prompt.IndexOf(tbFind.Text) > -1) || tbFind.Text.Equals(""))
+                string prompt = Convert.ToString(items[idx].Item3);                
+                if (Utils.IsWildCardMatch(prompt,tbFind.Text) || tbFind.Text.Equals("")) //prompt.IndexOf(tbFind.Text) > -1)
                 {
                     activeView.selectedIndex = idx+1; break;
                 }
@@ -519,13 +526,14 @@ namespace scripthea.viewer
             return cnt;
         }
         private void btnRefresh_Click(object sender, RoutedEventArgs e) 
-        { 
+        {
+            
             if (checkImageDepot(tbImageDepot.Text) == 0)                 
             {                
                 if ((sender == btnRefresh) || (sender == tbImageDepot)) Clear();
                 return; 
             }
-            iDepot = new DepotFolder(imageFolder);
+            iDepot = new ImageDepot(imageFolder);
             if (!iDepot.isEnabled) { Log("Error: This is not an image depot."); return; }
             List<Tuple<int, string, string>> decompImageDepot = iDepot.Export2Viewer(); 
             if (!Utils.isNull(decompImageDepot))
@@ -614,6 +622,12 @@ namespace scripthea.viewer
         private void numDly_LostFocus(object sender, RoutedEventArgs e)
         {
             numDlyIsFocused = false;
+        }
+
+        private void btnMark_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender.Equals(btnMark)) activeView.Mark(tbFind.Text);
+            else activeView.Mark("");
         }
     }
 }
