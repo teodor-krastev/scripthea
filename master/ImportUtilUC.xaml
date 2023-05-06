@@ -10,8 +10,8 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
             <RowDefinition Height="30"/>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="600"/>
+            <RowDefinition Height="300*"/>
+            <RowDefinition Height="200*"/>
         </Grid.RowDefinitions>
         <GroupBox x:Name="gbFolder" Header="Image folder to convert (import) to image depot" Margin="0" >
             <Grid>

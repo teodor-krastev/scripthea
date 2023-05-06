@@ -154,6 +154,7 @@ namespace scripthea.composer
             if (!e.Key.Equals(Key.Space) && !e.Key.Equals(Key.Enter) && !e.Key.Equals(Key.Left) && !e.Key.Equals(Key.Right)) return;
             if (Utils.isNull(modifListBox.SelectedItem)) return;
             (modifListBox.SelectedItem as ModifItemUC).SwitchState(e.Key.Equals(Key.Space) || e.Key.Equals(Key.Enter) || e.Key.Equals(Key.Left));
+            e.Handled = true;
         }
         public int markWithWildcard(string searchPattern)
         {

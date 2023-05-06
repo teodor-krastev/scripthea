@@ -26,6 +26,7 @@ namespace scripthea.composer
         public ScanPreviewUC()
         {
             InitializeComponent();
+            allPrompts = new List<string>();
         }
 
         public event Utils.LogHandler OnLog;
@@ -41,6 +42,7 @@ namespace scripthea.composer
             {
                 Log("Error: no prompts in the list"); return;
             }
+            allPrompts = new List<string>(prompts);
             dTable = new DataTable(); checks = new List<CheckBox>(); 
             dTable.Columns.Add(new DataColumn("#", typeof(int)));
             dTable.Columns.Add(new DataColumn("On", typeof(bool)));
@@ -61,6 +63,7 @@ namespace scripthea.composer
             }                            
             if (dTable.Rows.Count > 0) dGrid.SelectedIndex = 0; chkTable_Checked(null, null);
         }
+
         private bool _scanning = false;
         public bool scanning
         {
@@ -126,6 +129,7 @@ namespace scripthea.composer
             selectedPrompt = Convert.ToString(dataRow.Row.ItemArray[2]);
             if (!Utils.isNull(e)) e.Handled = true;
         }
+        public List<string> allPrompts { get; private set; }
         public List<string> checkedPrompts()
         {
             List<string> ls = new List<string>();                

@@ -69,16 +69,30 @@ namespace scripthea.viewer
             //var uri = new Uri(filePath); var bitmap = new BitmapImage(uri);  image.Source = bitmap.Clone(); image.UpdateLayout(); bitmap = null;
             tbCue.Text = prompt;
             // iDepot compare
+            if (chkExtra.IsChecked.Value) return;
             if (iDepot == null) return;
             if (!iDepot.isEnabled) return;
-            if (idx > iDepot.items.Count) return;
+            if (!Utils.InRange(idx, 1, iDepot.items.Count, true)) return;
             ImageInfo ii = iDepot.items[idx - 1];
             if (!ii.prompt.Equals(prompt, StringComparison.InvariantCultureIgnoreCase)) return;
             if (!ii.filename.Equals(tbName.Text, StringComparison.InvariantCultureIgnoreCase)) return;
             modified = !Utils.GetMD5Checksum(filePath).Equals(ii.MD5Checksum);
-            if (chkExtra.IsChecked.Value && modified) UpdateMeta(modified);
+            if (modified) UpdateMeta(modified);
         }
-
+        private int ZoomFactor
+        {
+            get 
+            {
+                if (image == null) return -1;
+                if (image.Source == null) return -1;
+                ImageSource imageSource = image.Source;
+                double xScale = image.ActualWidth / imageSource.Width;
+                double yScale = image.ActualHeight / imageSource.Height; int scale = Convert.ToInt32(100 * (xScale + yScale) / 2);
+                lbZoomFactor.Content = scale.ToString() + " %";
+                return scale; 
+            }
+            set { }
+        }
         private int attemptCount = 0;
         private void UpdateMeta(bool? modified)
         {
@@ -143,7 +157,7 @@ namespace scripthea.viewer
         private void chkExtra_Checked(object sender, RoutedEventArgs e)
         {
             lboxMetadata.Visibility = Visibility.Visible;
-            columnMeta.Width = new GridLength(150);
+            columnMeta.Width = new GridLength(190);
             rowBottom.Height = new GridLength(140);
             UpdateMeta(false);
         }
@@ -160,6 +174,11 @@ namespace scripthea.viewer
             DataObject data = new DataObject(DataFormats.FileDrop, new string[] { filePath });
             // Start the drag-and-drop operation
             DragDrop.DoDragDrop(image, data, DragDropEffects.Copy);
+        }
+
+        private void image_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            int i = ZoomFactor;
         }
     }
 }

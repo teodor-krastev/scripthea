@@ -1,6 +1,12 @@
 <html>
   <head>
-    <meta http-equiv="Content-Language" content="en-gb">
+	<meta http-equiv="Content-Language" content="en-gb">
+	<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+	<meta name="description" content="Scripthea generated grid of images as web-page">
+	<meta name="keywords" content="Scripthea, images, text-to-image generator, AI">
+	<meta name="author" content="YOUR NAME">
+	<meta name="copyright" content="This page and all its contents are copyright of YOUR NAME (YEAR). All Rights Reserved.">
+  	<meta name="GENERATOR" content="Scripthea propmt composer">
     <style>
       table, th, td {
         /*border: 1px solid black;*/

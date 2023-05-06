@@ -19,6 +19,7 @@ using System.Threading.Tasks.Dataflow;
 using System.Reflection;
 using System.Drawing;
 using System.Net;
+using System.Net.NetworkInformation;
 
 using Label = System.Windows.Controls.Label;
 using FontFamily = System.Windows.Media.FontFamily;
@@ -478,6 +479,19 @@ namespace UtilsNS
                 else res.Add(ss);
             return res;
         }
+        public static bool IsInternetConnectionAvailable()
+        {
+            try
+            {
+                Ping ping = new Ping();
+                PingReply reply = ping.Send("8.8.8.8", 1000); // Google public DNS, 1000ms timeout
+                return reply.Status == IPStatus.Success;
+            }
+            catch
+            {
+                return false;
+            }
+        }
 
         private static Dictionary<string,string> FakeBrowserHeaders()
         {
@@ -488,7 +502,22 @@ namespace UtilsNS
             webHeaders.Add("Accept-Charset", "ISO-8859-1");
             return webHeaders;
         }
-        public static bool DownloadFile(Uri address, string fileName)
+        public static string DownloadString(string address)
+        {
+            string ss = "";
+            try
+            {
+                using (var client = new WebClient())
+                {
+                    foreach (var pr in FakeBrowserHeaders())
+                        client.Headers.Add(pr.Key, pr.Value);
+                    ss = client.DownloadString(address);
+                }
+            }
+            catch (WebException we) { TimedMessageBox(we.Message); ss = ""; }
+            return ss;
+        }
+        public static bool DownloadFile(string address, string fileName)
         {
             bool bb = true;
             try
@@ -628,7 +657,21 @@ namespace UtilsNS
             }
             return Regex.IsMatch(text, WildCardToRegular(sp));
         }
-        
+        public static List<string> ReadMultilineTextFromClipboard()
+        {
+            List<string> lines = new List<string>();
+
+            if (Clipboard.ContainsText())
+            {
+                string clipboardText = Clipboard.GetText();
+                string[] clipboardLines = clipboardText.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+
+                lines.AddRange(clipboardLines);
+            }
+
+            return lines;
+        }
+
         /// <summary>
         /// Read text file in List of string
         /// </summary>

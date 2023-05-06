@@ -1,11 +1,11 @@
-﻿<Window x:Class="scripthea.AboutWin"
+﻿<Window x:Name="AboutWindow" x:Class="scripthea.AboutWin"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:scripthea"
         mc:Ignorable="d"
-        Title="About Scripthea" Height="298.359" Width="402.405" MouseDown="aboutWin_MouseDown" Icon="Properties/penzy4.png" WindowStyle="ToolWindow" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Topmost="True">
+        Title="About Scripthea" Height="325.692" Width="402.405" MouseDown="aboutWin_MouseDown" Icon="Properties/penzy4.png" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Topmost="True" ShowInTaskbar="False" WindowStyle="ThreeDBorderWindow" Closing="AboutWindow_Closing">
     <Grid Margin="0">
         <Grid.RowDefinitions>
             <RowDefinition Height="136.101"/>
@@ -25,6 +25,7 @@
                 <Label x:Name="lbGithub" HorizontalAlignment="Left" Margin="0" Content="For online help and app.setup visit " FontSize="13"></Label>
                 <TextBlock x:Name="tbkWebsite" FontSize="15" Foreground="Blue" TextDecorations="Underline" Cursor="Hand" Text="Scripthea.com" Padding="0,2,0,0" MouseDown="tbkWebsite_MouseDown"/>
             </StackPanel>
+            <Label x:Name="lbMessage" FontWeight="Bold" HorizontalAlignment="Center" Margin="0"></Label>
         </StackPanel>
         <Image x:Name="imgLogo" Margin="18,25,17.975,13.101" Source="Properties/ScriptheaLogo2.png" Stretch="None" HorizontalAlignment="Center" VerticalAlignment="Center" Height="118" Width="314"/>
     </Grid>

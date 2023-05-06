@@ -133,7 +133,7 @@ namespace scripthea.composer
         }
         private void tbContent_ContextMenuOpening(object sender, ContextMenuEventArgs e)
         {
-            string input = opts.ConfirmGoogling ? new InputBox("Ask Google about", tbContent.Text, "").ShowDialog() : tbContent.Text;
+            string input = opts.composer.ConfirmGoogling ? new InputBox("Ask Google about", tbContent.Text, "").ShowDialog() : tbContent.Text;
             if (input.Equals("")) return;
             Utils.AskTheWeb(input, true);
         }

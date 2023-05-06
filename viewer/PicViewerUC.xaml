@@ -17,6 +17,7 @@
             <Image x:Name="imgZoomIn" Margin="20,0,3,0" Source="/Scripthea;component/Properties/zoom-in.png" MouseDown="imgZoomIn_MouseDown" Cursor="Hand"/>
             <Image x:Name="imgZoomFit" Margin="3,0" Source="/Scripthea;component/Properties/fit2.png" MouseDown="imgZoomFit_MouseDown" Cursor="Hand" />
             <Image x:Name="imgZoomOut" Margin="3,0" Source="/Scripthea;component/Properties/zoom-out.png" MouseDown="imgZoomIn_MouseDown" Cursor="Hand"/>
+            <Label x:Name="lbZoomFactor" FontSize="14"></Label>
         </StackPanel>
         <StackPanel Margin="0" Orientation="Horizontal" HorizontalAlignment="Right" Height="27">
             <Label x:Name="lbIndex" Content="" Margin="7,0,5,0" FontSize="14" Height="27" />
@@ -26,7 +27,7 @@
         <ScrollViewer x:Name="scrollViewer" Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Visibility="Collapsed">
         </ScrollViewer>
         <Grid x:Name="noscrollGrid" Grid.Row="1">
-            <Image x:Name="image" Margin="5" PreviewMouseLeftButtonDown="image_PreviewMouseLeftButtonDown" />
+            <Image x:Name="image" Margin="5" PreviewMouseLeftButtonDown="image_PreviewMouseLeftButtonDown" SizeChanged="image_SizeChanged" />
         </Grid>
         <Grid Grid.Row="2" Background="White" Margin="7,0,0,0" >
             <Grid.ColumnDefinitions>

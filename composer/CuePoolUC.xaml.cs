@@ -65,7 +65,8 @@ namespace scripthea.composer
         {
             opts = _opts;
             if (!Directory.Exists(cuesFolder)) { Utils.TimedMessageBox("Fatal error: cues folder <" + cuesFolder + "> does not exist.", "Closng application", 4000); Application.Current.Shutdown(); }
-            iPickerX.Init(ref _opts); iPickerX.Configure('X', new List<string>(), "Including the modifiers", "", "Browse", true).Click += new RoutedEventHandler(Browse_Click); 
+            iPickerX.Init(ref _opts); iPickerX.Configure('X', new List<string>(), "Including modifiers", "", "Browse", true).Click += new RoutedEventHandler(Browse_Click);
+            iPickerX.chkCustom1.Checked += new RoutedEventHandler(Modifiers_Checked); iPickerX.chkCustom1.Unchecked += new RoutedEventHandler(Modifiers_Checked);
 
             if (File.Exists(mapFile))
             {
@@ -249,15 +250,20 @@ namespace scripthea.composer
         { 
             get 
             {
+                if (couriers == null) return null;
                 if (couriers.Count != (poolCount + 1)) return null;
                 if (tabControl.SelectedIndex <= poolCount) return couriers[tabControl.SelectedIndex];
                 if (tabControl.SelectedIndex == (poolCount + 1)) return couriers[couriers.Count - 1];
                 return null;
             } 
         }
+        private void Modifiers_Checked(object sender, RoutedEventArgs e)
+        {
+            iPickerX.ReloadDepot();
+        }
     }
 
-    public class Courier // both ways messanger between (the active pool or image depot) and queryUC
+    public class Courier // two ways messanger between (the active pool or image depot) and queryUC
     {
         public bool cueSrc { get; private set; }
         private CueListUC cueList = null; ImagePickerUC iPicker = null;
@@ -272,22 +278,27 @@ namespace scripthea.composer
             iPicker = _iPicker; cueSrc = false;
             iPicker.OnPicSelect += new RoutedEventHandler(Change);
         }
-        public delegate void CueSelectionHandler(List<string> cueSelection);
-        public event CueSelectionHandler OnCueSelection;        
-        protected void Change(object sender, RoutedEventArgs e) // only for radioMode
-        {           
+        public List<string> SelectedCue() // only for radioMode
+        {
             List<string> cueSel = new List<string>();
             if (cueSrc)
             { 
-                if (!cueList.radioMode) return;
+                if (!cueList.radioMode) return null;
                 cueSel.AddRange(cueList.selectedCues()[0].cueTextAsList(true));
             }
             else
             {
                 //if (!iPicker.checkable) return;
-                cueSel.Add(Convert.ToString(sender));
+                cueSel.Add(iPicker.selectedImageInfo.prompt); 
             }
-            if (OnCueSelection != null) OnCueSelection(cueSel);
+            return cueSel;
+        }
+
+        public delegate void CueSelectionHandler(List<string> cueSelection);
+        public event CueSelectionHandler OnCueSelection;        
+        protected void Change(object sender, RoutedEventArgs e) // only for radioMode
+        {           
+            if (OnCueSelection != null) OnCueSelection(SelectedCue());
         }
         public List<List<string>> GetCues()
         {

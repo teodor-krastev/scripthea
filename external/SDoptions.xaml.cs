@@ -36,7 +36,8 @@ namespace scripthea.external
         public int GPUstackDepth;        
         // Initial settings
         public string SDlocation;
-        public bool ValidScript;
+        public bool ValidateScript;
+        
         public void save(string configFilename)
         {
             File.WriteAllText(configFilename, JsonConvert.SerializeObject(this));
@@ -48,19 +49,20 @@ namespace scripthea.external
     public partial class SDoptionsWindow : Window
     {
         public bool keepOpen = true;
+        public bool ValidScript { get; private set; }
         /// <summary>
         /// dialog box constructor; reads from file or creates new options object
         /// </summary>
         public SDoptionsWindow()
         {
-            InitializeComponent();         
+            InitializeComponent();
             if (File.Exists(configFilename))
             {
                 string fileJson = File.ReadAllText(configFilename);
-                opts = JsonConvert.DeserializeObject<SDoptions>(fileJson);                
+                opts = JsonConvert.DeserializeObject<SDoptions>(fileJson);
             }
-            else opts = new SDoptions();
-            if (opts.ValidScript) ValidatePyScript();
+            else { opts = new SDoptions(); opts.ValidateScript = true; }
+            if (opts.ValidateScript) ValidatePyScript();
         }
         public event Utils.LogHandler OnLog;
         protected void Log(string txt, SolidColorBrush clr = null)
@@ -103,7 +105,7 @@ namespace scripthea.external
             opts.GPUstackDepth = numGPUstackDepth.Value;
         
             opts.SDlocation = tbSDlocation.Text;
-            opts.ValidScript = chkValidScript.IsChecked.Value;
+            opts.ValidateScript = chkValidateScript.IsChecked.Value;
         }
         public void opts2Visual()
         {
@@ -117,9 +119,8 @@ namespace scripthea.external
 
             if (Directory.Exists(opts.SDlocation)) tbSDlocation.Text = opts.SDlocation;
             else Utils.TimedMessageBox("SD-WebUI directory <" + opts.SDlocation + "> does not exist.", "Warning", 3000);
-            chkValidScript.IsChecked = opts.ValidScript;
+            chkValidateScript.IsChecked = opts.ValidateScript || !ValidatePyScript();
         }
-
         /// <summary>
         /// Accepting and saving the changes
         /// </summary>
@@ -131,7 +132,6 @@ namespace scripthea.external
             opts.save(configFilename);
             Hide();
         }
-
         /// <summary>
         /// Cancel without modifications
         /// </summary>
@@ -141,24 +141,25 @@ namespace scripthea.external
         {
             Hide();
         }
-
         private void wndSDOptions_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             e.Cancel = keepOpen; Hide();
         }
-        public void ValidatePyScript()
+        public bool ValidatePyScript()
         {
+            ValidScript = false;
             string pyScript = "prompts_from_scripthea_1_5.py";
             string orgLoc = Path.Combine(Utils.configPath, pyScript);
-            if (!File.Exists(orgLoc)) { Log("Err: file " + orgLoc + " is missing."); return; }
-            if (!Directory.Exists(opts.SDlocation)) { Log("Err: SD folder " + opts.SDlocation + " is missing."); return; }
+            if (!File.Exists(orgLoc)) { Log("Err: file " + orgLoc + " is missing."); return false; }
+            if (!Directory.Exists(opts.SDlocation)) { Log("Err: SD folder " + opts.SDlocation + " is missing."); return false; }
             string sdLoc = Path.Combine(opts.SDlocation, "scripts", pyScript);
-            if (Utils.GetMD5Checksum(orgLoc) == Utils.GetMD5Checksum(sdLoc)) return;
-            if (MessageBox.Show("Scripthea py script is missing (or old) from scripts folder of SD\r Copy <prompts_from_scripthea_1_5.py> to SD folder?", "",
-                MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No) return;
-            File.Copy(orgLoc, sdLoc, true);
+            if (Utils.GetMD5Checksum(orgLoc) == Utils.GetMD5Checksum(sdLoc)) { ValidScript = true; return true; }
+            if (MessageBox.Show("Scripthea python script is missing (or old) from scripts folder of SD\r\r Copy <prompts_from_scripthea_1_5.py> to SD script folder?", "",
+                MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No) return false;
+            File.Copy(orgLoc, sdLoc, true); Utils.Sleep(200);
+            ValidScript = Utils.GetMD5Checksum(orgLoc) == Utils.GetMD5Checksum(sdLoc);
+            return ValidScript;
         }
-
         private void btnBrowse_Click(object sender, RoutedEventArgs e)
         {
             CommonOpenFileDialog dialog = new CommonOpenFileDialog();
@@ -166,7 +167,7 @@ namespace scripthea.external
             dialog.IsFolderPicker = true;
             if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
             {
-                tbSDlocation.Text = dialog.FileName; ValidatePyScript();
+                tbSDlocation.Text = dialog.FileName; opts.SDlocation = dialog.FileName; ValidatePyScript();
             }
             Activate();
             Topmost = true;  // important
@@ -206,5 +207,4 @@ namespace scripthea.external
             args.Add("do_not_save_grid", typeof(bool));
         }
     }
-
 }

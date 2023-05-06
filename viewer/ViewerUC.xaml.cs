@@ -165,6 +165,10 @@ namespace scripthea.viewer
             filename = ii.filename; MD5Checksum = ii.MD5Checksum; history = ii.history;
             return true;
         }
+        public bool SameAs(ImageInfo imageInfo)
+        {
+            return To_String().Equals(imageInfo?.To_String());
+        }
         public string To_String()
         {
             return JsonConvert.SerializeObject(this);
@@ -266,6 +270,16 @@ namespace scripthea.viewer
                 }
             } 
             return dp;
+        }
+        public bool SameAs(ImageDepot imageDepot) // compare data, location-blind 
+        {
+            bool bb = JsonConvert.SerializeObject(header).Equals(JsonConvert.SerializeObject(imageDepot?.header));
+            if ((items.Count != imageDepot.items.Count) || !bb) return false;
+            for (int i = 0; i < items.Count; i++)
+            {
+                bb &= items[i].SameAs(imageDepot.items[i]);
+            }
+            return bb;
         }
         public List<string> allImages() // in this folder 
         {
@@ -395,6 +409,7 @@ namespace scripthea.viewer
         void UpdateVis(); // update visual from iDepot
         void SynchroChecked(List<Tuple<int, string, string>> chks);
         void SetChecked(bool? check); // if null invert; returns checked
+        string markMask { get; }
         void Mark(string mask); // mark some items; if "" unmark all 
         void Clear(bool inclDepotItems = false);
         int selectedIndex { get; set; } // one based index in no-checkable mode
@@ -421,15 +436,15 @@ namespace scripthea.viewer
         public void Init(ref Options _opts) // ■▬►
         {
             opts = _opts;
-            chkAutoRefresh.IsChecked = opts.Autorefresh; imageFolder = opts.ImageDepotFolder; 
-            colListWidth.Width = new GridLength(opts.ViewColWidth);
+            chkAutoRefresh.IsChecked = opts.viewer.Autorefresh; imageFolder = opts.composer.ImageDepotFolder; 
+            colListWidth.Width = new GridLength(opts.composer.ViewColWidth);
             foreach (iPicList ipl in views)
                 ipl.Init(ref opts, false);            
         }
         public void Finish()
         {
-            opts.ViewColWidth = Convert.ToInt32(colListWidth.Width.Value);
-            opts.Autorefresh = chkAutoRefresh.IsChecked.Value;
+            opts.composer.ViewColWidth = Convert.ToInt32(colListWidth.Width.Value);
+            opts.viewer.Autorefresh = chkAutoRefresh.IsChecked.Value;
             foreach (iPicList ipl in views)
                 ipl.Finish();
         }
@@ -450,13 +465,60 @@ namespace scripthea.viewer
             {
                 _imageFolder = value;  tbImageDepot.Text = value;
             }
-        }
-        
+        }       
         public event Utils.LogHandler OnLog;
         protected void Log(string txt, SolidColorBrush clr = null)
         {
             if (OnLog != null) OnLog(txt, clr);
         }
+        /// <summary>
+        /// order - new is buffering
+        /// next - if another new delete the file if inclFile
+        ///     - "+" to restore
+        /// work only with tableView
+        /// </summary>
+        private class Undo
+        {   
+            private ImageDepot imageDepot; private int idx; private bool inclFile;
+            private ImageInfo ii;
+            public Undo(ref ImageDepot _imageDepot, int idx0, bool _inclFile) // buffer the entry when created
+            {
+                imageDepot = _imageDepot; idx = idx0; inclFile = _inclFile;
+                if (Utils.InRange(idx, 0, imageDepot.items.Count - 1))
+                    ii = imageDepot.items[idx]; // by ref ?
+            }
+            public void Clear()
+            {
+                ii = null; idx = -1;
+            }
+            private bool checkOut()
+            {
+                if (imageDepot == null) return false;
+                if (!imageDepot.isEnabled) return false;
+                if (ii == null) return false;
+                if (!Utils.InRange(idx, 0,imageDepot.items.Count - 1)) return false;               
+                return true; 
+            }
+            public bool recover2ImageDepot() // get it back
+            {
+                if (!checkOut()) return false;
+                imageDepot.items.Insert(idx, ii); imageDepot.Save();
+                Clear();
+                return true;
+            }
+            public void realRemove() // get it back
+            {
+                if (inclFile && checkOut())
+                {
+                    string fn = Path.Combine(imageDepot.path, ii.filename);
+                    if (File.Exists(fn)) File.Delete(fn);
+                    else Utils.TimedMessageBox("File <" + fn + "> does not exist");
+                }
+                Clear();
+            }
+        }
+        private Undo undo = null;
+
         public int RemoveSelected(bool inclFile = false)
         {
             if (!activeView.HasTheFocus) return -1;
@@ -465,39 +527,44 @@ namespace scripthea.viewer
             if (iDepot == null) { Log("no active image depot found"); return -1; }
             if (!iDepot.isEnabled) { Log("current image depot - not active"); return -1; }
             int idx0 = activeView.selectedIndex - 1;
-            if (!Utils.InRange(idx0, 0, iDepot.items.Count - 1)) { Log("index out of limits"); return -1; }    
-            
-            if (iDepot.RemoveAt(idx0, inclFile)) iDepot.Save(); // iDepot correction
-            else { Log("Unsuccessful delete operation"); return -1; }
-            
+            if (!Utils.InRange(idx0, 0, iDepot.items.Count - 1)) { Log("index out of limits"); return -1; }
+
+            string markMask = activeView.markMask;
             if (tabCtrlViews.SelectedIndex == 0) // tableView
-            {
-                string markMask = tableViewUC.markMask;
-                btnRefresh_Click(null, null);
-                if (!iDepot.isEnabled) { Log("current image depot - not active"); return -1; }                
-                tableViewUC.selectedIndex = Utils.EnsureRange(idx0, 0, iDepot.items.Count - 1) + 1;
-                tableViewUC.Mark(markMask);
+            {                
+                if (undo != null) undo.realRemove();
+                undo = new Undo(ref iDepot, idx0, inclFile); // 
+                if (iDepot.RemoveAt(idx0, false)) iDepot.Save(); // iDepot correction
+                else { Log("Unsuccessful delete operation"); return -1; }
+                Refresh(); 
             }
             else // gridView
             {
-                gridViewUC.RemoveAt(); 
+                gridViewUC.RemoveAt(inclFile);
+                if (iDepot.RemoveAt(idx0, false)) iDepot.Save(); // iDepot correction
+                else { Log("Unsuccessful delete operation"); return -1; }
             }
+            if (!iDepot.isEnabled) { Log("current image depot - not active"); return -1; }
+            // restore selection, masked and animation  
+            activeView.selectedIndex = Utils.EnsureRange(idx0, 0, iDepot.items.Count - 1) + 1;
+            activeView.Mark(markMask);
             if (anim) animation = true;
             if (iDepot.isEnabled) lbDepotInfo.Content = iDepot.items.Count.ToString() + " images";
             return idx0;
         } 
         public void Clear() 
         {
-            activeView.Clear(); picViewerUC.Clear(); activeView.Mark("");
+            activeView?.Clear(); picViewerUC?.Clear(); activeView?.Mark(""); undo?.Clear();
         }
         private bool updating = false; private bool showing = false;
-        public void ShowImageDepot(string imageDepot)
+        public bool ShowImageDepot(string imageDepot)
         {
-            if (updating) return;
+            if (updating) return false;
             updating = true;
-            tbImageDepot.Text = imageDepot; 
-            tbImageDepot_TextChanged(null, null);
+            if (tbImageDepot.Text != imageDepot) tbImageDepot.Text = imageDepot; 
+            else tbImageDepot_TextChanged(null, null);
             updating = false; showing = true;
+            return tbImageDepot.Foreground.Equals(Brushes.Black);
         }
         List<iPicList> views;
         
@@ -518,21 +585,23 @@ namespace scripthea.viewer
                 idx += k;
             }
         }
-        private int checkImageDepot(string folder)
+        private int checkImageDepot()
         {
-            int cnt = ImgUtils.checkImageDepot(tbImageDepot.Text);
+            int cnt = ImgUtils.checkImageDepot(imageFolder);
             if (cnt > 0) { lbDepotInfo.Content = cnt.ToString() + " images"; lbDepotInfo.Foreground = Brushes.Blue; }
             else { lbDepotInfo.Content = "This is not an image depot."; lbDepotInfo.Foreground = Brushes.Tomato; }
             return cnt;
         }
-        private void btnRefresh_Click(object sender, RoutedEventArgs e) 
+        public void Refresh(string iFolder = "")
         {
-            
-            if (checkImageDepot(tbImageDepot.Text) == 0)                 
-            {                
-                if ((sender == btnRefresh) || (sender == tbImageDepot)) Clear();
-                return; 
+            string folder = iFolder;
+            if (iDepot != null && iFolder == "")
+            {
+                if (iDepot.isEnabled && Directory.Exists(iDepot.path))  folder = iDepot.path;
+                else folder = imageFolder;
             }
+            if (!Directory.Exists(folder)) { Log("Err: Missing directory > " + folder); return; }
+
             iDepot = new ImageDepot(imageFolder);
             if (!iDepot.isEnabled) { Log("Error: This is not an image depot."); return; }
             List<Tuple<int, string, string>> decompImageDepot = iDepot.Export2Viewer(); 
@@ -543,31 +612,45 @@ namespace scripthea.viewer
                 showing = true;
             }
             animation = false; btnPlay.IsEnabled = decompImageDepot.Count > 0; 
+        }
+        private void btnRefresh_Click(object sender, RoutedEventArgs e) 
+        {
+            if (checkImageDepot() == 0)
+            {
+                if ((sender == btnRefresh) || (sender == tbImageDepot)) Clear();
+            }
+            else Refresh(imageFolder);
             if (!Utils.isNull(e)) e.Handled = true;
         }
         private void tbImageDepot_TextChanged(object sender, TextChangedEventArgs e)
         {           
-            if (checkImageDepot(tbImageDepot.Text) > 0)
+            if (checkImageDepot() > 0)
             {
                 tbImageDepot.Foreground = Brushes.Black; 
-                //opts.ImageDepotFolder = tbImageDepot.Text; Log("@WorkDir");
+                if (chkAutoRefresh.IsChecked.Value) btnRefresh_Click(sender, e);
             }
             else 
             { 
                 tbImageDepot.Foreground = Brushes.Red;                
             }     
-            if (chkAutoRefresh.IsChecked.Value) btnRefresh_Click(sender, e);
         }
         private void chkAutoRefresh_Checked(object sender, RoutedEventArgs e)
         {
             if (chkAutoRefresh.IsChecked.Value) { colRefresh.Width = new GridLength(0); btnRefresh.Visibility = Visibility.Collapsed; btnRefresh_Click(sender, e); }
-            else { colRefresh.Width = new GridLength(70); btnRefresh.Visibility = Visibility.Visible; }
+            else { colRefresh.Width = new GridLength(40); btnRefresh.Visibility = Visibility.Visible; }
         }
         private int lastIdx = 0;
         private void tabCtrlViews_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             animation = false;
-            if ((lastIdx == 1) && (tabCtrlViews.SelectedIndex == 0) && gridViewUC.OutOfResources) gridViewUC.Clear();
+            if ((lastIdx == 1) && (tabCtrlViews.SelectedIndex == 0))
+            {
+                if (gridViewUC.OutOfResources) gridViewUC.Clear();
+                else
+                {
+                    if (gridViewUC.Loading) gridViewUC.CancelRequest = true;
+                }
+            }
             lastIdx = tabCtrlViews.SelectedIndex;
             if (chkAutoRefresh.IsChecked.Value && showing) btnRefresh_Click(sender, e);             
             if (!Utils.isNull(e)) e.Handled = true;
@@ -611,19 +694,32 @@ namespace scripthea.viewer
         }        
         private void ucViewer_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key.Equals(Key.Delete) && !tbImageDepot.IsFocused && !numDlyIsFocused) RemoveSelected();
-                //Utils.DelayExec(100, () => {  } );
+            if (!activeView.HasTheFocus) return;
+            if ((e.Key.Equals(Key.Delete) || e.Key.Equals(Key.NumPad0))) //Utils.DelayExec(100, () => {  } );
+            {
+                Log("@Explore=70");
+                RemoveSelected();
+            }           
+            if (e.Key.Equals(Key.Add)) // recover from undo
+            {
+                int si = activeView.selectedIndex;
+                bool bb = false;
+                if (tabCtrlViews.SelectedIndex == 0) // table view
+                {
+                    if (undo == null) return;
+                    bb = undo.recover2ImageDepot(); 
+                    if (bb) Refresh();
+                }
+                else // grid view
+                {
+                    bb = gridViewUC.Recover();
+                }
+                if (bb) Log("Recover a deleted image", Brushes.Crimson);
+                activeView.selectedIndex = Utils.EnsureRange(si, 1, iDepot.items.Count);
+                activeView.Mark(tbFind.Text);
+                checkImageDepot();
+            }                
         }
-        private bool numDlyIsFocused = false;
-        private void numDly_GotFocus(object sender, RoutedEventArgs e)
-        {
-            numDlyIsFocused = true;
-        }
-        private void numDly_LostFocus(object sender, RoutedEventArgs e)
-        {
-            numDlyIsFocused = false;
-        }
-
         private void btnMark_Click(object sender, RoutedEventArgs e)
         {
             if (sender.Equals(btnMark)) activeView.Mark(tbFind.Text);

@@ -6,13 +6,13 @@
              xmlns:local="clr-namespace:scripthea.master"
              xmlns:viewer="clr-namespace:scripthea.viewer" x:Class="scripthea.master.ImagePickerUC"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="613.671" >
+             d:DesignHeight="450" d:DesignWidth="613.671" Focusable="True" >
     <Grid Margin="5,0,0,0">
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
             <RowDefinition Height="30"/>
-            <RowDefinition Height="500"/>
-            <RowDefinition Height="1*"/>
+            <RowDefinition Height="300*"/>
+            <RowDefinition Height="200*"/>
         </Grid.RowDefinitions>
         <GroupBox x:Name="gbFolder" Header="Image depot folder " Margin="0" >
             <Grid>
@@ -41,13 +41,14 @@
                         </ContextMenu>
                     </Image.ContextMenu>
                 </Image>
-                <Label Content="View" Margin="0" VerticalAlignment="Center" FontSize="13"/>
-                <RadioButton x:Name="rbList" Content="List" VerticalAlignment="Center" Margin="3,0,0,0" IsChecked="True" Checked="rbList_Checked" FontSize="13"/>
-                <RadioButton x:Name="rbGrid" Content="Grid" VerticalAlignment="Center" Margin="3,0,0,0" Checked="rbList_Checked" FontSize="13"/>
+                <StackPanel Background="#FFEEF6FA" Width="128" Orientation="Horizontal">
+                    <Label Content="View" Margin="0" VerticalAlignment="Center" FontSize="13"/>
+                    <RadioButton x:Name="rbList" Content="List" VerticalAlignment="Center" Margin="3,0,0,0" IsChecked="True" Checked="rbList_Checked" FontSize="13"/>
+                    <RadioButton x:Name="rbGrid" Content="Grid" VerticalAlignment="Center" Margin="3,0,0,0" Checked="rbList_Checked" FontSize="13"/>
+                </StackPanel>
                 <ComboBox x:Name="comboCustom" SelectedIndex="0" Background="White" Margin="10,0,0,0" VerticalAlignment="Center">
                     <ComboBoxItem Content="comboCustom"/>
                 </ComboBox>
-                <Rectangle x:Name="rectSepar" Width="10" Margin="7,0,-3,0" HorizontalAlignment="Left" Fill="#99DEDEDE"/>
 
                 <CheckBox x:Name="chkCustom1" Content="chkCustom1" Margin="10,0,0,0" VerticalAlignment="Center"/>
                 <CheckBox x:Name="chkCustom2" Content="chkCustom2" Margin="10,0,0,0" VerticalAlignment="Center" />

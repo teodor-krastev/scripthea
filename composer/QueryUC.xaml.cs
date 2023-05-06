@@ -62,7 +62,7 @@ namespace scripthea.composer
             scanPreviewUC.btnScanChecked.Click += new RoutedEventHandler(btnScanPreviewProcs_Click);
             scanPreviewUC.btnQuerySelected.Click += new RoutedEventHandler(btnScanPreviewProcs_Click);
 
-            tiMiodifiers.Visibility = Visibility.Collapsed; tiScanPreview.Visibility = Visibility.Collapsed;
+            //tiMiodifiers.Visibility = Visibility.Collapsed; tiScanPreview.Visibility = Visibility.Collapsed;
 
             API = new ControlAPI(); cbActiveAPI_SelectionChanged(null, null);
             API.OnQueryComplete += new ControlAPI.APIEventHandler(QueryComplete);
@@ -145,12 +145,12 @@ namespace scripthea.composer
         protected void ChangeCue(List<string> selCues)
         {
             //Log("conditions changed");
-            if (opts.SingleAuto && cuePoolUC.radioMode) Compose(null, selCues, modifiersUC.Composite());
+            if (opts.composer.SingleAuto && cuePoolUC.radioMode) Compose(null, selCues, modifiersUC.Composite());
         }
         protected void ChangeModif(object sender, RoutedEventArgs e)
         {
             //Log("conditions changed");           
-            if (opts.SingleAuto && tcQuery.SelectedItem.Equals(tiSingle)) btnCompose_Click(sender,e);
+            if (opts.composer.SingleAuto && tcQuery.SelectedItem.Equals(tiSingle)) btnCompose_Click(sender,e);
         }
 
         private bool UpdatingOptions = false;
@@ -158,17 +158,17 @@ namespace scripthea.composer
         {
             if (Utils.isNull(opts)) return;
             UpdatingOptions = true;
-            pnlCue.Height = new GridLength(Utils.EnsureRange(opts.QueryRowHeight, 150, 500));
-            colQuery.Width = new GridLength(opts.QueryColWidth);
-            chkAutoSingle.IsChecked = opts.SingleAuto; btnCompose.IsEnabled = !opts.SingleAuto;              
-            chkOneLineCue.IsChecked = opts.OneLineCue;           
+            pnlCue.Height = new GridLength(Utils.EnsureRange(opts.composer.QueryRowHeight, 150, 500));
+            colQuery.Width = new GridLength(opts.composer.QueryColWidth);
+            chkAutoSingle.IsChecked = opts.composer.SingleAuto; btnCompose.IsEnabled = !opts.composer.SingleAuto;              
+            chkOneLineCue.IsChecked = opts.composer.OneLineCue;           
 
-            cbActiveAPI.Text = opts.API; 
-            if (Directory.Exists(opts.ImageDepotFolder)) tbImageDepot.Text = opts.ImageDepotFolder;
+            cbActiveAPI.Text = opts.composer.API; 
+            if (Directory.Exists(opts.composer.ImageDepotFolder)) tbImageDepot.Text = opts.composer.ImageDepotFolder;
             else
             {
                 Log("Directory <"+tbImageDepot.Text+"> does not exist. Setting to default directory :"+ ImgUtils.defaultImageDepot);
-                opts.ImageDepotFolder = ImgUtils.defaultImageDepot; tbImageDepot.Text = ImgUtils.defaultImageDepot;
+                opts.composer.ImageDepotFolder = ImgUtils.defaultImageDepot; tbImageDepot.Text = ImgUtils.defaultImageDepot;
             }           
             UpdatingOptions = false;              
         }
@@ -176,20 +176,22 @@ namespace scripthea.composer
         {
             if (UpdatingOptions || Utils.isNull(opts)) return;
             int QueryRowHeight = Convert.ToInt32(pnlCue.Height.Value);
-            if (QueryRowHeight > 1) opts.QueryRowHeight = QueryRowHeight;
-            opts.QueryColWidth = Convert.ToInt32(colQuery.Width.Value);
-            opts.SingleAuto = chkAutoSingle.IsChecked.Value; btnCompose.IsEnabled = !opts.SingleAuto;           
-            opts.OneLineCue = chkOneLineCue.IsChecked.Value;           
+            if (QueryRowHeight > 1) opts.composer.QueryRowHeight = QueryRowHeight;
+            opts.composer.QueryColWidth = Convert.ToInt32(colQuery.Width.Value);
+            opts.composer.SingleAuto = chkAutoSingle.IsChecked.Value; btnCompose.IsEnabled = !opts.composer.SingleAuto;           
+            opts.composer.OneLineCue = chkOneLineCue.IsChecked.Value;           
 
-            opts.API = cbActiveAPI.Text; 
-            opts.ImageDepotFolder = tbImageDepot.Text;           
+            opts.composer.API = cbActiveAPI.Text; 
+            opts.composer.ImageDepotFolder = tbImageDepot.Text;           
         }
         private void tbImageDepot_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            opts.ImageDepotFolder = tbImageDepot.Text;
-            if (Directory.Exists(tbImageDepot.Text)) tbImageDepot.Foreground = Brushes.Black;                
-            else tbImageDepot.Foreground = Brushes.Red;
-            Log("@WorkDir");
+        {            
+            if (Directory.Exists(tbImageDepot.Text))
+            {
+                tbImageDepot.Foreground = Brushes.Black; 
+                opts.composer.ImageDepotFolder = tbImageDepot.Text; Log("@WorkDir");
+            }                                
+            else tbImageDepot.Foreground = Brushes.Red;            
         }
         private void btnNewFolder_Click(object sender, RoutedEventArgs e)
         {
@@ -205,8 +207,9 @@ namespace scripthea.composer
         {
             get { return Utils.flattenTextBox(tbCue, true) + Utils.flattenTextBox(tbModifier,true); }
         }
-        public string Compose(object sender, List<string> selectedCue, string modifiers) // redundant , bool OneLineCue = true
+        public string Compose(object sender, List<string> selectedCue, string modifiers) // , bool OneLineCue = true ->redundant 
         {
+            if (Utils.isNull(selectedCue)) return "";
             if (sender == null || sender == btnCompose || sender == tcQuery || sender == cuePoolUC)
             {
                 tbCue.Text = "";
@@ -215,23 +218,24 @@ namespace scripthea.composer
                     if (line.Equals("")) continue;
                     if (line.Length > 1)
                         if (line.Substring(0, 2).Equals("##")) continue;
-                    tbCue.Text += line + (opts.OneLineCue ? ' ' : '\r');
+                    tbCue.Text += line + (opts.composer.OneLineCue ? ' ' : '\r');
                 }
             }
             if (sender == null || sender == btnCompose || sender == tcQuery || sender == modifiersUC)
                 tbModifier.Text = modifiers;
             return propmt;
         }
-
         public void btnCompose_Click(object sender, RoutedEventArgs e)
         {
             if (Utils.isNull(cuePoolUC) || Utils.isNull(modifiersUC)) return;
-            if (Utils.isNull(cuePoolUC.ActiveCueList) && !status.Equals(Status.Undefined)) return; // { Log("Err: no active cue pool.");  }
+            if (Utils.isNull(cuePoolUC.activeCourier)) return; 
+            /*if (Utils.isNull(cuePoolUC.ActiveCueList) && !status.Equals(Status.Undefined)) return; // { Log("Err: no active cue pool.");  }
             if (Utils.isNull(cuePoolUC.ActiveCueList?.allCues) || Utils.isNull(modifiersUC.modifLists)) return;
             List<CueItemUC> selectedSeed = cuePoolUC?.ActiveCueList?.selectedCues();
             if (Utils.isNull(selectedSeed)) { Log("Err: no cue is selected. (35)"); return; }
-            if (selectedSeed.Count.Equals(0)) { /*Log("Err: no cue is selected. (58)");*/ return; }
-            Compose(sender, selectedSeed[0].cueTextAsList(true), modifiersUC.Composite());
+            if (selectedSeed.Count.Equals(0)) return; { /*Log("Err: no cue is selected. (58)");*/
+
+            Compose(sender, cuePoolUC.activeCourier.SelectedCue(), modifiersUC.Composite()); 
         }
         private void QueryAPI(string prompt)
         {   
@@ -240,7 +244,7 @@ namespace scripthea.composer
             else Log("@StartGeneration (single)");
             if (status.Equals(Status.Scanning) && scanPreviewUC.scanning) // move selection
                 scanPreviewUC.selectByPropmt(prompt);
-            API.Query(prompt, opts.ImageDepotFolder); Log("---", Brushes.DarkOrange); 
+            API.Query(prompt, opts.composer.ImageDepotFolder); Log("---", Brushes.DarkOrange); 
         }
         protected void QueryComplete(string imageFilePath, bool success)
         {
@@ -257,7 +261,7 @@ namespace scripthea.composer
                     {
                         status = Status.Idle; btnScan.Content = strScan; btnScan.Background = Brushes.MintCream;
                         Log("This Scan resulted in " + scanPrompts.Count.ToString()+" images.", Brushes.DarkMagenta);
-                        btnScanPreview.IsEnabled = true; scanPreviewUC.scanning = false; btnScanPreview.IsEnabled = true; 
+                        btnScanPreview.IsEnabled = true; scanPreviewUC.scanning = false; btnScanPreview.IsEnabled = true; btnAppend2Preview.IsEnabled = true;
                     }                        
                     else // next image gen
                     {
@@ -274,7 +278,7 @@ namespace scripthea.composer
             if (cuePoolUC.activeCourier == null) { Log("Err: no cue is selected (err.code:12)"); return; }
             List<List<string>> lls = cuePoolUC.activeCourier.GetCues();
             if (lls.Count.Equals(0)) { Log("Err: no cue is selected (err.code:96)"); return; }
-            List<string> ScanModifs = CombiModifs(modifiersUC.ModifItemsByType(ModifStatus.Scannable), opts.ModifPrefix, Utils.EnsureRange(opts.ModifSample, 1, 9));
+            List<string> ScanModifs = CombiModifs(modifiersUC.ModifItemsByType(ModifStatus.Scannable), opts.composer.ModifPrefix, Utils.EnsureRange(opts.composer.ModifSample, 1, 9));
             foreach (List<string> ls in lls)
             {
                 if (ScanModifs.Count.Equals(0))
@@ -284,7 +288,7 @@ namespace scripthea.composer
                 else
                     foreach (string sc in ScanModifs)
                     {
-                        scanPrompts.Add(Compose(null, ls, modifiersUC.FixItemsAsString() + (sc.Equals("") ? "" : opts.ModifPrefix) + sc));                        
+                        scanPrompts.Add(Compose(null, ls, modifiersUC.FixItemsAsString() + (sc.Equals("") ? "" : opts.composer.ModifPrefix) + sc));                        
                     }
             }            
         }
@@ -295,7 +299,7 @@ namespace scripthea.composer
             if ((ScanModifs.Count == 1) && ScanModifs[0].Equals("")) return rslt;
             if (sample >= ScanModifs.Count)
                 { Log("Error: number of scannable modifiers: " + ScanModifs.Count.ToString() + " must be bigger than modifiers sample: " +sample.ToString()); return rslt; }
-            List<string> line = new List<string>(); string ss = "";
+            List<string> line = new List<string>(); 
             IEnumerable<IEnumerable<int>> combinations = CombiIndexes(sample, ScanModifs.Count);
             foreach (var combination in combinations)
             {
@@ -356,13 +360,13 @@ namespace scripthea.composer
                         Log("Err: internal error #45"); return;
                 }
                 status = Status.Scanning; btnScan.Content = "Cancel"; btnScan.Background = Brushes.Coral;
-                btnScanPreview.IsEnabled = false;
+                btnScanPreview.IsEnabled = false; btnAppend2Preview.IsEnabled = false;
             }
             else
             {
                 if (status == Status.Scanning) Log("Warning: User cancelation!", Brushes.Tomato);
                 status = Status.Request2Cancel; btnScan.Content = strScan; btnScan.Background = Brushes.MintCream;
-                btnScanPreview.IsEnabled = true; return;
+                btnScanPreview.IsEnabled = true; btnAppend2Preview.IsEnabled = true; return;
             }
             GetScanPrompts();
             if (scanPrompts.Count == 0) { Log("Err: no prompt generated"); return; }
@@ -377,8 +381,9 @@ namespace scripthea.composer
         {
             if (Utils.isNull(API)) return;
             ComboBoxItem cbi = (ComboBoxItem)cbActiveAPI.SelectedItem;
-            API.activeAPIname = (string)cbi.Content; opts.API = API.activeAPIname;
-            showAPI = API.activeAPI.isDocked;
+            if (Utils.isNull(cbi)) API.activeAPIname = "Simulation";
+            else API.activeAPIname = (string)cbi.Content; 
+            opts.composer.API = API.activeAPIname; showAPI = API.activeAPI.isDocked;
             if (showAPI) 
             { 
                 gridAPI.Children.Clear(); gridAPI.Children.Add(API.activeAPI.userControl);
@@ -391,7 +396,7 @@ namespace scripthea.composer
         {
             if (Utils.isNull(API)) { Log("Err: no API is selected. (55)"); return; }
             if (Utils.isNull(API.activeAPI)) { Log("Err: no API is selected. (22)"); return; }           
-            API.activeAPI.opts["folder"] = opts.ImageDepotFolder;
+            API.activeAPI.opts["folder"] = opts.composer.ImageDepotFolder;
             API.about2Show(propmt);
             API.ShowDialog();
         }
@@ -403,7 +408,7 @@ namespace scripthea.composer
             {
                 Utils.TimedMessageBox("API is busy, try again later...", "Warning"); return;
             }            
-            if (opts.SingleAuto) btnCompose_Click(null, null); status = Status.SingeQuery;
+            if (opts.composer.SingleAuto) btnCompose_Click(null, null); status = Status.SingeQuery;
             QueryAPI(Compose(sender, cuePoolUC.ActiveCueList?.selectedCues()[0].cueTextAsList(true), modifiersUC.Composite()));
         }
         private void tbCue_TextChanged(object sender, TextChangedEventArgs e)
@@ -425,10 +430,10 @@ namespace scripthea.composer
             else Log("@ExplorerPart=0");
             if (!Utils.isNull(opts))
             {
-                if (tcQuery.SelectedItem.Equals(tiSingle)) pnlCue.Height = new GridLength(Utils.EnsureRange(opts.QueryRowHeight, 150,500));
+                if (tcQuery.SelectedItem.Equals(tiSingle)) pnlCue.Height = new GridLength(Utils.EnsureRange(opts.composer.QueryRowHeight, 150,500));
                 else
                 {
-                    opts.QueryRowHeight = Convert.ToInt32(pnlCue.Height.Value);
+                    opts.composer.QueryRowHeight = Convert.ToInt32(pnlCue.Height.Value);
                     pnlCue.Height = new GridLength(1);
                 }
             }
@@ -478,13 +483,14 @@ namespace scripthea.composer
         }
         private void btnScanPreview_Click(object sender, RoutedEventArgs e)
         {
+            List<string> ls = (sender == btnAppend2Preview) ? new List<string>(scanPreviewUC.allPrompts) : new List<string>();
             GetScanPrompts();
-            if (scanPrompts.Count == 0) { return; };
-            List<string> ls = new List<string>(scanPrompts);
+            if (scanPrompts.Count == 0) { Log("Warning: No prompts generated"); return; };
+            ls.AddRange(scanPrompts);
 
+            tiMiodifiers.Visibility = Visibility.Visible; tiScanPreview.Visibility = Visibility.Visible; 
             tcModScanPre.SelectedIndex = 1; Utils.DoEvents();
             scanPreviewUC.LoadPrompts(ls);
-            btnScan.IsEnabled = false;
         }
         private void btnScanPreviewProcs_Click(object sender, RoutedEventArgs e)
         {
@@ -493,13 +499,13 @@ namespace scripthea.composer
                 if (scanPreviewUC.scanning)
                 {
                     scanPreviewUC.scanning = false; status = Status.Request2Cancel;
-                    Log("Warning: User cancelation!", Brushes.Tomato); btnScanPreview.IsEnabled = true;
+                    Log("Warning: User cancelation!", Brushes.Tomato); btnScanPreview.IsEnabled = true; btnAppend2Preview.IsEnabled = true;
                 }
                 else
                 {
                     scanPrompts = scanPreviewUC.checkedPrompts();
                     if (scanPrompts.Count == 0) { Log("Err: no prompts checked"); return; }
-                    status = Status.Scanning; scanPreviewUC.scanning = true; btnScanPreview.IsEnabled = false;
+                    status = Status.Scanning; scanPreviewUC.scanning = true; btnScanPreview.IsEnabled = false; btnAppend2Preview.IsEnabled = false;
                     scanPromptIdx = 0; QueryAPI(scanPrompts[0]);
                 }
             }
@@ -507,11 +513,6 @@ namespace scripthea.composer
             {               
                 if (scanPreviewUC.selectedPrompt == "") { Log("Err: no prompt selected"); return; }                
                 QueryAPI(scanPreviewUC.selectedPrompt);
-            }
-            if (sender.Equals(scanPreviewUC.btnClose))
-            {
-                tcModScanPre.SelectedIndex = 0;
-                btnScan.IsEnabled = true;
             }
         }
 

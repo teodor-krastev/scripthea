@@ -10,8 +10,8 @@
         Title="Scripthea - text-to-image prompt composer" Height="450" Width="1080.709" Loaded="MainWindow1_Loaded" Closing="MainWindow1_Closing" Icon="Properties/penzy4.png" FontSize="13" KeyDown="MainWindow1_KeyDown" PreviewKeyDown="MainWindow1_PreviewKeyDown">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="200" x:Name="pnlLog" MinWidth="100" MaxWidth="600"/>
-            <ColumnDefinition Width="329*"/>
+            <ColumnDefinition Width="200" x:Name="pnlLog" MinWidth="100" MaxWidth="1000"/>
+            <ColumnDefinition Width="3*"/>
         </Grid.ColumnDefinitions>
         <Grid>
             <Grid.RowDefinitions>
@@ -23,7 +23,7 @@
             <StackPanel Margin="0,0,0,0" Orientation="Horizontal" HorizontalAlignment="Left">
                 <CheckBox x:Name="chkLog" Content="Log" VerticalAlignment="Center" Margin="8,0,0,0" IsChecked="True"/>
                 <Button x:Name="btnClear" Content="X" Width="24" Margin="8,6,0,4" Click="btnClear_Click" Foreground="#FF9E0202" FontWeight="Bold" FontSize="14" ToolTip="Clear log" Background="{x:Null}"/>
-                <Button x:Name="btnRefresh" Width="24" Margin="8,6,0,4" ToolTip="Refresh directory tree" Click="btnRefresh_Click" Background="{x:Null}">
+                <Button x:Name="btnRefresh" Width="30" Margin="8,6,0,4" ToolTip="Refresh directory tree" Click="btnRefresh_Click" Background="{x:Null}">
                     <ContentControl>
                         <Image Source="Properties/refresh.png"></Image>
                     </ContentControl>
@@ -50,41 +50,41 @@
                 <Image x:Name="imgLast" Grid.Row="1" Margin="2,7,2,2"/>
             </Grid>
             <GridSplitter x:Name="gridSplitLog2" Grid.Row="2" HorizontalAlignment="Stretch" Height="5" Margin="0" VerticalAlignment="Top" Background="#FFE0EFFB" DragCompleted="gridSplitLog2_DragCompleted"/>
-            <master:DirTreeUC x:Name="dirTreeUC" Margin="0,5,0,0" Grid.Row="2" BorderBrush="#FF0A16E9" BorderThickness="0,2,1,0"/>
+            <master:DirTreeUC x:Name="dirTreeUC" Margin="2,5,0,2" Grid.Row="2" BorderBrush="#FF0A16E9" BorderThickness="1,1.5,0,1"/>
         </Grid>
         <TabControl x:Name="tabControl" Margin="17,0" Grid.Column="1" SelectionChanged="tabControl_SelectionChanged" BorderBrush="{x:Null}" >
-            <TabItem x:Name="tiComposer"  Header=" Prompt composer " Width="125" Height="28" HorizontalAlignment="Left" Margin="2,0,-2,0" Background="#FFF1F0F0">
+            <TabItem x:Name="tiComposer"  Header=" Prompt composer " Width="125" Height="28" HorizontalAlignment="Left" Margin="2,0,-2,0" Background="#FFF1F0F0" BorderBrush="#FF03911F">
                 <Grid>
                     <composer:QueryUC x:Name="queryUC" Margin="0" />
                 </Grid>
             </TabItem>
-            <TabItem x:Name="tiViewer" Header=" Image Depot Viewer " Width="136" Height="28" Background="#FFECECEC" HorizontalAlignment="Left"  Margin="5,0,-5,0">
+            <TabItem x:Name="tiViewer" Header=" Image Depot Viewer " Width="136" Height="28" Background="#FFECECEC" HorizontalAlignment="Left"  Margin="5,0,-5,0" BorderBrush="#FF053EE9">
                 <Grid >
                     <viewer:ViewerUC x:Name="viewerUC" Margin="0"/>
                 </Grid>
             </TabItem>
-            <TabItem x:Name="tiDepotMaster" Header=" Image Depot Master " Width="136" Height="28" Background="#FFECECEC" HorizontalAlignment="Left"  Margin="12,0,-12,0">
+            <TabItem x:Name="tiDepotMaster" Header=" Image Depot Master " Width="136" Height="28" Background="#FFECECEC" HorizontalAlignment="Left"  Margin="12,0,-12,0" BorderBrush="#FFB95C57">
                 <Grid >
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="371*"/>
+                        <ColumnDefinition Width="371*" MinWidth="600" MaxWidth="2000"/>
                         <ColumnDefinition Width="179*"/>
                     </Grid.ColumnDefinitions>
                     <master:DepotMasterUC x:Name="depotMaster" Margin="0"/>
-                    <GridSplitter x:Name="gridSplitterM" HorizontalAlignment="Left" Grid.Column="1" Margin="0" Width="5" Background="#FFEDFFF6"/>
+                    <GridSplitter x:Name="gridSplitterM" HorizontalAlignment="Left" Grid.Column="1" Margin="0" Width="5" Background="#FFE0EFFB"/>
 
                 </Grid>
             </TabItem>
-            <TabItem x:Name="tiUtils" Header="Import/Export" Width="110" Height="28" Background="#FFECECEC" HorizontalAlignment="Left" Margin="15,0,-15,0" >
+            <TabItem x:Name="tiUtils" Header="Import/Export" Width="110" Height="28" Background="#FFECECEC" HorizontalAlignment="Left" Margin="15,0,-15,0" BorderBrush="#FFF0DC00" >
                 <Grid >
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="600"/>
-                        <ColumnDefinition Width="600"/>
+                        <ColumnDefinition Width="600" MinWidth="400" MaxWidth="2000"/>
+                        <ColumnDefinition Width="600" MinWidth="400" MaxWidth="2000"/>
                         <ColumnDefinition Width="1*"/>
                     </Grid.ColumnDefinitions>
                     <master:ImportUtilUC x:Name="importUtilUC" Width="Auto"/>
-                    <GridSplitter x:Name="gridSplitterIO1" HorizontalAlignment="Left" Grid.Column="1" Margin="0" Width="5" Background="#FFEDFFF6"/>
+                    <GridSplitter x:Name="gridSplitterIO1" HorizontalAlignment="Left" Grid.Column="1" Margin="0" Width="5" Background="#FFE0EFFB"/>
                     <master:ExportUtilUC x:Name="exportUtilUC" Grid.Column="1" Width="Auto"/>
-                    <GridSplitter x:Name="gridSplitterIO2" HorizontalAlignment="Left" Grid.Column="2" Margin="0" Width="5" Background="#FFEDFFF6"/>
+                    <GridSplitter x:Name="gridSplitterIO2" HorizontalAlignment="Left" Grid.Column="2" Margin="0" Width="5" Background="#FFE0EFFB"/>
                 </Grid>
             </TabItem>
         </TabControl>
@@ -94,7 +94,8 @@
                 <ImageBrush TileMode="Tile" ImageSource="Properties/v3line-6.png"/>
             </GridSplitter.Background>
         </GridSplitter>
-        <GridSplitter x:Name="gridSplitLeft2" Grid.Column="1" HorizontalAlignment="Left" Margin="2,0" Width="5" Background="#FFECFBF0" ResizeDirection="Columns" MouseDoubleClick="gridSplitLeft_MouseDoubleClick" Visibility="Hidden"/>
+        <GridSplitter x:Name="gridSplitLeft2" Grid.Column="1" HorizontalAlignment="Left" Margin="2,0" Width="5" Background="#FFECFBF0" ResizeDirection="Columns" 
+                      MouseDoubleClick="gridSplitLeft_MouseDoubleClick"/>
         <TextBox x:Name="tbImageDepot" Grid.Column="1" Height="23" TextWrapping="Wrap" Text="" HorizontalAlignment="Right" VerticalAlignment="Top" BorderBrush="{x:Null}" Margin="0,0,5,0" IsReadOnly="True" Foreground="#FF377C5D"/>
     </Grid>
 </Window>

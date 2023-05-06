@@ -31,10 +31,12 @@ namespace scripthea.viewer
         public bool checkable { get; private set; }
         public void Init(ref Options _opts, bool _checkable)
         {
+            undoRec = new UndoRec(); undoRec.idx0 = -1; undoRec.piUC = null;
             opts = _opts; checkable = _checkable;
-            lbZoom.Content = opts.ThumbZoom.ToString() + "%";
-            chkShowCue.IsChecked = opts.ThumbCue; chkShowFilename.IsChecked = opts.ThumbFilename;
+            lbZoom.Content = opts.viewer.ThumbZoom.ToString() + "%";
+            chkShowCue.IsChecked = opts.viewer.ThumbCue; chkShowFilename.IsChecked = opts.viewer.ThumbFilename;            
         }
+        public bool CancelRequest = false;
         private bool ShuttingDown = false;
         public void Finish()
         {
@@ -78,16 +80,29 @@ namespace scripthea.viewer
                 if (ps.selected) return ps;
             return null;
         }
+        private bool _Loading;
+        public bool Loading
+        {
+            get { return _Loading; }
+            private set
+            {
+                _Loading = value;
+                if (Loading) { Mouse.OverrideCursor = Cursors.Wait; }
+                else { Mouse.OverrideCursor = null; }
+                Utils.DoEvents();
+            }
+        }
         public void UpdateVis()
         {
             try
-            {                
-                Mouse.OverrideCursor = Cursors.Wait; Utils.DoEvents();
+            {
+                Loading = true; CancelRequest = false;
                 if (!IsAvailable) Clear(); 
                 picItemsClear(); int cnt = iDepot.items.Count; 
                 foreach (var itm in iDepot.Export2Viewer())
                 {
                     if (ShuttingDown) return;
+                    if (CancelRequest) { CancelRequest = false; return; }
                     PicItemUC piUC = new PicItemUC(ref opts, checkable); piUC.IsChecked = true;
                     picItems.Add(piUC); labelNum.Content = (int)(100.0 * picItems.Count / cnt) + "%";
                     int k = Utils.InRange(thumbsPerRow, 2,20) ? thumbsPerRow : 4;
@@ -114,14 +129,17 @@ namespace scripthea.viewer
                 ChangeContent(this, null); 
             }
             finally 
-            { Mouse.OverrideCursor = null; labelNum.Content = ""; selectedIndex = 1; scrollToIdx(); }
+            { Loading = false; labelNum.Content = ""; selectedIndex = 1; scrollToIdx(); }
         }
         public void SynchroChecked(List<Tuple<int, string, string>> chks)
         {
             if (!checkable) return;
             SetChecked(false);
             foreach (Tuple<int, string, string> chk in chks)
-                picItems[chk.Item1 - 1].IsChecked = true;
+            {
+                int idx = chk.Item1 - 1;
+                if (Utils.InRange(idx, 0,picItems.Count-1)) picItems[idx].IsChecked = true;
+            }                
         }
         public void SetChecked(bool? check)
         {
@@ -138,22 +156,51 @@ namespace scripthea.viewer
         {
             if (OnLog != null) OnLog(txt, clr);
         }
-        public void RemoveAt(int idx = -1) // default selected
-        {            
+
+        struct UndoRec { public int idx0; public PicItemUC piUC; public ImageInfo ii; public bool inclFile; } // undo buffer
+        UndoRec undoRec;
+
+        public void RemoveAt(bool inclFile, int idx = -1) // default selected
+        {
+            bool bb = undoRec.idx0 > -1 && undoRec.piUC != null && undoRec.ii != null; // valid buffer
+            if (bb)
+            {           
+                if (undoRec.inclFile)
+                {
+                    string fn = Path.Combine(iDepot.path, undoRec.ii.filename);
+                    if (File.Exists(fn)) File.Delete(fn);
+                    else Log("Wrn: Image file <" + fn + "> is missing");
+                }
+                undoRec.idx0 = -1; undoRec.piUC = null; undoRec.ii = null; undoRec.inclFile = false; // clear buffer
+            }
+            int si = selectedIndex;
             int j = idx.Equals(-1) ? selectedIndex - 1 : idx;
-            if (Utils.InRange(j, 0, picItems.Count - 1))
-            {
-                wrapPics.Children.Remove(picItems[j]);
-                picItems[j] = null;
-                picItems.RemoveAt(j);
-            }    
-            GC.Collect(); wrapPics.UpdateLayout();
+            if (!Utils.InRange(j, 0, picItems.Count - 1)) return;
+            // buffer - saving and overwriting
+            undoRec.idx0 = j; undoRec.piUC = picItems[j]; undoRec.ii = iDepot.items[j]; undoRec.inclFile = inclFile;
+            // remove index -> j
+            wrapPics.Children.Remove(picItems[j]);                
+            picItems.RemoveAt(j); GC.Collect(); wrapPics.UpdateLayout();
             // renumber picItems
-            for (int i = 0; i < picItems.Count; i++)
+            for (int i = 0; i < picItems.Count; i++)           
+                picItems[i].idx = i + 1;                       
+            selectedIndex = Utils.EnsureRange(si, 1, picItems.Count);               
+        }
+        public bool Recover()
+        {
+            bool bb = undoRec.idx0 > -1 && undoRec.piUC != null && undoRec.ii != null; // valid buffer
+            if (bb)
             {
-                picItems[i].idx = i + 1; 
-            }           
-            selectedIndex = Utils.EnsureRange(j, 0, picItems.Count - 1) + 1;               
+                wrapPics.Children.Insert(undoRec.idx0, undoRec.piUC);
+                picItems.Insert(undoRec.idx0, undoRec.piUC);
+                iDepot.items.Insert(undoRec.idx0, undoRec.ii); iDepot.Save();
+                // renumber picItems
+                for (int i = 0; i < picItems.Count; i++)
+                    picItems[i].idx = i + 1;
+                selectedIndex = Utils.EnsureRange(undoRec.idx0, 0, picItems.Count-1) + 1;
+                undoRec.idx0 = -1; undoRec.piUC = null;
+            }
+            return bb; 
         }
         private void picItemsClear()
         {
@@ -164,13 +211,16 @@ namespace scripthea.viewer
             picItems.Clear(); GC.Collect(); wrapPics.Children.Clear(); wrapPics.UpdateLayout();
         }
         public string imageFolder { get { return iDepot.path; } }
+        private string _markMask = "";
+        public string markMask { get { return _markMask; } }
         public void Mark(string mask)
         {
+            _markMask = mask;
             foreach (PicItemUC piUC in picItems)
                 piUC.marked = mask.Equals("") ? false : Utils.IsWildCardMatch(piUC.prompt, mask);
         }
         public void Clear(bool inclDepotItems = false)
-        {
+        {            
             picItemsClear(); 
             if (inclDepotItems) iDepot?.items.Clear();                       
         }
@@ -201,12 +251,14 @@ namespace scripthea.viewer
             set
             {
                 if (!Utils.InRange(value, 1, Count) || Count == 0) return;
+                int idxS = value;
                 PicItemUC piUC2 = null;
                 foreach (PicItemUC piUC in picItems) // reset all
-                {
-                    piUC.selected = piUC.idx.Equals(value);
-                    if (piUC.selected) { piUC.focused = true; piUC2 = picItems[value - 1]; }
-                }                                                                          
+                {                    
+                    piUC.selected = piUC.idx.Equals(idxS);                    
+                    if (piUC.selected) { piUC.focused = true; piUC2 = piUC; }
+                } 
+                if (piUC2 == null) { Log("Err: internal selected index"); return; }
                 scrollToIdx(value);
                 if (piUC2 != null)
                     OnSelect(piUC2.idx, piUC2.imageFolder + piUC2.filename, piUC2.prompt);
@@ -271,14 +323,14 @@ namespace scripthea.viewer
         } 
         private void chkShowCue_Checked(object sender, RoutedEventArgs e)
         {
-            opts.ThumbCue = chkShowCue.IsChecked.Value; opts.ThumbFilename = chkShowFilename.IsChecked.Value;
+            opts.viewer.ThumbCue = chkShowCue.IsChecked.Value; opts.viewer.ThumbFilename = chkShowFilename.IsChecked.Value;
             UpdatePicItems();
         }
         private void btnZoomIn_Click(object sender, RoutedEventArgs e)
         {
-            int newZoom = opts.ThumbZoom + (sender.Equals(btnZoomIn) ? 5 : -5);
-            opts.ThumbZoom = Utils.EnsureRange(newZoom, 40, 300);
-            lbZoom.Content = opts.ThumbZoom.ToString() + "%";
+            int newZoom = opts.viewer.ThumbZoom + (sender.Equals(btnZoomIn) ? 5 : -5);
+            opts.viewer.ThumbZoom = Utils.EnsureRange(newZoom, 40, 300);
+            lbZoom.Content = opts.viewer.ThumbZoom.ToString() + "%";
             UpdatePicItems();            
         }
         private void btnItemUp_MouseDown(object sender, MouseButtonEventArgs e) // Left/Right

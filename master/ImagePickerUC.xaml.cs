@@ -38,7 +38,7 @@ namespace scripthea.master
         public bool checkable 
         { 
             get { return _checkable; }
-            set { _checkable = value; listView.SetChecked(value); } 
+            private set { _checkable = value; listView.SetChecked(value); gridView.SetChecked(value); } 
         }
         private bool IsReadOnly; 
         public char letter { get; private set; }
@@ -58,11 +58,11 @@ namespace scripthea.master
             comboCustom.Items.Clear(); IsReadOnly = _IsReadOnly;
             if (cbItems.Count.Equals(0))
             {
-                comboCustom.Visibility = Visibility.Collapsed; rectSepar.Visibility = Visibility.Visible;
+                comboCustom.Visibility = Visibility.Collapsed; //rectSepar.Visibility = Visibility.Visible;
             }
             else
             {
-                comboCustom.Visibility = Visibility.Visible; rectSepar.Visibility = Visibility.Collapsed;
+                comboCustom.Visibility = Visibility.Visible; //rectSepar.Visibility = Visibility.Collapsed;
                 foreach (string ss in cbItems)
                 {
                     ComboBoxItem cbi = new ComboBoxItem() { Content = ss };
@@ -115,9 +115,18 @@ namespace scripthea.master
             iDepot = null; listView.loadedDepot = ""; gridView.loadedDepot = "";
             tbImageDepot_TextChanged(null, null);
         }
+        public ImageInfo selectedImageInfo
+        {
+            get 
+            {
+                if (activeView.selectedIndex == -1 || iDepot == null) return null;
+                if (!iDepot.isEnabled) return null;
+                return iDepot.items[activeView.selectedIndex - 1];
+            }
+        }
         public List<ImageInfo> imageInfos(bool check, bool uncheck)
         {
-            if (!iDepot.isEnabled || activeView.Equals(null)) return null;
+            if (!iDepot.isEnabled || activeView.Equals(null) || !checkable) return null;
             List<ImageInfo> lii = new List<ImageInfo>();
             List<Tuple<int, string, string>> lt = activeView.GetItems(check, uncheck);
             foreach (var ii in lt)
@@ -129,7 +138,8 @@ namespace scripthea.master
             return lii;
         }
         public List<Tuple<int, string, string>> ListOfTuples(bool check, bool uncheck)
-        {          
+        {
+            if (!iDepot.isEnabled || activeView.Equals(null) || !checkable) return null;
             return activeView?.GetItems(check, uncheck);
         }
         List<iPicList> views;
@@ -185,7 +195,6 @@ namespace scripthea.master
         protected void ChangeContent(object sender, RoutedEventArgs e)
         {
             GetChecked();
-
         }
         public event Utils.LogHandler OnLog;
         protected void Log(string txt, SolidColorBrush clr = null)
@@ -193,7 +202,7 @@ namespace scripthea.master
             if (OnLog != null) OnLog(txt, clr);
             else Utils.TimedMessageBox(txt, "Information", 3000);
         }
-        private int GetChecked(bool print = true)
+        private int GetChecked(bool print = true) // returns numb. of checked
         {
             if (print) lbChecked.Content = "---";
             if (!isEnabled || activeView == null) { /*Log("Err: No active image depot found.");*/ return -1; }
@@ -201,9 +210,10 @@ namespace scripthea.master
             if (print)
                 lbChecked.Content = itms.Count.ToString() + " out of " + activeView.Count.ToString();
             if (activeView.Count == 0) image.Source = null;
-            return itms.Count;
+            return itms.Count; 
         }
         public bool converting = false; public ImageDepot iDepot = null;
+
         private void tbImageDepot_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (ImgUtils.checkImageDepot(tbImageDepot.Text, false) > 0) tbImageDepot.Foreground = Brushes.Black;
@@ -218,9 +228,21 @@ namespace scripthea.master
                     iDepot = new ImageDepot(tbImageDepot.Text, ImgUtils.DefaultImageGenerator, IsReadOnly);
                 else iDepot = null;
             }
+            if (!chkCustom1.IsChecked.Value && Convert.ToString(chkCustom1.Content).Equals("Including modifiers") && iDepot != null)
+            {
+                string[] stringSeparators = new string[] { opts.composer.ModifPrefix };
+                foreach (ImageInfo ii in iDepot.items)
+                {
+                    string[] pa = ii.prompt.Split(stringSeparators, System.StringSplitOptions.RemoveEmptyEntries);
+                    if (pa.Length < 2) continue;
+                    ii.prompt = pa[0];
+                }
+            }
             if (iDepot != null) 
                 if (iDepot.isEnabled) ChangeDepot(iDepot, null);
-            if (chkCustom1.IsChecked.Value) iDepot?.Validate(true);
+            if (chkCustom1.IsChecked.Value && Convert.ToString(chkCustom1.Content).Equals("Validate on open")) 
+                iDepot?.Validate(true);
+
             lastTab = null;
             rbList_Checked(null, null); GetChecked();
         }
@@ -296,12 +318,11 @@ namespace scripthea.master
             if (tcMain.SelectedItem.Equals(tiList))
                 listView.SynchroChecked(gridView.GetItems(true, false));
             lastTab = (TabItem)tcMain.SelectedItem;
+            GetChecked();
         }
-
         private void tcMain_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (tcMain == null || iDepot == null) return;
-            
+            if (tcMain == null || iDepot == null) return;            
         }
         private void image_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {

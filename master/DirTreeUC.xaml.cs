@@ -23,6 +23,7 @@ using System.Windows.Media.Animation;
 using Image = System.Windows.Controls.Image;
 using Color = System.Drawing.Color;
 using scripthea.viewer;
+using ExifLib;
 
 namespace scripthea.master
 {
@@ -33,13 +34,13 @@ namespace scripthea.master
         { get { return System.IO.Path.Combine(Utils.basePath, "images"); } }
         public static ImageInfo.ImageGenerator DefaultImageGenerator = ImageInfo.ImageGenerator.StableDiffusion;
 
-        public static BitmapImage file_not_found { get { return UnhookedImageLoad(Utils.basePath + "\\Properties\\file_not_found.jpg", ImageFormat.Jpeg); } }
+        public static BitmapImage file_not_found { get { return UnhookedImageLoad(Path.Combine(Utils.configPath,"file_not_found.jpg"), ImageFormat.Jpeg); } }
         public static SolidColorBrush ToSolidColorBrush(string hex_code)
         {
             return (SolidColorBrush)new BrushConverter().ConvertFromString(hex_code);
         }
 
-        public static int checkImageDepot(string imageDepot, bool checkDesc = true)
+        public static int checkImageDepot(string imageDepot, bool checkDesc = true) // return -1 if not OK
         {
             string idepot = imageDepot.EndsWith("\\") ? imageDepot : imageDepot + "\\";
             if (!Directory.Exists(idepot)) return -1;
@@ -58,6 +59,92 @@ namespace scripthea.master
                 return imgPng.Length + imgJpg.Length;
             }
         }
+        /// <summary>
+        /// ModifyExifData
+        /// </summary>
+        /// <param name="inputImagePath"></param>
+        /// <param name="outputImagePath"></param>
+        /// https://medium.com/@dannyc/get-image-file-metadata-in-c-using-net-88603e6da63f
+        /// 
+        /*public enum JpgPropertyTag: int
+        {
+            // PropertyTagTypeShort
+            ImageWidth = 0x0100, ImageHeight = 0x0101, // JPEGQuality = 0x5010, Adobe private property
+
+            // PropertyTagTypeASCII
+            Artist = 0x013B, Copyright = 0x8298, 
+            DateTime = 0x0132, 
+            SoftwareUsed = 0x0131, UserComment = 0x9286 	
+        }
+
+        public static void ModifyExifData(string inputImagePath, Dictionary<JpgPropertyTag, string> propTags, string outputImagePath = "")
+        {
+            // Load the image
+            System.Drawing.Image image = System.Drawing.Image.FromFile(inputImagePath);
+
+            // Get the PropertyItems (EXIF data) of the image
+            PropertyItem[] properties = image.PropertyItems;
+
+            // Modify the desired EXIF property
+            int propertyId = 0x0132; // 0x0132 is the EXIF tag for DateTime
+            string newValue = DateTime.Now.ToString("yyyy:MM:dd HH:mm:ss");
+
+            // Find the PropertyItem with the desired property ID
+            PropertyItem targetProperty = null;
+            foreach (var property in properties)
+            {
+                if (property.Id == propertyId)
+                {
+                    targetProperty = property;
+                    break;
+                }
+            }
+
+            // If the property exists, modify it. If not, create a new one
+            if (targetProperty != null)
+            {
+                targetProperty.Value = Encoding.ASCII.GetBytes(newValue + '\0');
+            }
+            else
+            {
+                targetProperty = image.PropertyItems[0];
+                targetProperty.Id = propertyId;
+                targetProperty.Type = 2; // 2 is the type for ASCII strings
+                targetProperty.Value = Encoding.ASCII.GetBytes(newValue + '\0');
+                targetProperty.Len = targetProperty.Value.Length;
+            }
+
+            // Set the modified property back to the image
+            image.SetPropertyItem(targetProperty);
+
+            // Save the modified image to the output file
+            image.Save(outputImagePath == "" ? inputImagePath : outputImagePath , ImageFormat.Jpeg);
+        }
+
+
+        
+        public  void Ma1in()
+        {
+
+            // Load the JPG image.
+            System.Drawing.Image image = System.Drawing.Image.FromFile("my_image.jpg");
+
+            // Get the ExifData object.
+            ExifLib.IFD ExifData exifData = image.GetPropertyItem(306).Value as ExifData;
+
+            // Modify the EXIF data.
+            exifData.Make = "My Camera";
+            exifData.Model = "My Model";
+            exifData.DateTime = DateTime.Now;
+            exifData.Description = "This is my image description";
+
+            // Set the PropertyItem value of the Image object.
+            image.GetPropertyItem(306).Value = exifData;
+
+            // Save the image.
+            image.Save("my_image_modified.jpg");
+        }*/
+    
 
         public static ImageFormat GetImageFormat(string filePath)
         {

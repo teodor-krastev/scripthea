@@ -11,24 +11,33 @@
         </Grid.RowDefinitions>
 
         <TabControl x:Name="tabControl" Margin="3,0" Grid.Column="1" BorderBrush="{x:Null}" >
-            <TabItem x:Name="tiComposer"  Header="Prompt composer" Height="28" HorizontalAlignment="Left" Background="#FFF1F0F0">
+            <TabItem x:Name="tiGeneral" Header="  General  " Height="28" Background="#FFECECEC" HorizontalAlignment="Left">
+                <Grid >
+                    <StackPanel>
+                        <GroupBox Height="40">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,4,0,0">
+                                <CheckBox x:Name="chkUpdates" Content="Biweekly check for updates" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5,0,0,0"></CheckBox>
+                                <Button x:Name="btnCheck4Update" Content="Check Now " HorizontalAlignment="Left" VerticalAlignment="Center" Background="#FFFAF5E5" Margin="10,0,0,0" Height="26" Width="80" ></Button>
+                                <Label x:Name="lbNewVer" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="6,0,0,0"></Label>
+                            </StackPanel>
+                        </GroupBox>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+            <TabItem x:Name="tiComposer"  Header=" Prompt composer " Height="28" HorizontalAlignment="Left" Background="#FFF1F0F0">
                 <Grid>
                     
                 </Grid>
             </TabItem>
-            <TabItem x:Name="tiViewer" Header="Img.Depot Viewer" Height="28" Background="#FFECECEC" HorizontalAlignment="Left">
+            <TabItem x:Name="tiViewer" Header=" Img.Depot Viewer " Height="28" Background="#FFECECEC" HorizontalAlignment="Left">
                 <Grid >
                     
                 </Grid>
             </TabItem>
-            <TabItem x:Name="tiDepotMaster" Header="Img.Depot Master" Height="28" Background="#FFECECEC" HorizontalAlignment="Left">
+            <TabItem x:Name="tiIDutilities" Header=" Img.Depot Utilities " Height="28" Background="#FFECECEC" HorizontalAlignment="Left">
                 <Grid >
                     <CheckBox x:Name="chkValidationAsk" Content="Ask before correction in image depot validation" HorizontalAlignment="Left" Margin="10,4.608,0,0" VerticalAlignment="Top"/>
 
-                </Grid>
-            </TabItem>
-            <TabItem x:Name="tiUtils" Header="Import/Export" Height="28" Background="#FFECECEC" HorizontalAlignment="Left">
-                <Grid >
                 </Grid>
             </TabItem>
         </TabControl>

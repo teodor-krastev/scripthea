@@ -71,7 +71,7 @@ namespace scripthea.master
             if (sender.Equals(btnCopyA2B)) k = Copy1to2(iPickerA, iPickerB); 
             if (sender.Equals(btnCopyB2A)) k = Copy1to2(iPickerB, iPickerA);
             if (k == -1) Utils.TimedMessageBox("Err: Issue during copying", "Error", 3000);
-            else Utils.TimedMessageBox(k+" files have been copyied", "Information", 3000);
+            else Utils.TimedMessageBox(k+" files have been copied", "Information", 3000);
         }
         private void btnMoveA2B_Click(object sender, RoutedEventArgs e)
         {
@@ -90,7 +90,6 @@ namespace scripthea.master
             if (k == -1) Utils.TimedMessageBox("Err: Issue during deleting", "Error", 3000);
             else Utils.TimedMessageBox(k + " files have been deleted", "Information", 3000);
         }
-
         public int Copy1to2(ImagePickerUC iPicker1, ImagePickerUC iPicker2)
         {
             if (ImgUtils.checkImageDepot(iPicker2.imageDepot, true) == -1)
@@ -182,11 +181,12 @@ namespace scripthea.master
                 ImageDepot df = iPicker?.iDepot;
                 if (df == null) { Log("Error: Invalid image depot! (11)", Brushes.Red); return; }
                 if (!df.isEnabled) { Log("Error: Invalid image depot! (12)", Brushes.Red); return; }
+                iPicker.ReloadDepot();
                 iPicker.isChanging = true;
                 bb = df.Validate(true);
                 iPicker.isChanging = true;
                 if (df.Extras().Count == 0) return;
-                MessageBoxResult result = MessageBox.Show("All the files without entry (" + df.Extras().Count.ToString() + ") will be deleted. Continue?",
+                MessageBoxResult result = MessageBox.Show("All the files without image depot entry (" + df.Extras().Count.ToString() + ") will be deleted. Continue?",
                     "Confirmation", MessageBoxButton.OKCancel, MessageBoxImage.Question);
                 if (result == MessageBoxResult.Cancel) return;
                 foreach (string fn in df.Extras())

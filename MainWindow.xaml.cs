@@ -31,7 +31,7 @@ namespace scripthea
     /// </summary>
     public partial class MainWindow : Window
     {
-        AboutWin aboutWin;       
+        public AboutWin aboutWin;       
         public MainWindow()
         {
             aboutWin = new AboutWin();
@@ -46,19 +46,28 @@ namespace scripthea
         public FocusControl focusControl;
         private void MainWindow1_Loaded(object sender, RoutedEventArgs e)
         {
-            optionsFile = Path.Combine(Utils.configPath, "options.json");
+            optionsFile = Path.Combine(Utils.configPath, "Scripthea.cfg");
             if (!Directory.Exists(Utils.configPath)) throw new Exception("Fatal error: Directory <" + Utils.configPath + "> does not exist.");
             if (File.Exists(optionsFile))
             {
                 string json = System.IO.File.ReadAllText(optionsFile);
                 opts = JsonConvert.DeserializeObject<Options>(json);
-                if (opts.ImageDepotFolder.Equals("<default.image.depot>")) opts.ImageDepotFolder = ImgUtils.defaultImageDepot;
+                if (opts.composer.ImageDepotFolder == null) opts.composer.ImageDepotFolder = "";
+                if (opts.composer.ImageDepotFolder.Equals("<default.image.depot>")) opts.composer.ImageDepotFolder = ImgUtils.defaultImageDepot; 
             }
             else opts = new Options();
-            opts.debug = Utils.isInVisualStudio || Utils.localConfig;
+            opts.general.debug = Utils.isInVisualStudio || Utils.localConfig; aboutWin.Init(ref opts);
+            if (opts.general.UpdateCheck) Check4Update(null,null);
+            else
+            {
+                if (!opts.general.NewVersion.Equals(""))
+                {
+                    aboutWin.lbMessage.Foreground = System.Windows.Media.Brushes.Green; aboutWin.lbMessage.Content = "New release (" + opts.general.NewVersion + ") is available at Scripthea.com !";
+                }
+            }
+            if (!opts.general.debug) imgPreferences.Visibility = Visibility.Collapsed;
+            preferencesWindow = new PreferencesWindow(); preferencesWindow.Init(ref opts); preferencesWindow.btnCheck4Update.Click += new RoutedEventHandler(Check4Update);
             
-            if (!opts.debug) imgPreferences.Visibility = Visibility.Collapsed;
-            preferencesWindow = new PreferencesWindow();
             Title = "Scripthea - options loaded";
             dirTreeUC.Init();
             dirTreeUC.OnActive += new DirTreeUC.SelectHandler(Active);
@@ -74,20 +83,18 @@ namespace scripthea
             exportUtilUC.Init(ref opts);
 
             oldTab = tiComposer;
-            Log("> Welcome to Scripthea" + "  " + (opts.debug ? "(in debug mode)" : "")); Log("");
+            Log("> Welcome to Scripthea" + "  " + (opts.general.debug ? "(in debug mode)" : "")); Log("");
             Utils.DelayExec(2000, new Action(() => { aboutWin.Hide(); })); 
             queryUC.Init(ref opts);            
-            
-            Left = opts.Left;
-            Top = opts.Top;
-            Width = opts.Width;
-            Height = opts.Height;
-            Width = opts.Width;
-            pnlLog.Width = new GridLength(opts.LogColWidth);
-            gridSplitLeft_MouseDoubleClick(null, null);
+            Left = opts.layout.Left;
+            Top = opts.layout.Top;
+            Width = opts.layout.Width;
+            Height = opts.layout.Height;
+            Width = opts.layout.Width;
+            pnlLog.Width = new GridLength(opts.layout.LogColWidth);            
             rowLogImage.Height = new GridLength(1);
 
-            if (opts.SingleAuto) queryUC.btnCompose_Click(null, null);
+            if (opts.composer.SingleAuto) queryUC.btnCompose_Click(null, null);
 
             focusControl = new FocusControl();
             focusControl.Register("import",importUtilUC);
@@ -101,8 +108,19 @@ namespace scripthea
             if (!File.Exists(penpicFile)) throw new Exception(penpicFile +" file is missing");
             penpic = new Bitmap(penpicFile); imgAbout.Source = ImgUtils.BitmapToBitmapImage(penpic, System.Drawing.Imaging.ImageFormat.Png);
             SwitchExplorer(false);
-            if (!opts.debug) imgPreferences.Visibility = Visibility.Collapsed;
-            Title = "Scripthea - text-to-image prompt composer v" + Utils.getAppFileVersion;           
+            gridSplitLeft_MouseDoubleClick(null, null);
+            if (!opts.general.debug) imgPreferences.Visibility = Visibility.Collapsed;
+            Title = "Scripthea - text-to-image prompt composer v" + Utils.getAppFileVersion;            
+        }
+        public void Check4Update(object sender, RoutedEventArgs e)
+        {
+            int k = sender == null ? opts.general.LastUpdateCheck : -1;
+            aboutWin.Check4Updates(k);
+            if (k == -1)
+            {
+                if (opts.general.NewVersion.Equals("")) preferencesWindow.lbNewVer.Content = "Your version is up to date";
+                else preferencesWindow.lbNewVer.Content = "New version: " + opts.general.NewVersion;
+            }
         }
         private void SwitchExplorer(bool on) // 
         {
@@ -123,8 +141,8 @@ namespace scripthea
 
                 rowLog.Height = new GridLength(100 - vl, GridUnitType.Star);
                 rowExplorer.Height = new GridLength(vl, GridUnitType.Star);
-                if (vl.Equals(0) || vl.Equals(100)) gridSplitLeft2.Visibility = Visibility.Collapsed;
-                else gridSplitLeft2.Visibility = Visibility.Visible;
+                //if (vl.Equals(0) || vl.Equals(100)) gridSplitLeft2.Visibility = Visibility.Collapsed;
+                //else gridSplitLeft2.Visibility = Visibility.Visible;
                 if (vl != 100 && vl != 0 && !Utils.isNull(opts))
                 {
                     if (vl > 70) //partly shown
@@ -151,15 +169,15 @@ namespace scripthea
         }
         private void MainWindow1_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            opts.Left = Convert.ToInt32(Left);
-            opts.Top = Convert.ToInt32(Top);
-            opts.Width = Convert.ToInt32(Width);
-            opts.Height = Convert.ToInt32(Height);
-            opts.LogColWidth = Convert.ToInt32(pnlLog.ActualWidth);
+            opts.layout.Left = Convert.ToInt32(Left);
+            opts.layout.Top = Convert.ToInt32(Top);
+            opts.layout.Width = Convert.ToInt32(Width);
+            opts.layout.Height = Convert.ToInt32(Height);
+            opts.layout.LogColWidth = Convert.ToInt32(pnlLog.ActualWidth);
             queryUC.Finish();
             viewerUC.Finish();
             dirTreeUC.Finish();
-            if (!Utils.isNull(aboutWin)) aboutWin.Close();
+            if (!Utils.isNull(aboutWin)) { aboutWin.closing = true; aboutWin.Close(); }
 
             string json = JsonConvert.SerializeObject(opts);
             System.IO.File.WriteAllText(optionsFile, json);
@@ -177,7 +195,7 @@ namespace scripthea
         {
             try
             {
-                string txt = msg.Trim();
+                string txt = msg.Trim(); bool skipLog = false;
                 if (txt.Length > 7)
                     switch (txt.Substring(0, 8))
                     {
@@ -204,25 +222,25 @@ namespace scripthea
                             queryUC.Request2Cancel();
                             break;
                         case "@WorkDir":
-                            if (Directory.Exists(opts.ImageDepotFolder))
+                            if (Directory.Exists(opts.composer.ImageDepotFolder))
                             {
-                                dirTreeUC.CatchAFolder(opts.ImageDepotFolder);
-                                tbImageDepot.Text = "working image depot -> " + opts.ImageDepotFolder;
+                                dirTreeUC.CatchAFolder(opts.composer.ImageDepotFolder);
+                                tbImageDepot.Text = "working image depot -> " + opts.composer.ImageDepotFolder;
                             }
-                            else tbImageDepot.Text = "working image depot -> <NOT SET>";
+                            else tbImageDepot.Text = "working image depot -> <NOT THERE>";
                             break; 
                         case "@Explore":
                             string[] sa = txt.Split('='); if (sa.Length != 2) Utils.TimedMessageBox("Error(#458)");
-                            ExplorerPart = Convert.ToInt32(sa[1]);
+                            ExplorerPart = Convert.ToInt32(sa[1]); skipLog = true;
                             break; 
                         case "@_Header":
                             string[] sb = txt.Split('='); if (sb.Length != 2) Utils.TimedMessageBox("Error(#459)");
-                            Title = "Scripthea - "+sb[1];
+                            Title = "Scripthea - "+sb[1]; skipLog = true;
                             break; 
                     }
-                if (chkLog.IsChecked.Value)
+                if (chkLog.IsChecked.Value && !skipLog)
                 {                
-                    if (txt.StartsWith("@") && !opts.debug) return; // skips internal messages if not debug    
+                    if (txt.StartsWith("@") && !opts.general.debug) return; // skips internal messages if not debug    
                     if (ExplorerPart.Equals(100)) 
                     { 
                         if (!txt.StartsWith("@") && !txt.StartsWith("StartGe") && !txt.Equals("---")) 
@@ -272,6 +290,12 @@ namespace scripthea
         TabItem oldTab;
         private void tabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            string nextDepotFolder(string firstGuess)
+            {
+                if (ImgUtils.checkImageDepot(firstGuess) > -1) return firstGuess;
+                if (ImgUtils.checkImageDepot(opts.composer.ImageDepotFolder) > -1) return opts.composer.ImageDepotFolder;
+                return ImgUtils.defaultImageDepot;
+            }
             if (sender != tabControl) return;
             if (tabControl.SelectedItem.Equals(tiComposer))
             {
@@ -283,9 +307,14 @@ namespace scripthea
             }
             if (tabControl.SelectedItem.Equals(tiViewer))
             {
-                if (oldTab.Equals(tiComposer)) viewerUC.ShowImageDepot(queryUC.tbImageDepot.Text);
-                if (oldTab.Equals(tiUtils)) viewerUC.ShowImageDepot(importUtilUC.imageFolder);
-                ExplorerPart = 100; dirTreeUC.CatchAFolder(viewerUC.tbImageDepot.Text);
+                bool bb = false;
+                if (oldTab.Equals(tiComposer))
+                    bb |= viewerUC.ShowImageDepot(nextDepotFolder(queryUC.tbImageDepot.Text));
+                if (oldTab.Equals(tiUtils)) 
+                    bb |= viewerUC.ShowImageDepot(nextDepotFolder(importUtilUC.imageFolder));
+                if (!bb) bb |= viewerUC.ShowImageDepot(nextDepotFolder(""));
+                ExplorerPart = 100; dirTreeUC.CatchAFolder(viewerUC.tbImageDepot.Text); 
+                focusControl.GotTheFocus(viewerUC, null); // unknown why it needs to be done from code 
             }
             if (tabControl.SelectedItem.Equals(tiDepotMaster))
             {
@@ -316,8 +345,8 @@ namespace scripthea
         }
         private void gridSplitLeft_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (!Utils.isNull(sender)) opts.LogColWaveSplit = !opts.LogColWaveSplit;
-            if (opts.LogColWaveSplit)
+            if (!Utils.isNull(sender)) opts.layout.LogColWaveSplit = !opts.layout.LogColWaveSplit;
+            if (opts.layout.LogColWaveSplit)
             {
                 gridSplitLeft.Visibility = Visibility.Visible;
                 gridSplitLeft2.Visibility = Visibility.Collapsed;
@@ -325,9 +354,9 @@ namespace scripthea
             }
             else
             {
-                gridSplitLeft.Visibility = Visibility.Collapsed;
                 gridSplitLeft2.Visibility = Visibility.Visible;
-                tabControl.Margin = new Thickness(5, 0, 0, 0);
+                gridSplitLeft.Visibility = Visibility.Collapsed;               
+                tabControl.Margin = new Thickness(7, 0, 0, 0);
             }
         }
         private void MainWindow1_KeyDown(object sender, KeyEventArgs e)
@@ -347,10 +376,11 @@ namespace scripthea
                     break;
             }
         }
+
         private void imgPreferences_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (Utils.isInVisualStudio) preferencesWindow.ShowWindow(tabControl.SelectedIndex);
-            else Utils.TimedMessageBox("Preferences dialog is under development.","", 3000);
+            preferencesWindow.ShowWindow(tabControl.SelectedIndex);
+            //if (Utils.isInVisualStudio) else Utils.TimedMessageBox("Preferences dialog is under development.","", 3000);
         }
         private void btnRefresh_Click(object sender, RoutedEventArgs e)
         {

@@ -47,7 +47,7 @@ namespace scripthea.master
                 return nm;
             }
         }
-        private void GotTheFocus(object sender, EventArgs e)
+        public void GotTheFocus(object sender, EventArgs e)
         {
             ifc = sender as iFocusControl;        
             foreach (var pair in iFoci)

@@ -32,7 +32,7 @@
             </Grid>
 
             <TabControl x:Name="tcQuery" Margin="0"  SelectedIndex="0" SelectionChanged="tcQuery_SelectionChanged" >
-                <TabItem x:Name="tiSingle" Header="Single" Width="70" Height="25" Background="#FFECECEC" Margin="2,0,-9.063,0.089" HorizontalAlignment="Left">
+                <TabItem x:Name="tiSingle" Header="Single" Width="70" Height="25" Background="#FFECECEC" Margin="2,0,-9.063,0.089" HorizontalAlignment="Left" BorderBrush="#FF0A9401">
                     <Grid>
                         <Button x:Name="btnCompose" Content="Compose a prompt" Height="30" Width="130" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,7,0,0" Click="btnCompose_Click" Background="#FFFAFAEB" FontSize="13"/>
                         <Button x:Name="btnQuery" Content="Generate image" Height="30" Width="120" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="150,7,0,0" Background="#FFEBF3FA" FontSize="13" Click="btnQuery_Click"/>
@@ -41,11 +41,13 @@
                         <CheckBox x:Name="chkOneLineCue" Content="One line cue" Width="87" Margin="105,50,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Checked="UpdateToOptions" Unchecked="UpdateToOptions" IsChecked="True" Visibility="Collapsed" />
                     </Grid>
                 </TabItem>
-                <TabItem x:Name="tiScan" Header="Scan" Height="25" Background="#FFECECEC" Margin="5,0,-9.063,0.089" HorizontalAlignment="Left" Width="69" >
+                <TabItem x:Name="tiScan" Header="Scan" Height="25" Background="#FFECECEC" Margin="5,0,-9.063,0.089" HorizontalAlignment="Left" Width="69" BorderBrush="#FF6C009C" >
                     <Grid Background="#FFFAF7ED">
-                        <Button x:Name="btnScan" Content="S c a n" Height="30" Width="77" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,7,0,0" FontWeight="Bold" Background="#FFF5FAEB" Click="btnScan_Click" FontSize="13"/>
-                        <TextBox HorizontalAlignment="Right" Text="Combine all checked cues + fixed modifiers with one from the scanned modifiers." Width="162" Margin="0,0,-0.228,0" TextWrapping="Wrap" Background="{x:Null}" BorderBrush="{x:Null}" VerticalAlignment="Top" FontSize="12"/>
-                        <Button x:Name="btnScanPreview" Content="Scan Preview" Height="30" Width="98" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10,0,0,7" Background="MintCream" FontSize="13" Click="btnScanPreview_Click"/>
+                        <Button x:Name="btnScan" Content="S c a n" Height="30" Width="77" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,7,0,0" FontWeight="Bold" Background="#FFF5FAEB" Click="btnScan_Click" FontSize="13" BorderBrush="#FF0233A2"/>
+                        <TextBox HorizontalAlignment="Right" Text="Combine all checked cues + fixed modifiers + some (by modif. sample number) of scanned modifiers." Width="162" Margin="0,0,-0.228,0" TextWrapping="Wrap" Background="{x:Null}" BorderBrush="{x:Null}" VerticalAlignment="Top" FontSize="12"/>
+                        <Button x:Name="btnScanPreview" Content="Scan preview" Height="30" Width="98" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10,0,0,7" Background="MintCream" FontSize="13" Click="btnScanPreview_Click" BorderBrush="#FF993109"/>
+                        <Button x:Name="btnAppend2Preview" Content="Append to preview" Height="30" Width="127" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="113,0,0,7.241" Background="#FFFAFFF5" FontSize="13" Click="btnScanPreview_Click" BorderBrush="#FF993109"/>
+
                     </Grid>
                 </TabItem>
                 <TabItem x:Name="tiOptions" Header="Options" Height="25" Background="#FFECECEC" Margin="10,0,-11,0.089" HorizontalAlignment="Left" Width="70">
@@ -59,7 +61,6 @@
                                 <TextBox x:Name="tbImageDepot" Background="#FFFBFBF4" Margin="0,2,2,-2" BorderThickness="0" TextChanged="tbImageDepot_TextChanged">
                                 </TextBox>
                                 <Button x:Name="btnNewFolder" Grid.Column="1" Content=" Browse " Click="btnNewFolder_Click" Foreground="#FF0F8001" FontWeight="Bold" Background="#FFF4F4F4" Margin="3,0,0,0" Visibility="Hidden">
-
                                 </Button>
                             </Grid>
                         </GroupBox>
@@ -80,24 +81,24 @@
             <local:CuePoolUC x:Name="cuePoolUC"  Margin="0,6,0,0" Grid.Row="3"/>
         </Grid>
 
-        <GridSplitter x:Name="gridSplitRight" Grid.Column="1" HorizontalAlignment="Left" Margin="0" Width="5" Background="#FFEDFFF6"/>
+        <GridSplitter x:Name="gridSplitRight" Grid.Column="1" HorizontalAlignment="Left" Margin="0" Width="5" />
         <Grid Grid.Column="1" >
             <Grid.RowDefinitions>
                 <RowDefinition x:Name="rowAPI" Height="65"/>
                 <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
             <Grid x:Name="gridAPI" Margin="7,0,0,0"></Grid>
-            <TabControl Grid.Row="1"  x:Name="tcModScanPre" Margin="5,0,0,0" BorderBrush="#FF19B995" BorderThickness="0,1,0,0" >
-                <TabItem x:Name="tiMiodifiers" Header="Modifiers">
+            <TabControl Grid.Row="1"  x:Name="tcModScanPre" Margin="5,0,0,0" BorderBrush="#FF19B995" BorderThickness="0,1,0,0" TabStripPlacement="Bottom" FontFamily="Lucida Sans" FontSize="14" >
+                <TabItem x:Name="tiMiodifiers" Header="Modifiers" Background="#FFECECEC"  Height="30" Width="150" Margin="5,-1,-5,-2" BorderBrush="#FF13A387" Visibility="Collapsed"> 
                     <Grid>
-                        <ScrollViewer Margin="0" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto">
+                        <ScrollViewer Margin="0" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto" FontFamily="Segoe UI" FontSize="13">
                             <local:ModifiersUC x:Name="modifiersUC"/>
                         </ScrollViewer>
                     </Grid>
                 </TabItem>
-                <TabItem x:Name="tiScanPreview" Header="Scan Preview">
+                <TabItem x:Name="tiScanPreview" Header="Scan Preview" Background="#FFECECEC" Height="30" Width="150" Margin="10,-1,-10,-2" BorderBrush="#FF993109" Visibility="Collapsed"> 
                     <Grid>
-                        <local:ScanPreviewUC x:Name="scanPreviewUC" Margin="0"/>
+                        <local:ScanPreviewUC x:Name="scanPreviewUC" Margin="0" FontFamily="Segoe UI" FontSize="13"/>
                     </Grid>
                 </TabItem>
             </TabControl>

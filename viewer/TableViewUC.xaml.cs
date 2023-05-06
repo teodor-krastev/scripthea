@@ -85,8 +85,15 @@ namespace scripthea.viewer
         {
             if (!checkable) return;
             SetChecked(false);
-            foreach (Tuple<int, string, string> chk in chks)
-                dTable.Rows[chk.Item1-1]["on"] = true;
+            try
+            {
+                foreach (Tuple<int, string, string> chk in chks)
+                {               
+                    int idx = chk.Item1 - 1;
+                    if (Utils.InRange(idx, 0, dTable.Rows.Count - 1)) dTable.Rows[idx]["on"] = true;
+                }               
+            }
+            catch { }
         }
         public void SetChecked(bool? check)
         {
@@ -257,9 +264,13 @@ namespace scripthea.viewer
             int sr = dGrid.SelectedIndex;
             if (e.Key.Equals(Key.Space) && Utils.InRange(sr, 0, dTable.Rows.Count - 1))
             {
-                var chk = DataGridHelper.GetCellByIndices(dGrid, sr, 1).FindVisualChild<CheckBox>();
-                if (chk != null) chk.IsChecked = !chk.IsChecked.Value;      
-                OnSelect(sr, Path.Combine(imageFolder, Convert.ToString(dTable.Rows[sr].ItemArray[3])), ""); 
+                if (checkable)
+                {
+                    var chk = DataGridHelper.GetCellByIndices(dGrid, sr, 1).FindVisualChild<CheckBox>();
+                    if (chk != null) chk.IsChecked = !chk.IsChecked.Value;
+                    OnSelect(sr, Path.Combine(imageFolder, Convert.ToString(dTable.Rows[sr].ItemArray[3])), "");
+                }
+                else dGrid.SelectedIndex = Utils.EnsureRange(sr + 1, 0, dTable.Rows.Count - 1); 
             }           
         }
         private void dGrid_BeginningEdit(object sender, DataGridBeginningEditEventArgs e)  // TO BE FINISHED !!!

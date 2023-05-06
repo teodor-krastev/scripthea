@@ -19,10 +19,10 @@
                             <UtilsNS:NumericBox x:Name="numTimeOutImgGen" HorizontalAlignment="Left" Height="25" Margin="0,3,0,-0.051" VerticalAlignment="Top" Width="52" FontSize="13" Maximum="1000" Minimum="2" Value="60"/>
                         </StackPanel>
                     </StackPanel>
-                    <GroupBox x:Name="groupBox1" Header="Panes visible" HorizontalAlignment="Right" Margin="5" VerticalAlignment="Top">
+                    <GroupBox x:Name="groupBox1" Header="Panes visible" HorizontalAlignment="Right" Margin="0,5,4.667,0" VerticalAlignment="Top" Height="81" Width="142">
                         <StackPanel Margin="2,5,2,2">
                             <CheckBox x:Name="chkCommLog" Content="Comm.Log" Height="20"/>
-                            <CheckBox x:Name="chkGPUtemp" Content="GPU temperature" Height="20"/>
+                            <CheckBox x:Name="chkGPUtemp" Content="GPU temperature" Height="20" Margin="0,5,0,0"/>
                         </StackPanel>
                     </GroupBox>
                 </Grid>
@@ -51,12 +51,14 @@
                         </Grid>
                     </GroupBox>
                     <StackPanel Margin="0,8,0,0">
-                        <CheckBox x:Name="chkValidScript" Content="Validate Scripthea client script (.py) in SD-webUI scripts dir." Margin="4,0,0,0"></CheckBox>
+                        <CheckBox x:Name="chkValidateScript" Content="Validate Scripthea client script (.py) in SD-webUI scripts dir." Margin="4,0,0,0"></CheckBox>
                     </StackPanel>
                 </StackPanel>
             </TabItem>
         </TabControl>
-        <Button x:Name="btnOK" Content="OK" HorizontalAlignment="Right" Margin="0,11.143,17.286,11.286" VerticalAlignment="Center" Width="90" Click="OKButton_Click" Grid.Row="1" Height="25" FontWeight="Bold" IsDefault="True" Background="#FFF0F0F0"/>
-        <Button x:Name="btnCancel" Content="Cancel" HorizontalAlignment="Right" Margin="0,11.143,127.286,11.286" VerticalAlignment="Center" Width="95" Grid.Row="1" Height="25" RenderTransformOrigin="0.502,0.5" Click="btnCancel_Click" IsCancel="True" Background="#FFF0F0F0"/>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0" Width="206" >
+            <Button x:Name="btnOK" Content="OK" HorizontalAlignment="Left" Margin="0" VerticalAlignment="Center" Width="90" Click="OKButton_Click" Height="25" FontWeight="Bold" IsDefault="True" Background="#FFF0F0F0"/>
+            <Button x:Name="btnCancel" Content="Cancel" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center" Width="95" Height="25" RenderTransformOrigin="0.502,0.5" Click="btnCancel_Click" IsCancel="True" Background="#FFF0F0F0"/>
+        </StackPanel>
     </Grid>
 </Window>

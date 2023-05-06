@@ -5,11 +5,11 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:scripthea.viewer" xmlns:UtilsNS="clr-namespace:UtilsNS"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800" PreviewKeyDown="ucViewer_PreviewKeyDown">
+             d:DesignHeight="450" d:DesignWidth="800" PreviewKeyDown="ucViewer_PreviewKeyDown" Focusable="True">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition x:Name="colListWidth" Width="400" MinWidth="200" MaxWidth="1000"/>
-            <ColumnDefinition Width="129*"/>
+            <ColumnDefinition x:Name="colListWidth" Width="500" MinWidth="400" MaxWidth="2000"/>
+            <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
         <Grid Margin="0" >
             <Grid.RowDefinitions>
@@ -21,13 +21,17 @@
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
-                        <ColumnDefinition x:Name="colRefresh"  Width="70"/>
+                        <ColumnDefinition x:Name="colRefresh"  Width="40"/>
                         <ColumnDefinition Width="97"/>
                     </Grid.ColumnDefinitions>
                     <TextBox x:Name="tbImageDepot" Background="#FFFBFBF4" TextChanged="tbImageDepot_TextChanged" Margin="0,2,2.962,-2" BorderThickness="0">
                     </TextBox>
-                    <Button x:Name="btnRefresh" Grid.Column="1" Content="Refresh" Foreground="#FF0F8001" HorizontalAlignment="Center" Width="65" FontWeight="Bold" Background="#FFF4F4F4" Margin="0,0,-0.354,-0.051" RenderTransformOrigin="0.5,0.501" Click="btnRefresh_Click"/>
-                    <CheckBox x:Name="chkAutoRefresh" Grid.Column="2" Content="Auto-refresh" Foreground="#FF2963BE" HorizontalAlignment="Left"  Background="#FFF4F4F4" Margin="5,0,0,-0.051" VerticalAlignment="Center" Checked="chkAutoRefresh_Checked" Unchecked="chkAutoRefresh_Checked" />
+                    <Button x:Name="btnRefresh" Grid.Column="1" Foreground="#FF0F8001" HorizontalAlignment="Center" Width="36" FontWeight="Bold"  Click="btnRefresh_Click" Background="{x:Null}" ToolTip="Refresh from image depot">
+                        <ContentControl>
+                            <Image Source="/Scripthea;component/Properties/refresh.png"  Cursor="Hand"></Image>
+                        </ContentControl>
+                    </Button>
+                    <CheckBox x:Name="chkAutoRefresh" Grid.Column="2" Content="Auto-refresh" Foreground="#FF05A003" HorizontalAlignment="Left"  Background="#FFF4F4F4" Margin="5,0,0,-0.051" VerticalAlignment="Center" Checked="chkAutoRefresh_Checked" Unchecked="chkAutoRefresh_Checked" />
                 </Grid>
             </GroupBox>
             <Grid Grid.Row="2">
@@ -55,7 +59,7 @@
                         <Image Source="/Scripthea;component/Properties/stop.png"  Cursor="Hand"></Image>
                     </ContentControl>
                 </Button>
-                <UtilsNS:NumericBox x:Name="numDly" HorizontalAlignment="Left" Height="25" Margin="0,0,8,0" VerticalAlignment="Center" Width="47" Value="5" Minimum="1" Maximum="99" ValueChanged="numDly_ValueChanged" ToolTip="Delay to next image in animation [s]" GotFocus="numDly_GotFocus" LostFocus="numDly_LostFocus"/>
+                <UtilsNS:NumericBox x:Name="numDly" HorizontalAlignment="Left" Height="25" Margin="0,0,8,0" VerticalAlignment="Center" Width="47" Value="5" Minimum="1" Maximum="99" ValueChanged="numDly_ValueChanged" ToolTip="Delay to next image in animation [s]"/>
                 <Label x:Name="lbDepotInfo" Content="" VerticalAlignment="Top" Margin="0,0,5,0" HorizontalAlignment="Left" ></Label>
             </StackPanel>
             <TabControl x:Name="tabCtrlViews" Grid.Row="1" SelectedIndex="0" BorderBrush="{x:Null}" Panel.ZIndex="10" SelectionChanged="tabCtrlViews_SelectionChanged">

@@ -32,7 +32,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="25"/>
                 <ColumnDefinition/>
-                <ColumnDefinition Width="38"/>
+                <ColumnDefinition Width="40"/>
             </Grid.ColumnDefinitions>
             <Image x:Name="ibtnTumbOpt" Source="/Scripthea;component/Properties/TripleBarTeal.bmp" MouseDown="ibtnTumbOpt_MouseDown" Margin="0"></Image>
             <StackPanel Margin="0"  Orientation="Horizontal" HorizontalAlignment="Center" Grid.Column="1" Width="197">

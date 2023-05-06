@@ -137,6 +137,14 @@ namespace scripthea.composer
         private void AppendFile()
         {
             CommonOpenFileDialog dialog = new CommonOpenFileDialog(); dialog.Multiselect = false;
+            if (cbOption.SelectedIndex == 4) // clipboard text 
+            {
+                List<string> ls = Utils.ReadMultilineTextFromClipboard();
+                foreach (string cue in ls)
+                    AddCue(cue);
+                if (selected == -1) selected = 0; TextChanged(null, null);
+                return;
+            }
             if (cbOption.SelectedIndex == 3) // text file
             {
                 dialog.DefaultExtension = ".txt";
@@ -188,7 +196,7 @@ namespace scripthea.composer
                 foreach (ImageInfo ii in iDepot.items)
                 {
                     string prompt = ii.prompt;
-                    int idx = prompt.IndexOf(opts.ModifPrefix);
+                    int idx = prompt.IndexOf(opts.composer.ModifPrefix);
                     if ((idx > -1) && (cbOption.SelectedIndex == 1)) prompt = prompt.Substring(0, idx);
                     AddCue(prompt);
                 }         

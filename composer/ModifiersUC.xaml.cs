@@ -46,8 +46,8 @@ namespace scripthea.composer
         Options opts;
         public void Init(ref Options _opts)
         {
-            opts = _opts; chkAddEmpty.IsChecked = opts.AddEmptyModif; chkConfirmGoogling.IsChecked = opts.ConfirmGoogling; 
-            numSample.Value = Utils.EnsureRange(opts.ModifSample, 1,9);
+            opts = _opts; chkAddEmpty.IsChecked = opts.composer.AddEmptyModif; chkConfirmGoogling.IsChecked = opts.composer.ConfirmGoogling; 
+            numSample.Value = Utils.EnsureRange(opts.composer.ModifSample, 1,9);
             modifLists = new List<ModifListUC>();
             var files = new List<string>(Directory.GetFiles(Utils.configPath, "*.mdfr"));
             if (File.Exists(mapFile))
@@ -67,13 +67,13 @@ namespace scripthea.composer
                     if (ModifMap.ContainsKey(cmu.ModifListName))
                         cmu.isVisible = ModifMap[cmu.ModifListName];
             }
-            ShowMap = true; ShowMap = false; tbModifPrefix.Text = opts.ModifPrefix;
+            ShowMap = true; ShowMap = false; tbModifPrefix.Text = opts.composer.ModifPrefix;
             SetSingleScanMode(true);
         }
 
         public void Finish()
         {
-            opts.ConfirmGoogling = chkConfirmGoogling.IsChecked.Value;
+            opts.composer.ConfirmGoogling = chkConfirmGoogling.IsChecked.Value;
             ShowMap = false; // update ModifMap;
             System.IO.File.WriteAllText(mapFile, JsonConvert.SerializeObject(ModifMap));
         }
@@ -129,7 +129,7 @@ namespace scripthea.composer
                         if (cmu.isVisible && !firstSet) { cmu.SetHeaderPosition(true); firstSet = true; }
                         else cmu.SetHeaderPosition(false);
                     }
-                    imgOpen.Visibility = Visibility.Visible; imgClose.Visibility = Visibility.Collapsed; ; 
+                    imgOpen.Visibility = Visibility.Visible; imgClose.Visibility = Visibility.Collapsed; 
                     btnModifMap.SetValue(Grid.ColumnProperty, 1);
                 }
                 _ShowMap = value;
@@ -139,13 +139,13 @@ namespace scripthea.composer
         {
             string ss = "";
             foreach (string sc in ModifItemsByType(ModifStatus.Scannable))
-                ss += sc.Equals("") ? "" : opts.ModifPrefix + sc + " ";
+                ss += sc.Equals("") ? "" : opts.composer.ModifPrefix + sc + " ";
             return FixItemsAsString() + ss;
         }
         public List<string> ModifItemsByType(ModifStatus ms)
         {
             List<string> ls = new List<string>();
-            if (ms.Equals(ModifStatus.Scannable) && opts.AddEmptyModif) ls.Add("");
+            if (ms.Equals(ModifStatus.Scannable) && opts.composer.AddEmptyModif) ls.Add("");
             foreach (ModifListUC sm in modifLists)
             {
                 if (!sm.isChecked) continue;
@@ -158,7 +158,7 @@ namespace scripthea.composer
         {
             string ss = "";
             foreach (string sc in ModifItemsByType(ModifStatus.Fixed))
-                ss += opts.ModifPrefix + sc + " ";
+                ss += opts.composer.ModifPrefix + sc + " ";
             return ss;
         }
         public void SetSingleScanMode(bool singleMode)
@@ -226,21 +226,21 @@ namespace scripthea.composer
         }
         private void chkAddEmpty_Checked(object sender, RoutedEventArgs e)
         {
-            opts.AddEmptyModif = chkAddEmpty.IsChecked.Value;
+            opts.composer.AddEmptyModif = chkAddEmpty.IsChecked.Value;
         }
         private void chkConfirmGoogling_Checked(object sender, RoutedEventArgs e)
         {
-            opts.ConfirmGoogling = chkConfirmGoogling.IsChecked.Value;
+            opts.composer.ConfirmGoogling = chkConfirmGoogling.IsChecked.Value;
         }
 
         private void numSample_ValueChanged(object sender, RoutedEventArgs e)
         {
-            opts.ModifSample = numSample.Value; 
+            opts.composer.ModifSample = numSample.Value; 
         }
 
         private void tbModifPrefix_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (!Utils.isNull(opts)) opts.ModifPrefix = tbModifPrefix.Text;
+            if (!Utils.isNull(opts)) opts.composer.ModifPrefix = tbModifPrefix.Text;
         }
     }
 }

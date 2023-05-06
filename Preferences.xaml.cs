@@ -49,49 +49,66 @@ class Program
      */
     public class Options
     {
-        // general 
-        public bool debug;
-        // layout 
-        public int Left;
-        public int Top;
-        public int Height;
-        public int Width;
-        public int LogColWidth;
-        public bool LogColWaveSplit;
-        public int QueryRowHeight;
-        public int QueryColWidth;
-        public int ViewColWidth;
-        // query single
-        public bool SingleAuto;
-        public bool OneLineCue;
-        // query 
-        public string ImageDepotFolder;        
-        public string API;
-        // modifiers
-        public string ModifPrefix;
-        public bool AddEmptyModif;
-        public bool ConfirmGoogling;
-        public int ModifSample;
-        // viewer
-        public bool Autorefresh;
-        public int ThumbZoom;
-        public bool ThumbCue;
-        public bool ThumbFilename;
-    }
+        public Options()
+        {
+            if (general == null) general = new General();
+            if (layout == null) layout = new Layout();
+            if (composer == null) composer = new Composer();
+            if (viewer == null) viewer = new Viewer();
+            if (iDmasterImpExp == null) iDmasterImpExp = new IDmasterImpExp();
+        }
+        public General general; 
+        public class General
+        {
+            public bool debug;
+            public bool UpdateCheck;
+            public int LastUpdateCheck;
+            public string NewVersion;
+        }
+        public Layout layout; 
+        public class Layout
+        {
+            public int Left;
+            public int Top;
+            public int Height;
+            public int Width;
+            public int LogColWidth;
+            public bool LogColWaveSplit;
+        }
+        public Composer composer;
+        public class Composer
+        {
+            public int QueryRowHeight;
+            public int QueryColWidth;
+            public int ViewColWidth;
+            // query single
+            public bool SingleAuto;
+            public bool OneLineCue;
+            // query 
+            public string ImageDepotFolder;        
+            public string API;
+            // modifiers
+            public string ModifPrefix;
+            public bool AddEmptyModif;
+            public bool ConfirmGoogling;
+            public int ModifSample;
+        }
+        public Viewer viewer;
+        public class Viewer
+        {
+            public bool Autorefresh;
+            public int ThumbZoom;
+            public bool ThumbCue;
+            public bool ThumbFilename;
+        }
 
-    public class Preferences
-    {
-        public Preferences()
+        public IDmasterImpExp iDmasterImpExp;
+        public class IDmasterImpExp
         {
 
         }
-        public string test;
-        public void save(string configFilename)
-        {
-            string json = JsonConvert.SerializeObject(this);
-            File.WriteAllText(configFilename, json);
-        }
-    }
+     }
+
     /// <summary>
     /// Interaction logic, load & save for GeneralOptions genOptions
     /// </summary>
@@ -104,36 +121,35 @@ class Program
         public PreferencesWindow()
         {
             InitializeComponent();         
-            if (File.Exists(configFilename))
-            {
-                string fileJson = File.ReadAllText(configFilename);
-                prefs = JsonConvert.DeserializeObject<Preferences>(fileJson);
-            }
-            else prefs = new Preferences();
-            prefs2visuals(); 
         }
+        Options opts;
+        public void Init(ref Options _opts)
+        {
+            opts = _opts; 
+            opts2visuals();
+        } 
         public string configFilename = Path.Combine(Utils.configPath, "Scripthea.cfg");  
         /// <summary>
         /// the point of the dialog, readable everywhere
         /// </summary>
-        public Preferences prefs;
         public event Utils.LogHandler OnLog;
         protected void Log(string txt, SolidColorBrush clr = null)
         {
             if (OnLog != null) OnLog(txt, clr);
             else Utils.TimedMessageBox(txt, "Warning", 3500);
         }
-        public void prefs2visuals()
+        public void opts2visuals()
         {
-            
+            if (!opts.general.NewVersion.Equals("")) lbNewVer.Content = "New version: " + opts.general.NewVersion;
+            chkUpdates.IsChecked = opts.general.UpdateCheck;
         }
-        public void visuals2prefs()
+        public void visuals2opts()
         {
-            
+            opts.general.UpdateCheck = chkUpdates.IsChecked.Value;
         }
         public void ShowWindow(int tabIdx)
         {
-            tabControl.SelectedIndex = Utils.EnsureRange(tabIdx, 0, 3);
+            tabControl.SelectedIndex = Utils.EnsureRange(tabIdx, 0, 2) + 1;
             ShowDialog();
         }
         /// <summary>
@@ -143,7 +159,7 @@ class Program
         /// <param name="e"></param>
         private void OKButton_Click(object sender, RoutedEventArgs e) // visual to internal 
         {
-            prefs.save(configFilename); Hide();
+            visuals2opts(); Hide();
         }
 
         /// <summary>

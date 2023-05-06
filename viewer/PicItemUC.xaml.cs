@@ -144,24 +144,24 @@ namespace scripthea.viewer
         const int baseHeight = 100;
         public void VisualUpdate() // by opts
         {
-            opts.ThumbZoom = Utils.EnsureRange(opts.ThumbZoom, 30, 300);
-            this.Width = baseWidth * opts.ThumbZoom / 100; this.Height = baseHeight * opts.ThumbZoom / 100;
+            opts.viewer.ThumbZoom = Utils.EnsureRange(opts.viewer.ThumbZoom, 30, 300);
+            this.Width = baseWidth * opts.viewer.ThumbZoom / 100; this.Height = baseHeight * opts.viewer.ThumbZoom / 100;
             // top
-            if (checkable || opts.ThumbCue)
+            if (checkable || opts.viewer.ThumbCue)
             {
-                if (opts.ThumbCue) CueRow.Height = new GridLength(40);
+                if (opts.viewer.ThumbCue) CueRow.Height = new GridLength(40);
                 else CueRow.Height = new GridLength(15);
             }
             else CueRow.Height = new GridLength(1);
             if (checkable) { chkChecked.Visibility = Visibility.Visible; tbCue.Margin = new Thickness(15, 0, 0, 0); }
             else { chkChecked.Visibility = Visibility.Collapsed; tbCue.Margin = new Thickness(0); }
-            if (opts.ThumbCue) tbCue.Visibility = Visibility.Visible;
+            if (opts.viewer.ThumbCue) tbCue.Visibility = Visibility.Visible;
             else tbCue.Visibility = Visibility.Collapsed;
             // bottom
-            if (opts.ThumbFilename) FileRow.Height = new GridLength(25);
+            if (opts.viewer.ThumbFilename) FileRow.Height = new GridLength(25);
             else FileRow.Height = new GridLength(1);
             // frame
-            if (!opts.ThumbCue && !opts.ThumbFilename) grid.Margin = new Thickness(6);
+            if (!opts.viewer.ThumbCue && !opts.viewer.ThumbFilename) grid.Margin = new Thickness(6);
             else grid.Margin = new Thickness(3);
         }
     }
