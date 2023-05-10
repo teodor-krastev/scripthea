@@ -93,6 +93,9 @@ namespace scripthea
             Width = opts.layout.Width;
             pnlLog.Width = new GridLength(opts.layout.LogColWidth);            
             rowLogImage.Height = new GridLength(1);
+            colMasterWidth.Width = new GridLength(opts.iDutilities.MasterWidth);
+            colImportWidth.Width = new GridLength(opts.iDutilities.ImportWidth);
+            colExportWidth.Width = new GridLength(opts.iDutilities.ExportWidth);
 
             if (opts.composer.SingleAuto) queryUC.btnCompose_Click(null, null);
 
@@ -137,12 +140,9 @@ namespace scripthea
             set
             {
                 int vl = Utils.EnsureRange(value, 0, 100);
-                //_ExplorerPart = vl;
-
+ 
                 rowLog.Height = new GridLength(100 - vl, GridUnitType.Star);
                 rowExplorer.Height = new GridLength(vl, GridUnitType.Star);
-                //if (vl.Equals(0) || vl.Equals(100)) gridSplitLeft2.Visibility = Visibility.Collapsed;
-                //else gridSplitLeft2.Visibility = Visibility.Visible;
                 if (vl != 100 && vl != 0 && !Utils.isNull(opts))
                 {
                     if (vl > 70) //partly shown
@@ -151,7 +151,7 @@ namespace scripthea
                     }
                     else
                     {
-                        gridSplitLeft.Visibility = Visibility.Visible; //rowLogImage.Height = new GridLength(Utils.EnsureRange(opts.LogColWidth, 1, gridLog.Height * 0.66));
+                        gridSplitLeft.Visibility = Visibility.Visible; 
                     }
                 }
                 ExplorerPartChanging();
@@ -173,7 +173,11 @@ namespace scripthea
             opts.layout.Top = Convert.ToInt32(Top);
             opts.layout.Width = Convert.ToInt32(Width);
             opts.layout.Height = Convert.ToInt32(Height);
-            opts.layout.LogColWidth = Convert.ToInt32(pnlLog.ActualWidth);
+            opts.layout.LogColWidth = Convert.ToInt32(pnlLog.Width.Value);
+            opts.iDutilities.MasterWidth = Convert.ToInt32(colMasterWidth.Width.Value);
+            opts.iDutilities.ImportWidth = Convert.ToInt32(colImportWidth.Width.Value);
+            opts.iDutilities.ExportWidth = Convert.ToInt32(colExportWidth.Width.Value);
+
             queryUC.Finish();
             viewerUC.Finish();
             dirTreeUC.Finish();

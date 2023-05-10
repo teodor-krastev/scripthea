@@ -240,9 +240,6 @@ namespace scripthea.master
             }
             if (iDepot != null) 
                 if (iDepot.isEnabled) ChangeDepot(iDepot, null);
-            if (chkCustom1.IsChecked.Value && Convert.ToString(chkCustom1.Content).Equals("Validate on open")) 
-                iDepot?.Validate(true);
-
             lastTab = null;
             rbList_Checked(null, null); GetChecked();
         }

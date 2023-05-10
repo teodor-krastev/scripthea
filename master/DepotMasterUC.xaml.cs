@@ -33,15 +33,20 @@ namespace scripthea.master
             opts = _opts;
             SetIPicker(ref iPickerA, 'A'); SetIPicker(ref iPickerB, 'B');
             ChangeDepot(null,null);
+
         }
+        MenuItem mi1; MenuItem mi2;  MenuItem mi3;
         private void SetIPicker(ref ImagePickerUC iPicker, char letter)
         {
-            iPicker.Init(ref opts); iPicker.Configure(letter, new List<string>(), "Validate on open", "", "", false);
+            iPicker.Init(ref opts); iPicker.Configure(letter, new List<string>(), "", "", "", false);
             iPicker.OnChangeDepot += new RoutedEventHandler(ChangeDepot);
             iPicker.cmImgMenu.Items.Add(new Separator());
-            MenuItem mi = new MenuItem() { Header = "Synchronize image depot", Tag = letter };
-            mi.Click += new RoutedEventHandler(miSynchronize_Click);
-            iPicker.cmImgMenu.Items.Add(mi);
+            mi1 = new MenuItem() { Header = "Remove entries without images", Tag = letter };
+            mi1.Click += new RoutedEventHandler(miSynchronize_Click); iPicker.cmImgMenu.Items.Add(mi1);
+            mi2 = new MenuItem() { Header = "Remove images without entries", Tag = letter };
+            mi2.Click += new RoutedEventHandler(miSynchronize_Click); iPicker.cmImgMenu.Items.Add(mi2);
+            mi3 = new MenuItem() { Header = "Synchronize image depot", Tag = letter };
+            mi3.Click += new RoutedEventHandler(miSynchronize_Click); iPicker.cmImgMenu.Items.Add(mi3);
         }
         public event Utils.LogHandler OnLog;
         protected void Log(string txt, SolidColorBrush clr = null)
@@ -173,27 +178,37 @@ namespace scripthea.master
         }
         private void miSynchronize_Click(object sender, RoutedEventArgs e)
         {
-            bool bb = false;
+            bool bb = true;
             try
             {            
                 if (!(sender is MenuItem)) return;
+                string mis = Convert.ToString((sender as MenuItem).Header);
                 ImagePickerUC iPicker = iPickerByName(Convert.ToChar((sender as MenuItem).Tag));
                 ImageDepot df = iPicker?.iDepot;
                 if (df == null) { Log("Error: Invalid image depot! (11)", Brushes.Red); return; }
                 if (!df.isEnabled) { Log("Error: Invalid image depot! (12)", Brushes.Red); return; }
                 iPicker.ReloadDepot();
                 iPicker.isChanging = true;
-                bb = df.Validate(true);
-                iPicker.isChanging = true;
-                if (df.Extras().Count == 0) return;
-                MessageBoxResult result = MessageBox.Show("All the files without image depot entry (" + df.Extras().Count.ToString() + ") will be deleted. Continue?",
-                    "Confirmation", MessageBoxButton.OKCancel, MessageBoxImage.Question);
-                if (result == MessageBoxResult.Cancel) return;
-                foreach (string fn in df.Extras())
+                if (mis.Equals(Convert.ToString(mi1.Header)) || mis.Equals(Convert.ToString(mi3.Header)))
                 {
-                    string ffn = Path.Combine(df.path, fn);
-                    if (!File.Exists(ffn)) { bb = false; Log("A file is missing: "+ffn);  continue; }
-                    File.Delete(ffn);
+                    bb &= df.Validate(true); iPicker.ReloadDepot();
+                }
+                iPicker.isChanging = true;
+                if (mis.Equals(Convert.ToString(mi2.Header)) || mis.Equals(Convert.ToString(mi3.Header)))
+                {
+                    List<string> ls = new List<string>(df.Extras());
+                    if (ls.Count == 0) return; MessageBoxResult result = MessageBoxResult.OK;
+                    if (opts.iDutilities.MasterValidationAsk)
+                        result = MessageBox.Show("All the files without image depot entry (" + ls.Count.ToString() + ") will be deleted. Continue?",
+                        "Confirmation", MessageBoxButton.OKCancel, MessageBoxImage.Question);
+                    if (result == MessageBoxResult.Cancel) return;
+                    foreach (string fn in ls)
+                    {
+                        string ffn = Path.Combine(df.path, fn);
+                        if (!File.Exists(ffn)) { bb = false; Log("A file is missing: "+ffn);  continue; }
+                        File.Delete(ffn);
+                    }
+                    Log(ls.Count.ToString() + " images without image depot entry have been deleted.");
                 }
             }    
             finally

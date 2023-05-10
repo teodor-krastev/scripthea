@@ -12,9 +12,8 @@
 
         <TabControl x:Name="tabControl" Margin="3,0" Grid.Column="1" BorderBrush="{x:Null}" >
             <TabItem x:Name="tiGeneral" Header="  General  " Height="28" Background="#FFECECEC" HorizontalAlignment="Left">
-                <Grid >
-                    <StackPanel>
-                        <GroupBox Height="40">
+                    <StackPanel Margin="0,7,0,3">
+                        <GroupBox Height="47">
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,4,0,0">
                                 <CheckBox x:Name="chkUpdates" Content="Biweekly check for updates" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5,0,0,0"></CheckBox>
                                 <Button x:Name="btnCheck4Update" Content="Check Now " HorizontalAlignment="Left" VerticalAlignment="Center" Background="#FFFAF5E5" Margin="10,0,0,0" Height="26" Width="80" ></Button>
@@ -22,23 +21,25 @@
                             </StackPanel>
                         </GroupBox>
                     </StackPanel>
-                </Grid>
             </TabItem>
             <TabItem x:Name="tiComposer"  Header=" Prompt composer " Height="28" HorizontalAlignment="Left" Background="#FFF1F0F0">
-                <Grid>
-                    
-                </Grid>
+                <StackPanel Margin="0,7,0,3" >
+                    <GroupBox Header="Modifiers" Height="55">
+                        <CheckBox x:Name="chkConfirmGoogling" Content="Confirm google search when right click on modifier." HorizontalAlignment="Left" VerticalAlignment="Top" Margin="7,8,0,0"/>
+                    </GroupBox>
+                </StackPanel>
             </TabItem>
             <TabItem x:Name="tiViewer" Header=" Img.Depot Viewer " Height="28" Background="#FFECECEC" HorizontalAlignment="Left">
-                <Grid >
-                    
-                </Grid>
+                <StackPanel Margin="10,12,0,3" >
+                    <CheckBox x:Name="chkViewerRemoveImages" Content="Remove image files along with removed img.depot entries." HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                </StackPanel>
             </TabItem>
             <TabItem x:Name="tiIDutilities" Header=" Img.Depot Utilities " Height="28" Background="#FFECECEC" HorizontalAlignment="Left">
-                <Grid >
-                    <CheckBox x:Name="chkValidationAsk" Content="Ask before correction in image depot validation" HorizontalAlignment="Left" Margin="10,4.608,0,0" VerticalAlignment="Top"/>
-
-                </Grid>
+                <StackPanel Margin="0,7,0,3" >
+                    <GroupBox Header="Image Depot Master" Height="55">
+                        <CheckBox x:Name="chkValidationAsk" Content="Ask before removing images in image depot synchronization" HorizontalAlignment="Left" Margin="7,8,0,0" VerticalAlignment="Top"/>
+                    </GroupBox>
+                </StackPanel>
             </TabItem>
         </TabControl>
 

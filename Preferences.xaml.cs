@@ -20,33 +20,6 @@ using Microsoft.WindowsAPICodePack.Dialogs;
 
 namespace scripthea
 {
-
-
-    /*
-     * using System;
-
-public class OuterClass
-{
-    public string OuterProperty { get; set; }
-
-    public class NestedClass
-    {
-        public string NestedProperty { get; set; }
-    }
-}
-
-class Program
-{
-    static void Main(string[] args)
-    {
-        OuterClass outer = new OuterClass { OuterProperty = "Outer Property Value" };
-        OuterClass.NestedClass nested = new OuterClass.NestedClass { NestedProperty = "Nested Property Value" };
-
-        Console.WriteLine($"Outer class property: {outer.OuterProperty}");
-        Console.WriteLine($"Nested class property: {nested.NestedProperty}");
-    }
-}
-     */
     public class Options
     {
         public Options()
@@ -55,7 +28,7 @@ class Program
             if (layout == null) layout = new Layout();
             if (composer == null) composer = new Composer();
             if (viewer == null) viewer = new Viewer();
-            if (iDmasterImpExp == null) iDmasterImpExp = new IDmasterImpExp();
+            if (iDutilities == null) iDutilities = new IDutilities();
         }
         public General general; 
         public class General
@@ -100,12 +73,16 @@ class Program
             public int ThumbZoom;
             public bool ThumbCue;
             public bool ThumbFilename;
+            public bool RemoveImages;
         }
 
-        public IDmasterImpExp iDmasterImpExp;
-        public class IDmasterImpExp
+        public IDutilities iDutilities;
+        public class IDutilities
         {
-
+            public bool MasterValidationAsk;
+            public int MasterWidth;
+            public int ImportWidth;
+            public int ExportWidth;
         }
      }
 
@@ -126,7 +103,6 @@ class Program
         public void Init(ref Options _opts)
         {
             opts = _opts; 
-            opts2visuals();
         } 
         public string configFilename = Path.Combine(Utils.configPath, "Scripthea.cfg");  
         /// <summary>
@@ -142,14 +118,21 @@ class Program
         {
             if (!opts.general.NewVersion.Equals("")) lbNewVer.Content = "New version: " + opts.general.NewVersion;
             chkUpdates.IsChecked = opts.general.UpdateCheck;
+            chkConfirmGoogling.IsChecked = opts.composer.ConfirmGoogling;
+            chkViewerRemoveImages.IsChecked = opts.viewer.RemoveImages;
+            chkValidationAsk.IsChecked = opts.iDutilities.MasterValidationAsk;
         }
         public void visuals2opts()
         {
             opts.general.UpdateCheck = chkUpdates.IsChecked.Value;
+            opts.composer.ConfirmGoogling = chkConfirmGoogling.IsChecked.Value;
+            opts.viewer.RemoveImages = chkViewerRemoveImages.IsChecked.Value;
+            opts.iDutilities.MasterValidationAsk = chkValidationAsk.IsChecked.Value;
         }
         public void ShowWindow(int tabIdx)
         {
             tabControl.SelectedIndex = Utils.EnsureRange(tabIdx, 0, 2) + 1;
+            opts2visuals();
             ShowDialog();
         }
         /// <summary>

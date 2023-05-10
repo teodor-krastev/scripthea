@@ -438,6 +438,7 @@ namespace scripthea.viewer
             opts = _opts;
             chkAutoRefresh.IsChecked = opts.viewer.Autorefresh; imageFolder = opts.composer.ImageDepotFolder; 
             colListWidth.Width = new GridLength(opts.composer.ViewColWidth);
+
             foreach (iPicList ipl in views)
                 ipl.Init(ref opts, false);            
         }
@@ -522,7 +523,7 @@ namespace scripthea.viewer
         public int RemoveSelected(bool inclFile = false)
         {
             if (!activeView.HasTheFocus) return -1;
-            string ss = inclFile ? "and file" : ""; bool anim = animation; animation = false;
+            string ss = inclFile ? "and image file" : ""; bool anim = animation; animation = false;
             Log("Deleting image #" + activeView.selectedIndex.ToString()+ " entry "+ ss, Brushes.Tomato);
             if (iDepot == null) { Log("no active image depot found"); return -1; }
             if (!iDepot.isEnabled) { Log("current image depot - not active"); return -1; }
@@ -534,14 +535,14 @@ namespace scripthea.viewer
             {                
                 if (undo != null) undo.realRemove();
                 undo = new Undo(ref iDepot, idx0, inclFile); // 
-                if (iDepot.RemoveAt(idx0, false)) iDepot.Save(); // iDepot correction
+                if (iDepot.RemoveAt(idx0, opts.viewer.RemoveImages)) iDepot.Save(); // iDepot correction
                 else { Log("Unsuccessful delete operation"); return -1; }
                 Refresh(); 
             }
             else // gridView
             {
                 gridViewUC.RemoveAt(inclFile);
-                if (iDepot.RemoveAt(idx0, false)) iDepot.Save(); // iDepot correction
+                if (iDepot.RemoveAt(idx0, opts.viewer.RemoveImages)) iDepot.Save(); // iDepot correction
                 else { Log("Unsuccessful delete operation"); return -1; }
             }
             if (!iDepot.isEnabled) { Log("current image depot - not active"); return -1; }
@@ -698,7 +699,7 @@ namespace scripthea.viewer
             if ((e.Key.Equals(Key.Delete) || e.Key.Equals(Key.NumPad0))) //Utils.DelayExec(100, () => {  } );
             {
                 Log("@Explore=70");
-                RemoveSelected();
+                RemoveSelected(opts.viewer.RemoveImages);
             }           
             if (e.Key.Equals(Key.Add)) // recover from undo
             {

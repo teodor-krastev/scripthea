@@ -66,7 +66,7 @@
             <TabItem x:Name="tiDepotMaster" Header=" Image Depot Master " Width="136" Height="28" Background="#FFECECEC" HorizontalAlignment="Left"  Margin="12,0,-12,0" BorderBrush="#FFB95C57">
                 <Grid >
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="371*" MinWidth="600" MaxWidth="2000"/>
+                        <ColumnDefinition x:Name="colMasterWidth" Width="371*" MinWidth="600" MaxWidth="2000"/>
                         <ColumnDefinition Width="179*"/>
                     </Grid.ColumnDefinitions>
                     <master:DepotMasterUC x:Name="depotMaster" Margin="0"/>
@@ -77,8 +77,8 @@
             <TabItem x:Name="tiUtils" Header="Import/Export" Width="110" Height="28" Background="#FFECECEC" HorizontalAlignment="Left" Margin="15,0,-15,0" BorderBrush="#FFF0DC00" >
                 <Grid >
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="600" MinWidth="400" MaxWidth="2000"/>
-                        <ColumnDefinition Width="600" MinWidth="400" MaxWidth="2000"/>
+                        <ColumnDefinition x:Name="colImportWidth" Width="600" MinWidth="400" MaxWidth="2000"/>
+                        <ColumnDefinition x:Name="colExportWidth" Width="600" MinWidth="400" MaxWidth="2000"/>
                         <ColumnDefinition Width="1*"/>
                     </Grid.ColumnDefinitions>
                     <master:ImportUtilUC x:Name="importUtilUC" Width="Auto"/>

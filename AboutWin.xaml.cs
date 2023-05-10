@@ -87,26 +87,18 @@ namespace scripthea
         {
             Hide();
         }
-
         private void tbSources_MouseDown(object sender, MouseButtonEventArgs e)
         {
             Utils.CallTheWeb(@"https://github.com/teodor-krastev/scripthea");
         }
-
         private void lbAuthor_MouseDown(object sender, MouseButtonEventArgs e)
         {
             Utils.CallTheWeb(@"https://sicyon.com/survey/comment.html?sj=scripthea");
         }
-
         private void tbkWebsite_MouseDown(object sender, MouseButtonEventArgs e)
         {
             Utils.CallTheWeb(@"https://scripthea.com");
         }
-        private void imgLogo_MouseDown(object sender, MouseButtonEventArgs e)
-        {                       
-            //Utils.writeDict("c:/Projects/Scripthea/_setup/PAD/scripthea.", pad);
-        }
-
         public XmlDocument readXml(string url) 
         {
             string xmlContent = Utils.DownloadString(url);
@@ -152,7 +144,6 @@ namespace scripthea
             }            
             return pad;
         }
-
         private void AboutWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             if (closing) return;
