@@ -484,7 +484,7 @@ namespace UtilsNS
             try
             {
                 Ping ping = new Ping();
-                PingReply reply = ping.Send("8.8.8.8", 1000); // Google public DNS, 1000ms timeout
+                PingReply reply = ping.Send("8.8.8.8", 2200); // Google public DNS, 1000ms timeout
                 return reply.Status == IPStatus.Success;
             }
             catch

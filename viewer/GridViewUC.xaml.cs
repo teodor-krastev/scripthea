@@ -217,7 +217,11 @@ namespace scripthea.viewer
         {
             _markMask = mask;
             foreach (PicItemUC piUC in picItems)
-                piUC.marked = mask.Equals("") ? false : Utils.IsWildCardMatch(piUC.prompt, mask);
+            {
+                bool bb = mask.Equals("") ? false : Utils.IsWildCardMatch(piUC.prompt, mask);
+                if (checkable) piUC.IsChecked = bb;
+                else piUC.marked = bb;
+            }
         }
         public void Clear(bool inclDepotItems = false)
         {            

@@ -45,6 +45,7 @@ namespace scripthea
             public int Top;
             public int Height;
             public int Width;
+            public bool Maximazed;
             public int LogColWidth;
             public bool LogColWaveSplit;
         }

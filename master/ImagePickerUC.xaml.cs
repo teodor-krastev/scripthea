@@ -142,7 +142,7 @@ namespace scripthea.master
             if (!iDepot.isEnabled || activeView.Equals(null) || !checkable) return null;
             return activeView?.GetItems(check, uncheck);
         }
-        List<iPicList> views;
+        private List<iPicList> views;
         iPicList activeView { get { return views[tcMain.SelectedIndex]; } }
         public string imageDepot // save shortcut to iDepot.depotFolder
         {
@@ -252,6 +252,10 @@ namespace scripthea.master
                 case "Check All": activeView.SetChecked(true);
                     break;
                 case "Uncheck All": activeView.SetChecked(false);
+                    break;
+                case "Check with Mask":
+                    string msk = new InputBox("Check with Mask", activeView.markMask, "").ShowDialog();
+                    activeView.Mark(msk);
                     break;
                 case "Invert Checking": activeView.SetChecked(null);
                     break;

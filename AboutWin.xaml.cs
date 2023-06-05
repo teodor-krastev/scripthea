@@ -40,12 +40,12 @@ namespace scripthea
                 if (lastChecked.Equals(-1)) Utils.TimedMessageBox("No internet connection");
                 else
                 {
-                    lbMessage.Foreground = Brushes.Red; lbMessage.Content = "No internet connection"; 
+                    lbMessage.Foreground = Brushes.Red; lbMessage.Content = "Problem with the internet connection"; 
                 }                
                 return; // no i-net
             }
             lbMessage.Foreground = Brushes.Green;            
-            DateTime refDate = new DateTime(2023, 1, 1);
+            DateTime refDate = new DateTime(2023, 1, 1); // reference date
             TimeSpan timeSpan = DateTime.Today - refDate;  
             if ((timeSpan.Days - lastChecked) >= 14  || lastChecked.Equals(-1)) 
             {

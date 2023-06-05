@@ -57,7 +57,7 @@
             </TabItem>
         </TabControl>
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0" Width="206" >
-            <Button x:Name="btnOK" Content="OK" HorizontalAlignment="Left" Margin="0" VerticalAlignment="Center" Width="90" Click="OKButton_Click" Height="25" FontWeight="Bold" IsDefault="True" Background="#FFF0F0F0"/>
+            <Button x:Name="btnOK" Content="OK" HorizontalAlignment="Left" Margin="0" VerticalAlignment="Center" Width="90" Click="OKButton_Click" Height="25" FontWeight="Bold" IsDefault="True" Background="#FFF0F0F0" BorderBrush="#FF0468B2"/>
             <Button x:Name="btnCancel" Content="Cancel" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center" Width="95" Height="25" RenderTransformOrigin="0.502,0.5" Click="btnCancel_Click" IsCancel="True" Background="#FFF0F0F0"/>
         </StackPanel>
     </Grid>

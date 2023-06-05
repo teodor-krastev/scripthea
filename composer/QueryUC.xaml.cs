@@ -210,7 +210,7 @@ namespace scripthea.composer
         public string Compose(object sender, List<string> selectedCue, string modifiers) // , bool OneLineCue = true ->redundant 
         {
             if (Utils.isNull(selectedCue)) return "";
-            if (sender == null || sender == btnCompose || sender == tcQuery || sender == cuePoolUC)
+            if (sender == null || sender == btnCompose || sender == tcQuery || sender == cuePoolUC || sender == chkAutoSingle)
             {
                 tbCue.Text = "";
                 foreach (string line in selectedCue)
@@ -221,7 +221,7 @@ namespace scripthea.composer
                     tbCue.Text += line + (opts.composer.OneLineCue ? ' ' : '\r');
                 }
             }
-            if (sender == null || sender == btnCompose || sender == tcQuery || sender == modifiersUC)
+            if (sender == null || sender == btnCompose || sender == tcQuery || sender == modifiersUC || sender == chkAutoSingle)
                 tbModifier.Text = modifiers;
             return propmt;
         }
@@ -229,12 +229,6 @@ namespace scripthea.composer
         {
             if (Utils.isNull(cuePoolUC) || Utils.isNull(modifiersUC)) return;
             if (Utils.isNull(cuePoolUC.activeCourier)) return; 
-            /*if (Utils.isNull(cuePoolUC.ActiveCueList) && !status.Equals(Status.Undefined)) return; // { Log("Err: no active cue pool.");  }
-            if (Utils.isNull(cuePoolUC.ActiveCueList?.allCues) || Utils.isNull(modifiersUC.modifLists)) return;
-            List<CueItemUC> selectedSeed = cuePoolUC?.ActiveCueList?.selectedCues();
-            if (Utils.isNull(selectedSeed)) { Log("Err: no cue is selected. (35)"); return; }
-            if (selectedSeed.Count.Equals(0)) return; { /*Log("Err: no cue is selected. (58)");*/
-
             Compose(sender, cuePoolUC.activeCourier.SelectedCue(), modifiersUC.Composite()); 
         }
         private void QueryAPI(string prompt)
@@ -332,14 +326,6 @@ namespace scripthea.composer
                                     select indexes[i];
          }
      
-/*      In this example, we start with an array of m numbers (numbers) and a value n specifying the size of each combination we want to generate.
-
-        We use LINQ to generate all possible subsets of numbers. We iterate over the range of integers from 0 to 1 << numbers.Length (exclusive), 
-        which gives us all possible bit patterns of length numbers.Length. We filter the subsets to only include those with exactly n set bits, 
-        which corresponds to a subset of size n. We then use another LINQ expression to convert each subset into a sequence of its elements, 
-        using a bitwise AND to determine whether each element is included in the subset.
-         */
-
         public void Request2Cancel() 
         {
             if (Convert.ToString(btnScan.Content).Equals("Cancel") && status == Status.Scanning) // only if scanning

@@ -84,13 +84,13 @@ namespace scripthea
 
             oldTab = tiComposer;
             Log("> Welcome to Scripthea" + "  " + (opts.general.debug ? "(in debug mode)" : "")); Log("");
-            Utils.DelayExec(2000, new Action(() => { aboutWin.Hide(); })); 
+            Utils.DelayExec(2500, new Action(() => { aboutWin.Hide(); })); 
             queryUC.Init(ref opts);            
             Left = opts.layout.Left;
             Top = opts.layout.Top;
             Width = opts.layout.Width;
             Height = opts.layout.Height;
-            Width = opts.layout.Width;
+            if (opts.layout.Maximazed) WindowState = WindowState.Maximized; 
             pnlLog.Width = new GridLength(opts.layout.LogColWidth);            
             rowLogImage.Height = new GridLength(1);
             colMasterWidth.Width = new GridLength(opts.iDutilities.MasterWidth);
@@ -173,6 +173,7 @@ namespace scripthea
             opts.layout.Top = Convert.ToInt32(Top);
             opts.layout.Width = Convert.ToInt32(Width);
             opts.layout.Height = Convert.ToInt32(Height);
+            opts.layout.Maximazed = WindowState == WindowState.Maximized;
             opts.layout.LogColWidth = Convert.ToInt32(pnlLog.Width.Value);
             opts.iDutilities.MasterWidth = Convert.ToInt32(colMasterWidth.Width.Value);
             opts.iDutilities.ImportWidth = Convert.ToInt32(colImportWidth.Width.Value);

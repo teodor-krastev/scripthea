@@ -109,8 +109,7 @@ namespace scripthea.viewer
         protected void Log(string txt, SolidColorBrush clr = null)
         {
             if (OnLog != null) OnLog(txt, clr);
-        }
-        
+        }        
         public string imageFolder { get { return iDepot?.path; } }
         public void SetRowColor(int idx0, bool bb)
         {
@@ -127,12 +126,17 @@ namespace scripthea.viewer
             _markMask = mask;
             foreach (DataRow row in dTable.Rows)
             {
-                string prompt = Convert.ToString(row["Prompt"]); int idx0 = Convert.ToInt32(row["#"])-1;
+                string prompt = Convert.ToString(row["Prompt"]); 
                 bool bb = mask.Equals("") ? false :  Utils.IsWildCardMatch(prompt, mask);
-                DataGridRow dRow = DataGridHelper.GetRowByIndex(dGrid, idx0);
-                if (dRow == null) return;
-                if (bb) dRow.Background = Brushes.MintCream; // ImgUtils.ToSolidColorBrush("#FFEBFFF5");
-                else dRow.Background = Brushes.White;
+                if (checkable) row["on"] = Convert.ToBoolean(bb);
+                else
+                {   
+                    int idx0 = Convert.ToInt32(row["#"])-1;
+                    DataGridRow dRow = DataGridHelper.GetRowByIndex(dGrid, idx0);
+                    if (dRow == null) continue;
+                    if (bb) dRow.Background = Brushes.MintCream; // ImgUtils.ToSolidColorBrush("#FFEBFFF5");
+                    else dRow.Background = Brushes.White;
+                }
             }
         }
         public void Clear(bool inclDepotItems = false)
