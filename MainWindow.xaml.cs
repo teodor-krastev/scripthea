@@ -47,7 +47,12 @@ namespace scripthea
         private void MainWindow1_Loaded(object sender, RoutedEventArgs e)
         {
             optionsFile = Path.Combine(Utils.configPath, "Scripthea.cfg");
-            if (!Directory.Exists(Utils.configPath)) throw new Exception("Fatal error: Directory <" + Utils.configPath + "> does not exist.");
+            if (!Directory.Exists(Utils.configPath))
+            {
+                string msg = "Fatal error: Directory <" + Utils.configPath + "> does not exist.";
+                Title = msg; Utils.Sleep(2000);
+                throw new Exception(msg);
+            }                   
             if (File.Exists(optionsFile))
             {
                 string json = System.IO.File.ReadAllText(optionsFile);
@@ -60,6 +65,7 @@ namespace scripthea
             if (opts.general.UpdateCheck) Check4Update(null,null);
             else
             {
+                if (opts.general.NewVersion == null) opts.general.NewVersion = "";
                 if (!opts.general.NewVersion.Equals(""))
                 {
                     aboutWin.lbMessage.Foreground = System.Windows.Media.Brushes.Green; aboutWin.lbMessage.Content = "New release (" + opts.general.NewVersion + ") is available at Scripthea.com !";
