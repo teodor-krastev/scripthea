@@ -77,7 +77,7 @@ namespace scripthea
             public bool RemoveImages;
         }
 
-        public IDutilities iDutilities;
+        public IDutilities iDutilities; // Image Depot utilities
         public class IDutilities
         {
             public bool MasterValidationAsk;

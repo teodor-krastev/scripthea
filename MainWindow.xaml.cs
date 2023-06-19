@@ -13,7 +13,6 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
-using System.Drawing;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using scripthea.viewer;
@@ -41,7 +40,7 @@ namespace scripthea
         string optionsFile;
         public Options opts;
         public PreferencesWindow preferencesWindow;
-        private Bitmap penpic;
+        private System.Drawing.Bitmap penpic;
 
         public FocusControl focusControl;
         private void MainWindow1_Loaded(object sender, RoutedEventArgs e)
@@ -94,7 +93,7 @@ namespace scripthea
             queryUC.Init(ref opts);            
             Left = opts.layout.Left;
             Top = opts.layout.Top;
-            Width = opts.layout.Width;
+            Width = Math.Abs(opts.layout.Width);
             Height = opts.layout.Height;
             if (opts.layout.Maximazed) WindowState = WindowState.Maximized; 
             pnlLog.Width = new GridLength(opts.layout.LogColWidth);            
@@ -115,11 +114,18 @@ namespace scripthea
             //focusControl.Register("idfX", queryUC.cuePoolUC.iPickerX);
             string penpicFile = Path.Combine(Utils.configPath, "penpic1.png");
             if (!File.Exists(penpicFile)) throw new Exception(penpicFile +" file is missing");
-            penpic = new Bitmap(penpicFile); imgAbout.Source = ImgUtils.BitmapToBitmapImage(penpic, System.Drawing.Imaging.ImageFormat.Png);
+            penpic = new System.Drawing.Bitmap(penpicFile); imgAbout.Source = ImgUtils.BitmapToBitmapImage(penpic, System.Drawing.Imaging.ImageFormat.Png);
             SwitchExplorer(false);
             gridSplitLeft_MouseDoubleClick(null, null);
             if (!opts.general.debug) imgPreferences.Visibility = Visibility.Collapsed;
-            Title = "Scripthea - text-to-image prompt composer v" + Utils.getAppFileVersion;            
+            Title = "Scripthea - text-to-image prompt composer v" + Utils.getAppFileVersion;   
+            if (opts.layout.Width < 0)
+            {
+                Log("Assuming that you run Scripthea for the first time:", Brushes.Blue);
+                Log("1. Check and modify (if needed) the default preferences (three bar button above).", Brushes.Blue);
+                Log("2. If you have Stable Diffusion WebUI installed go to SD panel (here top/right), open Options and on the second tab point the Stable Diffusion WebUI locaton", Brushes.Blue);
+                Log(""); Log("Press F1 for Scripthea online help.", Brushes.Green);
+            }
         }
         public void Check4Update(object sender, RoutedEventArgs e)
         {
@@ -294,8 +300,8 @@ namespace scripthea
             }
             dti++;
             lbProcessing.Content = ch;
-           
-            Bitmap clrBitmap = ImgUtils.ChangeColor(penpic, ImgUtils.ColorFromHue((dti % 20) * 18));
+
+            System.Drawing.Bitmap clrBitmap = ImgUtils.ChangeColor(penpic, ImgUtils.ColorFromHue((dti % 20) * 18));
             imgAbout.Source = ImgUtils.BitmapToBitmapImage(clrBitmap, System.Drawing.Imaging.ImageFormat.Png);
         }
         TabItem oldTab;
