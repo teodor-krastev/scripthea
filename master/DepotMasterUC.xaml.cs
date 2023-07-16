@@ -143,7 +143,7 @@ namespace scripthea.master
                     Log("File <" + source_path + "> not found."); continue;
                 }
                 File.Copy(source_path, target_path); k++;
-                iPicker2.iDepot.Append(ii);
+                if (!iPicker2.iDepot.Append(ii)) { Utils.TimedMessageBox("Error: image depot problem"); break; }
             }
             iPicker2.isChanging = false;
             return k;

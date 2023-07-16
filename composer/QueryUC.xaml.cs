@@ -64,15 +64,20 @@ namespace scripthea.composer
 
             //tiMiodifiers.Visibility = Visibility.Collapsed; tiScanPreview.Visibility = Visibility.Collapsed;
 
-            API = new ControlAPI(); cbActiveAPI_SelectionChanged(null, null);
+            API = new ControlAPI(); 
+            if (API.interfaceAPIs.ContainsKey("SDiffusion"))             
+                API.interfaceAPIs["SDiffusion"].APIparamsEvent += new APIparamsHandler(OnAPIparams);
+            cbActiveAPI_SelectionChanged(null, null);
             API.OnQueryComplete += new ControlAPI.APIEventHandler(QueryComplete);
             API.OnLog += new Utils.LogHandler(Log);
-
+            sd_params_UC.Init();
+            
             if (Utils.TheosComputer() && Utils.isInVisualStudio) { btnTest.Visibility = Visibility.Visible; }
-            else { btnTest.Visibility = Visibility.Collapsed; }            
+            else { btnTest.Visibility = Visibility.Collapsed; }              
         }
         public void Finish()
         {
+            sd_params_UC.Finish();
             UpdateToOptions(null, null);
             cuePoolUC.Finish(); modifiersUC.Finish();
             if (!Utils.isNull(API))
@@ -117,6 +122,17 @@ namespace scripthea.composer
         {
             if (OnLog != null) OnLog(txt, clr);
         }
+       
+        protected Dictionary<string, object> OnAPIparams(bool? showIt)
+        {
+            if (showIt != null)
+            {
+                if ((bool)showIt) tiSD_API.Visibility = Visibility.Visible;
+                else tiSD_API.Visibility = Visibility.Collapsed;           
+            }
+            return sd_params_UC.sdp;
+        }
+
         private bool _showAPI;
         public bool showAPI
         {
@@ -242,7 +258,12 @@ namespace scripthea.composer
         }
         protected void QueryComplete(string imageFilePath, bool success)
         {
-            if (!success) Log("Error(API)-> "+ imageFilePath);           
+            if (!success)
+            {
+                if (imageFilePath == "") { Log("Stable Diffusion is not connected!", Brushes.Red); status = Status.Idle; }
+                else Log("Error with " + imageFilePath);
+            }
+            bool scanEnd = false;
             switch (status)
             {
                 case Status.SingeQuery:
@@ -250,18 +271,24 @@ namespace scripthea.composer
                     status = Status.Idle; Log("@EndGeneration: " + imageFilePath);
                     break;
                 case Status.Scanning:                   
-                    Log("@EndGeneration: " + imageFilePath);
+                    Log("@EndGeneration: " + imageFilePath);                    
                     if (scanPromptIdx == (scanPrompts.Count-1)) // the end of it, back to init state
                     {
-                        status = Status.Idle; btnScan.Content = strScan; btnScan.Background = Brushes.MintCream;
+                        status = Status.Idle; scanEnd = true;
                         Log("This Scan resulted in " + scanPrompts.Count.ToString()+" images.", Brushes.DarkMagenta);
-                        btnScanPreview.IsEnabled = true; scanPreviewUC.scanning = false; btnScanPreview.IsEnabled = true; btnAppend2Preview.IsEnabled = true;
+                        API.activeAPI.Broadcast("end.scan");
                     }                        
                     else // next image gen
                     {
                         scanPromptIdx++; QueryAPI(scanPrompts[scanPromptIdx]); 
                     }
                     break;
+            }
+            if (status == Status.Idle) // back
+            {
+                if (!scanEnd) Log("@EndGeneration");
+                btnScan.Content = strScan; btnScan.Background = Brushes.MintCream;                        
+                btnScanPreview.IsEnabled = true; scanPreviewUC.scanning = false; btnScanPreview.IsEnabled = true; btnAppend2Preview.IsEnabled = true;
             }
         }
         private List<string> scanPrompts = new List<string>();
@@ -373,7 +400,7 @@ namespace scripthea.composer
             if (showAPI) 
             { 
                 gridAPI.Children.Clear(); gridAPI.Children.Add(API.activeAPI.userControl);
-                API.activeAPI.Init("");
+                API.activeAPI.Init(ref opts);
             }
             if (!Utils.isNull(e)) e.Handled = true;
         }
@@ -383,7 +410,7 @@ namespace scripthea.composer
             if (Utils.isNull(API)) { Log("Err: no API is selected. (55)"); return; }
             if (Utils.isNull(API.activeAPI)) { Log("Err: no API is selected. (22)"); return; }           
             API.activeAPI.opts["folder"] = opts.composer.ImageDepotFolder;
-            API.about2Show(propmt);
+            API.about2Show(ref opts);
             API.ShowDialog();
         }
         private void btnQuery_Click(object sender, RoutedEventArgs e)
@@ -474,7 +501,7 @@ namespace scripthea.composer
             if (scanPrompts.Count == 0) { Log("Warning: No prompts generated"); return; };
             ls.AddRange(scanPrompts);
 
-            tiMiodifiers.Visibility = Visibility.Visible; tiScanPreview.Visibility = Visibility.Visible; 
+            tiModifiers.Visibility = Visibility.Visible; tiScanPreview.Visibility = Visibility.Visible; 
             tcModScanPre.SelectedIndex = 1; Utils.DoEvents();
             scanPreviewUC.LoadPrompts(ls);
         }
@@ -500,7 +527,7 @@ namespace scripthea.composer
                 if (scanPreviewUC.selectedPrompt == "") { Log("Err: no prompt selected"); return; }                
                 QueryAPI(scanPreviewUC.selectedPrompt);
             }
-        }
+        }        
 
         private void btnTest_Click(object sender, RoutedEventArgs e)
         {

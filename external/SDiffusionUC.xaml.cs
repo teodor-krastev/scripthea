@@ -18,10 +18,10 @@ using System.Net;
 using System.Threading;
 using System.Net.Sockets;
 using Newtonsoft.Json;
-using OpenHWMonitor;
 using Path = System.IO.Path;
 using System.IO.Pipes;
 using UtilsNS;
+using scripthea.viewer;
 
 namespace scripthea.external
 {
@@ -30,198 +30,117 @@ namespace scripthea.external
     /// </summary>
     public partial class SDiffusionUC : UserControl, interfaceAPI
     {
-        PipeServer2S server2s; PipeServer2C server2c; NVidia nVidia;
         public SDiffusionUC()
         {
             InitializeComponent(); localDebug = Utils.isInVisualStudio;
             opts = new Dictionary<string, string>();
-            nVidia = new NVidia();
         }
         SDoptionsWindow SDopts; private bool localDebug = true;
-        public Dictionary<string, string> opts { get; set; } // main (non this API specific) options 
-        private bool _nVidiaAvailable;
-        private bool nVidiaAvailable 
-        { 
-            get { return _nVidiaAvailable; }
-            set 
-            {
-                if (SDopts == null) return;
-                if (value) 
-                { 
-                    if (SDopts.opts.showGPUtemp) gridTmpr.Visibility = Visibility.Visible; 
-                    else gridTmpr.Visibility = Visibility.Collapsed;
-                    gridTmprDly.Visibility = Visibility.Collapsed; 
-                }
-                else
-                { 
-                    gridTmpr.Visibility = Visibility.Collapsed;
-                    if (SDopts.opts.showGPUtemp) gridTmprDly.Visibility = Visibility.Visible;
-                    else gridTmprDly.Visibility = Visibility.Collapsed;
-                }
-                _nVidiaAvailable = value;
-            }  
-        }
-        public void Init(string prompt) // init and update visuals from opts
+        public Dictionary<string, string> opts { get; set; } // interfaceAPI: main (non API specific) options 
+
+        private Options genOpts;
+        public void Init(ref Options _opts) // init and update visuals from opts
         {
-            lbStatus.Content = "COMM: closed"; server2s = null; server2c = null; GC.Collect();
+            genOpts = _opts;
+            sd_api_uc.ibtnOpts.MouseDown -= ibtnOpts_MouseDown; sd_api_uc.ibtnOpts.MouseDown += ibtnOpts_MouseDown;
+            sdScriptUC.ibtnOpts.MouseDown -= ibtnOpts_MouseDown; sdScriptUC.ibtnOpts.MouseDown += ibtnOpts_MouseDown;
+
             if (SDopts == null)
             {
-                SDopts = new SDoptionsWindow();   
-                nVidiaAvailable = nVidia.IsAvailable(); SDopts.nVidiaAvailable = nVidiaAvailable;
-                opts2Visual(SDopts.opts);
+                SDopts = new SDoptionsWindow();
+                tempRegulator.Init(ref SDopts.opts); SDopts.nVidiaHwAvailable = tempRegulator.nVidiaHWAvailable;
+                opts2Visual(true);
             }
-            // (re)create servers          
-            server2s = new PipeServer2S("scripthea_pipe2s");
-            server2s.OnLog += inLog;
-            server2s.TextReceived += Server_TextReceived; // solely for debug
-            server2s.OnStatusChange += new PipeServer2S.StatusChangeHandler(StatusChange);
-            server2s.status = SDServer.Status.waiting;
-
-            server2c = new PipeServer2C("scripthea_pipe2c");            
         }
-        private void opts2Visual(SDoptions opts)
+        private bool lastAPIcomm = false;
+        private void opts2Visual(bool first)
         {
-            if (opts.showCommLog) gridSDlog.Visibility = Visibility.Visible;
-            else gridSDlog.Visibility = Visibility.Collapsed;
-            if (nVidiaAvailable)
+            bool changeAPIcomm = lastAPIcomm != SDopts.opts.APIcomm;
+            if (first || changeAPIcomm)
             {
-                chkTmpr.IsChecked = opts.GPUtemperature; numGPUThreshold.Value = opts.GPUThreshold;
+                if (SDopts.opts.APIcomm)
+                {
+                    if (changeAPIcomm)
+                        if (sdScriptUC.IsConnected) sdScriptUC.reStartServers(true);
+                    sd_api_uc.Visibility = Visibility.Visible; sdScriptUC.Visibility = Visibility.Collapsed;
+                    sd_api_uc.Init(ref SDopts);
+                }
+                else
+                {
+                    if (changeAPIcomm) sd_api_uc.Finish();
+                    sdScriptUC.Visibility = Visibility.Visible; sd_api_uc.Visibility = Visibility.Collapsed;                    
+                    sdScriptUC.Init(ref SDopts); 
+                }
+                lastAPIcomm = SDopts.opts.APIcomm;
+                var ap = OnAPIparams(SDopts.opts.APIcomm);
             }
-            else
-            {
-                chkTmprDly.IsChecked = opts.GPUtemperature; dTimer?.Stop(); 
-                numDly.Value = opts.GPUThreshold;
-            }                        
+            tempRegulator.opts2Visual();
         }
         public void Finish()
         {
-            if (Utils.isNull(server2c)) return;
-            
-            server2c.CloseSession(); // close server 
-            server2s = null; server2c = null;
+            tempRegulator.Finish();
+            sd_api_uc.Finish(); sdScriptUC.Finish();
             SDopts.keepOpen = false; SDopts.Close();
-        }       
+        }
+        public void Broadcast(string msg)
+        {
+            if (SDopts.opts.APIcomm) return;
+            if (msg.Equals("end.scan", StringComparison.OrdinalIgnoreCase) && SDopts.opts.closeAtEndOfScan)
+            {
+                sdScriptUC.reStartServers(true); Log("SD comm. has been reset.", Brushes.Tomato);
+            }                
+        }
         public event Utils.LogHandler OnLog;
         protected void Log(string txt, SolidColorBrush clr = null)
         {
             if (OnLog != null) OnLog(txt, clr);
         }
+        public event APIparamsHandler APIparamsEvent;
+        protected Dictionary<string, object> OnAPIparams(bool? showIt)
+        {
+            return APIparamsEvent?.Invoke(showIt);
+        }
         public bool isDocked { get { return true; } }
         public UserControl userControl { get { return this as UserControl; } }
-        public bool isEnabled { get; } // connected and working (depends on the API)
+        public bool isEnabled  // connected and working (depends on the API)
+        {
+            get
+            {
+                if (SDopts.opts.APIcomm) return sd_api_uc.active;
+                else return sdScriptUC.IsConnected;
+            }  
+        }
         private void SimulatorImage(string filepath) // copy random simulator file to filepath
         {
             File.Copy(SimulFolder.RandomImageFile, filepath);
         }
-        public bool imageReady 
-        { 
-            get 
-            {
-                if (Utils.isNull(server2s) || Utils.isNull(server2c)) return false;
-                return server2s.status.Equals(SDServer.Status.imageReady);                
-            } 
-        }
-        int timeLeft = 0;
-        public bool GenerateImage(string prompt, string imageDepotFolder, out string filename) // returns the filename of saved/copied in ImageDepoFolder image 
+        public bool GenerateImage(string prompt, string imageDepotFolder, out ImageInfo ii) // returns the filename of saved/copied in ImageDepoFolder image 
         {
-            if (SDopts.opts.GPUtemperature)
+            if (!isEnabled) { ii = null; return false; } 
+            tempRegulator.tempRegulate(); bool rslt = false; 
+            if (SDopts.opts.APIcomm) // API
             {
-                if (!dTimer.IsEnabled) dTimer.Start();
-                if (nVidiaAvailable)
+                string filename = Utils.timeName(); // target image 
+                string folder = imageDepotFolder.EndsWith("\\") ? imageDepotFolder : imageDepotFolder + "\\"; opts["folder"] = folder;
+                string fullFN = Path.Combine(folder, Path.ChangeExtension(filename, ".png"));
+                if (File.Exists(fullFN))
                 {
-                    while (((currentTmp > SDopts.opts.GPUThreshold) || (currentTmp == -1)) && SDopts.opts.GPUtemperature) { Thread.Sleep(500); }
+                    fullFN = Utils.AvoidOverwrite(fullFN); // new name
+                    filename = Path.ChangeExtension(Path.GetFileName(fullFN), "");
                 }
-                else
-                {
-                    timeLeft = SDopts.opts.GPUThreshold;
-                    while ((timeLeft > 0) && SDopts.opts.GPUtemperature) { Thread.Sleep(500); }
-                }
+                Dictionary<string, object> apIn = OnAPIparams(null); Dictionary<string, object> apOut;
+                apIn["prompt"] = prompt;
+                rslt = sd_api_uc.GenerateImage(fullFN, apIn, out apOut);
+                
+                ii = new ImageInfo(apOut);
             }
-            else { timeLeft = 0; dTimer.Stop(); }
-            filename = Utils.timeName(); // target image 
-            if (Utils.isNull(server2s) || Utils.isNull(server2c)) { inLog("Err: communication issue"); return false; }
-            string folder = imageDepotFolder.EndsWith("\\") ? imageDepotFolder : imageDepotFolder + "\\";  opts["folder"] = folder; 
-            string fullFN = Path.Combine(folder,Path.ChangeExtension(filename, ".png"));
-            if (File.Exists(fullFN))
+            else // named-pipe server here <-> client in python script
             {
-                fullFN = Utils.AvoidOverwrite(fullFN); // new name
-                filename = Path.ChangeExtension(Path.GetFileName(fullFN), "");
+                string filename;
+                rslt = sdScriptUC.GenerateImage(prompt, imageDepotFolder, out filename);
+                ii = new ImageInfo(Path.Combine(imageDepotFolder, filename), ImageInfo.ImageGenerator.StableDiffusion, true);
             }
-            
-            int k = 0; // wait for expect state
-            while (!server2s.status.Equals(SDServer.Status.promptExpect) && (k < (2 * SDopts.opts.TimeOutImgGen))) { Thread.Sleep(500); k++; }
-            if (!server2s.status.Equals(SDServer.Status.promptExpect)) { inLog("Err: time-out at promptExpect"); return false; }
-
-            Dictionary<string, string> jsn = new Dictionary<string, string>();
-            jsn.Add("prompt", prompt); jsn.Add("folder", folder); jsn.Add("filename", filename);
-            filename = Path.ChangeExtension(filename, ".png");
-            if (!server2c.Send(JsonConvert.SerializeObject(jsn))) { inLog("Err: fail to send a message to the client"); return false; }
-
-            k = 0; bool bir = imageReady; // wait for image gen.
-            while (!bir && (k < (5 * SDopts.opts.TimeOutImgGen))) {  Thread.Sleep(200); k++; if (!bir) bir = imageReady; }                       
-            if (!bir) { inLog("Err: time-out at imageReady"); return false; }
-
-            //if (server.debug && bir) SimulatorImage(fullFN);
-            if (!File.Exists(fullFN)) { inLog("Err: image file <" + fullFN + "> not found"); return false; }
-            
-            return bir;
-        }        
-        private void StatusChange(SDServer.Status previous, SDServer.Status current)
-        {
-            try
-            {
-                Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background,
-                  new Action(() =>
-                  {
-                        lbStatus.Content = "COMM: " + current.ToString(); lbStatus.UpdateLayout();        
-                        btnReset.IsEnabled = current == SDServer.Status.promptExpect;            
-             
-                        switch (current)
-                        {
-                            case SDServer.Status.closed: BorderBrush = Brushes.White; // before server opens 
-                                //if (!previous.Equals(SDServer.Status.closed)) RestartServer();
-                                break;
-                            case SDServer.Status.waiting: BorderBrush = Brushes.Silver; // waiting the client to call
-                                break;
-                            case SDServer.Status.connected: BorderBrush = Brushes.Gold; // ... the client called from the Scripthea script   
-                                server2c.OnLog += inLog;
-                                break;
-                            case SDServer.Status.promptExpect: BorderBrush = Brushes.RoyalBlue; // the script for the next prompt
-                                break;
-                            case SDServer.Status.promptSent: BorderBrush = Brushes.Coral; // prompt sent, image is expected 
-                                break;
-                            case SDServer.Status.imageReady: BorderBrush = Brushes.LightSeaGreen; // image has been generated
-                                break;
-                        }           
-                  }));
-            }
-            catch { }
-        }
-        protected void inLog(String txt, SolidColorBrush clr = null)
-        {
-            if (txt.Length.Equals(0)) return;
-            if (Application.Current == null) return;
-            Utils.log(rtbSDlog, txt.Trim(), clr);
-        }
-        private void Server_TextReceived(object sender, string txt)
-        {
-            if (localDebug) inLog("> "+txt);
-        }
-        private void RestartServer()
-        {
-            server2c.CloseSession(); Utils.Sleep(500);
-            server2s.reader.Close(); server2s.reader = null; GC.Collect();
-            server2s.Dispose(); 
-            server2c.Dispose(); inLog("Scripthea server restarting...", Brushes.Red);
-            Utils.Sleep(500);
-            Init("");            
-            
-        }
-        private void btnReset_Click(object sender, RoutedEventArgs e)
-        {
-            Log("@CancelRequest");
-            inLog("closing session in client", Brushes.IndianRed);
-            RestartServer();
+            return rslt;
         }
         private void lb1_MouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -229,278 +148,12 @@ namespace scripthea.external
             if (sender.Equals(lb2)) Utils.CallTheWeb("https://stability.ai/");
             if (sender.Equals(lb3)) Utils.CallTheWeb("http://127.0.0.1:7860/");
         }
-        int currentTmp = -1; double averTmp = -1; int maxTmp = -1;
-        List<int> tmpStack; 
-        DispatcherTimer dTimer;
-        private void chkTemp_Checked(object sender, RoutedEventArgs e)
-        {
-            if ((sender as CheckBox).IsChecked.Value)
-            {
-                if (Utils.isNull(dTimer))
-                {
-                    dTimer = new DispatcherTimer();
-                    dTimer.Tick += new EventHandler(dTimer_Tick);
-                    dTimer.Interval = new TimeSpan(1000 * 10000); // 1 [sec]
-                    tmpStack = new List<int>();
-                }
-                if (SDopts.opts.GPUtemperature) timeLeft = SDopts.opts.GPUThreshold;
-                else timeLeft = 0;
-                dTimer.Start();
-            }
-            else 
-            { 
-                dTimer.Stop(); timeLeft = 0; lbTimeLeft.Content = "";
-                chkTmpr.Foreground = Brushes.Black; 
-            }
-        }
-        private void dTimer_Tick(object sender, EventArgs e)
-        {
-            if (!nVidiaAvailable)
-            {
-                lbTimeLeft.Content = "Time left: " + timeLeft.ToString()+ "[s]"; 
-                if (timeLeft > 0 ) timeLeft--;
-                return;
-            }
-            int? primeTmp = nVidia.GetGPUtemperature();
-            if (Utils.isNull(primeTmp)) return;
-            currentTmp = (int)primeTmp;
-            if (currentTmp < SDopts.opts.GPUThreshold) chkTmpr.Foreground = Brushes.Blue;
-            else chkTmpr.Foreground = Brushes.Red;
-            chkTmpr.Content = "GPU temp[°C] = " + currentTmp.ToString();
-            tmpStack.Add(currentTmp);
-            while (tmpStack.Count > SDopts.opts.GPUstackDepth) tmpStack.RemoveAt(0);
-            averTmp = tmpStack.ToArray().Average();
-            maxTmp = -1;
-            foreach (int t in tmpStack)
-                maxTmp = Math.Max(t, maxTmp);
-            lbTmpInfo.Content = "aver: " + averTmp.ToString("G3") + "  max: " + maxTmp.ToString();
-        }
-        private void numGPUThreshold_ValueChanged(object sender, RoutedEventArgs e)
-        {
-            if (SDopts != null)
-                SDopts.opts.GPUThreshold = (sender as NumericBox).Value;
-        }
         private void ibtnOpts_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            SDopts.opts2Visual(); SDopts.ShowDialog(); 
-            opts2Visual(SDopts.opts);
-        }
-        #region Watcher
-        // Watcher ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-        FileSystemWatcher watcher;
-
-        private void watchImageDir(string dir)
-        {
-            if (Utils.isNull(watcher))
-            {
-                watcher = new FileSystemWatcher(dir);
-                watcher.NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite
-                                       | NotifyFilters.FileName | NotifyFilters.DirectoryName;
-                watcher.Filter = "*.*";
-                watcher.Created += new FileSystemEventHandler(OnChangedWatcher);
-            }
-            else { watcher.Path = dir; }
-            watcher.EnableRaisingEvents = true;
-        }
-        public bool IsFileReady(string filename)
-        {
-            // If the file can be opened for exclusive access it means that the file
-            // is no longer locked by another process.
-            try
-            {
-                using (FileStream inputStream = File.Open(filename, FileMode.Open, FileAccess.Read, FileShare.None))
-                    return inputStream.Length > 0;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-
-        private void OnChangedWatcher(object source, FileSystemEventArgs e)
-        {
-            if (!System.IO.Path.GetExtension(e.Name).Equals(".sis")) return;
-            this.Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.Background,
-                new Action(
-                    delegate ()
-                    {
-                        /*if (!LineMode) return;
-                        procStage = 2;
-                        while (!IsFileReady(e.FullPath)) { DoEvents(); }
-                        UpdateFileList(e.Name);*/
-                    }
-                )
-            );
-        }
-        #endregion Watcher
-    }
-    #region PipeServers
-    public class PipeServer2S : SDServer // incoming
-    {
-        public StreamReader reader = null;
-        public event EventHandler<string> TextReceived;
-        private Status _status;
-        public Status status
-        {
-            get
-            {
-                if (pipeServer == null) _status = Status.closed;
-                return _status;
-            }
-            set { Status previous = _status; _status = value; StatusChange(previous, value); }
-        }
-        public delegate void StatusChangeHandler(Status previous, Status current);
-        public event StatusChangeHandler OnStatusChange;
-        public void StatusChange(Status previous, Status current)
-        {
-            if (OnStatusChange != null) OnStatusChange(previous, current);
-        }
-
-        protected void Receive(string txt)
-        {
-            if (txt == null) return;
-            switch (txt.Trim())
-            {
-                case "@next.prompt":
-                    status = Status.promptExpect;
-                    break;
-                case "@image.ready":
-                    status = Status.imageReady;
-                    break;
-                case "@image.failed":
-                    status = Status.imageFailed;
-                    break;
-                case "exit":
-                    status = Status.closed;
-                    break;
-            }
-        }
-        public PipeServer2S(string pipeName) : base(pipeName, PipeDirection.In)
-        {
-            reader = new StreamReader(pipeServer);
-        }
-        public override void AddAction()
-        {
-            while (IsConnected && !cts.IsCancellationRequested)
-            {
-                string message = reader.ReadLine();
-                if (message == null)
-                {
-                    log("session close by client(SD)");
-                    status = Status.closed;
-                    break;
-                }
-                Receive(message);
-                TextReceived?.Invoke(this, message);
-                if (message.Trim() == "exit")
-                {                    
-                    status = Status.closed;
-                    break;
-                }
-            }
+            bool bb = SDopts.opts.APIcomm;
+            SDopts.opts2Visual(); SDopts.ShowDialog();
+            opts2Visual(bb != SDopts.opts.APIcomm);
         }
     }
-    public class PipeServer2C : SDServer // outgoing
-    {
-        public StreamWriter writer = null;
-        public PipeServer2C(string pipeName) : base(pipeName, PipeDirection.Out)
-        {
-            writer = new StreamWriter(pipeServer);          
-        }
-        public bool Send(string message)
-        {            
-            try
-            {
-                if (!IsConnected) return false; ;
-                if (writer == null) { writer = new StreamWriter(pipeServer); }
-                writer.Write(message);
-                if (IsConnected) writer.Flush();
-            }
-            catch(Exception e) { log("problem flushing the write buffer ("+e.Message+")"); return false; }
-            return IsConnected;
-        }
-        public override void AddAction()
-        {
-            while (IsConnected && !cts.IsCancellationRequested)  { Utils.Sleep(200); }
-        }
-        public void CloseSession()
-        {
-            Send("@close.session");
-        }
-    }
-    public class SDServer : IDisposable
-    {
-        public enum Status
-        {
-            closed,         // before server opens 
-            waiting,        // waiting the client to call
-            connected,      // ... the client called from the Scripthea script          
-            promptExpect,   // the script for the next prompt
-            promptSent,     // prompt sent, image is expected 
-            imageReady,     // image has been generated
-            imageFailed     // image has failed to be generated
-        }
-        public bool IsConnected { get { if (pipeServer == null) return false; return pipeServer.IsConnected; } }
-        protected string pipeName;
-        protected NamedPipeServerStream pipeServer;
-        public Task task;
-        protected CancellationTokenSource cts;
-        
-        public SDServer(string _pipeName, PipeDirection direction)
-        {
-            pipeName = _pipeName;
-            pipeServer = new NamedPipeServerStream(pipeName, direction, 1);
-            cts = new CancellationTokenSource(); 
-            task = Task.Run(() => PipeServer(), cts.Token);
-        }
-        public void Dispose()
-        {
-            cts.Cancel();
-            pipeServer.Close(); pipeServer.Dispose(); GC.Collect();
-            try { task.Wait(); }
-            catch (AggregateException ex) { Utils.TimedMessageBox(ex.Message); }
-        }
-
-        public event Utils.LogHandler OnLog;
-        protected void log(string txt, SolidColorBrush clr = null)
-        {
-            if (OnLog != null) OnLog(txt, clr);
-            else Console.WriteLine(txt);
-        }
-        public virtual void AddAction()
-        {
-        }
-        protected void PipeServer()
-        {
-            log("Waiting to connect...");
-            pipeServer.WaitForConnection();
-            log("open session");
-
-            AddAction();
-            log(pipeName + " session");
-        }
-        public void Close()
-        {                     
-            if (task.Status.Equals(TaskStatus.Running)  || task.Status.Equals(TaskStatus.RanToCompletion))
-            {
-                cts.Cancel(); task.Wait(TimeSpan.FromSeconds(3)); 
-               /* try
-                {
-                    if (!task.Wait(TimeSpan.FromSeconds(1)))
-                    {
-                        throw new TaskCanceledException("Task did not complete within the timeout.");
-                    }
-                }
-                catch (TaskCanceledException)
-                {
-                    Console.WriteLine("Task timed out. Terminating...");
-                    task.Kill();
-                }*/                            
-            }
-            if (pipeServer.IsConnected) pipeServer.Disconnect();
-            pipeServer.Dispose(); 
-        }
-    }
-    #endregion PipeServer
 }
 

@@ -152,6 +152,21 @@
     <Compile Include="composer\ScanPreviewUC.xaml.cs">
       <DependentUpon>ScanPreviewUC.xaml</DependentUpon>
     </Compile>
+    <Compile Include="external\NumericSliderUC.xaml.cs">
+      <DependentUpon>NumericSliderUC.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="external\SDscriptUC.xaml.cs">
+      <DependentUpon>SDscriptUC.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="external\SD_API_UC.xaml.cs">
+      <DependentUpon>SD_API_UC.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="external\SD_params_UC.xaml.cs">
+      <DependentUpon>SD_params_UC.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="external\tempRegulatorUC.xaml.cs">
+      <DependentUpon>tempRegulatorUC.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Preferences.xaml.cs">
       <DependentUpon>Preferences.xaml</DependentUpon>
     </Compile>
@@ -244,6 +259,26 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="composer\ScanPreviewUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="external\NumericSliderUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="external\SDscriptUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="external\SD_API_UC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="external\SD_params_UC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="external\tempRegulatorUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

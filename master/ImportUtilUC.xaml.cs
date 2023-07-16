@@ -227,7 +227,7 @@ namespace scripthea.master
                         unchk.Add(efn); continue;
                     }
                     ImageInfo ii = new ImageInfo(Path.Combine(imageFolder, efn), ImageInfo.ImageGenerator.StableDiffusion, chkKeepNames.IsChecked.Value);
-                    if (!ii.IsAvailable()) { nok++; continue; }
+                    if (!ii.IsEnabled()) { nok++; continue; }
                     depotFolder.items.Add(ii);                   
                     k++;
                 }

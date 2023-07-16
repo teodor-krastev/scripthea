@@ -56,9 +56,8 @@ namespace scripthea.viewer
                 }             
                 filename = Path.GetFileName(suggestedName);       
             }
-            catch (System.IO.IOException IOe) { Utils.TimedMessageBox("Error: (" + System.IO.Path.GetFileName(fullfilename) + ") " + IOe.Message);  }
+            catch (System.IO.IOException IOe) { filename = ""; Utils.TimedMessageBox("Error: (" + System.IO.Path.GetFileName(fullfilename) + ") " + IOe.Message);  }
         }
-        public bool IsAvailable() { return !filename.Equals(""); } // file hasn't been assinged
         private List<string> SplitFilename(string fn, char sep) // pattern <txt><sep><txt><sep><cue><ext>
         {
             var ls = new List<string>();
@@ -72,48 +71,51 @@ namespace scripthea.viewer
             ls.Add(ext);
             return ls;
         }
-
         public ImageInfo(string json)
         {
             FromString(json);
         }
-        public ImageInfo(Dictionary<string, string> dict)
+        public ImageInfo(Dictionary<string, object> dict)
         {
             FromDictionary(dict);
         }
-        public string prompt { get; set; }        
-        public int steps { get; set; }
-        public string sampler { get; set; }
-        public int scale { get; set; }
+        /*{"prompt", "String" }, {"negative_prompt", "String" }, { "seed", "Int64" }, { "width", "Int64" }, { "height", "Int64" },
+            { "sampler_name", "String" }, { "cfg_scale", "Double" }, { "steps", "Int64" }, { "batch_size", "Int64" }, { "restore_faces", "Boolean" },
+            { "sd_model_hash", "String" }, { "denoising_strength", "Int64" }, { "job_timestamp", "String" }*/
+        public string prompt { get; set; }
+        public string negative_prompt { get; set; }
+        public long steps { get; set; }
+        public string sampler_name { get; set; }
+        public double cfg_scale { get; set; }
+        public double denoising_strength { get; set; }
         public long seed { get; set; }
-        public string size { get; set; }
-        public string ModelHash { get; set; }
+        public long width { get; set; }
+        public long height { get; set; }
+        public long batch_size { get; set; }
+        public bool restore_faces { get; set; }
+        public string sd_model_hash { get; set; }
         public string filename { get; set; } // without folder
-        public string MD5Checksum { get; set; } 
+        public string job_timestamp { get; set; }
+        // its own
+        public object tags { get; set; } // open stucture for future use: set of labels to be selected and/or define position in a image structure within a Scripthea project
         public string history { get; set; } // stages of variations, '|' separated -> for future use
-
-        public bool IsEnabled() { return !filename.Equals(""); }
+        public string MD5Checksum { get; set; } 
+        // internal
+        public bool IsEnabled() { return !filename.Equals(""); } // file hasn't been assinged
         public bool IsModified(string folder) // check if recorded MD5 is egual to MD5 of the image file
         {
             string ffn = Path.Combine(folder, filename);
             if (!File.Exists(ffn)) return false;
             return MD5Checksum.Equals(ffn);
         }
-        public int Width()
+        public string Size()
         {
-            string[] sa = size.Split('x');
-            if (sa.Length != 2) return -1;
-            return Convert.ToInt32(sa[0]);
+            return Convert.ToString(width) + "x" + Convert.ToString(height);
         }
-        public int Height()
-        {
-            string[] sa = size.Split('x');
-            if (sa.Length != 2) return -1;
-            return Convert.ToInt32(sa[1]);
-        }
+        
         public void historyAdd(string txt)
         {
-            string tx = txt.Replace('|', '_');
+            string tx = txt.Replace('|', '_'); // not to confuse
             if (history.Equals("")) history = tx;
             else history += '|' + tx;
         }
@@ -131,7 +133,7 @@ namespace scripthea.viewer
 
             Dictionary<string, string> meta;
             bool sd = ImgUtils.GetMetaDataItems(fullfilename, out meta);
-            if (sd) sd &= FromDictionary(meta);
+            if (sd) FromMetaDictionary(meta);
             if (!sd) { filename = ""; return false; }
 
             // suggest a name
@@ -158,12 +160,15 @@ namespace scripthea.viewer
             if (File.Exists(fullfilename)) return false;
             return true;
         }
-        public bool FromString(string json)
+        public void FromString(string json)
         {
-            ImageInfo ii = JsonConvert.DeserializeObject<ImageInfo>(json);
-            prompt = ii.prompt; steps = ii.steps; sampler = ii.sampler; scale = ii.scale; seed = ii.seed; size = ii.size; ModelHash = ii.ModelHash;
-            filename = ii.filename; MD5Checksum = ii.MD5Checksum; history = ii.history;
-            return true;
+            Dictionary<string, object> dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+            FromDictionary(dict);
+        }
+        public void FromMetaString(string json)
+        {
+            Dictionary<string, string> dict = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+            FromMetaDictionary(dict);
         }
         public bool SameAs(ImageInfo imageInfo)
         {
@@ -173,58 +178,145 @@ namespace scripthea.viewer
         {
             return JsonConvert.SerializeObject(this);
         }
-        public bool FromDictionary(Dictionary<string,string> dict) 
+        public void FromDictionary(Dictionary<string, object> dict)
         {
-            if (dict.ContainsKey("prompt")) prompt = dict["prompt"];
-            if (dict.ContainsKey("steps")) steps = Convert.ToInt32(dict["steps"]);
-            if (dict.ContainsKey("sampler")) sampler = dict["sampler"];
-            if (dict.ContainsKey("scale")) scale = Convert.ToInt32(dict["scale"]);
-            if (dict.ContainsKey("seed")) seed = Convert.ToInt64(dict["seed"]);
-            if (dict.ContainsKey("size")) size = dict["size"];
-            if (dict.ContainsKey("ModelHash")) ModelHash = dict["ModelHash"];
-            if (dict.ContainsKey("filename")) filename = dict["filename"];
-            if (dict.ContainsKey("MD5Checksum")) MD5Checksum = dict["MD5Checksum"];             
-            if (dict.ContainsKey("history")) history = dict["history"];
-            else history = "";
-            return true;
+            if (dict.ContainsKey("prompt")) prompt = Convert.ToString(dict["prompt"]);
+            negative_prompt = dict.ContainsKey("negative_prompt") ? Convert.ToString(dict["negative_prompt"]) : "";
+            if (dict.ContainsKey("steps")) steps = Convert.ToInt64(dict["steps"]);
+            if (dict.ContainsKey("sampler_name")) sampler_name = Convert.ToString(dict["sampler_name"]);
+            if (dict.ContainsKey("cfg_scale")) cfg_scale = Convert.ToDouble(dict["cfg_scale"]);
+            seed = dict.ContainsKey("seed") ? Convert.ToInt64(dict["seed"]) : -1;
+            if (dict.ContainsKey("width")) width = Convert.ToInt64(dict["width"]);
+            if (dict.ContainsKey("height")) height = Convert.ToInt64(dict["height"]);
+            denoising_strength = dict.ContainsKey("denoising_strength") ? Convert.ToDouble(dict["denoising_strength"]) : 0;
+            batch_size = dict.ContainsKey("batch_size") ?Convert.ToInt64(dict["batch_size"]) : 1;
+            restore_faces = dict.ContainsKey("restore_faces") ? Convert.ToBoolean(dict["restore_faces"]) : false;            
+            if (dict.ContainsKey("sd_model_hash")) sd_model_hash = Convert.ToString(dict["sd_model_hash"]);
+            if (dict.ContainsKey("filename")) filename = Convert.ToString(dict["filename"]);
+            if (dict.ContainsKey("job_timestamp")) job_timestamp = Convert.ToString(dict["job_timestamp"]);            
+            if (dict.ContainsKey("MD5Checksum")) MD5Checksum = Convert.ToString(dict["MD5Checksum"]);
+            history = dict.ContainsKey("history") ? Convert.ToString(dict["history"]) : "";
+            tags = dict.ContainsKey("tags") ? dict["history"] : null;
         }
-        public Dictionary<string, string> ToDictionary()
+        public void FromMetaDictionary(Dictionary<string,string> dict) 
         {
-            Dictionary<string, string> dict = new Dictionary<string, string>();
-            dict.Add("prompt", prompt); dict.Add("steps", steps.ToString()); dict.Add("sampler",sampler); dict.Add("scale", scale.ToString()); 
-            dict.Add("seed", seed.ToString()); dict.Add("size", size); dict.Add("ModelHash", ModelHash); dict.Add("filename", filename); 
-            dict.Add("MD5Checksum", MD5Checksum); dict.Add("history", history); 
+            if (dict.ContainsKey("prompt")) prompt = dict["prompt"]; negative_prompt = ""; denoising_strength = 0; batch_size = 1; restore_faces = false;
+            if (dict.ContainsKey("steps")) steps = Convert.ToInt32(dict["steps"]);
+            if (dict.ContainsKey("sampler")) sampler_name = dict["sampler"];
+            if (dict.ContainsKey("scale")) cfg_scale = Convert.ToInt32(dict["scale"]);
+            seed = dict.ContainsKey("seed") ? Convert.ToInt64(dict["seed"]) : -1;
+            if (dict.ContainsKey("size"))
+            {
+                string size = dict["size"]; string[] sa = size.Split('x');
+                width =  Convert.ToInt64(sa[0]); height = Convert.ToInt64(sa[1]);
+            }
+            if (dict.ContainsKey("ModelHash")) sd_model_hash = dict["ModelHash"];
+            if (dict.ContainsKey("filename")) filename = dict["filename"];
+            if (dict.ContainsKey("MD5Checksum")) MD5Checksum = dict["MD5Checksum"];
+            history = dict.ContainsKey("history") ? Convert.ToString(dict["history"]) : "";
+        }
+        public Dictionary<string, object> ToDictionary(bool SDonly = false)
+        {
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            dict.Add("prompt", prompt); 
+            dict.Add("negative_prompt", negative_prompt);
+            dict.Add("steps", steps); 
+            dict.Add("sampler_name", sampler_name); 
+            dict.Add("cfg_scale", cfg_scale.ToString());
+            dict.Add("denoising_strength", denoising_strength); 
+            dict.Add("batch_size", batch_size);
+            dict.Add("restore_faces", restore_faces);
+            dict.Add("seed", seed); 
+            dict.Add("sd_model_hash", sd_model_hash); 
+            dict.Add("filename", filename); 
+            dict.Add("job_timestamp", job_timestamp);
+            dict.Add("widht", width); 
+            dict.Add("height", height);
+            if (SDonly)
+            {
+                dict.Add("MD5Checksum", MD5Checksum); 
+                dict.Add("history", history);
+                dict.Add("tags", tags); 
+            }
             return dict;
         }
         // clone 1. target.FromString(source.To_String())
         //       2. target.FromDictionary(Source.ToDictionary())
     }
+    public static class ImageDepotConvertor
+    {
+        public static bool Old2New(string idf)
+        {
+            ImageDepot imageDepot = new ImageDepot(idf, ImageInfo.ImageGenerator.FromDescFile, true);
+            imageDepot.Save(true);
+            return true; 
+        }
+        public static bool AutoConvert = true;
+        public static bool? CheckFileVersion(string folder) // true - new one (OK); false - old one
+        {
+            bool bb = false;
+            string desc = Path.Combine(folder, ImgUtils.descriptionFile);
+            if (!File.Exists(desc)) return null;
+            List<string> body = Utils.readList(desc, false);
+            if (body.Count == 0) return null;
+            if (body[0].StartsWith("#"))
+            {
+                Dictionary<string, string> header = JsonConvert.DeserializeObject<Dictionary<string, string>>(body[0].Substring(1));
+                if (header.ContainsKey("application"))
+                {
+                    string[] sa = header["application"].Split(' ');
+                    if (sa[0] != "Scripthea" || sa.Length != 2) return null; 
+                    string[] sb = sa[1].Split('.'); if (sb.Length != 4) return null;
+                    bb = Convert.ToInt32(sb[3]) > 69;
+                }
+            }
+            return bb;
+        }
+    }
     public class ImageDepot
     {
         public ImageDepot(string _folder, ImageInfo.ImageGenerator _imageGenerator = ImageInfo.ImageGenerator.FromDescFile, bool _IsReadOnly = false) 
         {
-            if (!Directory.Exists(_folder)) return; isReadOnly = _IsReadOnly;
+            if (!Directory.Exists(_folder)) return; isReadOnly = _IsReadOnly; string desc = Path.Combine(_folder, ImgUtils.descriptionFile);
             header = new Dictionary<string, string>(); items = new List<ImageInfo>();
-
-            if (_imageGenerator == ImageInfo.ImageGenerator.FromDescFile) // read type from file
+            
+            if (_imageGenerator == ImageInfo.ImageGenerator.FromDescFile && File.Exists(desc)) // read type from file
             {
-                string desc = Path.Combine(_folder, ImgUtils.descriptionFile);
-                if (File.Exists(desc))
+                if (!isReadOnly)
                 {
-                    List<string> body = Utils.readList(desc,false);
-                    if (body.Count == 0) return;
-                    if (body[0].StartsWith("#"))
+                    bool? bb = ImageDepotConvertor.CheckFileVersion(_folder);
+                    if (bb == null) { Utils.TimedMessageBox("Error: Corrupted Scripthea image depot!", "Error", 4000); return; }
+                    if (!(bool)bb) // old version
                     {
-                        header = JsonConvert.DeserializeObject<Dictionary<string, string>>(body[0].Substring(1));
-                        body.RemoveAt(0);
-                        if (header.ContainsKey("ImageGenerator"))
-                            foreach (ImageInfo.ImageGenerator ig in Enum.GetValues(typeof(ImageInfo.ImageGenerator)))
-                            {
-                                if (ig.Equals(header["ImageGenerator"])) imageGenerator = ig;
-                            }
-                    }
+                        if (ImageDepotConvertor.AutoConvert) ImageDepotConvertor.Old2New(_folder); // convert 
+                        else isReadOnly = true;                                                    // OR lock
+                    }    
+                }                
+                List<string> body = Utils.readList(desc,false);
+                if (body.Count == 0) return;
+                if (body[0].StartsWith("#"))
+                {
+                    header = JsonConvert.DeserializeObject<Dictionary<string, string>>(body[0].Substring(1));
+                    body.RemoveAt(0);
+                    if (header.ContainsKey("ImageGenerator"))
+                        foreach (ImageInfo.ImageGenerator ig in Enum.GetValues(typeof(ImageInfo.ImageGenerator)))
+                        {
+                            if (ig.Equals(header["ImageGenerator"])) imageGenerator = ig;
+                        }
+                    if (header.ContainsKey("application"))
+                    {
+                        string[] sa = header["application"].Split(' ');
+                        if (sa[0] != "Scripthea" || sa.Length != 2) { Utils.TimedMessageBox("Error: NOT Scripthea image depot file!", "Error", 5000); return; }
+                        string[] sb = sa[1].Split('.'); if (sb.Length != 4) return;
+                        appBuilt = Convert.ToInt32(sb[3]);
+                    } 
                     foreach (string ss in body)
-                        items.Add(new ImageInfo(ss));
+                    {
+                        ImageInfo ii = new ImageInfo();
+                        if (appBuilt < 70) ii.FromMetaString(ss);
+                        else ii.FromString(ss);
+                        items.Add(ii);
+                    }                       
                 }
             }
             else
@@ -236,14 +328,15 @@ namespace scripthea.viewer
         }
         public bool isEnabled
         {
-            get { return !Utils.isNull(header) && !Utils.isNull(items); }
+            get { return Utils.isNull(header) ? false : header.Count > 0 && !Utils.isNull(items); }
         }
+        public int appBuilt { get; private set; }
         public bool isReadOnly { get; private set; }
         public Dictionary<string, string> header;
         public List<ImageInfo> items;
         public bool RemoveAt(int idx, bool inclFile)
         {
-            if (!isEnabled) return false;
+            if (!isEnabled || isReadOnly) return false;
             if (!Utils.InRange(idx, 0, items.Count - 1)) return false; 
             if (inclFile)
             {
@@ -367,20 +460,21 @@ namespace scripthea.viewer
             }
             return ok;
         }
-        public void Append(ImageInfo ii)
+        public bool Append(ImageInfo ii)
         {
-            if (isReadOnly) return;
+            if (!isEnabled || isReadOnly) return false ;
             using (StreamWriter w = File.AppendText(Path.Combine(path, ImgUtils.descriptionFile)))
             {
                 w.WriteLine(ii.To_String());
             }
-            items.Add(ii);
+            items.Add(ii); return true;
         }
         public void Save(bool forced = false)
         {
             if (!forced)
                 if (isReadOnly) return;
             List<string> ls = new List<string>();
+            header["application"]= "Scripthea " + Utils.getAppFileVersion;
             ls.Add("#"+ JsonConvert.SerializeObject(header));
             foreach (ImageInfo ii in items)
                 ls.Add(ii.To_String());
@@ -438,7 +532,7 @@ namespace scripthea.viewer
             opts = _opts;
             chkAutoRefresh.IsChecked = opts.viewer.Autorefresh; imageFolder = opts.composer.ImageDepotFolder; 
             colListWidth.Width = new GridLength(opts.composer.ViewColWidth);
-
+            ImageDepotConvertor.AutoConvert = opts.viewer.ConvertImageDepot;
             foreach (iPicList ipl in views)
                 ipl.Init(ref opts, false);            
         }

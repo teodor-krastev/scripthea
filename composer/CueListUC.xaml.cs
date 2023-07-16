@@ -18,6 +18,17 @@ using Path = System.IO.Path;
 
 namespace scripthea.composer
 {
+    public class CueListHeader
+    {
+        public CueListHeader()
+        {
+            Tags = new List<string>(); 
+        }
+        public string Source { get; set; }
+        public string application { get; set; } // and version (optionally)
+        public List<string> Tags { get; set; }
+        public string Comment { get; set; }
+    }
     /// <summary>
     /// Interaction logic for CueItemsUC.xaml
     /// </summary>

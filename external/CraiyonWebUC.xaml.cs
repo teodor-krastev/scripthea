@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using UtilsNS;
+using scripthea.viewer;
 
 namespace scripthea.external
 {
@@ -29,9 +30,14 @@ namespace scripthea.external
 
         public Dictionary<string, string> opts { get; set; }
 
-        public void Init(string prompt) {  }
+        public void Init(ref Options _opts) {  }
         public void Finish() { }
+        public void Broadcast(string msg)
+        {
+
+        }
         public event Utils.LogHandler OnLog;
+        public event APIparamsHandler APIparamsEvent;
         protected void Log(string txt, SolidColorBrush clr = null)
         {
             if (OnLog != null) OnLog(txt, clr);
@@ -39,10 +45,10 @@ namespace scripthea.external
         public bool isDocked { get { return false; } }
         public UserControl userControl { get { return this as UserControl; } }
         public bool isEnabled { get { return true; } }
-        public bool GenerateImage(string prompt, string imageDepotFolder, out string filename)
+        public bool GenerateImage(string prompt, string imageDepotFolder, out ImageInfo ii)
         {
             Utils.CallTheWeb("https://craiyon.com/?prompt=" + prompt.Trim().Replace(' ', '+'));
-            filename = "";
+            ii = new ImageInfo();
             return true;
         }
 

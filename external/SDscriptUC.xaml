@@ -1,0 +1,21 @@
+﻿<UserControl x:Class="scripthea.external.SDscriptUC"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:scripthea.external"
+             mc:Ignorable="d" 
+             d:DesignHeight="65" d:DesignWidth="400">
+    <Grid>
+        <StackPanel Orientation="Horizontal">
+            <Grid Width="150" Height="60">
+                <Label x:Name="lbStatus" Height="28" Content="COMM:" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,0,0,3"/>
+                <Button x:Name="btnReset" Content="Reset" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="26" Width="49" Click="btnReset_Click" Margin="0,0,5,3" Background="#FFFDD07E"/>
+                <Image x:Name="ibtnOpts" Source="/Scripthea;component/Properties/TripleBarGrey.bmp" Margin="5,0,5,5" Width="25" Height="25" HorizontalAlignment="Left" VerticalAlignment="Bottom" Cursor="Hand"></Image>
+            </Grid>
+            <Grid x:Name="gridSDlog" Width="200" Height="58">
+                <RichTextBox x:Name="rtbSDlog" Margin="0" FontSize="12" ScrollViewer.CanContentScroll="True" Background="White" VerticalScrollBarVisibility="Auto"/>
+            </Grid>
+    </StackPanel>
+    </Grid>
+</UserControl>

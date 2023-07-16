@@ -17,36 +17,39 @@ using scripthea.viewer;
 using scripthea.master;
 using UtilsNS;
 
-
 namespace scripthea.external
 {
+    public delegate Dictionary<string, object> APIparamsHandler(bool? showIt);
+
     /// <summary>
     /// Common interface to all APIs
     /// </summary>
     public interface interfaceAPI
     {
         Dictionary<string, string> opts { get; set; } // visual adjustable options to that particular API, keep it in synchro with the visuals 
-        void Init(string prompt);
+        void Init(ref Options _opts);
         void Finish();
-        event Utils.LogHandler OnLog;
+        void Broadcast(string msg);
+        event Utils.LogHandler OnLog; // @ is for internal comm
+        event APIparamsHandler APIparamsEvent;
         bool isDocked { get; }
         UserControl userControl { get; }
         bool isEnabled { get; } // connected and working (depends on the API)
-        bool GenerateImage(string prompt, string imageDepotFolder, out string filename); // returns the filename of saved in _ImageDepoFolder image 
+        bool GenerateImage(string prompt, string imageDepotFolder, out ImageInfo ii); // returns ImageInfo of saved in imageDepoFolder image 
     }
     /// <summary>
     /// Interaction logic for controlAPI.xaml
     /// </summary>
     public partial class ControlAPI : Window
     {
-        Dictionary<string, interfaceAPI> interfaceAPIs;
+        public Dictionary<string, interfaceAPI> interfaceAPIs;
         public ControlAPI()
         {
             InitializeComponent();
             interfaceAPIs = new Dictionary<string, interfaceAPI>();
             visualControl("Simulation", new SimulatorUC()).OnLog += new Utils.LogHandler(Log);
             //visualControl("DeepAI", new DeepAIUC()); Later plugin...
-            visualControl("Craiyon", new CraiyonWebUC()).OnLog += new Utils.LogHandler(Log); 
+            visualControl("Craiyon", new CraiyonWebUC()).OnLog += new Utils.LogHandler(Log);
             visualControl("SDiffusion", new SDiffusionUC()).OnLog += new Utils.LogHandler(Log); 
             _activeAPIname = "Simulation"; tabControl.SelectedIndex = 0;
 
@@ -93,18 +96,19 @@ namespace scripthea.external
         }
         public interfaceAPI activeAPI { get { return interfaceAPIs[activeAPIname]; } }
 
-        private string prompt2api, imageFolder, imageName;  bool success = false;      
+        private string prompt2api, imageFolder; bool success = false; ImageInfo iInfo;     
 
         private void backgroundWorker1_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
-            success = activeAPI.GenerateImage(prompt2api, imageFolder, out imageName); // calling API
+            iInfo = null;
+            success = activeAPI.GenerateImage(prompt2api, imageFolder, out iInfo); // calling API
         }
         private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             switch (activeAPIname)
             {
                 case "Simulation":
-                    QueryComplete(Path.Combine(imageFolder, imageName), true);
+                    QueryComplete(Path.Combine(imageFolder, iInfo.filename), true);
                     break;
                 case "Craiyon":
                     QueryComplete("", true);
@@ -113,7 +117,7 @@ namespace scripthea.external
                     if (success)
                     {
                         if (!Directory.Exists(imageFolder)) { Log("Error: folder not found"); return; }
-                        if (File.Exists(Path.Combine(imageFolder, imageName)))
+                        if (File.Exists(Path.Combine(imageFolder, iInfo.filename)))
                         {
                             string desc = Path.Combine(imageFolder, ImgUtils.descriptionFile);
                             if (!File.Exists(desc)) // create an empty iDepot 
@@ -123,15 +127,20 @@ namespace scripthea.external
                             }
                             using (StreamWriter sw = File.AppendText(desc))
                             {
-                                ImageInfo ii = new ImageInfo(Path.Combine(imageFolder, imageName), ImageInfo.ImageGenerator.StableDiffusion, true);
-                                if (ii.IsEnabled())sw.WriteLine(ii.To_String());
+                                bool bb = iInfo != null;
+                                if (bb) bb &= iInfo.IsEnabled(); 
+                                if (bb) sw.WriteLine(iInfo.To_String());
                                 else Log("Error: wrong image file");                                
                             }
-                            QueryComplete(Path.Combine(imageFolder, imageName), true); // hooray ;)
+                            QueryComplete(Path.Combine(imageFolder, iInfo.filename), true); // hooray ;)
                         }
                         else { Log("Error: image file lost"); return; } 
                     }
-                    else QueryComplete(Path.Combine(imageFolder, imageName), false); // sadly :(   
+                    else  // sadly :(   
+                    {
+                        if (Utils.isNull(iInfo)) QueryComplete("", false);
+                        else QueryComplete(Path.Combine(imageFolder, iInfo.filename), false); 
+                    }
                     break;
             }        
         }
@@ -143,10 +152,10 @@ namespace scripthea.external
             prompt2api = prompt;
             backgroundWorker1.RunWorkerAsync();
          }
-        public void about2Show(string prompt)
+        public void about2Show(ref Options _opts)
         {
             Dictionary<string, string> tempOpts = new Dictionary<string, string>(activeAPI.opts);
-            activeAPI.Init(prompt); 
+            activeAPI.Init(ref _opts); 
             foreach (TabItem ti in tabControl.Items)
             {               
                 if (ti.Header.Equals(activeAPIname))

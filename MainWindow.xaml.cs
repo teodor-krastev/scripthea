@@ -206,7 +206,7 @@ namespace scripthea
         private DispatcherTimer dTimer;
         private void btnClear_Click(object sender, RoutedEventArgs e)
         {
-            tbLogger.Document.Blocks.Clear();
+            tbLogger.Document.Blocks.Clear(); imgLast.Source = null;
         }
         public void Log(string msg, SolidColorBrush clr = null)
         {
@@ -229,7 +229,7 @@ namespace scripthea
                             if (Utils.isNull(dTimer)) { Utils.TimedMessageBox("Err: broken timer", "Warning", 3500); return; }
                             dTimer.Stop();  lbProcessing.Content = "";
                             imgAbout.Source = ImgUtils.BitmapToBitmapImage(penpic, System.Drawing.Imaging.ImageFormat.Png); 
-                            string fn = txt.Substring(15).Trim();
+                            string fn = msg.Equals("@EndGeneration") ? "" : txt.Substring(15).Trim();
                             if (rowLogImage.Height.Value < 2) rowLogImage.Height = new GridLength(pnlLog.ActualWidth);
                             if (File.Exists(fn)) imgLast.Source = ImgUtils.UnhookedImageLoad(fn); // success
                             else imgLast.Source = ImgUtils.file_not_found;

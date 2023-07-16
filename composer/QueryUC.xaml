@@ -1,9 +1,10 @@
-﻿<UserControl x:Class="scripthea.composer.QueryUC"
+﻿<UserControl
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:scripthea.composer"
+             xmlns:external="clr-namespace:scripthea.external" x:Class="scripthea.composer.QueryUC"
              mc:Ignorable="d" d:DesignHeight="450" FontSize="13">
     <Grid>
         <Grid.ColumnDefinitions>
@@ -58,10 +59,8 @@
                                     <ColumnDefinition Width="1*"/>
                                     <ColumnDefinition Width="1"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBox x:Name="tbImageDepot" Background="#FFFBFBF4" Margin="0,2,2,-2" BorderThickness="0" TextChanged="tbImageDepot_TextChanged">
-                                </TextBox>
-                                <Button x:Name="btnNewFolder" Grid.Column="1" Content=" Browse " Click="btnNewFolder_Click" Foreground="#FF0F8001" FontWeight="Bold" Background="#FFF4F4F4" Margin="3,0,0,0" Visibility="Hidden">
-                                </Button>
+                                <TextBox x:Name="tbImageDepot" Background="#FFFBFBF4" Margin="0,2,2,-2" BorderThickness="0" TextChanged="tbImageDepot_TextChanged"/>
+                                <Button x:Name="btnNewFolder" Grid.Column="1" Content=" Browse " Click="btnNewFolder_Click" Foreground="#FF0F8001" FontWeight="Bold" Background="#FFF4F4F4" Margin="3,0,0,0" Visibility="Hidden"/>
                             </Grid>
                         </GroupBox>
                         <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
@@ -87,18 +86,23 @@
                 <RowDefinition x:Name="rowAPI" Height="65"/>
                 <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
-            <Grid x:Name="gridAPI" Margin="7,0,0,0"></Grid>
+            <Grid x:Name="gridAPI" Margin="7,0,0,0"/>
             <TabControl Grid.Row="1"  x:Name="tcModScanPre" Margin="5,0,0,0" BorderBrush="#FF19B995" BorderThickness="0,1,0,0" TabStripPlacement="Bottom" FontFamily="Lucida Sans" FontSize="14" >
-                <TabItem x:Name="tiMiodifiers" Header="Modifiers" Background="#FFECECEC"  Height="30" Width="150" Margin="5,-1,-5,-2" BorderBrush="#FF13A387" Visibility="Collapsed"> 
+                <TabItem x:Name="tiModifiers" Header="Modifiers" Background="#FFECECEC"  Height="30" Width="150" Margin="5,-1,-5,-2" BorderBrush="#FF13A387" >
                     <Grid>
                         <ScrollViewer Margin="0" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto" FontFamily="Segoe UI" FontSize="13">
                             <local:ModifiersUC x:Name="modifiersUC"/>
                         </ScrollViewer>
                     </Grid>
                 </TabItem>
-                <TabItem x:Name="tiScanPreview" Header="Scan Preview" Background="#FFECECEC" Height="30" Width="150" Margin="10,-1,-10,-2" BorderBrush="#FF993109" Visibility="Collapsed"> 
+                <TabItem x:Name="tiScanPreview" Header="Scan Preview" Background="#FFECECEC" Height="30" Width="150" Margin="10,-1,-10,-2" BorderBrush="#FF993109" >
                     <Grid>
                         <local:ScanPreviewUC x:Name="scanPreviewUC" Margin="0" FontFamily="Segoe UI" FontSize="13"/>
+                    </Grid>
+                </TabItem>
+                <TabItem x:Name="tiSD_API" Header="Stable Diffusion" Background="#FFECECEC" Height="30" Width="150" Margin="20,-1,-20,-2" BorderBrush="#FF144397">
+                    <Grid>
+                        <external:SD_params_UC x:Name="sd_params_UC" Margin="0" FontFamily="Segoe UI" FontSize="13"/>
                     </Grid>
                 </TabItem>
             </TabControl>

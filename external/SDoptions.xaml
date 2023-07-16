@@ -6,42 +6,28 @@
     <Grid Margin="0,0,4.127,0.987">
         <Grid.RowDefinitions>
             <RowDefinition/>
-            <RowDefinition Height="47.429"/>
+            <RowDefinition Height="60"/>
         </Grid.RowDefinitions>
-        <TabControl x:Name="tabCtrl" Margin="0,0,0.286,0" Grid.Row="0" Background="{x:Null}" >
+        <TabControl x:Name="tabCtrl" Margin="0,0,0.206,8" Grid.Row="0" Background="{x:Null}" >
             <TabItem x:Name="tiOptions" Header="Gereral" Width="130" Background="#FFF0F0F0">
-                <Grid>
-                    <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Width="225">
-                        <CheckBox x:Name="chkAutoOpenSession" Content="Open session when needed" Margin="5,5,0,0" Visibility="Collapsed"/>
-                        <CheckBox x:Name="chkAutoCloseSession" Content="Close session after a scan" Margin="5,5,0,0"/>
+                <Grid Margin="0,10,0,0">
+
+                    <StackPanel VerticalAlignment="Top" Margin="5,0,0,0">
                         <StackPanel Orientation="Horizontal" Height="28" Margin="0,5,0,0">
                             <Label Content="Time out for image gen.[s]" Height="27" ></Label>
                             <UtilsNS:NumericBox x:Name="numTimeOutImgGen" HorizontalAlignment="Left" Height="25" Margin="0,3,0,-0.051" VerticalAlignment="Top" Width="52" FontSize="13" Maximum="1000" Minimum="2" Value="60"/>
                         </StackPanel>
+                        <CheckBox x:Name="chkAutoOpenSession" Content="Open session when needed" Margin="0,5,0,0" Visibility="Collapsed"/>
+                        <CheckBox x:Name="chkAutoCloseSession" Content="Close session after py-script scan" Margin="0,10,0,0"/>
+                        <CheckBox x:Name="chkMeasureGPUtemp" Content="Measure nVidia GPU temperature (if any)" Height="20" Margin="0,5,0,0" Checked="chkMeasureGPUtemp_Checked" Unchecked="chkMeasureGPUtemp_Checked"/>
                     </StackPanel>
-                    <GroupBox x:Name="groupBox1" Header="Panes visible" HorizontalAlignment="Right" Margin="0,5,4.667,0" VerticalAlignment="Top" Height="81" Width="142">
-                        <StackPanel Margin="2,5,2,2">
-                            <CheckBox x:Name="chkCommLog" Content="Comm.Log" Height="20"/>
-                            <CheckBox x:Name="chkGPUtemp" Content="GPU temperature" Height="20" Margin="0,5,0,0"/>
-                        </StackPanel>
-                    </GroupBox>
                 </Grid>
             </TabItem>
             <TabItem x:Name="tiMEMS" Header="Initial setting" Height="24" Margin="-0.286,-1,0,1" HorizontalAlignment="Left" Width="130" Background="#FFF0F0F0">
                 <StackPanel >
-                    <GroupBox x:Name="groupBox" Header="Stable Diffusion webUI location" Height="57" Margin="0,0,-0.456,0">
+                    <GroupBox x:Name="groupGPUtmpr" Header="      nVidia GPU temperature feedack (if allowed)" Margin="0,8,0,0" VerticalAlignment="Bottom">
                         <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="1*"/>
-                                <ColumnDefinition Width="70"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBox x:Name="tbSDlocation" Background="#FFFBFBF4"  Margin="4"/>
-                            <Button x:Name="btnBrowse" Content=" Browse " Grid.Column="1" Foreground="#FF0F8001" FontWeight="Bold" Background="#FFF4F4F4" Margin="3" HorizontalAlignment="Center" VerticalAlignment="Center" Height="25" Click="btnBrowse_Click" />
-                        </Grid>
-                    </GroupBox>
-                    <GroupBox x:Name="groupGPUtmpr" Header="      nVidia GPU temperature feedack" Margin="0,8,0,0" VerticalAlignment="Bottom">
-                        <Grid>
-                            <CheckBox x:Name="chkGPUtemperature" Margin="5,-14,0,0"></CheckBox>
+                            <CheckBox x:Name="chkGPUtemperature" Margin="5,-16,0,0"></CheckBox>
                             <StackPanel Margin="2,5,2,2" Orientation="Horizontal">
                                 <Label x:Name="lbGPUvalue" Content="Threshold "></Label>
                                 <UtilsNS:NumericBox x:Name="numGPUThreshold" HorizontalAlignment="Left" Height="25" Margin="0" VerticalAlignment="Top" Width="59" FontSize="13" Maximum="100" Minimum="2" Value="60"/>
@@ -50,15 +36,32 @@
                             </StackPanel>
                         </Grid>
                     </GroupBox>
-                    <StackPanel Margin="0,8,0,0">
-                        <CheckBox x:Name="chkValidateScript" Content="Validate Scripthea client script (.py) in SD-webUI scripts dir." Margin="4,0,0,0"></CheckBox>
+                    <StackPanel Background="WhiteSmoke">
+                        <TextBlock Text="   When SD communication is via Py script" Margin="0,10,0,5" FontSize="14"/>
+                        <GroupBox x:Name="groupBox" Header=" Stable Diffusion webUI location" Height="57" Margin="0,0,-0.456,0">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="70"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox x:Name="tbSDlocation" Background="#FFFBFBF4"  Margin="4"/>
+                                <Button x:Name="btnBrowse" Content=" Browse " Grid.Column="1" Foreground="#FF0F8001" FontWeight="Bold" Background="#FFF4F4F4" Margin="3" HorizontalAlignment="Center" VerticalAlignment="Center" Height="25" Click="btnBrowse_Click" />
+                            </Grid>
+                        </GroupBox>
+                        <CheckBox x:Name="chkValidateScript" Content="Validate Scripthea client script (.py) in SD-webUI scripts dir." Margin="10,10,0,10"></CheckBox>
                     </StackPanel>
                 </StackPanel>
             </TabItem>
         </TabControl>
-        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0" Width="206" >
-            <Button x:Name="btnOK" Content="OK" HorizontalAlignment="Left" Margin="0" VerticalAlignment="Center" Width="90" Click="OKButton_Click" Height="25" FontWeight="Bold" IsDefault="True" Background="#FFF0F0F0" BorderBrush="#FF0468B2"/>
-            <Button x:Name="btnCancel" Content="Cancel" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center" Width="95" Height="25" RenderTransformOrigin="0.502,0.5" Click="btnCancel_Click" IsCancel="True" Background="#FFF0F0F0"/>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,2,0.206,0" >
+            <GroupBox Header="SD communication via" Width="170" Margin="5,0,0,5" Height="50">
+                <StackPanel Orientation="Horizontal">
+                    <RadioButton x:Name="rbAPIcomm" Content="API" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                    <RadioButton x:Name="rbScriptComm" Content="Py script" HorizontalAlignment="Left" Margin="15,0,0,0"  VerticalAlignment="Center" IsChecked="True"/>
+                </StackPanel>
+            </GroupBox>
+            <Button x:Name="btnOK" Content="OK" HorizontalAlignment="Left" Margin="10,5,0,0" VerticalAlignment="Center" Width="85" Click="OKButton_Click" Height="25" FontWeight="Bold" IsDefault="True" Background="#FFF0F0F0" BorderBrush="#FF0468B2"/>
+            <Button x:Name="btnCancel" Content="Cancel" HorizontalAlignment="Left" Margin="10,5,0,0" VerticalAlignment="Center" Width="90" Height="25" RenderTransformOrigin="0.502,0.5" Click="btnCancel_Click" IsCancel="True" Background="#FFF0F0F0"/>
         </StackPanel>
     </Grid>
 </Window>

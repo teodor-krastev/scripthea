@@ -88,7 +88,7 @@ namespace UtilsNS
         {
             if (Value < Maximum)
             {
-                Value++;
+                Value += Interval;
                 RaiseEvent(new RoutedEventArgs(IncreaseClickedEvent));
             }
         }
@@ -97,7 +97,7 @@ namespace UtilsNS
         {
             if (Value > Minimum)
             {
-                Value--;
+                Value -= Interval;
                 RaiseEvent(new RoutedEventArgs(DecreaseClickedEvent));
             }
         }
@@ -109,14 +109,12 @@ namespace UtilsNS
         {
             get
             {
-
                 return (int)GetValue(ValueProperty);
             }
             set
             {
                 TextBoxValue.Text = value.ToString();
                 SetValue(ValueProperty, value);
-
             }
         }
 
@@ -134,6 +132,19 @@ namespace UtilsNS
         }
 
         /// <summary>
+        /// Minimum value of the numeric up down conrol.
+        /// </summary>
+        public int Minimum
+        {
+            get { return (int)GetValue(MinimumProperty); }
+            set { SetValue(MinimumProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for Minimum.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty MinimumProperty =
+            DependencyProperty.Register("Minimum", typeof(int), typeof(NumericBox), new UIPropertyMetadata(0));
+
+        /// <summary>
         /// Maximum value for the Numeric Up Down control
         /// </summary>
         public int Maximum
@@ -147,17 +158,17 @@ namespace UtilsNS
             DependencyProperty.Register("Maximum", typeof(int), typeof(NumericBox), new UIPropertyMetadata(100));
 
         /// <summary>
-        /// Minimum value of the numeric up down conrol.
+        /// Maximum value for the Numeric Up Down control
         /// </summary>
-        public int Minimum
+        public int Interval
         {
-            get { return (int)GetValue(MinimumProperty); }
-            set { SetValue(MinimumProperty, value); }
+            get { return (int)GetValue(IntervalProperty); }
+            set { SetValue(IntervalProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for Minimum.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty MinimumProperty =
-            DependencyProperty.Register("Minimum", typeof(int), typeof(NumericBox), new UIPropertyMetadata(0));
+        // Using a DependencyProperty as the backing store for Maximum.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IntervalProperty =
+            DependencyProperty.Register("Interval", typeof(int), typeof(NumericBox), new UIPropertyMetadata(1));
 
 
         // Value changed
@@ -205,12 +216,12 @@ namespace UtilsNS
         {
             if (e.IsDown && e.Key == Key.Up && Value < Maximum)
             {
-                Value++;
+                Value += Interval;
                 RaiseEvent(new RoutedEventArgs(IncreaseClickedEvent));
             }
             else if (e.IsDown && e.Key == Key.Down && Value > Minimum)
             {
-                Value--;
+                Value -= Interval;
                 RaiseEvent(new RoutedEventArgs(DecreaseClickedEvent));
 
             }

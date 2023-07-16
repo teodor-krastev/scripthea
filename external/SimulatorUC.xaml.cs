@@ -17,6 +17,7 @@ using System.Windows.Shapes;
 using UtilsNS;
 using Path = System.IO.Path;
 using scripthea.master;
+using scripthea.viewer;
 
 namespace scripthea.external
 {
@@ -49,25 +50,31 @@ namespace scripthea.external
         }
         public Dictionary<string, string> opts { get; set; } 
 
-        public void Init(string prompt) { }
+        public void Init(ref Options _opts) { }
         public void Finish() { }
+        public void Broadcast(string msg)
+        {
+
+        }
         public event Utils.LogHandler OnLog;
         protected void Log(string txt, SolidColorBrush clr = null)
         {
             if (OnLog != null) OnLog(txt, clr);
         }
+        public event APIparamsHandler APIparamsEvent;
         public bool isDocked { get { return false; } }
         public UserControl userControl { get { return this as UserControl; } }
         public bool isEnabled { get { return true; } }
-        public bool GenerateImage(string prompt, string imageDepotFolder, out string filename)
+        public bool GenerateImage(string prompt, string imageDepotFolder, out ImageInfo ii)
         {
             if (Directory.Exists(imageDepotFolder)) opts["folder"] = imageDepotFolder;
             else opts["folder"] = ImgUtils.defaultImageDepot;
 
             Utils.Sleep(10000);
 
-            filename = Path.ChangeExtension(Utils.timeName(), ".png");
-            File.Copy(SimulFolder.RandomImageFile, Path.Combine(opts["folder"], filename));       
+            string filename = Path.ChangeExtension(Utils.timeName(), ".png");
+            File.Copy(SimulFolder.RandomImageFile, Path.Combine(opts["folder"], filename));
+            ii = new ImageInfo(Path.Combine(imageDepotFolder,filename), ImageInfo.ImageGenerator.StableDiffusion, true); 
             return true;
         }        
         private void btnGenerate_Click(object sender, RoutedEventArgs e)

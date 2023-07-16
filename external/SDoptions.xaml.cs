@@ -27,15 +27,15 @@ namespace scripthea.external
 
         }
         // General
-        public bool closeAtEndOfScan;
+        public bool APIcomm;
         public int TimeOutImgGen;
-        public bool showCommLog;
-        public bool showGPUtemp;
+        public bool closeAtEndOfScan;
+        public bool measureGPUtemp;
+        // Initial settings
+        public string SDlocation;
         public bool GPUtemperature;
         public int GPUThreshold;
         public int GPUstackDepth;        
-        // Initial settings
-        public string SDlocation;
         public bool ValidateScript;
         
         public void save(string configFilename)
@@ -70,36 +70,20 @@ namespace scripthea.external
             if (OnLog != null) OnLog(txt, clr);
             else Utils.TimedMessageBox(txt, "Warning", 3500);
         }
-        private bool _nVidiaAvailable;
-        public bool nVidiaAvailable
-        {
-            get { return _nVidiaAvailable; }
-            set
-            {
-                if (value) // same controls different labels
-                {
-                    groupGPUtmpr.Header = "      nVidia GPU temperature feedack"; lbGPUvalue.Content = "Threshold ";
-                    lbGPUvalueDepth.Visibility = Visibility.Visible; numGPUstackDepth.Visibility = Visibility.Visible;
-                }
-                else 
-                {
-                    groupGPUtmpr.Header = "      non-nVidia GPU temperature control"; lbGPUvalue.Content = "Delay ";
-                    lbGPUvalueDepth.Visibility = Visibility.Collapsed; numGPUstackDepth.Visibility = Visibility.Collapsed; 
-                }
-                _nVidiaAvailable = value;
-            }
-        }
-        public string configFilename = Path.Combine(Utils.configPath, "StableDiffusion.cfg");  
+        public bool nVidiaHwAvailable { get; set; }
+        
+        protected string configFilename = Path.Combine(Utils.configPath, "StableDiffusion.cfg");  
         /// <summary>
         /// the point of the dialog, readable everywhere
         /// </summary>
         public SDoptions opts;
         private void Visual2opts()
         {
+            opts.APIcomm = rbAPIcomm.IsChecked.Value;
             opts.closeAtEndOfScan = chkAutoCloseSession.IsChecked.Value;
             opts.TimeOutImgGen = numTimeOutImgGen.Value;
-            opts.showCommLog = chkCommLog.IsChecked.Value;
-            opts.showGPUtemp = chkGPUtemp.IsChecked.Value;
+            opts.measureGPUtemp = chkMeasureGPUtemp.IsChecked.Value;
+
             opts.GPUtemperature = chkGPUtemperature.IsChecked.Value;
             opts.GPUThreshold = numGPUThreshold.Value;
             opts.GPUstackDepth = numGPUstackDepth.Value;
@@ -109,14 +93,14 @@ namespace scripthea.external
         }
         public void opts2Visual()
         {
+            rbAPIcomm.IsChecked = opts.APIcomm;
             chkAutoCloseSession.IsChecked = opts.closeAtEndOfScan;
             numTimeOutImgGen.Value = opts.TimeOutImgGen;
-            chkCommLog.IsChecked = opts.showCommLog;
-            chkGPUtemp.IsChecked = opts.showGPUtemp;
+            chkMeasureGPUtemp.IsChecked = opts.measureGPUtemp;
             chkGPUtemperature.IsChecked = opts.GPUtemperature;
             numGPUThreshold.Value = opts.GPUThreshold; 
             numGPUstackDepth.Value = opts.GPUstackDepth;
-
+            chkMeasureGPUtemp_Checked(null, null);
             if (Directory.Exists(opts.SDlocation)) tbSDlocation.Text = opts.SDlocation;
             else Utils.TimedMessageBox("SD-WebUI directory <" + opts.SDlocation + "> does not exist.", "Warning", 3000);
             chkValidateScript.IsChecked = opts.ValidateScript || !ValidatePyScript();
@@ -151,7 +135,7 @@ namespace scripthea.external
             string pyScript = "prompts_from_scripthea_1_5.py";
             string orgLoc = Path.Combine(Utils.configPath, pyScript);
             if (!File.Exists(orgLoc)) { Log("Err: file " + orgLoc + " is missing."); return false; }
-            if (!Directory.Exists(opts.SDlocation)) { Log("Err: SD folder " + opts.SDlocation + " is missing."); return false; }
+            if (!IsSDlocation(opts.SDlocation)) return false; 
             string sdLoc = Path.Combine(opts.SDlocation, "scripts", pyScript);
             if (Utils.GetMD5Checksum(orgLoc) == Utils.GetMD5Checksum(sdLoc)) { ValidScript = true; return true; }
             if (MessageBox.Show("Scripthea python script is missing (or old) from scripts folder of SD\r\r Copy <prompts_from_scripthea_1_5.py> to SD script folder?", "",
@@ -160,6 +144,14 @@ namespace scripthea.external
             ValidScript = Utils.GetMD5Checksum(orgLoc) == Utils.GetMD5Checksum(sdLoc);
             return ValidScript;
         }
+
+        public bool IsSDlocation(string folder, bool warning = true)
+        {
+            bool bb = Directory.Exists(folder);
+            if (bb) bb &=  Directory.Exists(Path.Combine(folder, "scripts")) && Directory.Exists(Path.Combine(folder, "modules"));
+            if (!bb) Utils.TimedMessageBox("The folder <" + folder + "> does not look like a webUI Stable Diffusion installation.", "Problem", 5000);
+            return bb;
+        }
         private void btnBrowse_Click(object sender, RoutedEventArgs e)
         {
             CommonOpenFileDialog dialog = new CommonOpenFileDialog();
@@ -167,12 +159,29 @@ namespace scripthea.external
             dialog.IsFolderPicker = true;
             if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
             {
-                tbSDlocation.Text = dialog.FileName; opts.SDlocation = dialog.FileName; ValidatePyScript();
+                if (IsSDlocation(dialog.FileName)) 
+                {
+                    tbSDlocation.Text = dialog.FileName; opts.SDlocation = dialog.FileName; ValidatePyScript();
+                }
             }
             Activate();
             Topmost = true;  // important
             Topmost = false; // important
             Focus();         // important
+        }
+
+        private void chkMeasureGPUtemp_Checked(object sender, RoutedEventArgs e)
+        {
+            if (nVidiaHwAvailable && chkMeasureGPUtemp.IsChecked.Value) // same controls different labels
+            {
+                groupGPUtmpr.Header = "      nVidia GPU temperature feedack"; lbGPUvalue.Content = "Threshold ";
+                lbGPUvalueDepth.Visibility = Visibility.Visible; numGPUstackDepth.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                groupGPUtmpr.Header = "      non-nVidia GPU temperature control"; lbGPUvalue.Content = "Delay ";
+                lbGPUvalueDepth.Visibility = Visibility.Collapsed; numGPUstackDepth.Visibility = Visibility.Collapsed;
+            }
         }
     }
 

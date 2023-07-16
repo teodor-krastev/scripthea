@@ -75,6 +75,7 @@ namespace scripthea
             public bool ThumbCue;
             public bool ThumbFilename;
             public bool RemoveImages;
+            public bool ConvertImageDepot;
         }
 
         public IDutilities iDutilities; // Image Depot utilities
@@ -121,6 +122,7 @@ namespace scripthea
             chkUpdates.IsChecked = opts.general.UpdateCheck;
             chkConfirmGoogling.IsChecked = opts.composer.ConfirmGoogling;
             chkViewerRemoveImages.IsChecked = opts.viewer.RemoveImages;
+            chkConvertImageDepot.IsChecked = opts.viewer.ConvertImageDepot;
             chkValidationAsk.IsChecked = opts.iDutilities.MasterValidationAsk;
         }
         public void visuals2opts()
@@ -128,6 +130,7 @@ namespace scripthea
             opts.general.UpdateCheck = chkUpdates.IsChecked.Value;
             opts.composer.ConfirmGoogling = chkConfirmGoogling.IsChecked.Value;
             opts.viewer.RemoveImages = chkViewerRemoveImages.IsChecked.Value;
+            opts.viewer.ConvertImageDepot = chkConvertImageDepot.IsChecked.Value;
             opts.iDutilities.MasterValidationAsk = chkValidationAsk.IsChecked.Value;
         }
         public void ShowWindow(int tabIdx)

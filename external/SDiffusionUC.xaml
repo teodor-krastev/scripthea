@@ -7,39 +7,16 @@
              mc:Ignorable="d" Height="64" FontSize="13" BorderThickness="0,1,2,0" BorderBrush="#FFEEEEEE" >
     <Grid>
         <StackPanel Margin="1,3,1,1" Orientation="Horizontal">
-            <Grid Width="150" Height="60">
-                <Label x:Name="lbStatus" Height="28" Content="COMM:" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,0,0,3"/>
-                <Button x:Name="btnReset" Content="Reset" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="26" Width="49" Click="btnReset_Click" Margin="0,0,5,3" Background="#FFFDD07E"/>
-                <Image x:Name="ibtnOpts" Source="/Scripthea;component/Properties/TripleBarGrey.bmp" Margin="5,0,5,5" Width="25" Height="25" HorizontalAlignment="Left" VerticalAlignment="Bottom" Cursor="Hand" MouseDown="ibtnOpts_MouseDown"></Image>
-            </Grid>
-            <Grid x:Name="gridSDlog" Width="200" Height="58">
-                <RichTextBox x:Name="rtbSDlog" Margin="0" FontSize="12" ScrollViewer.CanContentScroll="True" Background="White" VerticalScrollBarVisibility="Auto"/>
-            </Grid>
+            <local:SD_API_UC x:Name="sd_api_uc"></local:SD_API_UC>
+            <local:SDscriptUC x:Name="sdScriptUC"></local:SDscriptUC> 
             <Grid Width="150" Height="60">
                 <StackPanel Margin="0">
                     <Label x:Name="lb1" Content="Stable Diffusion" HorizontalAlignment="Center" Margin="0,-5,0,0" VerticalAlignment="Top" FontSize="15" Height="28" Foreground="RoyalBlue" Cursor="Hand" ToolTip="Google 'Stable Diffusion'" MouseDown="lb1_MouseDown"/>
                     <Label x:Name="lb2" Content="by Stability.AI" HorizontalAlignment="Center" Margin="0,-6,0,0" VerticalAlignment="Top" FontSize="14" Height="27" Cursor="Hand" Foreground="Navy" ToolTip="Visit Stability.AI" MouseDown="lb1_MouseDown"/>
                     <Label x:Name="lb3" Content="local server" HorizontalAlignment="Center" Margin="0,-8,0,0" VerticalAlignment="Top" FontSize="14" Height="26" Cursor="Hand" Foreground="Navy" ToolTip="Open the front-end" MouseDown="lb1_MouseDown"/>
                 </StackPanel>
-
             </Grid>
-            <Grid x:Name="gridTmpr" Width="150" Height="60">
-                <StackPanel Height="40" VerticalAlignment="Top">
-                    <CheckBox x:Name="chkTmpr" Content="GPU temperature" VerticalAlignment="Top" Height="20" Margin="5,0,0,0" Background="#FFF0FBFA" Checked="chkTemp_Checked" Unchecked="chkTemp_Checked" HorizontalAlignment="Left"/>
-                    <Label x:Name="lbTmpInfo" Height="25" Margin="0,-8,0.076,0" Content="aver:   max:"/>
-                </StackPanel>
-                <Label VerticalAlignment="Bottom" HorizontalAlignment="Left" Content="next when T &lt;" Height="24"></Label>
-                <UtilsNS:NumericBox x:Name="numGPUThreshold" HorizontalAlignment="Right" Height="25" Margin="0,0,3,0" VerticalAlignment="Bottom" Width="55" FontSize="13" Maximum="100" Minimum="2" Value="60" ValueChanged="numGPUThreshold_ValueChanged"/>
-            </Grid>
-            <Grid x:Name="gridTmprDly" Width="160" Height="60" >
-                <StackPanel Height="40" VerticalAlignment="Top">
-                    <CheckBox x:Name="chkTmprDly" Content="GPU temper. control" VerticalAlignment="Top" Height="20" Margin="5,0,0,0" Background="#FFF0FBFA" Checked="chkTemp_Checked" Unchecked="chkTemp_Checked" HorizontalAlignment="Left"/>
-                    <Label x:Name="lbTmpInfoDly" Height="27" Margin="0,-8,0.076,0" Content="Delay[s] between queries"/>
-                </StackPanel>
-                <UtilsNS:NumericBox x:Name="numDly" VerticalAlignment="Bottom" HorizontalAlignment="Left" Height="25" Margin="4,0,0,0"  Width="51" FontSize="13" Maximum="100" Minimum="2" Value="60" ValueChanged="numGPUThreshold_ValueChanged"/>
-                <Label x:Name="lbTimeLeft"  Content=""  VerticalAlignment="Bottom" Height="26" Margin="60,0,0,2"></Label>
-            </Grid>
-
+            <local:tempRegulatorUC x:Name="tempRegulator" />
         </StackPanel>
     </Grid>
 </UserControl>
