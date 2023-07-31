@@ -11,9 +11,9 @@
             <local:SDscriptUC x:Name="sdScriptUC"></local:SDscriptUC> 
             <Grid Width="150" Height="60">
                 <StackPanel Margin="0">
-                    <Label x:Name="lb1" Content="Stable Diffusion" HorizontalAlignment="Center" Margin="0,-5,0,0" VerticalAlignment="Top" FontSize="15" Height="28" Foreground="RoyalBlue" Cursor="Hand" ToolTip="Google 'Stable Diffusion'" MouseDown="lb1_MouseDown"/>
-                    <Label x:Name="lb2" Content="by Stability.AI" HorizontalAlignment="Center" Margin="0,-6,0,0" VerticalAlignment="Top" FontSize="14" Height="27" Cursor="Hand" Foreground="Navy" ToolTip="Visit Stability.AI" MouseDown="lb1_MouseDown"/>
-                    <Label x:Name="lb3" Content="local server" HorizontalAlignment="Center" Margin="0,-8,0,0" VerticalAlignment="Top" FontSize="14" Height="26" Cursor="Hand" Foreground="Navy" ToolTip="Open the front-end" MouseDown="lb1_MouseDown"/>
+                    <Label x:Name="lb1" Content="Stable Diffusion" HorizontalAlignment="Center" Margin="0,-5,0,0" VerticalAlignment="Top" FontSize="15" Height="28" Foreground="RoyalBlue" Cursor="Hand" ToolTip="Google 'Stable Diffusion text-to-image generator'" MouseDown="lb1_MouseDown"/>
+                    <Label x:Name="lb2" Content="by Stability.AI" HorizontalAlignment="Center" Margin="0,-6,0,0" VerticalAlignment="Top" FontSize="14" Height="27" Cursor="Hand" Foreground="Navy" ToolTip="Visit Stability.AI webste" MouseDown="lb1_MouseDown"/>
+                    <Label x:Name="lb3" Content="local server" HorizontalAlignment="Center" Margin="0,-8,0,0" VerticalAlignment="Top" FontSize="14" Height="26" Cursor="Hand" Foreground="Navy" ToolTip="Open the webUI front-end in your browser" MouseDown="lb1_MouseDown"/>
                 </StackPanel>
             </Grid>
             <local:tempRegulatorUC x:Name="tempRegulator" />

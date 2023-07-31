@@ -105,14 +105,18 @@ namespace scripthea.composer
             spCues.Children.Add(cue); cues.Add(cue);
             return cues.Count - 1; 
         }
-        private int AddCue(List<string> cue) // multiline cue / internal
-        {
-            if (cue == null) { AddCue(new CueItemUC("",radioMode)); return cues.Count - 1; }
-            return AddCue(new CueItemUC(cue, radioMode));
+        private string cleanUp(string cue)
+        {                       
+            return cue.Trim().Trim('\"').Trim();
         }
         private int AddCue(string cue) // one-line cue / internal 
         {
-            return AddCue(new CueItemUC(cue, radioMode));
+            return AddCue(new CueItemUC(cleanUp(cue), radioMode));
+        }
+        private int AddCue(List<string> cuesIn) // multiline cue / internal
+        {
+            if (cuesIn == null) { AddCue(new CueItemUC("",radioMode)); return cues.Count - 1; }
+            return AddCue(new CueItemUC(cuesIn, radioMode));
         }
         private void RemoveAt(int idx)
         {

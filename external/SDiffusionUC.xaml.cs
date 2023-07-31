@@ -144,7 +144,7 @@ namespace scripthea.external
         }
         private void lb1_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (sender.Equals(lb1)) Utils.AskTheWeb("Stable Diffusion");
+            if (sender.Equals(lb1)) Utils.AskTheWeb("Stable+Diffusion+text-to-image+generator");
             if (sender.Equals(lb2)) Utils.CallTheWeb("https://stability.ai/");
             if (sender.Equals(lb3)) Utils.CallTheWeb("http://127.0.0.1:7860/");
         }

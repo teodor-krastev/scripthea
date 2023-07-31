@@ -232,7 +232,7 @@ namespace scripthea
                             string fn = msg.Equals("@EndGeneration") ? "" : txt.Substring(15).Trim();
                             if (rowLogImage.Height.Value < 2) rowLogImage.Height = new GridLength(pnlLog.ActualWidth);
                             if (File.Exists(fn)) imgLast.Source = ImgUtils.UnhookedImageLoad(fn); // success
-                            else imgLast.Source = ImgUtils.file_not_found;
+                            else { imgLast.Source = ImgUtils.file_not_found; Log("Error: file not found " + fn); } 
                             txt = msg.Substring(1);
                             break;
                         case "@CancelR": // CancelRequest 

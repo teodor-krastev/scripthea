@@ -37,6 +37,8 @@ namespace scripthea
             public bool UpdateCheck;
             public int LastUpdateCheck;
             public string NewVersion;
+            public string LastSDsetting;
+            public bool AutoRefreshSDsetting;
         }
         public Layout layout; 
         public class Layout

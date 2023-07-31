@@ -7,12 +7,12 @@
              xmlns:UtilsNS="clr-namespace:UtilsNS" x:Class="scripthea.external.SD_params_UC"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid Background="White">
+    <Grid Background="White" Margin="0,9,0,0">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="500"/>
             <ColumnDefinition Width="7*"/>
         </Grid.ColumnDefinitions>
-        <StackPanel Margin="0,10,0,0">
+        <StackPanel Margin="0,0,0,0">
             <GroupBox Height="120" Header="Negative prompt" Margin="5,0">
                 <Grid>
                     <TextBox x:Name="tbNegativePrompt" BorderBrush="{x:Null}" Margin="0,7,0,0" TextChanged="tbNegativePrompt_TextChanged"/>
@@ -24,15 +24,37 @@
                 <Label Content="Sampling Method"></Label>
                 <ComboBox x:Name="cbSampler" VerticalAlignment="Center" HorizontalAlignment="Left" Width="120" Background="White" SelectionChanged="cbSampler_SelectionChanged"/>
                 <CheckBox x:Name="chkRestoreFaces" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="17,0,0,0" Content="Restore Faces" Checked="chkRestoreFaces_Checked" Unchecked="chkRestoreFaces_Checked"></CheckBox>
-                <StackPanel Height="30" Orientation="Horizontal" HorizontalAlignment="Left" Margin="35,0,0,0" Width="128" VerticalAlignment="Center">
+                <StackPanel Height="30" Orientation="Horizontal" HorizontalAlignment="Left" Margin="25,0,0,0" Width="128" VerticalAlignment="Center">
                     <Label HorizontalAlignment="Right" VerticalAlignment="Center" Content="Seed"></Label>
-                    <TextBox x:Name="tbSeed" Text="-1" Width="78" VerticalAlignment="Center" FontWeight="Bold" Margin="0" BorderBrush="{x:Null}" Height="20" TextChanged="tbNegativePrompt_TextChanged"></TextBox>
+                    <TextBox x:Name="tbSeed" Text="-1" Width="93" VerticalAlignment="Center" FontWeight="Bold" Margin="0,0,0,-3" BorderBrush="{x:Null}" Height="23" TextChanged="tbNegativePrompt_TextChanged"></TextBox>
                 </StackPanel>
             </StackPanel>
             <local:NumericSliderUC x:Name="nsSamplingSteps" Height="28" Margin="0,5"/>
             <local:NumericSliderUC x:Name="nsCFGscale" Height="28" Margin="0,5"/>
 
         </StackPanel>
+        <GroupBox x:Name="grpSDsettings" Grid.Column="1" Header="SD parameters settings" HorizontalAlignment="Left" Margin="0" VerticalAlignment="Top" Width="300">
+            <StackPanel>
+                <StackPanel Margin="0,3,0,0" Orientation="Horizontal" Height="30">
+                    <Button x:Name="btnSetParams" Width="27" Background="#FFFFFFFF" Margin="2,3" Click="btnSetParams_Click">
+                        <Image Source="set_arrow.png" ToolTip="Copy a setting to visuals"></Image>
+                    </Button>
+                    <Button x:Name="btnGetParams" Width="27" Background="#FFFFFFFF" Margin="2,3" Click="btnGetParams_Click" >
+                        <Image Source="get_arrow.png" ToolTip="Copy visuals to a setting" ></Image>
+                    </Button>
+                    <ComboBox x:Name="cbSettings" Background="{x:Null}" Width="140" Margin="2,3" IsReadOnly="True" SelectionChanged="cbSettings_SelectionChanged">
+                    
+                    </ComboBox>
+                    <Button x:Name="btnAddParams" Width="30" Background="{x:Null}" Margin="2,3" Foreground="#FF01219F" FontWeight="Bold" FontSize="16" Click="btnAddParams_Click">
+                        <TextBlock Text=" +" Width="22" Height="30" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="-10,-7,0,0" Foreground="#FF960000"/>
+                    </Button>
+                    <Button x:Name="btnDelParams" Width="30" Background="{x:Null}" Margin="2,3" Foreground="#FFBD0202" FontWeight="Bold" Click="btnDelParams_Click">
+                        <TextBlock Text=" -" Width="25" Height="35" FontSize="32" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#FF0239B7" Margin="-6,-15,0,0"/>
+                    </Button>
+                </StackPanel>
+                <CheckBox x:Name="chkAutoRefresh" Content="Auto-refresh" Margin="2,3" Checked="chkAutoRefresh_Checked" Unchecked="chkAutoRefresh_Checked"></CheckBox>
+            </StackPanel>
+        </GroupBox>
 
     </Grid>
 </UserControl>

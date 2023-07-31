@@ -643,7 +643,6 @@ namespace UtilsNS
             }
             return st.Replace("  ", " ").Trim();
         }
-
         private static String WildCardToRegular(String value) // If you want to implement both "*" and "?"
         {
             return "^" + Regex.Escape(value).Replace("\\?", ".").Replace("\\*", ".*") + "$";
@@ -668,10 +667,8 @@ namespace UtilsNS
 
                 lines.AddRange(clipboardLines);
             }
-
             return lines;
         }
-
         /// <summary>
         /// Read text file in List of string
         /// </summary>
@@ -680,6 +677,7 @@ namespace UtilsNS
         /// <returns></returns>
         public static List<string> readList(string filename, bool skipRem = true)
         {
+            if (!File.Exists(filename)) return null;
             List<string> ls = new List<string>();
             foreach (string line in File.ReadLines(filename))
             {
@@ -1057,14 +1055,6 @@ namespace UtilsNS
         public static BaseLocation baseLocation = BaseLocation.auto;
         private static string GetBaseLOcation(BaseLocation bl)
         {
-
-
-
-
-
-
-
-
             switch (bl)
             {
                 case BaseLocation.oneUp:

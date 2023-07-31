@@ -70,7 +70,8 @@ namespace scripthea.composer
             cbActiveAPI_SelectionChanged(null, null);
             API.OnQueryComplete += new ControlAPI.APIEventHandler(QueryComplete);
             API.OnLog += new Utils.LogHandler(Log);
-            sd_params_UC.Init();
+            sd_params_UC.Init(ref opts);
+            cuePoolUC.OnSDparams += new Utils.LogHandler(sd_params_UC.ImportImageInfo);
             
             if (Utils.TheosComputer() && Utils.isInVisualStudio) { btnTest.Visibility = Visibility.Visible; }
             else { btnTest.Visibility = Visibility.Collapsed; }              
@@ -130,7 +131,7 @@ namespace scripthea.composer
                 if ((bool)showIt) tiSD_API.Visibility = Visibility.Visible;
                 else tiSD_API.Visibility = Visibility.Collapsed;           
             }
-            return sd_params_UC.sdp;
+            return sd_params_UC.vPrms;
         }
 
         private bool _showAPI;
@@ -219,13 +220,13 @@ namespace scripthea.composer
                 tbImageDepot.Text = dialog.FileName;
             }
         }
-        public string propmt
+        public string prompt
         {
             get { return Utils.flattenTextBox(tbCue, true) + Utils.flattenTextBox(tbModifier,true); }
         }
         public string Compose(object sender, List<string> selectedCue, string modifiers) // , bool OneLineCue = true ->redundant 
         {
-            if (Utils.isNull(selectedCue)) return "";
+            if (Utils.isNull(selectedCue)) return prompt;
             if (sender == null || sender == btnCompose || sender == tcQuery || sender == cuePoolUC || sender == chkAutoSingle)
             {
                 tbCue.Text = "";
@@ -239,7 +240,7 @@ namespace scripthea.composer
             }
             if (sender == null || sender == btnCompose || sender == tcQuery || sender == modifiersUC || sender == chkAutoSingle)
                 tbModifier.Text = modifiers;
-            return propmt;
+            return prompt;
         }
         public void btnCompose_Click(object sender, RoutedEventArgs e)
         {
@@ -286,7 +287,7 @@ namespace scripthea.composer
             }
             if (status == Status.Idle) // back
             {
-                if (!scanEnd) Log("@EndGeneration");
+                //if (!scanEnd) Log("@EndGeneration");
                 btnScan.Content = strScan; btnScan.Background = Brushes.MintCream;                        
                 btnScanPreview.IsEnabled = true; scanPreviewUC.scanning = false; btnScanPreview.IsEnabled = true; btnAppend2Preview.IsEnabled = true;
             }
@@ -422,7 +423,8 @@ namespace scripthea.composer
                 Utils.TimedMessageBox("API is busy, try again later...", "Warning"); return;
             }            
             if (opts.composer.SingleAuto) btnCompose_Click(null, null); status = Status.SingeQuery;
-            QueryAPI(Compose(sender, cuePoolUC.ActiveCueList?.selectedCues()[0].cueTextAsList(true), modifiersUC.Composite()));
+            string pro = Compose(sender, cuePoolUC.ActiveCueList?.selectedCues()[0].cueTextAsList(true), modifiersUC.Composite()); // TO BE CLEARED !!! selection from image depot problem
+            QueryAPI(pro); 
         }
         private void tbCue_TextChanged(object sender, TextChangedEventArgs e)
         {
@@ -431,7 +433,7 @@ namespace scripthea.composer
 
         private void imgCopy_MouseDown_1(object sender, MouseButtonEventArgs e)
         {
-            Clipboard.SetText(propmt);
+            Clipboard.SetText(prompt);
         }
         private void tcQuery_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {

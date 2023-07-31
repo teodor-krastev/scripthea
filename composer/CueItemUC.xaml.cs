@@ -28,24 +28,20 @@ namespace scripthea.composer
         public CueItemUC(string text, bool _radioChecked = false)
         {
             InitializeComponent(); radioChecked = _radioChecked;
-            tbCue.Text = text;
+            tbCue.Text = text.Trim().Trim('\"').Trim();
         }
-
         public CueItemUC(List<string> text, bool _radioChecked = false)
         {
             InitializeComponent(); radioChecked = _radioChecked;
-            tbCue.Text = ""; int k = 0;
-            foreach (string line in text)
-            {
-                tbCue.Text += line + (k.Equals(text.Count - 1) ? "" : "\r"); k++;
-            }
+            tbCue.Text = ""; 
+            foreach (string line in text) tbCue.Text += line + "\r";
+            tbCue.Text = tbCue.Text.Trim().Trim('\"');
         }
         public event Utils.LogHandler OnLog;
         protected void Log(string txt, SolidColorBrush clr = null)
         {
             if (OnLog != null) OnLog(txt, clr);
         }
-
         public bool radioMode
         {
             get { return rbChecked.Visibility.Equals(Visibility.Visible); }
@@ -75,8 +71,8 @@ namespace scripthea.composer
         }
         public string cueText
         {
-            get { return tbCue.Text; }
-            set { tbCue.Text = value; }
+            get { return tbCue.Text.Trim().Trim('\"').Trim(); }
+            set { tbCue.Text = value.Trim().Trim('\"').Trim(); }
         }
         public bool empty
         {
@@ -84,7 +80,7 @@ namespace scripthea.composer
         }
         public string cueTextAsString(bool noComment)
         {
-            return Utils.flattenTextBox(tbCue, noComment);
+            return Utils.flattenTextBox(tbCue, noComment).Trim().Trim('\"').Trim();
         }
         public List<string> cueTextAsList(bool noComment)
         {

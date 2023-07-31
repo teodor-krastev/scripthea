@@ -24,6 +24,7 @@ namespace scripthea.composer
     /// </summary>
     public partial class ModifiersUC : UserControl
     {
+        private string ModifiersFolder;
         public List<ModifListUC> modifLists;
         public Dictionary<string, bool> ModifMap;
         public List<ModifItemUC> modifItems
@@ -41,15 +42,16 @@ namespace scripthea.composer
         }
         public ModifiersUC()
         {
-            InitializeComponent();
+            InitializeComponent();           
         }
         Options opts;
         public void Init(ref Options _opts)
-        {
+        {           
+            ModifiersFolder = System.IO.Path.Combine(Utils.basePath, "modifiers");
             opts = _opts; chkAddEmpty.IsChecked = opts.composer.AddEmptyModif; 
             numSample.Value = Utils.EnsureRange(opts.composer.ModifSample, 1,9);
             modifLists = new List<ModifListUC>();
-            var files = new List<string>(Directory.GetFiles(Utils.configPath, "*.mdfr"));
+            var files = new List<string>(Directory.GetFiles(ModifiersFolder, "*.mdfr"));
             if (File.Exists(mapFile))
             {
                 string json = System.IO.File.ReadAllText(mapFile);
@@ -93,7 +95,7 @@ namespace scripthea.composer
             foreach (ModifListUC cmu in modifLists)
                 cmu.isVisible = ModifMap.ContainsKey(cmu.ModifListName) ? ModifMap[cmu.ModifListName] : true;
         }
-        public string mapFile { get { return System.IO.Path.Combine(Utils.configPath, "modifiers.map"); } }
+        public string mapFile { get { return System.IO.Path.Combine(ModifiersFolder, "modifiers.map"); } }
         private bool _ShowMap;
         public bool ShowMap
         {

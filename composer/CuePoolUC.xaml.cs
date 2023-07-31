@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Newtonsoft.Json;
 using scripthea.master;
+using scripthea.viewer;
 using UtilsNS;
 
 namespace scripthea.composer
@@ -60,13 +61,16 @@ namespace scripthea.composer
             }            
             return "";
         }
-        private Options opts;
+        private Options opts; Button btnSDparams;
         public void Init(ref Options _opts)
         {
             opts = _opts;
             if (!Directory.Exists(cuesFolder)) { Utils.TimedMessageBox("Fatal error: cues folder <" + cuesFolder + "> does not exist.", "Closng application", 4000); Application.Current.Shutdown(); }
             iPickerX.Init(ref _opts); iPickerX.Configure('X', new List<string>(), "Including modifiers", "", "Browse", true).Click += new RoutedEventHandler(Browse_Click);
             iPickerX.chkCustom1.Checked += new RoutedEventHandler(Modifiers_Checked); iPickerX.chkCustom1.Unchecked += new RoutedEventHandler(Modifiers_Checked);
+            btnSDparams = new Button(); btnSDparams.Content = " set SD params ►>"; btnSDparams.Margin = new Thickness(7, 2, 0, 0); btnSDparams.Background = null;
+            btnSDparams.VerticalAlignment = VerticalAlignment.Center; btnSDparams.Height = 26; btnSDparams.Click += new RoutedEventHandler(btnSDparams_Click); btnSDparams.IsEnabled = false;
+            iPickerX.stPnl2.Children.Add(btnSDparams);
 
             if (File.Exists(mapFile))
             {
@@ -132,12 +136,21 @@ namespace scripthea.composer
         protected void Browse_Click(object sender, RoutedEventArgs e)
         {
             CommonOpenFileDialog dialog = new CommonOpenFileDialog();
-            //dialog.InitialDirectory = ImgUtils.defaultImageDepot;
+            if (Directory.Exists(opts.composer.ImageDepotFolder)) dialog.InitialDirectory = opts.composer.ImageDepotFolder;
             dialog.Title = "Select an image depot folder ";
             dialog.IsFolderPicker = true;
-            if (dialog.ShowDialog() == CommonFileDialogResult.Ok) iPickerX.tbImageDepot.Text = dialog.FileName;
-            else return;
+            if (dialog.ShowDialog() != CommonFileDialogResult.Ok) return;
+            iPickerX.tbImageDepot.Text = dialog.FileName; btnSDparams.IsEnabled = Directory.Exists(dialog.FileName);
         }
+        public event Utils.LogHandler OnSDparams;
+        protected void btnSDparams_Click(object sender, RoutedEventArgs e) 
+        {
+            if (OnSDparams == null) return;
+            ImageInfo ii = iPickerX.selectedImageInfo;
+            if (ii == null) return; 
+            OnSDparams(ii.To_String(), null);
+        }
+
         public event Utils.LogHandler OnLog;
         protected void Log(string txt, SolidColorBrush clr = null)
         {
@@ -263,7 +276,7 @@ namespace scripthea.composer
         }
     }
 
-    public class Courier // two ways messanger between (the active pool or image depot) and queryUC
+    public class Courier // two ways messenger between (the active pool or image depot) and queryUC
     {
         public bool cueSrc { get; private set; }
         private CueListUC cueList = null; ImagePickerUC iPicker = null;
@@ -289,7 +302,7 @@ namespace scripthea.composer
             else
             {
                 //if (!iPicker.checkable) return;
-                cueSel.Add(iPicker.selectedImageInfo.prompt); 
+                if (iPicker.selectedImageInfo != null) cueSel.Add(iPicker.selectedImageInfo.prompt); 
             }
             return cueSel;
         }

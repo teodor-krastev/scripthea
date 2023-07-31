@@ -482,5 +482,11 @@
   <ItemGroup>
     <Resource Include="Properties\play.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="external\set_arrow.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="external\get_arrow.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

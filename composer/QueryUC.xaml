@@ -53,13 +53,13 @@
                 </TabItem>
                 <TabItem x:Name="tiOptions" Header="Options" Height="25" Background="#FFECECEC" Margin="10,0,-11,0.089" HorizontalAlignment="Left" Width="70">
                     <Grid >
-                        <GroupBox x:Name="gbFolder" VerticalAlignment="Bottom" Header="Image depot folder"  Height="47">
+                        <GroupBox x:Name="gbFolder" VerticalAlignment="Bottom" Header=" Depot folder for generated images"  Height="50">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="1*"/>
                                     <ColumnDefinition Width="1"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBox x:Name="tbImageDepot" Background="#FFFBFBF4" Margin="0,2,2,-2" BorderThickness="0" TextChanged="tbImageDepot_TextChanged"/>
+                                <TextBox x:Name="tbImageDepot" Background="#FFFBFBF4" Margin="5,5,2,0" BorderThickness="0" TextChanged="tbImageDepot_TextChanged"/>
                                 <Button x:Name="btnNewFolder" Grid.Column="1" Content=" Browse " Click="btnNewFolder_Click" Foreground="#FF0F8001" FontWeight="Bold" Background="#FFF4F4F4" Margin="3,0,0,0" Visibility="Hidden"/>
                             </Grid>
                         </GroupBox>
