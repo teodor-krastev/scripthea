@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:ni="http://schemas.ni.com/controls/2009/xaml/presentation" xmlns:UtilsNS="clr-namespace:UtilsNS" x:Name="wndSDOptions" x:Class="scripthea.external.SDoptionsWindow"
-        Title=" Stable Diffusion options" Height="402.378" Width="392.583" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" Icon="/Scripthea;component/Properties/TripleBarGrey.bmp" ShowInTaskbar="False" Closing="wndSDOptions_Closing" FontSize="13">
+        Title=" Stable Diffusion options" Height="402.378" Width="392.583" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" ShowInTaskbar="False" Closing="wndSDOptions_Closing" FontSize="13" Icon="/Scripthea;component/Properties/TripleBarGrey.png">
     <Grid Margin="0,0,4.127,0.987">
         <Grid.RowDefinitions>
             <RowDefinition/>
@@ -38,7 +38,7 @@
                     </GroupBox>
                     <StackPanel Background="WhiteSmoke">
                         <TextBlock Text="   When SD communication is via Py script" Margin="0,10,0,5" FontSize="14"/>
-                        <GroupBox x:Name="groupBox" Header=" Stable Diffusion webUI location" Height="57" Margin="0,0,-0.456,0">
+                        <GroupBox x:Name="gbSDlocation" Header=" Stable Diffusion webUI location" Height="57" Margin="0,0,-0.456,0" BorderBrush="Silver">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="1*"/>

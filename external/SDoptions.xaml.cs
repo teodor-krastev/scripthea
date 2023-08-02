@@ -101,8 +101,7 @@ namespace scripthea.external
             numGPUThreshold.Value = opts.GPUThreshold; 
             numGPUstackDepth.Value = opts.GPUstackDepth;
             chkMeasureGPUtemp_Checked(null, null);
-            if (Directory.Exists(opts.SDlocation)) tbSDlocation.Text = opts.SDlocation;
-            else Utils.TimedMessageBox("SD-WebUI directory <" + opts.SDlocation + "> does not exist.", "Warning", 3000);
+            if (IsSDlocation(opts.SDlocation)) tbSDlocation.Text = opts.SDlocation;
             chkValidateScript.IsChecked = opts.ValidateScript || !ValidatePyScript();
         }
         /// <summary>
@@ -145,11 +144,13 @@ namespace scripthea.external
             return ValidScript;
         }
 
-        public bool IsSDlocation(string folder, bool warning = true)
+        public bool IsSDlocation(string folder, bool warning = true) 
         {
             bool bb = Directory.Exists(folder);
             if (bb) bb &=  Directory.Exists(Path.Combine(folder, "scripts")) && Directory.Exists(Path.Combine(folder, "modules"));
-            if (!bb) Utils.TimedMessageBox("The folder <" + folder + "> does not look like a webUI Stable Diffusion installation.", "Problem", 5000);
+            if (!bb && warning && !folder.Equals("")) Utils.TimedMessageBox("The folder <" + folder + "> does not look like a Stable Diffusion webUI installation.", "Problem", 5000);
+            if (bb) gbSDlocation.BorderBrush = Brushes.Silver;
+            else gbSDlocation.BorderBrush = Brushes.OrangeRed;
             return bb;
         }
         private void btnBrowse_Click(object sender, RoutedEventArgs e)

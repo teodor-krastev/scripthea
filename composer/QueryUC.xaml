@@ -43,7 +43,7 @@
                     </Grid>
                 </TabItem>
                 <TabItem x:Name="tiScan" Header="Scan" Height="25" Background="#FFECECEC" Margin="5,0,-9.063,0.089" HorizontalAlignment="Left" Width="69" BorderBrush="#FF6C009C" >
-                    <Grid Background="#FFFAF7ED">
+                    <Grid Background="#FFFEFCF7">
                         <Button x:Name="btnScan" Content="S c a n" Height="30" Width="77" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,7,0,0" FontWeight="Bold" Background="#FFF5FAEB" Click="btnScan_Click" FontSize="13" BorderBrush="#FF0233A2"/>
                         <TextBox HorizontalAlignment="Right" Text="Combine all checked cues + fixed modifiers + some (by modif. sample number) of scanned modifiers." Width="162" Margin="0,0,-0.228,0" TextWrapping="Wrap" Background="{x:Null}" BorderBrush="{x:Null}" VerticalAlignment="Top" FontSize="12"/>
                         <Button x:Name="btnScanPreview" Content="Scan preview" Height="30" Width="98" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10,0,0,7" Background="MintCream" FontSize="13" Click="btnScanPreview_Click" BorderBrush="#FF993109"/>
@@ -75,7 +75,12 @@
                     </Grid>
                 </TabItem>
             </TabControl>
-            <Image x:Name="imgCopy" Margin="0,0,7,0" VerticalAlignment="Top" HorizontalAlignment="Right" Height="23" Width="29" ToolTip="Copy to clipboard" Cursor="Hand" MouseDown="imgCopy_MouseDown_1" Source="/Scripthea;component/Properties/copy1a.png"/>
+            <Button x:Name="btnCopy" Margin="0,0,3,0" VerticalAlignment="Top" HorizontalAlignment="Right" Background="{x:Null}" ToolTip="Edit preferences" Cursor="Hand" Width="30" Height="28" BorderBrush="#FFCECECE" Click="btnCopy_Click">
+                <ContentControl>
+                    <Image x:Name="imgCopy" Margin="0,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" Height="20" Width="25" ToolTip="Copy to clipboard" Cursor="Hand" Source="/Scripthea;component/Properties/copy1a.png"/>
+                </ContentControl>
+            </Button>
+
             <GridSplitter x:Name="gridSplitCue" HorizontalAlignment="Stretch" Height="5" Margin="0" Grid.Row="2" VerticalAlignment="Top"/>
             <local:CuePoolUC x:Name="cuePoolUC"  Margin="0,6,0,0" Grid.Row="3"/>
         </Grid>

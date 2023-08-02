@@ -433,7 +433,7 @@ namespace scripthea.composer
 
         private void imgCopy_MouseDown_1(object sender, MouseButtonEventArgs e)
         {
-            Clipboard.SetText(prompt);
+            
         }
         private void tcQuery_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -530,6 +530,10 @@ namespace scripthea.composer
                 QueryAPI(scanPreviewUC.selectedPrompt);
             }
         }        
+        private void btnCopy_Click(object sender, RoutedEventArgs e)
+        {
+            Clipboard.SetText(prompt);
+        }
 
         private void btnTest_Click(object sender, RoutedEventArgs e)
         {
@@ -543,7 +547,7 @@ namespace scripthea.composer
             double t = (DateTime.Now - t0).TotalSeconds;
             Log("time taken = "+t.ToString("G3")+" [sec]  "+ns.ToString()+" files OK");
             Log("time " + (t / ns).ToString("G3") + " [sec] per file");*/
-            CombiIndexes(3, 5);
+            //CombiIndexes(3, 5);
         }
 
     }

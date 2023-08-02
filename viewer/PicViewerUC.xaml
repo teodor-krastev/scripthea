@@ -8,12 +8,17 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="27"/>
+            <RowDefinition Height="30"/>
             <RowDefinition Height="4*"/>
             <RowDefinition x:Name="rowBottom" Height="42"/>
         </Grid.RowDefinitions>
         <StackPanel Margin="0" Orientation="Horizontal" HorizontalAlignment="Left">
-            <Image x:Name="imgCopy" Margin="5,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Right" Height="23" Width="29" ToolTip="Copy image to clipboard" Cursor="Hand" MouseDown="imgCopy_MouseDown_1" Source="/Scripthea;component/Properties/copy1a.png"/>
+            <Button x:Name="btnCopy" Margin="7,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Right" Background="{x:Null}" ToolTip="Edit preferences" Cursor="Hand" Width="30" Height="28" BorderBrush="#FFCECECE" Click="btnCopy_Click" >
+                <ContentControl>
+                    <Image x:Name="imgCopy" Margin="0,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" Height="20" Width="25" ToolTip="Copy to clipboard" Cursor="Hand" Source="/Scripthea;component/Properties/copy1a.png"/>
+                </ContentControl>
+            </Button>
+
             <Image x:Name="imgZoomIn" Margin="20,0,3,0" Source="/Scripthea;component/Properties/zoom-in.png" MouseDown="imgZoomIn_MouseDown" Cursor="Hand"/>
             <Image x:Name="imgZoomFit" Margin="3,0" Source="/Scripthea;component/Properties/fit2.png" MouseDown="imgZoomFit_MouseDown" Cursor="Hand" />
             <Image x:Name="imgZoomOut" Margin="3,0" Source="/Scripthea;component/Properties/zoom-out.png" MouseDown="imgZoomIn_MouseDown" Cursor="Hand"/>

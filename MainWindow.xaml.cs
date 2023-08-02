@@ -70,7 +70,6 @@ namespace scripthea
                     aboutWin.lbMessage.Foreground = System.Windows.Media.Brushes.Green; aboutWin.lbMessage.Content = "New release (" + opts.general.NewVersion + ") is available at Scripthea.com !";
                 }
             }
-            if (!opts.general.debug) imgPreferences.Visibility = Visibility.Collapsed;
             preferencesWindow = new PreferencesWindow(); preferencesWindow.Init(ref opts); preferencesWindow.btnCheck4Update.Click += new RoutedEventHandler(Check4Update);
             
             Title = "Scripthea - options loaded";
@@ -117,7 +116,6 @@ namespace scripthea
             penpic = new System.Drawing.Bitmap(penpicFile); imgAbout.Source = ImgUtils.BitmapToBitmapImage(penpic, System.Drawing.Imaging.ImageFormat.Png);
             SwitchExplorer(false);
             gridSplitLeft_MouseDoubleClick(null, null);
-            if (!opts.general.debug) imgPreferences.Visibility = Visibility.Collapsed;
             Title = "Scripthea - text-to-image prompt composer v" + Utils.getAppFileVersion;   
             if (opts.layout.Width < 0)
             {
@@ -394,11 +392,6 @@ namespace scripthea
             }
         }
 
-        private void imgPreferences_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            preferencesWindow.ShowWindow(tabControl.SelectedIndex);
-            //if (Utils.isInVisualStudio) else Utils.TimedMessageBox("Preferences dialog is under development.","", 3000);
-        }
         private void btnRefresh_Click(object sender, RoutedEventArgs e)
         {
             string sPath = dirTreeUC.selectedPath;
@@ -412,6 +405,11 @@ namespace scripthea
                 if (e.Key.Equals(Key.F11)) viewerUC.animation = true;
                 if (e.Key.Equals(Key.Escape)) viewerUC.animation = false;
             }
+        }
+
+        private void btnPreferences_Click(object sender, RoutedEventArgs e)
+        {
+            preferencesWindow.ShowWindow(tabControl.SelectedIndex);
         }
     }
 }

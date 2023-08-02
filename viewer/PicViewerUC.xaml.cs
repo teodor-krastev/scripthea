@@ -149,11 +149,6 @@ namespace scripthea.viewer
             }
             image.Width = Double.NaN; image.Height = Double.NaN;
         }
-        private void imgCopy_MouseDown_1(object sender, MouseButtonEventArgs e)
-        {
-            Clipboard.SetImage((BitmapSource)image.Source);
-            Utils.TimedMessageBox("The image is in the clipboard");
-        }
         private void chkExtra_Checked(object sender, RoutedEventArgs e)
         {
             lboxMetadata.Visibility = Visibility.Visible;
@@ -179,6 +174,12 @@ namespace scripthea.viewer
         private void image_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             int i = ZoomFactor;
+        }
+
+        private void btnCopy_Click(object sender, RoutedEventArgs e)
+        {
+            Clipboard.SetImage((BitmapSource)image.Source);
+            Utils.TimedMessageBox("The image has been copied to the clipboard");
         }
     }
 }

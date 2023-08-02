@@ -58,8 +58,19 @@
         </StackPanel>
         <Button x:Name="btnModifMap" Width="27" HorizontalAlignment="Left" Margin="0,1,5,0" FontWeight="Bold"  Click="btnModifMap_Click" BorderBrush="#FF589B37" BorderThickness="0" Height="25" VerticalAlignment="Top" Background="White">
             <StackPanel>
-                <Image x:Name="imgOpen" Source="/Scripthea;component/Properties/right_black_arrow.png" ToolTip="Open modifiers map" Cursor="Hand"></Image>
-                <Image x:Name="imgClose" Source="/Scripthea;component/Properties/left_black_arrow.png" ToolTip="Close modifiers map" Visibility="Collapsed"></Image>
+                <Button x:Name="btnOpenOpts" HorizontalAlignment="Left" VerticalAlignment="Bottom" Background="{x:Null}" Margin="0" BorderBrush="{x:Null}" >
+                    <ContentControl>
+                        <Image x:Name="imgOpen" Source="/Scripthea;component/Properties/right_black_arrow.png" ToolTip="Open modifiers map" Margin="0"   
+                       Cursor="Hand" HorizontalAlignment="Left" VerticalAlignment="Center"></Image>
+                    </ContentControl>
+                </Button>
+                <Button x:Name="btnCloseOpts" HorizontalAlignment="Left" VerticalAlignment="Bottom" Background="{x:Null}" Margin="0"  BorderBrush="{x:Null}" Visibility="Collapsed">
+                    <ContentControl>
+                        <Image x:Name="imgClose" Source="/Scripthea;component/Properties/left_black_arrow.png" ToolTip="Close modifiers map" Margin="0"  
+                       Cursor="Hand" HorizontalAlignment="Center" VerticalAlignment="Center"></Image>
+                    </ContentControl>
+                </Button>
+
             </StackPanel>
         </Button>
     </Grid>

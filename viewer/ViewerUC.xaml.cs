@@ -240,8 +240,13 @@ namespace scripthea.viewer
             }
             return dict;
         }
-        // clone 1. target.FromString(source.To_String())
-        //       2. target.FromDictionary(Source.ToDictionary())
+        public ImageInfo Clone()
+        {
+            return new ImageInfo(ToDictionary());
+        }
+
+        // copy 1. target.FromString(source.To_String())
+        //      2. target.FromDictionary(Source.ToDictionary())
     }
     public static class ImageDepotConvertor
     {

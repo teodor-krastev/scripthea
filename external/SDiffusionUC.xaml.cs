@@ -42,8 +42,8 @@ namespace scripthea.external
         public void Init(ref Options _opts) // init and update visuals from opts
         {
             genOpts = _opts;
-            sd_api_uc.ibtnOpts.MouseDown -= ibtnOpts_MouseDown; sd_api_uc.ibtnOpts.MouseDown += ibtnOpts_MouseDown;
-            sdScriptUC.ibtnOpts.MouseDown -= ibtnOpts_MouseDown; sdScriptUC.ibtnOpts.MouseDown += ibtnOpts_MouseDown;
+            sd_api_uc.btnSDoptions.Click -= btnSDoptions_Click; sd_api_uc.btnSDoptions.Click += btnSDoptions_Click;
+            sdScriptUC.btnSDoptions.Click -= btnSDoptions_Click; sdScriptUC.btnSDoptions.Click += btnSDoptions_Click;
 
             if (SDopts == null)
             {
@@ -148,7 +148,8 @@ namespace scripthea.external
             if (sender.Equals(lb2)) Utils.CallTheWeb("https://stability.ai/");
             if (sender.Equals(lb3)) Utils.CallTheWeb("http://127.0.0.1:7860/");
         }
-        private void ibtnOpts_MouseDown(object sender, MouseButtonEventArgs e)
+        
+        private void btnSDoptions_Click(object sender, RoutedEventArgs e)
         {
             bool bb = SDopts.opts.APIcomm;
             SDopts.opts2Visual(); SDopts.ShowDialog();

@@ -116,7 +116,7 @@ namespace scripthea.composer
                         chk.Content = cmu.ModifListName;
                         listBox.Items.Add(chk);
                     }
-                    imgOpen.Visibility = Visibility.Collapsed; imgClose.Visibility = Visibility.Visible;
+                    btnOpenOpts.Visibility = Visibility.Collapsed; btnCloseOpts.Visibility = Visibility.Visible;
                     btnModifMap.SetValue(Grid.ColumnProperty, 0);
                 }
                 else
@@ -130,7 +130,7 @@ namespace scripthea.composer
                         if (cmu.isVisible && !firstSet) { cmu.SetHeaderPosition(true); firstSet = true; }
                         else cmu.SetHeaderPosition(false);
                     }
-                    imgOpen.Visibility = Visibility.Visible; imgClose.Visibility = Visibility.Collapsed; 
+                    btnOpenOpts.Visibility = Visibility.Visible; btnCloseOpts.Visibility = Visibility.Collapsed; 
                     btnModifMap.SetValue(Grid.ColumnProperty, 1);
                 }
                 _ShowMap = value;

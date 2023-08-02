@@ -214,7 +214,6 @@ namespace scripthea.external
         {
             ActiveSetting?.GetFromDict(vPrms); CheckDifference(vPrms);
         }
-        
         private void cbSettings_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!chkAutoRefresh.IsChecked.Value) return;
