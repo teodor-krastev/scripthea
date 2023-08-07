@@ -28,7 +28,7 @@ namespace scripthea.viewer
             picItems = new List<PicItemUC>();
         }
         Options opts;
-        public bool checkable { get; private set; }
+        public bool checkable { get; set; }
         public void Init(ref Options _opts, bool _checkable)
         {
             undoRec = new UndoRec(); undoRec.idx0 = -1; undoRec.piUC = null;
@@ -73,12 +73,21 @@ namespace scripthea.viewer
                return iDepot.items[idx];
             return null;
         }
-        protected PicItemUC SelectedPicItem() // idx from inside PicItem
+        protected PicItemUC SelectedPicItem() // from inside PicItem
         {
             if (!IsAvailable) return null;
             foreach (PicItemUC ps in picItems)
                 if (ps.selected) return ps;
             return null;
+        }
+        protected ImageInfo SelectedItem(int idx) // idx in iDepot
+        {
+            ImageInfo ii = null;
+            if (iDepot != null)
+                if (iDepot.isEnabled && Utils.InRange(idx, 0, iDepot.items.Count - 1))
+                    ii = iDepot.items[idx];
+            if (ii == null && SelectedPicItem() != null) ii = iDepot.items[SelectedPicItem().idx];
+            return ii;
         }
         private bool _Loading;
         public bool Loading
@@ -111,18 +120,19 @@ namespace scripthea.viewer
                         if (scroller.VerticalOffset > 0) scroller.ScrollToHome(); 
                         Utils.DoEvents(); 
                     }
-                    if (!piUC.ContentUpdate(itm.Item1, Path.Combine(imageFolder, itm.Item2), itm.Item3))
-                        { Log("Exhausted resources - use table view instead", Brushes.Red); OutOfResources = true; break; }
+                    piUC.ContentUpdate(itm.Item1, imageFolder, SelectedItem(itm.Item1 - 1));                      
                     piUC.VisualUpdate();
-                    piUC.OnSelect += new RoutedEventHandler(SelectTumb); wrapPics.Children.Add(piUC);
+                    piUC.OnSelect -= new RoutedEventHandler(SelectTumb); piUC.OnSelect += new RoutedEventHandler(SelectTumb); 
+                    wrapPics.Children.Add(piUC);
                     if (checkable)
                     {
-                        piUC.chkChecked.Checked += new RoutedEventHandler(ChangeContent); piUC.chkChecked.Unchecked += new RoutedEventHandler(ChangeContent);
+                        piUC.chkChecked.Checked -= new RoutedEventHandler(ChangeContent);   piUC.chkChecked.Checked += new RoutedEventHandler(ChangeContent); 
+                        piUC.chkChecked.Unchecked -= new RoutedEventHandler(ChangeContent); piUC.chkChecked.Unchecked += new RoutedEventHandler(ChangeContent);
                     }
                     if (itm.Item1 == 1)
                     {
                         piUC.selected = true;
-                        OnSelect(itm.Item1, piUC.imageFolder + piUC.filename, piUC.prompt);
+                        OnSelect(itm.Item1,  iDepot.path, SelectedItem(itm.Item1-1));
                     }
                 }
                 if (picItems.Count > 0) picItems[0].selected = true;
@@ -218,7 +228,7 @@ namespace scripthea.viewer
             _markMask = mask;
             foreach (PicItemUC piUC in picItems)
             {
-                bool bb = mask.Equals("") ? false : Utils.IsWildCardMatch(piUC.prompt, mask);
+                bool bb = mask.Equals("") ? false : Utils.IsWildCardMatch(piUC.imgInfo.prompt, mask);
                 if (checkable) piUC.IsChecked = bb;
                 else piUC.marked = bb;
             }
@@ -262,10 +272,11 @@ namespace scripthea.viewer
                     piUC.selected = piUC.idx.Equals(idxS);                    
                     if (piUC.selected) { piUC.focused = true; piUC2 = piUC; }
                 } 
-                if (piUC2 == null) { Log("Err: internal selected index"); return; }
+                if (piUC2 == null) 
+                    { Log("Err: internal selected index"); return; }
                 scrollToIdx(value);
                 if (piUC2 != null)
-                    OnSelect(piUC2.idx, piUC2.imageFolder + piUC2.filename, piUC2.prompt);
+                    OnSelect(piUC2.idx, iDepot.path, SelectedItem(piUC2.idx-1));
             }
         }
         public int Count { get { return picItems.Count; } }
@@ -278,21 +289,21 @@ namespace scripthea.viewer
                 if (piUC.IsChecked == null) continue;
                 if ((bool)piUC.IsChecked)
                 {
-                    if (check) itms.Add(new Tuple<int, string, string>(piUC.idx, piUC.filename, piUC.prompt));
+                    if (check) itms.Add(new Tuple<int, string, string>(piUC.idx, piUC.imgInfo.filename, piUC.imgInfo.prompt));
                 }
                 else
                 {
-                    if (uncheck) itms.Add(new Tuple<int, string, string>(piUC.idx, piUC.filename, piUC.prompt));
+                    if (uncheck) itms.Add(new Tuple<int, string, string>(piUC.idx, piUC.imgInfo.filename, piUC.imgInfo.prompt));
                 }
             }
             return itms;            
         }
         
-        public delegate void PicViewerHandler(int idx, string filePath, string prompt);
+        public delegate void PicViewerHandler(int idx, string imageDir, ImageInfo ii);
         public event PicViewerHandler SelectEvent;
-        protected void OnSelect(int idx, string filePath, string prompt)
+        protected void OnSelect(int idx, string imageDir, ImageInfo ii)
         {
-            if (SelectEvent != null) SelectEvent(idx, filePath, prompt);
+            if (SelectEvent != null) SelectEvent(idx, imageDir, ii);
         }
         public event RoutedEventHandler OnChangeContent;
         protected void ChangeContent(object sender, RoutedEventArgs e)
@@ -304,13 +315,13 @@ namespace scripthea.viewer
             if (Count == 0) return;
             foreach (PicItemUC piUC in picItems) // reset all            
                 if (piUC.selected) piUC.selected = false;
-            string fn = (sender as PicItemUC).filename; int k = 1;
+            string fn = (sender as PicItemUC).imgInfo.filename; int k = 1;
             foreach (PicItemUC piUC in picItems)
             {
                 if (piUC.Equals(sender))
                 {
                     piUC.selected = true;
-                    OnSelect(piUC.idx, piUC.imageFolder + piUC.filename, piUC.prompt);
+                    OnSelect(piUC.idx, iDepot.path, SelectedItem(piUC.idx-1));
                 }
                 k++;
             }

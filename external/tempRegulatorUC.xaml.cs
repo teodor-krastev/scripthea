@@ -39,7 +39,7 @@ namespace scripthea.external
         }
         public void Finish()
         {
-            if (!Utils.isNull(dTimer)) dTimer.Stop();
+            dTimer?.Stop();
         }
         int timeLeft = 0;
         public bool tempRegulate() // false = timeout
@@ -47,7 +47,7 @@ namespace scripthea.external
             bool bb = true;
             if (opts.GPUtemperature)
             {
-                if (!dTimer.IsEnabled) dTimer.Start();
+                if (!dTimer.IsEnabled) dTimer?.Start();
                 if (nVidiaAvailable)
                 {
                     while (((currentTmp > opts.GPUThreshold) || (currentTmp == -1)) && opts.GPUtemperature) { Thread.Sleep(500); }
@@ -58,7 +58,7 @@ namespace scripthea.external
                     while ((timeLeft > 0) && opts.GPUtemperature) { Thread.Sleep(500); }
                 }
             }
-            else { timeLeft = 0; dTimer.Stop(); }
+            else { timeLeft = 0; dTimer?.Stop(); }
             return bb;
         }
         public bool nVidiaHWAvailable { get { return nVidia.IsAvailable(); } }
@@ -109,7 +109,7 @@ namespace scripthea.external
             }
             else
             {
-                dTimer.Stop(); timeLeft = 0; lbTimeLeft.Content = "";
+                dTimer?.Stop(); timeLeft = 0; lbTimeLeft.Content = "";
                 chkTmpr.Foreground = Brushes.Black;
             }
         }

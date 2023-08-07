@@ -10,7 +10,7 @@
         Title="Scripthea - text-to-image prompt composer" Height="450" Width="1080.709" Loaded="MainWindow1_Loaded" Closing="MainWindow1_Closing" Icon="Properties/penzy4.png" FontSize="13" KeyDown="MainWindow1_KeyDown" PreviewKeyDown="MainWindow1_PreviewKeyDown">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="200" x:Name="pnlLog" MinWidth="100" MaxWidth="1000"/>
+            <ColumnDefinition Width="300" x:Name="pnlLog" MinWidth="100" MaxWidth="1000"/>
             <ColumnDefinition Width="3*"/>
         </Grid.ColumnDefinitions>
         <Grid>
@@ -23,7 +23,7 @@
             <StackPanel Margin="0,0,0,0" Orientation="Horizontal" HorizontalAlignment="Left">
                 <CheckBox x:Name="chkLog" Content="Log" VerticalAlignment="Center" Margin="8,0,0,0" IsChecked="True"/>
                 <Button x:Name="btnClear" Content="X" Width="24" Margin="8,6,0,4" Click="btnClear_Click" Foreground="#FF9E0202" FontWeight="Bold" FontSize="14" ToolTip="Clear log" Background="{x:Null}"/>
-                <Button x:Name="btnRefresh" Width="30" Margin="8,6,0,4" ToolTip="Refresh directory tree" Click="btnRefresh_Click" Background="{x:Null}">
+                <Button x:Name="btnRefresh" Width="26"  Height="26" Margin="8,0,0,0" ToolTip="Refresh directory tree" Click="btnRefresh_Click" Background="{x:Null}">
                     <ContentControl>
                         <Image Source="Properties/refresh.png"></Image>
                     </ContentControl>
@@ -32,9 +32,9 @@
             <StackPanel HorizontalAlignment="Right" VerticalAlignment="Center" Orientation="Horizontal" Height="35" Margin="0" Width="110">
                 <Image x:Name="imgAbout" Margin="0,3,0,0" Source="Properties/penpic1.ico" Cursor="Help" MouseDown="imgAbout_MouseDown" VerticalAlignment="Center" Width="30" Height="30" HorizontalAlignment="Left"/>
                 <Label x:Name="lbProcessing" FontSize="14" FontWeight="Bold" Background="{x:Null}" Margin="3,10,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="40"/>
-                <Button x:Name="btnPreferences" Margin="0,0,3,0" VerticalAlignment="Center" Background="{x:Null}" ToolTip="Edit preferences" Cursor="Hand" Click="btnPreferences_Click" Width="30" Height="30">
+                <Button x:Name="btnPreferences" Margin="0,0,3,0" VerticalAlignment="Center" Background="{x:Null}" ToolTip="Edit preferences" Cursor="Hand" Click="btnPreferences_Click" Width="28" Height="28">
                     <ContentControl>
-                        <Image Source="Properties/TripleBarBlack.png" HorizontalAlignment="Center" VerticalAlignment="Center" Width="28" Height="28"></Image>
+                        <Image Source="Properties/TripleBarBlack.png" HorizontalAlignment="Center" VerticalAlignment="Center" Width="28" Height="28" Margin="1,1,0,0"></Image>
                     </ContentControl>
                 </Button>
             </StackPanel>

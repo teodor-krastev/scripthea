@@ -32,15 +32,22 @@
                 <ColumnDefinition Width="100"/>
             </Grid.ColumnDefinitions>
             <StackPanel Orientation="Horizontal" Grid.ColumnSpan="2" Margin="0,0,-0.329,-0.228">
-                <Image x:Name="imgMenu" Margin="5,2,7,0" VerticalAlignment="Top" Width="25" Source="/Scripthea;component/Properties/TripleBarTeal.bmp" ToolTip="Single click - menu; Double left - invert" Cursor="Hand" MouseDown="imgMenu_MouseDown" >
-                    <Image.ContextMenu>
-                        <ContextMenu x:Name="cmCue">
+                <Button x:Name="btnMenu" Width="30" Margin="3,0,0,0" ToolTip="Local menu" Background="{x:Null}" >
+                    <ContentControl>
+                        <Image x:Name="imgMenu" Margin="0,1,0,0" VerticalAlignment="Center" Width="28" Source="/Scripthea;component/Properties/TripleBarTeal.png" ToolTip="Single click - menu; Double left - invert" Cursor="Hand" HorizontalAlignment="Center" Height="28" MouseDown="imgMenu_MouseDown" >
+                        </Image>
+                    </ContentControl>
+                    <Button.ContextMenu>
+                        <ContextMenu x:Name="cmImgMenu">
                             <MenuItem Header="Check All" Click="mi_Click"/>
                             <MenuItem Header="Uncheck All" Click="mi_Click"/>
-                            <MenuItem Header="Invert Checking"  Click="mi_Click" FontWeight="Bold"/>
+                            <MenuItem Header="Check with Mask" Click="mi_Click"/>
+                            <MenuItem Header="Invert Checking" Click="mi_Click" FontWeight="Bold"/>
+                            <Separator/>
+                            <MenuItem Header="Refresh" Click="mi_Click"/>
                         </ContextMenu>
-                    </Image.ContextMenu>
-                </Image>
+                    </Button.ContextMenu>
+                </Button>
                 <Label Content="Source" Margin="0,2,0,0"/>
                 <ComboBox SelectedIndex="0" Background="White" Margin="3">
                     <ComboBoxItem Content="Stable Diffusion"/>
@@ -58,7 +65,7 @@
             </TabItem>
             <TabItem x:Name="tiGrid" Visibility="Collapsed">
                 <DataGrid x:Name="dGrid" Margin="0" SelectionMode="Single" CanUserAddRows="False" SelectionChanged="dGrid_SelectionChanged" HorizontalScrollBarVisibility="Disabled" 
-                          AutoGeneratingColumn="dGrid_AutoGeneratingColumn" MaxColumnWidth="1000" CanUserReorderColumns="False" KeyDown="textBlock_KeyDown"/>
+                          AutoGeneratingColumn="dGrid_AutoGeneratingColumn" MaxColumnWidth="1000" CanUserReorderColumns="False" KeyDown="textBlock_KeyDown" />
             </TabItem>
         </TabControl>
         <GridSplitter Grid.Row="3" VerticalAlignment="Top" HorizontalAlignment="Stretch" Height="3"></GridSplitter>

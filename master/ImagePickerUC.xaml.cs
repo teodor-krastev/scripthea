@@ -213,7 +213,6 @@ namespace scripthea.master
             return itms.Count; 
         }
         public bool converting = false; public ImageDepot iDepot = null;
-
         private void tbImageDepot_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (ImgUtils.checkImageDepot(tbImageDepot.Text, false) > 0) tbImageDepot.Foreground = Brushes.Black;
@@ -264,40 +263,18 @@ namespace scripthea.master
             }
             GetChecked();
         }
-        bool inverting = false;
-        private void imgMenu_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            for (int i = 0; i < cmImgMenu.Items.Count; i++)
-            {
-                if (cmImgMenu.Items[i] is MenuItem)
-                    (cmImgMenu.Items[i] as MenuItem).IsEnabled = isEnabled;
-            } 
-            inverting = false;
-            if (e.ChangedButton == MouseButton.Left)
-            {
-                if (e.ClickCount == 1)
-                {
-                    Utils.DelayExec(300, () => { imgMenu.ContextMenu.IsOpen = !inverting; });
-                }
-                if (e.ClickCount == 2)
-                {
-                    inverting = true;
-                    activeView.SetChecked(null);
-                }
-            }
-            GetChecked();
-        }
         private void MCheckUncheck(object sender, MouseButtonEventArgs e)
         {
             GetChecked();
         }
         public event RoutedEventHandler OnPicSelect;
         string lastLoadedPic = "";
-        public void loadPic(int idx, string filePath, string prompt)
+        public void loadPic(int idx, string imageDir, ImageInfo ii)
         {
+            string filePath = Path.Combine(imageDir, ii.filename);
             if (File.Exists(filePath)) { image.Source = ImgUtils.UnhookedImageLoad(filePath, ImageFormat.Png); lastLoadedPic = filePath; }
             else { image.Source = ImgUtils.file_not_found; lastLoadedPic = ""; }
-            if (OnPicSelect != null) OnPicSelect(prompt, null);
+            if (OnPicSelect != null) OnPicSelect(ii.prompt, null);
             GetChecked();
         }
         TabItem lastTab = null;
@@ -332,5 +309,28 @@ namespace scripthea.master
             // Start the drag-and-drop operation
             DragDrop.DoDragDrop(image, data, DragDropEffects.Copy);
         }
-    }
+        bool inverting = false;
+        private void imgMenu_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            for (int i = 0; i < cmImgMenu.Items.Count; i++)
+            {
+                if (cmImgMenu.Items[i] is MenuItem)
+                    (cmImgMenu.Items[i] as MenuItem).IsEnabled = isEnabled;
+            }
+            inverting = false;
+            if (e.ChangedButton == MouseButton.Left)
+            {
+                if (e.ClickCount == 1)
+                {
+                    Utils.DelayExec(300, () => { btnMenu.ContextMenu.IsOpen = !inverting; });
+                }
+                if (e.ClickCount == 2)
+                {
+                    inverting = true;
+                    activeView.SetChecked(null);
+                }
+            }
+            GetChecked();
+        }
+     }
 }

@@ -219,19 +219,19 @@ namespace scripthea.viewer
         {
             Dictionary<string, object> dict = new Dictionary<string, object>();
             dict.Add("prompt", prompt); 
+            dict.Add("width", width); 
+            dict.Add("height", height);
             dict.Add("negative_prompt", negative_prompt);
-            dict.Add("steps", steps); 
             dict.Add("sampler_name", sampler_name); 
+            dict.Add("steps", steps); 
             dict.Add("cfg_scale", cfg_scale.ToString());
-            dict.Add("denoising_strength", denoising_strength); 
-            dict.Add("batch_size", batch_size);
-            dict.Add("restore_faces", restore_faces);
             dict.Add("seed", seed); 
             dict.Add("sd_model_hash", sd_model_hash); 
             dict.Add("filename", filename); 
             dict.Add("job_timestamp", job_timestamp);
-            dict.Add("widht", width); 
-            dict.Add("height", height);
+            dict.Add("denoising_strength", denoising_strength); 
+            dict.Add("batch_size", batch_size);
+            dict.Add("restore_faces", restore_faces);
             if (SDonly)
             {
                 dict.Add("MD5Checksum", MD5Checksum); 

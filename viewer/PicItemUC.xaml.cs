@@ -15,6 +15,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using scripthea.master;
 using UtilsNS;
+using Path = System.IO.Path;
 
 namespace scripthea.viewer
 {
@@ -107,7 +108,7 @@ namespace scripthea.viewer
         {
             if (OnSelect != null) OnSelect(this, e);
         }
-        public string imageFolder, filename, prompt;
+        public string imageFolder;
         public event Utils.LogHandler OnLog;
         protected void Log(string txt, SolidColorBrush clr = null)
         {
@@ -117,23 +118,29 @@ namespace scripthea.viewer
         {
             imgPic.Source = null;   
         }
-        public bool ContentUpdate(int index, string filePath, string _prompt)
+        public ImageInfo imgInfo { get; private set; }
+        public bool file_not_found { get; private set; }
+        public bool ContentUpdate(int index, string imageDir, ImageInfo ii)
         {
-            idx = index;
-            filename = System.IO.Path.GetFileName(filePath);
-            if (File.Exists(filePath))
+            if (ii == null || !Directory.Exists(imageDir)) return false;
+            imageFolder = imageDir; imgInfo = ii.Clone();
+            string filePath = Path.Combine(imageDir, ii.filename);
+            file_not_found = !File.Exists(filePath);
+            if (!file_not_found)
             {
                 //imgPic.Dispatcher.InvokeAsync(() => // slower for some reason !
                 //{
-                    imageFolder = System.IO.Path.GetDirectoryName(filePath) +"\\";
-                    imgPic.Source = ImgUtils.UnhookedImageLoad(filePath);                              
+                imgPic.Source = ImgUtils.UnhookedImageLoad(filePath);
                 //});
-                if (imgPic.Source == null) return false;  
+                if (imgPic.Source == null) return false;
             }
-            else tbFile.Foreground = Brushes.Tomato; 
-            tbFile.Text = filename; tbFile.ToolTip = filePath;
-            prompt = _prompt; tbCue.Text = prompt; tbCue.ToolTip = prompt;
-            selected = false; return true;
+            else
+            {
+                imgPic.Source = ImgUtils.file_not_found; tbFile.Foreground = Brushes.Tomato;
+            }
+            tbFile.Text = ii.filename; tbFile.ToolTip = filePath;
+            idx = index; tbCue.Text = ii.prompt; tbCue.ToolTip = ii.prompt;
+            selected = false; return !file_not_found;
         }
         private void imgPic_MouseDown_1(object sender, MouseButtonEventArgs e)
         {

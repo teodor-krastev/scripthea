@@ -419,11 +419,25 @@ namespace UtilsNS
             foreach (string tx in txt) log(tbLog, tx);
         }
         #endregion LOG
-        public static Dictionary<string, string> dictDouble2String(Dictionary<string, double> dv, string prec)
+
+        public static Dictionary<string, string> dictObject2String(Dictionary<string, object> dv, string prec = "G5")
         {
             Dictionary<string, string> ds = new Dictionary<string, string>();
             foreach (var item in dv)
-                ds[item.Key] = item.Value.ToString(prec);
+                if (item.Value is double) ds.Add(item.Key, Convert.ToDouble(item.Value).ToString(prec));
+                else
+                {
+                    if (isNull(item.Value)) continue;
+                    ds.Add(item.Key, item.Value.ToString());
+                }                    
+            return ds;
+        }
+
+        public static Dictionary<string, string> dictDouble2String(Dictionary<string, double> dv, string prec = "G5")
+        {
+            Dictionary<string, string> ds = new Dictionary<string, string>();
+            foreach (var item in dv)
+                ds.Add(item.Key, item.Value.ToString(prec));
             return ds;
         }
         public static void dict2ListBox(Dictionary<string, string> ds, ListBox lbox)

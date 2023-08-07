@@ -21,7 +21,7 @@ using Brushes = System.Windows.Media.Brushes;
 
 namespace scripthea.viewer
 {
-    /// <summary>
+    /// <summary> 
     /// Interaction logic for PicViewerUC.xaml
     /// </summary>
     public partial class PicViewerUC : UserControl
@@ -36,18 +36,17 @@ namespace scripthea.viewer
             if (OnLog != null) OnLog(txt, clr);
         }
         public ImageDepot iDepot { get; set; }
-        private string _imagePath;
-        public string imagePath { get { return _imagePath; }  private set { _imagePath = value; } }
+        public ImageInfo imgInfo { get; private set; }
         public void Clear()
         {
             lbIndex.Content = ""; tbPath.Text = ""; tbName.Text = "";
             image.Source = null; image.UpdateLayout(); 
             tbCue.Text = ""; lboxMetadata.Items.Clear();
         }
-        public void loadPic(int idx, string filePath, string prompt)
+        public void loadPic(int idx, string imageDir, ImageInfo ii)
         {
-            if (File.Exists(filePath)) imagePath = filePath;
-            bool modified = false;
+            string filePath = Path.Combine(imageDir, ii.filename);
+            bool modified = false; 
             if (chkExtra.IsChecked.Value) UpdateMeta(modified);
             
             lbIndex.Content = "[" + idx.ToString() + "]";
@@ -67,14 +66,13 @@ namespace scripthea.viewer
                     { Log("Exhausted resources - use table view instead", Brushes.Red); return; }
             }
             //var uri = new Uri(filePath); var bitmap = new BitmapImage(uri);  image.Source = bitmap.Clone(); image.UpdateLayout(); bitmap = null;
-            tbCue.Text = prompt;
+            tbCue.Text = ii.prompt; imgInfo = ii.Clone();
             // iDepot compare
             if (chkExtra.IsChecked.Value) return;
             if (iDepot == null) return;
             if (!iDepot.isEnabled) return;
             if (!Utils.InRange(idx, 1, iDepot.items.Count, true)) return;
-            ImageInfo ii = iDepot.items[idx - 1];
-            if (!ii.prompt.Equals(prompt, StringComparison.InvariantCultureIgnoreCase)) return;
+            if (!ii.prompt.Equals(ii.prompt, StringComparison.InvariantCultureIgnoreCase)) return;
             if (!ii.filename.Equals(tbName.Text, StringComparison.InvariantCultureIgnoreCase)) return;
             modified = !Utils.GetMD5Checksum(filePath).Equals(ii.MD5Checksum);
             if (modified) UpdateMeta(modified);
@@ -94,17 +92,33 @@ namespace scripthea.viewer
             set { }
         }
         private int attemptCount = 0;
-        private void UpdateMeta(bool? modified)
+        private void UpdateMeta(bool? modified) // 
         {
-            if (!File.Exists(imagePath)) return;
+            if (iDepot == null || imgInfo == null) return;
+            string filePath = Path.Combine(iDepot.path, imgInfo.filename);
+            if (!File.Exists(filePath)) return;
             Dictionary<string, string> meta;
-            if (ImgUtils.GetMetaDataItems(imagePath, out meta)) { meta.Remove("prompt"); attemptCount = 0; }
+            if (ImgUtils.GetMetaDataItems(filePath, out meta)) {  attemptCount = 0; }
             else
             {
-                if (attemptCount < 2)
+                if (attemptCount < 2) // retry in case it's still opening
                     Utils.DelayExec(1000, new Action(() => { attemptCount++; UpdateMeta(modified); }));
-                meta.Add("No access to Meta data: ", ""); meta.Add(" the info is missing or ", ""); meta.Add("file is opened by a process.", "");
-            }           
+                //meta.Add("No access to Meta data: ", ""); meta.Add(" the info is missing or ", ""); meta.Add("file is opened by a process.", "");
+                meta = Utils.dictObject2String(imgInfo.ToDictionary(true));
+            } 
+            // clean up meta
+            meta.Remove("prompt");   
+            void removeMetaItem(string key, string val)
+            {
+                if (meta.ContainsKey(key))
+                    if (meta[key] == val) meta.Remove(key);
+            }
+            removeMetaItem("history", "");
+            removeMetaItem("negative_prompt", "");
+            removeMetaItem("batch_size", "1");
+            removeMetaItem("denoising_strength", "0");
+            removeMetaItem("restore_faces", "False");
+             
             Utils.dict2ListBox(meta, lboxMetadata);
             bool modif = false;
             if (modified == null) // get it here (later)
@@ -152,7 +166,7 @@ namespace scripthea.viewer
         private void chkExtra_Checked(object sender, RoutedEventArgs e)
         {
             lboxMetadata.Visibility = Visibility.Visible;
-            columnMeta.Width = new GridLength(190);
+            columnMeta.Width = new GridLength(250);
             rowBottom.Height = new GridLength(140);
             UpdateMeta(false);
         }

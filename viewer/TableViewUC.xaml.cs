@@ -160,8 +160,22 @@ namespace scripthea.viewer
             iDepot = _iDepot; loadedDepot = iDepot.path; 
             UpdateVis();
             if (dTable.Rows.Count > 0) dGrid.SelectedIndex = 0;
+            if (checkable)
+                for (int i = 0; i < dTable.Rows.Count; i++)
+                {
+                    CheckBox chk = DataGridHelper.GetCellByIndices(dGrid, i, 1).FindVisualChild<CheckBox>();
+                    if (Utils.isNull(chk)) continue;
+                    chk.Name = "chkList" + i.ToString();
+                    chk.Tag = i;
+                    chk.Checked += new RoutedEventHandler(chkCheckedColumn); chk.Unchecked += new RoutedEventHandler(chkCheckedColumn);                
+                }
             return true;
         }
+        private void chkCheckedColumn(object sender, RoutedEventArgs e)
+        {
+            ChangeContent(this, null);
+        }
+
         public int selectedIndex 
         {
             get 
@@ -202,11 +216,11 @@ namespace scripthea.viewer
             }
             return itms;
         }
-        public delegate void PicViewerHandler(int idx, string filePath, string prompt);
+        public delegate void PicViewerHandler(int idx, string imageDir, ImageInfo ii);
         public event PicViewerHandler SelectEvent;
-        protected void OnSelect(int idx, string filePath, string prompt)
+        protected void OnSelect(int idx, string imageDir, ImageInfo ii)
         {
-            if (SelectEvent != null) SelectEvent(idx, filePath, prompt);
+            if (SelectEvent != null) SelectEvent(idx, imageDir, ii);
         }
         public event RoutedEventHandler OnChangeContent;
         protected void ChangeContent(object sender, RoutedEventArgs e)
@@ -235,7 +249,7 @@ namespace scripthea.viewer
                     break;                
             }
         }
-        protected ImageInfo SelectedItem(int idx)
+        protected ImageInfo SelectedItem(int idx) // idx in the iDepot
         {
             ImageInfo ii = null;
             if (iDepot != null)
@@ -254,15 +268,14 @@ namespace scripthea.viewer
                 dGrid.ScrollIntoView(dGrid.SelectedItem, null);
             });
             int iRow = Convert.ToInt32(dataRow.Row.ItemArray[0]) - 1;
-            ImageInfo ii = null;
-            if (iDepot != null)
-                if (iDepot.isEnabled && iDepot.items.Count > iRow)
-                    ii = iDepot.items[iRow];
-            if (checkable) OnSelect(iRow + 1, Path.Combine(imageFolder, Convert.ToString(dTable.Rows[iRow].ItemArray[3])), Convert.ToString(dTable.Rows[iRow].ItemArray[2]));
-            else OnSelect(iRow + 1, Path.Combine(imageFolder, Convert.ToString(dTable.Rows[iRow].ItemArray[2])), Convert.ToString(dTable.Rows[iRow].ItemArray[1]));
+            ImageInfo ii = SelectedItem(iRow);
+            if (ii == null) { Utils.TimedMessageBox("Unknown image"); return; }
+            if (checkable) OnSelect(iRow + 1, imageFolder, ii);
+            else OnSelect(iRow + 1, imageFolder, ii);
             if (!Utils.isNull(e)) e.Handled = true;
             lastSelectedRow = dGrid.SelectedIndex;
         }
+
         private void dGrid_KeyDown(object sender, KeyEventArgs e)
         {
             int sr = dGrid.SelectedIndex;
@@ -272,7 +285,7 @@ namespace scripthea.viewer
                 {
                     var chk = DataGridHelper.GetCellByIndices(dGrid, sr, 1).FindVisualChild<CheckBox>();
                     if (chk != null) chk.IsChecked = !chk.IsChecked.Value;
-                    OnSelect(sr, Path.Combine(imageFolder, Convert.ToString(dTable.Rows[sr].ItemArray[3])), "");
+                    ChangeContent(this, null);  //OnSelect(sr, imageFolder, SelectedItem(sr-1));
                 }
                 else dGrid.SelectedIndex = Utils.EnsureRange(sr + 1, 0, dTable.Rows.Count - 1); 
             }           

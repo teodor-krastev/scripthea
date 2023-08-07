@@ -30,8 +30,12 @@
                 <ColumnDefinition Width="120"/>
             </Grid.ColumnDefinitions>
             <StackPanel x:Name="stPnl2" Orientation="Horizontal" Grid.ColumnSpan="2" Margin="0,1,-0.333,1" VerticalAlignment="Center" Height="28">
-                <Image x:Name="imgMenu" Margin="5,2,7,0" VerticalAlignment="Top" Width="25" Source="/Scripthea;component/Properties/TripleBarTeal.bmp" ToolTip="Single click - menu; Double left - invert" Cursor="Hand" MouseDown="imgMenu_MouseDown" >
-                    <Image.ContextMenu>
+                <Button x:Name="btnMenu" Width="30" Margin="3,0,0,0" ToolTip="Local menu" Background="{x:Null}" >
+                    <ContentControl>
+                        <Image x:Name="imgMenu" Margin="0,1,0,0" VerticalAlignment="Center" Width="28" Source="/Scripthea;component/Properties/TripleBarTeal.png" ToolTip="Single click - menu; Double left - invert" Cursor="Hand" HorizontalAlignment="Center" Height="28" MouseDown="imgMenu_MouseDown" >
+                        </Image>
+                    </ContentControl>
+                    <Button.ContextMenu>
                         <ContextMenu x:Name="cmImgMenu">
                             <MenuItem Header="Check All" Click="mi_Click"/>
                             <MenuItem Header="Uncheck All" Click="mi_Click"/>
@@ -40,9 +44,10 @@
                             <Separator/>
                             <MenuItem Header="Refresh" Click="mi_Click"/>
                         </ContextMenu>
-                    </Image.ContextMenu>
-                </Image>
-                <StackPanel Background="#FFEEF6FA" Width="135" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,2,0,0">
+                    </Button.ContextMenu>
+                </Button>
+
+                <StackPanel Background="#FFEEF6FA" Width="135" Orientation="Horizontal" VerticalAlignment="Center" Margin="5,2,0,0">
                     <Label Content="View" Margin="0,-2,0,0" VerticalAlignment="Center" FontSize="13"/>
                     <RadioButton x:Name="rbList" Content="List" VerticalAlignment="Center" Margin="3,0" IsChecked="True" Checked="rbList_Checked" FontSize="13"/>
                     <RadioButton x:Name="rbGrid" Content="Grid" VerticalAlignment="Center" Margin="3,0,0,0" Checked="rbList_Checked" FontSize="13"/>

@@ -158,9 +158,7 @@ namespace UtilsNS
             ValidateColumnIndex(dataGrid, columnIndex);
             ValidateRowIndex(dataGrid, rowIndex);
 
-
             var row = dataGrid.GetRowByIndex(rowIndex);
-
 
             if (row != null)//Get Column for the DataGridRow by index using GetRowColumnByIndex Extension methods
                 return row.GetRowColumnByIndex(dataGrid, columnIndex);

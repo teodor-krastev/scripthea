@@ -147,11 +147,16 @@ namespace scripthea.master
                 CheckBox chk = DataGridHelper.GetCellByIndices(dGrid, i, 0).FindVisualChild<CheckBox>();
                 chk.Name = "chkList" + i.ToString();
                 chk.Tag = i;
-                //chk.Checked += new RoutedEventHandler(CheckUncheck); chk.Unchecked += new RoutedEventHandler(CheckUncheck);
-                checkBoxes.Add(chk);
+                chk.Checked += new RoutedEventHandler(chkCheckedColumn); chk.Unchecked += new RoutedEventHandler(chkCheckedColumn);
+                //checkBoxes.Add(chk);
             }
             GetChecked();
-        }       
+        }
+        private void chkCheckedColumn(object sender, RoutedEventArgs e)
+        {
+            GetChecked();
+        }
+
         private List<string> GetChecked(bool print = true) // list of filenames
         {
             List<string> ls = new List<string>();
@@ -295,10 +300,12 @@ namespace scripthea.master
         private void textBlock_KeyDown(object sender, KeyEventArgs e)
         {
             int sr = dGrid.SelectedIndex; 
-            if (e.Key.Equals(Key.Space) && Utils.InRange(sr, 0, checkBoxes.Count - 1))
+            if (e.Key.Equals(Key.Space) && Utils.InRange(sr, 0, dTable.Rows.Count - 1))
             {
                 var chk = DataGridHelper.GetCellByIndices(dGrid, sr, 0).FindVisualChild<CheckBox>();
-                chk.IsChecked = !chk.IsChecked.Value;   
+                if (Utils.isNull(chk)) return;
+                chk.IsChecked = !chk.IsChecked.Value;
+                GetChecked();
             }                
         }  
 
@@ -351,7 +358,7 @@ namespace scripthea.master
             {
                 if (e.ClickCount == 1)
                 {
-                    Utils.DelayExec(300, () => { imgMenu.ContextMenu.IsOpen = !inverting; }); 
+                    Utils.DelayExec(300, () => { btnMenu.ContextMenu.IsOpen = !inverting; }); 
                 }
                 if (e.ClickCount == 2)
                 {
