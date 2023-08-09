@@ -30,11 +30,15 @@
         </StackPanel>
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="25"/>
+                <ColumnDefinition Width="32"/>
                 <ColumnDefinition/>
                 <ColumnDefinition Width="40"/>
             </Grid.ColumnDefinitions>
-            <Image x:Name="ibtnTumbOpt" Source="/Scripthea;component/Properties/TripleBarTeal.png" MouseDown="ibtnTumbOpt_MouseDown" Margin="0"></Image>
+            <Button x:Name="btnTumbOpt" Width="28" Margin="3,0,0,0" ToolTip="Thumb options" Background="{x:Null}" Click="btnTumbOpt_Click" >
+                <ContentControl>
+                    <Image x:Name="ibtnTumbOpt" Source="/Scripthea;component/Properties/TripleBarTeal.png" Margin="0" Width="25" Height="25" HorizontalAlignment="Center" VerticalAlignment="Center"></Image>
+                </ContentControl>
+            </Button>
             <StackPanel Margin="0"  Orientation="Horizontal" HorizontalAlignment="Center" Grid.Column="1" Width="197">
                 <Image x:Name="btnHome" Width="30" HorizontalAlignment="Left"  Margin="3,0,0,0" Cursor="Hand" Source="/Scripthea;component/Properties/home_arrow.png" MouseDown="btnHome_MouseDown" ToolTip="Home"/>
                 <Image x:Name="btnPageUp" Width="30" HorizontalAlignment="Left" Source="/Scripthea;component/Properties/left_dbl_arrow.png" Margin="3,0,0,0" Cursor="Hand" MouseDown="btnHome_MouseDown" ToolTip="Page Up"/>

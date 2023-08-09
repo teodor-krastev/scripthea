@@ -43,23 +43,23 @@
                     </Grid>
                 </TabItem>
                 <TabItem x:Name="tiScan" Header="Scan" Height="25" Background="#FFECECEC" Margin="5,0,-9.063,0.089" HorizontalAlignment="Left" Width="69" BorderBrush="#FF6C009C" >
-                    <Grid Background="#FFFEFCF7">
-                        <Button x:Name="btnScan" Content="S c a n" Height="30" Width="77" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,7,0,0" FontWeight="Bold" Background="#FFF5FAEB" Click="btnScan_Click" FontSize="13" BorderBrush="#FF0233A2"/>
+                    <Grid Background="White">
+                        <Button x:Name="btnScan" Content="S c a n" Height="30" Width="77" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,7,0,0" FontWeight="Bold" Background="#FFFDFFED" Click="btnScan_Click" FontSize="13" BorderBrush="#FF0233A2"/>
                         <TextBox HorizontalAlignment="Right" Text="Combine all checked cues + fixed modifiers + some (by modif. sample number) of scanned modifiers." Width="162" Margin="0,0,-0.228,0" TextWrapping="Wrap" Background="{x:Null}" BorderBrush="{x:Null}" VerticalAlignment="Top" FontSize="12"/>
-                        <Button x:Name="btnScanPreview" Content="Scan preview" Height="30" Width="98" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10,0,0,7" Background="MintCream" FontSize="13" Click="btnScanPreview_Click" BorderBrush="#FF993109"/>
-                        <Button x:Name="btnAppend2Preview" Content="Append to preview" Height="30" Width="127" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="113,0,0,7.241" Background="#FFFAFFF5" FontSize="13" Click="btnScanPreview_Click" BorderBrush="#FF993109"/>
+                        <Button x:Name="btnScanPreview" Content="Scan preview" Height="30" Width="98" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10,0,0,7" Background="#FFFFFFF5" FontSize="13" Click="btnScanPreview_Click" BorderBrush="#FF993109"/>
+                        <Button x:Name="btnAppend2Preview" Content="Append to preview" Height="30" Width="127" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="113,0,0,7.241" Background="#FFFFFFF5" FontSize="13" Click="btnScanPreview_Click" BorderBrush="#FF993109"/>
 
                     </Grid>
                 </TabItem>
                 <TabItem x:Name="tiOptions" Header="Options" Height="25" Background="#FFECECEC" Margin="10,0,-11,0.089" HorizontalAlignment="Left" Width="70">
                     <Grid >
-                        <GroupBox x:Name="gbFolder" VerticalAlignment="Bottom" Header=" Depot folder for generated images"  Height="50">
+                        <GroupBox x:Name="gbFolder" VerticalAlignment="Bottom" Header=" Depot folder for generated images"  Height="50" Background="#FFFBFBF4">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="1*"/>
                                     <ColumnDefinition Width="1"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBox x:Name="tbImageDepot" Background="#FFFBFBF4" Margin="5,5,2,0" BorderThickness="0" TextChanged="tbImageDepot_TextChanged"/>
+                                <TextBox x:Name="tbImageDepot"  Margin="5,5,2,0" BorderThickness="0" TextChanged="tbImageDepot_TextChanged" Background="{x:Null}"/>
                                 <Button x:Name="btnNewFolder" Grid.Column="1" Content=" Browse " Click="btnNewFolder_Click" Foreground="#FF0F8001" FontWeight="Bold" Background="#FFF4F4F4" Margin="3,0,0,0" Visibility="Hidden"/>
                             </Grid>
                         </GroupBox>

@@ -473,10 +473,10 @@
     <Resource Include="Properties\play.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="external\set_arrow.png" />
+    <Resource Include="Properties\set_arrow.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="external\get_arrow.png" />
+    <Resource Include="Properties\get_arrow.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Properties\TripleBarBlack.png" />

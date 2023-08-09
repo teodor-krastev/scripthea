@@ -40,24 +40,33 @@ namespace scripthea.master
             return (SolidColorBrush)new BrushConverter().ConvertFromString(hex_code);
         }
 
-        public static int checkImageDepot(string imageDepot, bool checkDesc = true) // return -1 if not OK
+        public static int checkImageDepot(string imageDepot, bool checkDesc = true) // return -1 if no access
         {
             string idepot = imageDepot.EndsWith("\\") ? imageDepot : imageDepot + "\\";
             if (!Directory.Exists(idepot)) return -1;
-
-            DirectoryInfo di = new DirectoryInfo(idepot);
-            if ((di.Attributes & FileAttributes.System) == FileAttributes.System) return -1; // system dir            
-            if (checkDesc)
+            try
             {
-                if (!File.Exists(Path.Combine(idepot, descriptionFile)) && checkDesc) return -1; // no desc file
-                List<string> ls = new List<string>(File.ReadAllLines(Path.Combine(idepot, descriptionFile)));
-                return ls.Count - 1;
+                DirectoryInfo di = new DirectoryInfo(idepot);
+                if ((di.Attributes & FileAttributes.System) == FileAttributes.System) return -1; // system dir            
             }
-            else
+            catch { /* Utils.TimedMessageBox("no access to " + idepot);*/ return -1; }
+            try
             {
-                string[] imgPng = Directory.GetFiles(imageDepot, "*.png"); string[] imgJpg = Directory.GetFiles(imageDepot, "*.jpg");
-                return imgPng.Length + imgJpg.Length;
+                if (checkDesc)
+                {
+                    string fn = Path.Combine(idepot, descriptionFile);
+                    if (!File.Exists(fn)) return 0; // no desc file                   
+                    List<string> ls = Utils.readList(fn);
+                    if (ls == null) return -1;
+                    return ls.Count - 1;
+                }
+                else
+                {
+                    string[] imgPng = Directory.GetFiles(imageDepot, "*.png"); string[] imgJpg = Directory.GetFiles(imageDepot, "*.jpg");
+                    return imgPng.Length + imgJpg.Length;
+                }
             }
+            catch { /* Utils.TimedMessageBox("problem with " + idepot); */ return -1; }
         }
         /// <summary>
         /// ModifyExifData
@@ -452,7 +461,7 @@ Color rgbColor = Color.FromRgb(r, g, b);
         {
             InitializeComponent();
         }
-        string AppDataStr = "<AppData>";
+        private string AppDataStr = "<AppData>";
         public string AppData
         {
             get
@@ -462,9 +471,11 @@ Color rgbColor = Color.FromRgb(r, g, b);
                 return "";
             }
         }
+        protected Options opts;
         List<string> history; string historyFile;
-        public void Init()
+        public void Init(ref Options _opts)
         {
+            opts = _opts;
             List<string> ld = new List<string>(Directory.GetLogicalDrives());
             historyFile = Path.Combine(Utils.configPath, "history.lst");
             if (File.Exists(historyFile))
@@ -525,29 +536,30 @@ Color rgbColor = Color.FromRgb(r, g, b);
                         subitem.Header = s.Substring(s.LastIndexOf("\\") + 1);  // the name of the folder
                         subitem.Tag = s;                                        // the path to the folder
                         subitem.FontWeight = FontWeights.Normal; subitem.FontSize = tvFolders.FontSize;
-                        if (ImgUtils.checkImageDepot(s, false) > 0)
+                        int checkImageDepot = ImgUtils.checkImageDepot(s, false); if (checkImageDepot < 0) continue;
+                        if (checkImageDepot > 0)
                         {
                             subitem.FontSize = tvFolders.FontSize + 0.5;
-                            subitem.Foreground = Brushes.Blue; //Coral; OrangeRed;
+                            subitem.Foreground = Brushes.Blue; 
                         }
-                        if (ImgUtils.checkImageDepot(s, true) > 0)
+                        checkImageDepot = ImgUtils.checkImageDepot(s, true); if (checkImageDepot < 0) continue;
+                        if (checkImageDepot > 0)
                         {
                             subitem.FontSize = tvFolders.FontSize + 0.5;
-                            subitem.Foreground = Utils.ToSolidColorBrush("#FF02CB02"); // Brushes.LimeGreen;  MediumSeaGreen  SeaGreen              
+                            subitem.Foreground = Utils.ToSolidColorBrush("#FF02CB02"); // greenish             
                         }
-                        bool bb = true; bool bc = true; ;
+                        bool bc = true; ;
                         try
                         {
                             bc = Directory.GetDirectories(s).Length > 0;
                         }
-                        catch { bb = false; }
-                        if (!bb) continue;
+                        catch (Exception ex) { Log("I: "+ex.Message); continue; }                        
                         if (bc) subitem.Items.Add(dummyNode);
                         subitem.Expanded += new RoutedEventHandler(folder_Expanded);
                         item.Items.Add(subitem);
                     }
                 }
-                catch (Exception ex) { Log(ex.Message); }
+                catch (Exception ey) { Log("II: "+ey.Message); }
             }
         }
         public void refreshTree() { comboBox_SelectionChanged(null, null); }
@@ -584,7 +596,7 @@ Color rgbColor = Color.FromRgb(r, g, b);
         public event Utils.LogHandler OnLog;
         protected void Log(string txt, SolidColorBrush clr = null)
         {
-            if (OnLog != null) OnLog(txt, clr);
+            if (OnLog != null && opts.general.debug) OnLog(txt, clr);
         }
         public bool CatchAFolder(string pth)
         {
@@ -682,7 +694,6 @@ Color rgbColor = Color.FromRgb(r, g, b);
                     break;
             }
         }
-
         private void btnHistory_Click(object sender, RoutedEventArgs e)
         {
             cmHistory.Items.Clear();
@@ -694,7 +705,6 @@ Color rgbColor = Color.FromRgb(r, g, b);
             }
             cmHistory.IsOpen = true;
         }
-
         void hmi_Click(object sender, RoutedEventArgs e)
         {
             MenuItem hmi = sender as MenuItem; string header = Convert.ToString(hmi.Header);
@@ -712,13 +722,11 @@ Color rgbColor = Color.FromRgb(r, g, b);
         private bool _isInitialized;
         private GifBitmapDecoder _gifDecoder;
         private Int32Animation _animation;
-
         public int FrameIndex
         {
             get { return (int)GetValue(FrameIndexProperty); }
             set { SetValue(FrameIndexProperty, value); }
         }
-
         private void Initialize()
         {
             _gifDecoder = new GifBitmapDecoder(new Uri("pack://application:,,," + this.GifSource), BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.Default);
@@ -728,13 +736,11 @@ Color rgbColor = Color.FromRgb(r, g, b);
 
             _isInitialized = true;
         }
-
         public GifImage()
         {
             VisibilityProperty.OverrideMetadata(typeof(GifImage),
                 new FrameworkPropertyMetadata(VisibilityPropertyChanged));
         }
-
         private void VisibilityPropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             if ((Visibility)e.NewValue == Visibility.Visible)

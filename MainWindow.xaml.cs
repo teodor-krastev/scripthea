@@ -73,8 +73,9 @@ namespace scripthea
             preferencesWindow = new PreferencesWindow(); preferencesWindow.Init(ref opts); preferencesWindow.btnCheck4Update.Click += new RoutedEventHandler(Check4Update);
             
             Title = "Scripthea - options loaded";
-            dirTreeUC.Init();
+            dirTreeUC.Init(ref opts);
             dirTreeUC.OnActive += new DirTreeUC.SelectHandler(Active);
+            dirTreeUC.OnLog += new Utils.LogHandler(Log);
 
             queryUC.OnLog += new Utils.LogHandler(Log); queryUC.tbImageDepot.KeyDown += new KeyEventHandler(MainWindow1_KeyDown);
             viewerUC.OnLog += new Utils.LogHandler(Log); viewerUC.tbImageDepot.KeyDown += new KeyEventHandler(MainWindow1_KeyDown);

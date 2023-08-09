@@ -166,7 +166,6 @@ namespace scripthea.viewer
         {
             if (OnLog != null) OnLog(txt, clr);
         }
-
         struct UndoRec { public int idx0; public PicItemUC piUC; public ImageInfo ii; public bool inclFile; } // undo buffer
         UndoRec undoRec;
 
@@ -326,11 +325,6 @@ namespace scripthea.viewer
                 k++;
             }
         }
-        private void ibtnTumbOpt_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (rowTumbOpt.Height.Value.Equals(1)) rowTumbOpt.Height = new GridLength(30);
-            else rowTumbOpt.Height = new GridLength(1);
-        }
         private void UpdatePicItems()
         {
             if (Count == 0) return;
@@ -422,6 +416,12 @@ namespace scripthea.viewer
         {
             if (!IsAvailable || picItems.Count.Equals(0) || selectedIndex.Equals(-1)) return;
             HasTheFocus = false;
+        }
+
+        private void btnTumbOpt_Click(object sender, RoutedEventArgs e)
+        {
+            if (rowTumbOpt.Height.Value.Equals(1)) rowTumbOpt.Height = new GridLength(30);
+            else rowTumbOpt.Height = new GridLength(1);
         }
     }
 }

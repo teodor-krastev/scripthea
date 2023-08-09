@@ -14,8 +14,9 @@
 
                     <StackPanel VerticalAlignment="Top" Margin="5,0,0,0">
                         <StackPanel Orientation="Horizontal" Height="28" Margin="0,5,0,0">
-                            <Label Content="Time out for image gen.[s]" Height="27" ></Label>
+                            <Label Content="Time out for image gen." Height="27" ></Label>
                             <UtilsNS:NumericBox x:Name="numTimeOutImgGen" HorizontalAlignment="Left" Height="25" Margin="0,3,0,-0.051" VerticalAlignment="Top" Width="52" FontSize="13" Maximum="1000" Minimum="2" Value="60"/>
+                            <Label Content="[sec]" Height="27" ></Label>
                         </StackPanel>
                         <CheckBox x:Name="chkAutoOpenSession" Content="Open session when needed" Margin="0,5,0,0" Visibility="Collapsed"/>
                         <CheckBox x:Name="chkAutoCloseSession" Content="Close session after py-script scan" Margin="0,10,0,0"/>
@@ -29,10 +30,10 @@
                         <Grid>
                             <CheckBox x:Name="chkGPUtemperature" Margin="5,-16,0,0"></CheckBox>
                             <StackPanel Margin="2,5,2,2" Orientation="Horizontal">
-                                <Label x:Name="lbGPUvalue" Content="Threshold "></Label>
-                                <UtilsNS:NumericBox x:Name="numGPUThreshold" HorizontalAlignment="Left" Height="25" Margin="0" VerticalAlignment="Top" Width="59" FontSize="13" Maximum="100" Minimum="2" Value="60"/>
+                                <Label x:Name="lbGPUvalue" Content="Threshold [°C]"></Label>
+                                <UtilsNS:NumericBox x:Name="numGPUThreshold" HorizontalAlignment="Left" Height="25" Margin="0" VerticalAlignment="Top" Width="50" FontSize="13" Maximum="100" Minimum="2" Value="60"/>
                                 <Label x:Name="lbGPUvalueDepth" Content="Aver/Max stack depth " Margin="6,0,0,0"></Label>
-                                <UtilsNS:NumericBox x:Name="numGPUstackDepth" HorizontalAlignment="Left" Height="25" Margin="0" VerticalAlignment="Top" Width="59" FontSize="13" Maximum="100" Minimum="2" Value="10"/>
+                                <UtilsNS:NumericBox x:Name="numGPUstackDepth" HorizontalAlignment="Left" Height="25" Margin="0" VerticalAlignment="Top" Width="50" FontSize="13" Maximum="100" Minimum="2" Value="10"/>
                             </StackPanel>
                         </Grid>
                     </GroupBox>

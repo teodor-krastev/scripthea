@@ -175,7 +175,7 @@ namespace scripthea.external
         {
             if (nVidiaHwAvailable && chkMeasureGPUtemp.IsChecked.Value) // same controls different labels
             {
-                groupGPUtmpr.Header = "      nVidia GPU temperature feedack"; lbGPUvalue.Content = "Threshold ";
+                groupGPUtmpr.Header = "      nVidia GPU temperature feedack"; lbGPUvalue.Content = "Threshold [°C]";
                 lbGPUvalueDepth.Visibility = Visibility.Visible; numGPUstackDepth.Visibility = Visibility.Visible;
             }
             else

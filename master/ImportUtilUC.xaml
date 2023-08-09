@@ -13,13 +13,13 @@
             <RowDefinition Height="300*"/>
             <RowDefinition Height="200*"/>
         </Grid.RowDefinitions>
-        <GroupBox x:Name="gbFolder" Header="Image folder to convert (import) to image depot" Margin="0" >
+        <GroupBox x:Name="gbFolder" Header="Image folder to convert (import) to image depot" Margin="0" Background="#FFFBFBF4">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                     <ColumnDefinition Width="70"/>
                 </Grid.ColumnDefinitions>
-                <TextBox x:Name="tbImageDepot" Background="#FFFBFBF4" Margin="0,2,2.962,-2" IsReadOnly="True" BorderThickness="0" TextChanged="tbImageDepot_TextChanged" >
+                <TextBox x:Name="tbImageDepot" Background="{x:Null}" Margin="0,2,2.962,-2" IsReadOnly="True" BorderThickness="0" TextChanged="tbImageDepot_TextChanged" >
                 </TextBox>
                 <Button x:Name="btnNewFolder" Grid.Column="1" Content="Browse" Click="btnNewFolder_Click" HorizontalAlignment="Left" Margin="5.038,0,0,-0.051" Width="60" Foreground="#FF0F8001" FontWeight="Bold" Background="#FFF4F4F4" Visibility="Collapsed">
                 </Button>

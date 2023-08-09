@@ -209,12 +209,12 @@ namespace scripthea.composer
                     os.radioMode = value;
                 if (value)
                 {
-                    imgRandom.Visibility = Visibility.Visible; imgMenu.Visibility = Visibility.Collapsed; lbSelCount.Visibility = Visibility.Collapsed;
+                    imgRandom.Visibility = Visibility.Visible; btnMenu.Visibility = Visibility.Collapsed; lbSelCount.Visibility = Visibility.Collapsed;
                     tabControl_SelectionChanged(null, null);
                 }
                 else
                 {
-                    imgRandom.Visibility = Visibility.Collapsed; imgMenu.Visibility = Visibility.Visible; lbSelCount.Visibility = Visibility.Visible;                    
+                    imgRandom.Visibility = Visibility.Collapsed; btnMenu.Visibility = Visibility.Visible; lbSelCount.Visibility = Visibility.Visible;                    
                 }
                 Change(null, null); 
             }
@@ -237,9 +237,12 @@ namespace scripthea.composer
             localCueIdx = si;
         }
         private readonly string[] miTitles = { "Check All", "Uncheck All", "Invert Checking" };
+        string bufMask = "";
         private void mi_Click(object sender, RoutedEventArgs e)
         {            
             MenuItem mi = sender as MenuItem; string header = Convert.ToString(mi.Header);
+            if (header.Equals("Check with Mask")) bufMask = new InputBox("Check with Mask", bufMask, "").ShowDialog();
+            if (bufMask.Equals("")) return;
             foreach (CueItemUC os in localCues[tcLists.SelectedIndex])
             { 
                 switch (header)
@@ -249,6 +252,9 @@ namespace scripthea.composer
                         break; 
                     case "Uncheck All":
                         os.boxChecked = false;
+                        break;
+                    case "Check with Mask":                        
+                        os.boxChecked = Utils.IsWildCardMatch(os.cueText, bufMask); 
                         break;
                     case "Invert Checking":
                         os.boxChecked = !os.boxChecked;
@@ -264,7 +270,7 @@ namespace scripthea.composer
             {
                 if (e.ClickCount == 1)
                 {
-                    Utils.DelayExec(300, () => { imgMenu.ContextMenu.IsOpen = !inverting; });
+                    Utils.DelayExec(300, () => { btnMenu.ContextMenu.IsOpen = !inverting; });
                 }
                 if (e.ClickCount == 2)
                 {
@@ -274,6 +280,5 @@ namespace scripthea.composer
                 }
             }
         }
-
     }
 }

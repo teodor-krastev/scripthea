@@ -37,10 +37,10 @@
             <StackPanel>
                 <StackPanel Margin="0,3,0,0" Orientation="Horizontal" Height="30">
                     <Button x:Name="btnSetParams" Width="27" Background="#FFFFFFFF" Margin="2,3" Click="btnSetParams_Click">
-                        <Image Source="set_arrow.png" ToolTip="Copy a setting to visuals"></Image>
+                        <Image Source="/Scripthea;component/Properties/set_arrow.png" ToolTip="Copy a setting to visuals"></Image>
                     </Button>
                     <Button x:Name="btnGetParams" Width="27" Background="#FFFFFFFF" Margin="2,3" Click="btnGetParams_Click" >
-                        <Image Source="get_arrow.png" ToolTip="Copy visuals to a setting" ></Image>
+                        <Image Source="/Scripthea;component/Properties/get_arrow.png" ToolTip="Copy visuals to a setting" ></Image>
                     </Button>
                     <ComboBox x:Name="cbSettings" Background="{x:Null}" Width="140" Margin="2,3" IsReadOnly="True" SelectionChanged="cbSettings_SelectionChanged">
                     

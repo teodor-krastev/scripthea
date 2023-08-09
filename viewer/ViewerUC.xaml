@@ -17,21 +17,21 @@
                 <RowDefinition Height="329*"/>
                 <RowDefinition Height="30"/>
             </Grid.RowDefinitions>
-            <GroupBox x:Name="gbFolder" Header="Image depot folder" Margin="0" >
+            <GroupBox x:Name="gbFolder" Header="Image depot folder" Margin="0" Background="#FFFBFBF4">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
                         <ColumnDefinition x:Name="colRefresh"  Width="40"/>
                         <ColumnDefinition Width="97"/>
                     </Grid.ColumnDefinitions>
-                    <TextBox x:Name="tbImageDepot" Background="#FFFBFBF4" TextChanged="tbImageDepot_TextChanged" Margin="0,2,2.962,-2" BorderThickness="0">
+                    <TextBox x:Name="tbImageDepot" Background="{x:Null}" TextChanged="tbImageDepot_TextChanged" Margin="0,2,2.962,-2" BorderThickness="0">
                     </TextBox>
                     <Button x:Name="btnRefresh" Grid.Column="1" Foreground="#FF0F8001" HorizontalAlignment="Center" Width="36" FontWeight="Bold"  Click="btnRefresh_Click" Background="{x:Null}" ToolTip="Refresh from image depot">
                         <ContentControl>
                             <Image Source="/Scripthea;component/Properties/refresh.png"  Cursor="Hand"></Image>
                         </ContentControl>
                     </Button>
-                    <CheckBox x:Name="chkAutoRefresh" Grid.Column="2" Content="Auto-refresh" Foreground="#FF05A003" HorizontalAlignment="Left"  Background="#FFF4F4F4" Margin="5,0,0,-0.051" VerticalAlignment="Center" Checked="chkAutoRefresh_Checked" Unchecked="chkAutoRefresh_Checked" />
+                    <CheckBox x:Name="chkAutoRefresh" Grid.Column="2" Content="Auto-refresh" Foreground="#FF028500" HorizontalAlignment="Left"  Background="#FFF4F4F4" Margin="5,0,0,-0.051" VerticalAlignment="Center" Checked="chkAutoRefresh_Checked" Unchecked="chkAutoRefresh_Checked" />
                 </Grid>
             </GroupBox>
             <Grid Grid.Row="2">

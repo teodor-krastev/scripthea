@@ -693,16 +693,20 @@ namespace UtilsNS
         {
             if (!File.Exists(filename)) return null;
             List<string> ls = new List<string>();
-            foreach (string line in File.ReadLines(filename))
+            try
             {
-                if (skipRem)
+                foreach (string line in File.ReadLines(filename))
                 {
-                    string ss = skimRem(line);
-                    if (!ss.Equals("")) ls.Add(ss);
+                    if (skipRem)
+                    {
+                        string ss = skimRem(line);
+                        if (!ss.Equals("")) ls.Add(ss);
+                    }
+                    else ls.Add(line);
                 }
-                else ls.Add(line);
+                return ls;
             }
-            return ls;
+            catch { return null; }
         }
         /// <summary>
         /// replace bunch of strings in a string/List
