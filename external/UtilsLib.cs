@@ -689,7 +689,7 @@ namespace UtilsNS
         /// <param name="filename">The text file</param>
         /// <param name="skipRem">If to skip # and empty lines</param>
         /// <returns></returns>
-        public static List<string> readList(string filename, bool skipRem = true)
+        public static List<string> readList(string filename, bool skipRem)
         {
             if (!File.Exists(filename)) return null;
             List<string> ls = new List<string>();

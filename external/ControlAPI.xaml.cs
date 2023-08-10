@@ -43,9 +43,10 @@ namespace scripthea.external
     public partial class ControlAPI : Window
     {
         public Dictionary<string, interfaceAPI> interfaceAPIs;
-        public ControlAPI()
+        protected Options opts;
+        public ControlAPI(ref Options _opts)
         {
-            InitializeComponent();
+            InitializeComponent(); opts = _opts;
             interfaceAPIs = new Dictionary<string, interfaceAPI>();
             visualControl("Simulation", new SimulatorUC()).OnLog += new Utils.LogHandler(Log);
             //visualControl("DeepAI", new DeepAIUC()); Later plugin...
@@ -73,7 +74,7 @@ namespace scripthea.external
         {
             if ((OnQueryComplete != null)) OnQueryComplete(imageFilePath, success);
         }
-        private interfaceAPI visualControl(string APIname, UserControl uc)
+        private interfaceAPI visualControl(string APIname, UserControl uc) // add iAPI
         {
             uc.Name = APIname.ToLower() + "UC"; interfaceAPIs.Add(APIname, (interfaceAPI)uc); 
             if (!interfaceAPIs[APIname].isDocked)
@@ -90,8 +91,9 @@ namespace scripthea.external
             get { return _activeAPIname; }
             set
             {
-                if (interfaceAPIs.ContainsKey(value)) _activeAPIname = value;
-                else Utils.TimedMessageBox("No API: " + value);
+                if (!interfaceAPIs.ContainsKey(value)) { Utils.TimedMessageBox("No API: " + value); return; }
+                interfaceAPIs[_activeAPIname]?.Finish(); 
+                _activeAPIname = value; interfaceAPIs[_activeAPIname]?.Init(ref opts);
             }
         }
         public interfaceAPI activeAPI { get { return interfaceAPIs[activeAPIname]; } }

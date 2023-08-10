@@ -64,7 +64,7 @@ namespace scripthea.composer
 
             //tiMiodifiers.Visibility = Visibility.Collapsed; tiScanPreview.Visibility = Visibility.Collapsed;
 
-            API = new ControlAPI(); 
+            API = new ControlAPI(ref opts); 
             if (API.interfaceAPIs.ContainsKey("SDiffusion"))             
                 API.interfaceAPIs["SDiffusion"].APIparamsEvent += new APIparamsHandler(OnAPIparams);
             cbActiveAPI_SelectionChanged(null, null);

@@ -79,7 +79,6 @@ namespace scripthea
             public bool RemoveImages;
             public bool ConvertImageDepot;
         }
-
         public IDutilities iDutilities; // Image Depot utilities
         public class IDutilities
         {

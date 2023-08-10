@@ -45,12 +45,9 @@ namespace scripthea.external
             sd_api_uc.btnSDoptions.Click -= btnSDoptions_Click; sd_api_uc.btnSDoptions.Click += btnSDoptions_Click;
             sdScriptUC.btnSDoptions.Click -= btnSDoptions_Click; sdScriptUC.btnSDoptions.Click += btnSDoptions_Click;
 
-            if (SDopts == null)
-            {
-                SDopts = new SDoptionsWindow();
-                tempRegulator.Init(ref SDopts.opts); SDopts.nVidiaHwAvailable = tempRegulator.nVidiaHWAvailable;
-                opts2Visual(true);
-            }
+            if (SDopts == null) SDopts = new SDoptionsWindow();
+            tempRegulator.Init(ref SDopts.opts); SDopts.nVidiaHwAvailable = tempRegulator.nVidiaHWAvailable;
+            opts2Visual(true);
         }
         private bool lastAPIcomm = false;
         private void opts2Visual(bool first)

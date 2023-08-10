@@ -56,9 +56,9 @@ namespace scripthea.master
                 {
                     string fn = Path.Combine(idepot, descriptionFile);
                     if (!File.Exists(fn)) return 0; // no desc file                   
-                    List<string> ls = Utils.readList(fn);
+                    List<string> ls = Utils.readList(fn,true);
                     if (ls == null) return -1;
-                    return ls.Count - 1;
+                    return ls.Count;
                 }
                 else
                 {
@@ -480,7 +480,7 @@ Color rgbColor = Color.FromRgb(r, g, b);
             historyFile = Path.Combine(Utils.configPath, "history.lst");
             if (File.Exists(historyFile))
             {
-                List<string> ls = Utils.readList(historyFile); history = new List<string>();
+                List<string> ls = Utils.readList(historyFile,true); history = new List<string>();
                 foreach (string ss in ls)
                     if (Directory.Exists(ss)) history.Add(ss);
             }
