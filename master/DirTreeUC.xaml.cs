@@ -521,8 +521,8 @@ Color rgbColor = Color.FromRgb(r, g, b);
             history.Insert(0, path);
             while (history.Count > 12) history.RemoveAt(history.Count - 1);
         }
-        TreeViewItem dummyNode = null;
-        void folder_Expanded(object sender, RoutedEventArgs e)
+        protected TreeViewItem dummyNode = null;
+        protected void folder_Expanded(object sender, RoutedEventArgs e)
         {
             TreeViewItem item = (TreeViewItem)sender;
             if (item.Items.Count == 1 && item.Items[0] == dummyNode)

@@ -27,8 +27,8 @@ namespace scripthea.external
     public interface interfaceAPI
     {
         Dictionary<string, string> opts { get; set; } // visual adjustable options to that particular API, keep it in synchro with the visuals 
-        void Init(ref Options _opts);
-        void Finish();
+        void Init(ref Options _opts); // coupled with Finish
+        void Finish(); // couped with Init (not constructor)
         void Broadcast(string msg);
         event Utils.LogHandler OnLog; // @ is for internal comm
         event APIparamsHandler APIparamsEvent;

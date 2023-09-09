@@ -77,7 +77,7 @@ namespace scripthea.external
         {
             tempRegulator.Finish();
             sd_api_uc.Finish(); sdScriptUC.Finish();
-            SDopts.keepOpen = false; SDopts.Close();
+            SDopts.keepOpen = false; SDopts.Close(); SDopts = null;
         }
         public void Broadcast(string msg)
         {

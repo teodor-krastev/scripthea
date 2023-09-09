@@ -180,6 +180,7 @@ namespace scripthea.viewer
         }
         public void FromDictionary(Dictionary<string, object> dict)
         {
+            if (dict == null) return;
             if (dict.ContainsKey("prompt")) prompt = Convert.ToString(dict["prompt"]);
             negative_prompt = dict.ContainsKey("negative_prompt") ? Convert.ToString(dict["negative_prompt"]) : "";
             if (dict.ContainsKey("steps")) steps = Convert.ToInt64(dict["steps"]);
@@ -200,6 +201,7 @@ namespace scripthea.viewer
         }
         public void FromMetaDictionary(Dictionary<string,string> dict) 
         {
+            if (dict == null) return;
             if (dict.ContainsKey("prompt")) prompt = dict["prompt"]; negative_prompt = ""; denoising_strength = 0; batch_size = 1; restore_faces = false;
             if (dict.ContainsKey("steps")) steps = Convert.ToInt32(dict["steps"]);
             if (dict.ContainsKey("sampler")) sampler_name = dict["sampler"];

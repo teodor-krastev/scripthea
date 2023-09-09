@@ -115,7 +115,7 @@ namespace scripthea.composer
                         tiOptions.IsEnabled = false;
                         break;
                 }
-                _status = value;
+                _status = value; //Log("status: "+_status.ToString());
             }
         }
         public event Utils.LogHandler OnLog;
@@ -261,7 +261,7 @@ namespace scripthea.composer
         {
             if (!success)
             {
-                if (imageFilePath == "") { Log("Stable Diffusion is not connected!", Brushes.Red); status = Status.Idle; }
+                if (imageFilePath == "") { Log("Error: Stable Diffusion is not connected!", Brushes.Red); status = Status.Idle; }
                 else Log("Error with " + imageFilePath);
             }
             bool scanEnd = false;
@@ -359,6 +359,46 @@ namespace scripthea.composer
             if (Convert.ToString(btnScan.Content).Equals("Cancel") && status == Status.Scanning) // only if scanning
                 btnScan_Click(btnScan, null);
         }
+        public string stGenerateImage(string prmt = "") // result = query.stGenerateImage()
+        {
+            if (!CheckAPIready()) return "Error[5]: API error (see log).";
+            if (prmt == "")
+            {
+                if (!tcQuery.SelectedItem.Equals(tiSingle)) return "Error[4]: In Composer tab turn to Single and select a prompt.";
+                btnQuery_Click(btnQuery, null); Utils.DoEvents();
+            }
+            else
+            {
+                status = Status.SingeQuery;
+                QueryAPI(prmt);
+            }
+            asyncGenerateImage();
+            return "Done.";
+        }
+        private async void asyncGenerateImage()
+        {
+            while (await GetBusyStatusAsync(Status.SingeQuery)) Utils.Sleep(200);
+        }
+        private Task<bool> GetBusyStatusAsync(Status _status)
+        {
+            return Task.Run(() =>
+            {
+                return status == _status;
+            });
+        }
+        public string stScanImages()
+        {
+            if (!CheckAPIready()) return "Error[5]: API error (see log).";
+            if (!tcQuery.SelectedItem.Equals(tiScan)) return "Error[4]: In Composer tab turn to Scan mode and check some cues and modifiers";
+            asyncScanImages();
+            return "Done.";
+        }
+        public async void asyncScanImages()
+        {
+            btnScan_Click(btnScan, null);
+            while (await GetBusyStatusAsync(Status.Scanning)) { Utils.Sleep(300);  } //Utils.DoEvents();
+        }
+        public string stStatus { get { return status.ToString(); } }
         private void btnScan_Click(object sender, RoutedEventArgs e)
         {
             if (Convert.ToString(btnScan.Content).Equals(strScan))
@@ -414,14 +454,17 @@ namespace scripthea.composer
             API.about2Show(ref opts);
             API.ShowDialog();
         }
+        private bool CheckAPIready()
+        {
+            if (Utils.isNull(API)) { Log("Err: no API is selected. (56)"); return false; }
+            if (Utils.isNull(API.activeAPI)) { Log("Err: no API is selected. (21)"); return false; }
+            if (API.IsBusy || status != Status.Idle)
+                { Utils.TimedMessageBox("API is busy, try again later...", "Warning"); return false;  }
+            return true;
+        }
         private void btnQuery_Click(object sender, RoutedEventArgs e)
         {
-            if (Utils.isNull(API)) { Log("Err: no API is selected. (56)"); return; }
-            if (Utils.isNull(API.activeAPI)) { Log("Err: no API is selected. (21)"); return; }
-            if (API.IsBusy || status != Status.Idle)
-            {
-                Utils.TimedMessageBox("API is busy, try again later...", "Warning"); return;
-            }            
+            if (!CheckAPIready()) return;
             if (opts.composer.SingleAuto) btnCompose_Click(null, null); status = Status.SingeQuery;
             string pro = Compose(sender, cuePoolUC.ActiveCueList?.selectedCues()[0].cueTextAsList(true), modifiersUC.Composite()); // TO BE CLEARED !!! selection from image depot problem
             QueryAPI(pro); 
@@ -429,11 +472,6 @@ namespace scripthea.composer
         private void tbCue_TextChanged(object sender, TextChangedEventArgs e)
         {
             btnQuery.IsEnabled = !tbCue.Text.Trim().Equals("");
-        }
-
-        private void imgCopy_MouseDown_1(object sender, MouseButtonEventArgs e)
-        {
-            
         }
         private void tcQuery_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -534,7 +572,20 @@ namespace scripthea.composer
         {
             Clipboard.SetText(prompt);
         }
-
+        public List<Tuple<string, string>> HelpList()
+        {
+            List<Tuple<string, string>> ls = new List<Tuple<string, string>>();
+            ls.Add(new Tuple<string, string>(
+                "stGenerateImage(string prompt = \"\" )", "Generate image with given prompt. If prompt is missing, it takes selected prompt from the composer which must be in Single mode."
+                ));
+            ls.Add(new Tuple<string, string>(
+                "stScanImages()", "Generate series of images with prompts from the composer. The composer must be in Scan mode and some cues and modifiers (optionally) must be checked."
+                ));
+            ls.Add(new Tuple<string, string>(
+                "stStatus", " Property for the current status of the composer. [Idle, SingeQuery, Scanning, Request2Cancel]"
+                ));
+            return ls;
+        }
         private void btnTest_Click(object sender, RoutedEventArgs e)
         {
             /*List<string> files = new List<string>(Directory.GetFiles(tbImageDepot.Text, "*.png"));

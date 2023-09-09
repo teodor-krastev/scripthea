@@ -22,6 +22,7 @@ using scripthea.master;
 using UtilsNS;
 using Path = System.IO.Path;
 using Color = System.Drawing.Color;
+using PyCodeLib;
 
 namespace scripthea
 {
@@ -80,7 +81,7 @@ namespace scripthea
             queryUC.OnLog += new Utils.LogHandler(Log); queryUC.tbImageDepot.KeyDown += new KeyEventHandler(MainWindow1_KeyDown);
             viewerUC.OnLog += new Utils.LogHandler(Log); viewerUC.tbImageDepot.KeyDown += new KeyEventHandler(MainWindow1_KeyDown);
             importUtilUC.OnLog += new Utils.LogHandler(Log); importUtilUC.tbImageDepot.KeyDown += new KeyEventHandler(MainWindow1_KeyDown);
-
+           
             Title = "Scripthea - loading text files...";            
             viewerUC.Init(ref opts);
             depotMaster.Init(ref opts);
@@ -103,7 +104,19 @@ namespace scripthea
             colExportWidth.Width = new GridLength(opts.iDutilities.ExportWidth);
 
             if (opts.composer.SingleAuto) queryUC.btnCompose_Click(null, null);
-
+            // pyCode Init
+            
+            if (Utils.TheosComputer()) pyCode.Init(@"C:\Software\Python\Python310\python310.dll");
+            if (!pyCode.IsEnabled) tiSMacro.Visibility = Visibility.Collapsed;
+            else
+            {
+                colSMacroFull.Width = new GridLength(opts.sMacro.FullWidth);
+                pyCode.colCodeWidth = opts.sMacro.CodeWidth; pyCode.colLogWidth = opts.sMacro.LogWidth;
+                if (pyCode.st != null) pyCode.st.OnLog += new Utils.LogHandler(Log);
+                // modules registration in pyCode
+                pyCode.Register("query",queryUC, queryUC.HelpList());
+                pyCode.Register("sdPrms", queryUC.sd_params_UC, queryUC.sd_params_UC.HelpList());
+            }                      
             focusControl = new FocusControl();
             focusControl.Register("import",importUtilUC);
             focusControl.Register("export",exportUtilUC.iPicker);
@@ -115,7 +128,7 @@ namespace scripthea
             string penpicFile = Path.Combine(Utils.configPath, "penpic1.png");
             if (!File.Exists(penpicFile)) throw new Exception(penpicFile +" file is missing");
             penpic = new System.Drawing.Bitmap(penpicFile); imgAbout.Source = ImgUtils.BitmapToBitmapImage(penpic, System.Drawing.Imaging.ImageFormat.Png);
-            SwitchExplorer(false);
+            ExplorerPart = 0;
             gridSplitLeft_MouseDoubleClick(null, null);
             Title = "Scripthea - text-to-image prompt composer v" + Utils.getAppFileVersion;   
             if (opts.layout.Width < 0)
@@ -135,15 +148,6 @@ namespace scripthea
                 if (opts.general.NewVersion.Equals("")) preferencesWindow.lbNewVer.Content = "Your version is up to date";
                 else preferencesWindow.lbNewVer.Content = "New version: " + opts.general.NewVersion;
             }
-        }
-        private void SwitchExplorer(bool on) // 
-        {
-            if (on)
-            {
-                if (ExplorerPart == 0) { ExplorerPart = 100; return; } // on/off situation
-                if (ExplorerPart < 70) { ExplorerPart = 70; return; } // more fluid case; if it's small increase size
-            }
-            else ExplorerPart = 0;
         }
         public int ExplorerPart // from 0 to 100% directory tree
         {
@@ -189,7 +193,11 @@ namespace scripthea
             opts.iDutilities.MasterWidth = Convert.ToInt32(colMasterWidth.Width.Value);
             opts.iDutilities.ImportWidth = Convert.ToInt32(colImportWidth.Width.Value);
             opts.iDutilities.ExportWidth = Convert.ToInt32(colExportWidth.Width.Value);
+            opts.sMacro.FullWidth = Convert.ToInt32(colSMacroFull.Width.Value);
+            opts.sMacro.CodeWidth = Convert.ToInt32(pyCode.colCodeWidth);
+            opts.sMacro.LogWidth = Convert.ToInt32(pyCode.colLogWidth);
 
+            pyCode.Finish();
             queryUC.Finish();
             viewerUC.Finish();
             dirTreeUC.Finish();
@@ -248,7 +256,10 @@ namespace scripthea
                         case "@Explore":
                             string[] sa = txt.Split('='); if (sa.Length != 2) Utils.TimedMessageBox("Error(#458)");
                             ExplorerPart = Convert.ToInt32(sa[1]); skipLog = true;
-                            break; 
+                            break;
+                        case "query ->":
+                            if ((tabControl.SelectedIndex > 0) && (ExplorerPart > 95)) ExplorerPart = 50;
+                            break;
                         case "@_Header":
                             string[] sb = txt.Split('='); if (sb.Length != 2) Utils.TimedMessageBox("Error(#459)");
                             Title = "Scripthea - "+sb[1]; skipLog = true;
@@ -407,10 +418,9 @@ namespace scripthea
                 if (e.Key.Equals(Key.Escape)) viewerUC.animation = false;
             }
         }
-
         private void btnPreferences_Click(object sender, RoutedEventArgs e)
         {
             preferencesWindow.ShowWindow(tabControl.SelectedIndex);
-        }
+        }       
     }
 }

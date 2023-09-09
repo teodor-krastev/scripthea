@@ -29,6 +29,8 @@ namespace scripthea
             if (composer == null) composer = new Composer();
             if (viewer == null) viewer = new Viewer();
             if (iDutilities == null) iDutilities = new IDutilities();
+            if (sMacro == null) sMacro = new SMacro();
+            if (common == null) common = new Common();
         }
         public General general; 
         public class General
@@ -87,7 +89,37 @@ namespace scripthea
             public int ImportWidth;
             public int ExportWidth;
         }
-     }
+        public SMacro sMacro;
+        public class SMacro
+        {
+            public string pythonLocation;
+            public int FullWidth;
+            public int CodeWidth;
+            public int LogWidth;
+        }
+        [JsonIgnore]
+        public Common common; // similar to broadcast in ControlAPI, fire an event every time prop changes 
+        public class Common
+        {
+            public delegate void CommonChangeHandler(Common common);
+            public event CommonChangeHandler OnCommonChange;
+            protected void Change() // only for radioMode
+            {
+                if (OnCommonChange != null) OnCommonChange(this);
+            }
+            private bool _wBool;
+            public bool wBool { get { return _wBool; } set { _wBool = wBool; Change(); } }
+            private int _wInt;
+            public int wInt { get { return _wInt; } set { _wInt = wInt; Change(); } }
+
+            public delegate void Register2sMacroHandler(string moduleName, object moduleObject, List<Tuple<string, string>> help);
+            public event Register2sMacroHandler OnRegister2sMacro;
+            public void Register2sMacro(string moduleName, object moduleObject, List<Tuple<string, string>> help) 
+            {
+                if (OnRegister2sMacro != null) OnRegister2sMacro(moduleName, moduleObject, help);
+            }
+        }
+    }
 
     /// <summary>
     /// Interaction logic, load & save for GeneralOptions genOptions

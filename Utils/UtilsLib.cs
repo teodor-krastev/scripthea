@@ -132,11 +132,10 @@ namespace UtilsNS
         // working directory for the script file is executable direcory of the c# application
         // you can change PYTHONSTARTUP for permanently set working directory location
         public static string CallPython(string scriptFile, string args, out string stderr, string python_path = "")
-        {
-            ProcessStartInfo start = new ProcessStartInfo();
+        {            
             string pp = python_path.Equals("") ? my_python_path : python_path;
             if (!File.Exists(pp)) { throw new Exception(pp + " is not there"); }
-
+            ProcessStartInfo start = new ProcessStartInfo();
             start.FileName = pp;
             string ss = args.Equals("") ? start.Arguments = string.Format("\"{0}\"", scriptFile) : start.Arguments = string.Format("\"{0}\" \"{1}\"", scriptFile, args); 
             start.UseShellExecute = false;// Do not use OS shell
@@ -165,7 +164,7 @@ namespace UtilsNS
         public static bool TheosComputer()
         {
             string cn = (string)System.Environment.GetEnvironmentVariables()["COMPUTERNAME"];
-            return (cn == "DESKTOP-M3GM68M") || (cn == "DESKTOP-U334RMA") || (cn == "THEOS") || (cn == "THEO-PC");
+            return (cn == "DESKTOP-3UQQHSO") || (cn == "DESKTOP-M3GM68M") || (cn == "DESKTOP-U334RMA") || (cn == "THEOS") || (cn == "THEO-PC");
         }
         public static bool isSingleChannelMachine // only in Axel-hub
         {
@@ -363,7 +362,7 @@ namespace UtilsNS
         public static void log(RichTextBox richText, string txt, SolidColorBrush clr = null)
         {
             if (isNull(System.Windows.Application.Current)) return;
-            Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background,
+            Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, 
               new Action(() =>
               {
                   TextRange rangeOfText1 = new TextRange(richText.Document.ContentStart, richText.Document.ContentEnd);
@@ -380,14 +379,14 @@ namespace UtilsNS
                   rangeOfText1 = new TextRange(richText.Document.ContentEnd, richText.Document.ContentEnd);
                   rangeOfText1.Text = Utils.RemoveLineEndings(txt) + "\r";
                   SolidColorBrush clr1 = System.Windows.Media.Brushes.Black; // default
-                  if (isNull(clr) && (txt.Length > 3))
+                  if (isNull(clr))
                   {
-                      if (txt.Substring(0, 3).Equals("Err")) clr1 = System.Windows.Media.Brushes.Red;
-                      if (txt.Substring(0, 3).Equals("War")) clr1 = System.Windows.Media.Brushes.Tomato;
+                      if (txt.StartsWith("Err")) clr1 = System.Windows.Media.Brushes.Red;
+                      if (txt.StartsWith("War")) clr1 = System.Windows.Media.Brushes.Tomato;
                   }
                   else clr1 = clr;
                   rangeOfText1.ApplyPropertyValue(TextElement.ForegroundProperty, clr1);
-                  richText.ScrollToEnd();
+                  richText.ScrollToEnd(); richText.UpdateLayout();
               }));
         }
         public static void log(RichTextBox richText, List<string> txt, SolidColorBrush clr = null)
@@ -647,14 +646,16 @@ namespace UtilsNS
         }
         public static string flattenTextBox(TextBox textBox, bool noComment)
         {
-            int lineCount = textBox.LineCount; string st = "";
-            for (int line = 0; line < lineCount; line++)
+            string st = ""; 
+            var lines = textBox.Text.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+            foreach (var line in lines)
             {
-                string ss = textBox.GetLineText(line).Trim();
+                string ss = line.Trim();
                 if (noComment) ss = Utils.skimRem(ss);
                 if (ss.Equals("")) continue;
                 st += " " + ss;
-            }
+            }            
+            //if (st.Equals("")) st = textBox.Text;
             return st.Replace("  ", " ").Trim();
         }
         private static String WildCardToRegular(String value) // If you want to implement both "*" and "?"
@@ -1018,7 +1019,6 @@ namespace UtilsNS
 
             return value.Replace("\r\n", string.Empty).Replace("\n", string.Empty).Replace("\r", string.Empty).Replace(lineSeparator, string.Empty).Replace(paragraphSeparator, string.Empty);
         }
-
         /// <summary>
         /// Read dictionary(string,string) from file format key=value
         /// skip empty line, starting with [ or ;
@@ -1047,7 +1047,6 @@ namespace UtilsNS
             }
             return dict;
         }
-
         [DllImport("user32.dll", SetLastError = true)]
         static extern int MessageBoxTimeout(IntPtr hwnd, String text, String title, uint type, Int16 wLanguageId, Int32 milliseconds);
         /// <summary>
@@ -1061,14 +1060,12 @@ namespace UtilsNS
             int returnValue = MessageBoxTimeout(IntPtr.Zero, text, title, Convert.ToUInt32(0), 1, milliseconds);
             //return (MessageBoxReturnStatus)returnValue;
         }
-
         /// <summary>
         /// Main directory of current app: System.Reflection.Assembly.GetEntryAssembly().Location <-> Environment.GetCommandLineArgs()[0]
         /// </summary>
         public static string appFullPath = System.Reflection.Assembly.GetEntryAssembly().Location;
         public static string appName = System.Reflection.Assembly.GetEntryAssembly().GetName().Name;
         public static bool localConfig = File.Exists(Path.ChangeExtension(System.Reflection.Assembly.GetEntryAssembly().Location, ".PDB"));
-        //public bool 
         public enum BaseLocation { oneUp, twoUp, appData, auto }
         public static BaseLocation baseLocation = BaseLocation.auto;
         private static string GetBaseLOcation(BaseLocation bl)
@@ -1104,9 +1101,7 @@ namespace UtilsNS
                 return GetBaseLOcation(baseLocation);
             }
         }
-
         public static string configPath { get { return Path.Combine(basePath,"Config")+"\\"; } }
-
         public static bool extendedDataPath { get; set; } // defaults are: in AH - true / in MM2 - false
         public static string dataPath 
         { 

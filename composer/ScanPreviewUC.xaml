@@ -12,7 +12,7 @@
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal">
             <Button x:Name="btnScanChecked" Content="Scan All Checked" HorizontalAlignment="Left" Margin="10,0,0,0" Width="137" FontSize="13" Background="MintCream" Height="25" BorderBrush="#FF052A98"/>
-            <Button x:Name="btnQuerySelected" Content="Query Selected" HorizontalAlignment="Left" Margin="5,0,0,0" Width="126" FontSize="13" Background="#FFFAFAEB" IsEnabled="False" Height="25" BorderBrush="#FF098302"/>
+            <Button x:Name="btnQuerySelected" Content="Query Selected One" HorizontalAlignment="Left" Margin="5,0,0,0" Width="140" FontSize="13" Background="#FFFAFAEB" IsEnabled="False" Height="25" BorderBrush="#FF098302"/>
             <Label x:Name="lbCheckCount" Content="Checked: " VerticalAlignment="Center" Margin="10,0,0,0"></Label>
             <Button x:Name="btnCopy" Content="Copy" HorizontalAlignment="Left" Margin="10,0,0,0" Width="91" FontSize="13" Background="#FFEBF7FA" Click="btnCopy_Click" Height="25"/>
             <Button x:Name="btnSaveAs" Content="Save As..." HorizontalAlignment="Left" Margin="5,0,0,0" Width="91" FontSize="13" Background="#FFEBF7FA" Click="btnSaveAs_Click" Height="25"/>

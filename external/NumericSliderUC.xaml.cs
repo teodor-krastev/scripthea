@@ -37,27 +37,31 @@ namespace scripthea.external
         {
             if (changing) return;
             changing = true;
-            numBox.Value = (int)slider.Value;
+            numBox.Value = (int)slider.Value; ValueChanged(this, (double)numBox.Value);
             changing = false;
         }
-
         private void numBox_ValueChanged(object sender, RoutedEventArgs e)
         {
             if (changing) return;
             changing = true;
-            slider.Value = numBox.Value;
+            slider.Value = numBox.Value; ValueChanged(this, (double)numBox.Value);
             changing = false;
         }
-
         public int Value 
         {
             get { return numBox.Value; }
             set
             {
                 changing = true;
-                numBox.Value = value; slider.Value = value;
+                numBox.Value = value; slider.Value = value; 
                 changing = false;
             }
+        }
+        public delegate void ValueChangedHandler(object sender, double value);
+        public event ValueChangedHandler OnValueChanged;
+        protected void ValueChanged(object sender, double value)
+        {
+            if (OnValueChanged != null) OnValueChanged(sender,value);
         }
     }
 }

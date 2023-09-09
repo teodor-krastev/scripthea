@@ -48,7 +48,7 @@ namespace scripthea.external
         {
             if (Utils.isNull(inDict)) return; 
             foreach (var pair in inDict) // validation
-                if (SDside.possParams.ContainsKey(pair.Key)) this[pair.Key] = pair.Value;
+                if (SDside.possParams.ContainsKey(pair.Key) && (pair.Key != "prompt")) this[pair.Key] = pair.Value;
         }
         public void GetFromImageInfo(ImageInfo ii)
         {
@@ -126,7 +126,8 @@ namespace scripthea.external
         {
             opts = _opts;
             if (!locked) return; 
-            nsWidth.Init("Width", 512, 64, 2048, 10); nsHeight.Init("Height", 512, 64, 2048, 10);
+            nsWidth.Init("Width", 512, 64, 2048, 10); nsWidth.lbTitle.Foreground = chkKeepRatio.Foreground;
+            nsHeight.Init("Height", 512, 64, 2048, 10); nsHeight.lbTitle.Foreground = chkKeepRatio.Foreground;
             foreach (string ss in SDside.Samplers)
                 cbSampler.Items.Add(new ComboBoxItem(){ Content = ss });
             nsSamplingSteps.Init("Sampl.Steps", 20, 1, 150, 1);  nsCFGscale.Init("CFG Scale", 7, 1, 30, 1);
@@ -135,15 +136,15 @@ namespace scripthea.external
             sdList.UpdateCombo(opts.general.LastSDsetting, cbSettings); btnSetParams_Click(null, null);
             chkAutoRefresh.IsChecked = opts.general.AutoRefreshSDsetting;
 
-            nsWidth.numBox.ValueChanged += new RoutedEventHandler(visual2prms); nsHeight.numBox.ValueChanged += new RoutedEventHandler(visual2prms);
+            nsWidth.OnValueChanged += new NumericSliderUC.ValueChangedHandler(SizeAdjust); nsHeight.OnValueChanged += new NumericSliderUC.ValueChangedHandler(SizeAdjust);
             nsSamplingSteps.numBox.ValueChanged += new RoutedEventHandler(visual2prms); nsCFGscale.numBox.ValueChanged += new RoutedEventHandler(visual2prms);
             locked = false; visual2prms(null, null);
         }
         public void Finish()
         {
-            if (chkAutoRefresh.IsChecked.Value) btnSetParams_Click(null, null);
+            if (chkAutoRefresh.IsChecked.Value) btnGetParams_Click(null, null);
             sdList.Save(); 
-            opts.general.LastSDsetting = cbSettings.Text; opts.general.AutoRefreshSDsetting = chkAutoRefresh.IsChecked.Value;
+            opts.general.LastSDsetting = (cbSettings.SelectedItem as ComboBoxItem).Content as string; ; opts.general.AutoRefreshSDsetting = chkAutoRefresh.IsChecked.Value;
         }
         private SDsetting _vPrms;
         public SDsetting vPrms
@@ -152,7 +153,7 @@ namespace scripthea.external
             {
                 return _vPrms;
             }
-            set // prms2visual
+            set // prms2visualOn
             {
                 if (value == null) return;
                 if (value.ContainsKey("negative_prompt")) tbNegativePrompt.Text = Convert.ToString(value["negative_prompt"]);
@@ -165,6 +166,12 @@ namespace scripthea.external
                 if (value.ContainsKey("steps")) nsSamplingSteps.Value = Convert.ToInt32(value["steps"]);
             }
         }
+        public bool stSet(string prmName, dynamic prmValue)
+        {
+            if (!SDside.curParams.Contains(prmName)) return false; 
+            vPrms = new SDsetting(new Dictionary<string, object>() { { prmName, (object)prmValue } });
+            return true;
+        }
         public void ImportImageInfo(string json, SolidColorBrush clr = null)
         {
             if (ActiveSetting == null) return;
@@ -175,21 +182,37 @@ namespace scripthea.external
         { 
             get 
             {
-                if (sdList.ContainsKey(cbSettings.Text)) return sdList[cbSettings.Text];
-                else { Utils.TimedMessageBox("Unknown setting: " + cbSettings.Text); return null; }
+                string selText = (cbSettings.SelectedItem as ComboBoxItem).Content as string;
+                if (sdList.ContainsKey(selText)) return sdList[selText];
+                else { Utils.TimedMessageBox("Unknown setting: " + selText); return null; }
             } 
         }
         protected void CheckDifference(SDsetting refSDs) // refSDs against the active SDsetting
         {
-            if (Utils.isNull(refSDs)) return;
+            if (Utils.isNull(refSDs) || Utils.isNull(ActiveSetting)) return;
             grpSDsettings.Header = "SD parameters settings" + ((ActiveSetting.Compare2SDsetting(vPrms) || chkAutoRefresh.IsChecked.Value) ? "" : " *").ToString();
+        }
+
+        protected void SizeAdjust(object sender, double value)
+        {
+            if (locked) return;
+            if (chkKeepRatio.IsChecked.Value && WxHratio > 0)
+            {
+                bool bb = locked;
+                locked = true;
+                if (sender == nsWidth) nsHeight.Value = Convert.ToInt32(nsWidth.Value / WxHratio);
+                if (sender == nsHeight) nsWidth.Value = Convert.ToInt32(nsHeight.Value * WxHratio);
+                locked = bb;
+            }
+            visual2prms(sender, null);
         }
         protected void visual2prms(object sender, RoutedEventArgs e) // live update
         {
             if (locked) return;
             _vPrms = new SDsetting();
             _vPrms["negative_prompt"] = tbNegativePrompt.Text; _vPrms["width"] = (long)nsWidth.Value; _vPrms["height"] = (long)nsHeight.Value;
-            _vPrms["sampler_name"] = cbSampler.Text; _vPrms["restore_faces"] = chkRestoreFaces.IsChecked.Value; _vPrms["seed"] = Convert.ToInt64(tbSeed.Text);
+            _vPrms["sampler_name"] = cbSampler.Text; _vPrms["restore_faces"] = chkRestoreFaces.IsChecked.Value;
+            if (long.TryParse(tbSeed.Text, out long result)) _vPrms["seed"] = result;
             _vPrms["cfg_scale"] = (double)nsCFGscale.Value; _vPrms["steps"] = (long)nsSamplingSteps.Value;
             CheckDifference(vPrms);            
         }
@@ -208,22 +231,23 @@ namespace scripthea.external
         private void btnSetParams_Click(object sender, RoutedEventArgs e) // set visuals from internal setting
         {
             SDsetting sds = ActiveSetting;
-            vPrms = sds;           
+            vPrms = sds; chkKeepRatio_Checked(sender, null);
         }
-        private void btnGetParams_Click(object sender, RoutedEventArgs e)
+        private void btnGetParams_Click(object sender, RoutedEventArgs e) 
         {
             ActiveSetting?.GetFromDict(vPrms); CheckDifference(vPrms);
         }
         private void cbSettings_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!chkAutoRefresh.IsChecked.Value) return;
-            if (sdList.ContainsKey(cbSettings.Text)) sdList[cbSettings.Text].GetFromDict(vPrms); // old one
+            string oldSel = cbSettings.Text;
+            if (sdList.ContainsKey(oldSel)) sdList[oldSel].GetFromDict(vPrms); // old one
             else Utils.TimedMessageBox("Unknown setting: " + cbSettings.Text);
 
             string newStr = "";
-            if ((sender as ComboBox).SelectedItem == null) newStr = "";
-            else newStr = ((sender as ComboBox).SelectedItem as ComboBoxItem).Content as string; // new one
-            if (sdList.ContainsKey(newStr)) vPrms = sdList[newStr];
+            if ((sender as ComboBox).SelectedItem != null) 
+                newStr = ((sender as ComboBox).SelectedItem as ComboBoxItem).Content as string; // new one
+            if (sdList.ContainsKey(newStr)) { vPrms = sdList[newStr]; chkKeepRatio_Checked(sender, null); }
             else Utils.TimedMessageBox("Unknown setting: " + newStr);
         }
         private void chkAutoRefresh_Checked(object sender, RoutedEventArgs e)
@@ -242,12 +266,13 @@ namespace scripthea.external
         private void btnAddParams_Click(object sender, RoutedEventArgs e)
         {
             SDsetting sds = vPrms.Clone();
-            if (!sdList.ContainsKey(cbSettings.Text)) { Utils.TimedMessageBox("Unknown setting: " + cbSettings.Text); return; }
+            string selText = (cbSettings.SelectedItem as ComboBoxItem).Content as string;
+            if (!sdList.ContainsKey(selText)) { Utils.TimedMessageBox("Unknown setting: " + selText); return; }
 
-            string newStg = new InputBox("Save current parameters in", cbSettings.Text, "").ShowDialog();
+            string newStg = new InputBox("Save current parameters in", selText, "").ShowDialog();
             if (newStg == "") return;
             sdList[newStg] = sds;
-            if (newStg.Equals(cbSettings.Text))
+            if (newStg.Equals(selText))
             {
                 if (chkAutoRefresh.IsChecked.Value) Utils.TimedMessageBox("same name: <" + newStg + "> - no action");
                 else Utils.TimedMessageBox("<" + newStg + "> params setting updated"); 
@@ -258,13 +283,27 @@ namespace scripthea.external
         }
         private void btnDelParams_Click(object sender, RoutedEventArgs e)
         {
-            if (sdList.ContainsKey(cbSettings.Text)) sdList.Remove(cbSettings.Text);
-            else { Utils.TimedMessageBox("Unknown setting: " + cbSettings.Text); return; }
-            Utils.TimedMessageBox(cbSettings.Text + " params setting removed");
+            string selText = (cbSettings.SelectedItem as ComboBoxItem).Content as string;
+            if (sdList.ContainsKey(selText)) sdList.Remove(selText);
+            else { Utils.TimedMessageBox("Unknown setting: " + selText); return; }
+            Utils.TimedMessageBox(selText + " params setting removed");
 
             bool ar = chkAutoRefresh.IsChecked.Value; chkAutoRefresh.IsChecked = false; // prevent cbSettings_SelectionChanged
             sdList.UpdateCombo(null, cbSettings); 
             if (ar) btnSetParams_Click(null, null); chkAutoRefresh.IsChecked = ar;
+        }
+        double WxHratio; 
+        private void chkKeepRatio_Checked(object sender, RoutedEventArgs e)
+        {
+            WxHratio = chkKeepRatio.IsChecked.Value? (double)nsWidth.Value / (double)nsHeight.Value : -1;
+        }      
+        public List<Tuple<string, string>> HelpList()
+        {
+            List<Tuple<string, string>> ls = new List<Tuple<string, string>>();
+            ls.Add(new Tuple<string, string>(
+                "stSet(string prmName, dynamic prmValue)", "Set SD parameter, returns True/False.\rPossible parameter names are:\r negative_prompt: string,\r width: integer,\r height: integer,\r sampler_name: string (Euler a, Euler, LMS, Heun, DPM2, DPM2 a,DPM++ 2Sa,DPM++ 2M, DPM++ SDE, DPM fast, DPM adaptive, LMS Karras, DPM2 Karas, DPM2 a Karas, DPM++ 2Sa Karas, DPM++ 2M Karas, DPM++ SDE Karas, DDIM, PLMS, UniPC),\r restore_faces: boolean,\r seed: integer,\r cfg_scale: integer,\r steps: integer."
+                ));
+            return ls;
         }
     }
 }

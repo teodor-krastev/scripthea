@@ -98,7 +98,7 @@ namespace scripthea.master
             Clear();
             if (!Directory.Exists(path))
             {
-                Log("Err: Directory <" + imageFolder + "> does not exist. "); return;
+                Log("Err: Directory <" + path + "> does not exist. "); return;
             }            
             if (!Utils.isNull(depotFolder))
             {

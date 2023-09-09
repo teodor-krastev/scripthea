@@ -25,6 +25,8 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <DocumentationFile>
+    </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -205,8 +207,6 @@
       <DependentUpon>SimulatorUC.xaml</DependentUpon>
     </Compile>
     <Compile Include="external\tempNVAPI.cs" />
-    <Compile Include="external\UtilsLib.cs" />
-    <Compile Include="external\VisualHelper.cs" />
     <Compile Include="viewer\GridViewUC.xaml.cs">
       <DependentUpon>GridViewUC.xaml</DependentUpon>
     </Compile>
@@ -483,6 +483,20 @@
     <Resource Include="Properties\TripleBarGrey.png" />
     <Resource Include="Properties\TripleBarRusty.png" />
     <Resource Include="Properties\TripleBarTeal.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="sMacro\AvalEditLib\AvalEditLib.csproj">
+      <Project>{25a33493-04b0-43ca-aef8-43ffe47b0418}</Project>
+      <Name>AvalEditLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="sMacro\PyCodeLib\PyCodeLib.csproj">
+      <Project>{94589c5f-f241-45b0-a685-bcafd624661a}</Project>
+      <Name>PyCodeLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="Utils\UtilsLib.csproj">
+      <Project>{a377a708-96b9-4569-bc22-0187d647611e}</Project>
+      <Name>UtilsLib</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

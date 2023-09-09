@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:scripthea" xmlns:viewer="clr-namespace:scripthea.viewer"
         xmlns:composer="clr-namespace:scripthea.composer" xmlns:master="clr-namespace:scripthea.master" 
+        xmlns:PyCodeLib="clr-namespace:PyCodeLib;assembly=PyCodeLib" 
         x:Name="MainWindow1" x:Class="scripthea.MainWindow"
         mc:Ignorable="d"
         Title="Scripthea - text-to-image prompt composer" Height="450" Width="1080.709" Loaded="MainWindow1_Loaded" Closing="MainWindow1_Closing" Icon="Properties/penzy4.png" FontSize="13" KeyDown="MainWindow1_KeyDown" PreviewKeyDown="MainWindow1_PreviewKeyDown">
@@ -25,7 +26,7 @@
                 <Button x:Name="btnClear" Content="X" Width="24" Margin="8,6,0,4" Click="btnClear_Click" Foreground="#FF9E0202" FontWeight="Bold" FontSize="14" ToolTip="Clear log" Background="{x:Null}"/>
                 <Button x:Name="btnRefresh" Width="26"  Height="26" Margin="8,0,0,0" ToolTip="Refresh directory tree" Click="btnRefresh_Click" Background="{x:Null}">
                     <ContentControl>
-                        <Image Source="Properties/refresh.png"></Image>
+                        <Image Source="Properties/refresh.png"/>
                     </ContentControl>
                 </Button>
             </StackPanel>
@@ -34,7 +35,7 @@
                 <Label x:Name="lbProcessing" FontSize="14" FontWeight="Bold" Background="{x:Null}" Margin="3,10,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="40"/>
                 <Button x:Name="btnPreferences" Margin="0,0,3,0" VerticalAlignment="Center" Background="{x:Null}" ToolTip="Edit preferences" Cursor="Hand" Click="btnPreferences_Click" Width="28" Height="28">
                     <ContentControl>
-                        <Image Source="Properties/TripleBarBlack.png" HorizontalAlignment="Center" VerticalAlignment="Center" Width="28" Height="28" Margin="1,1,0,0"></Image>
+                        <Image Source="Properties/TripleBarBlack.png" HorizontalAlignment="Center" VerticalAlignment="Center" Width="28" Height="28" Margin="1,1,0,0"/>
                     </ContentControl>
                 </Button>
             </StackPanel>
@@ -91,6 +92,17 @@
                     <GridSplitter x:Name="gridSplitterIO2" HorizontalAlignment="Left" Grid.Column="2" Margin="0" Width="5" Background="#FFE0EFFB"/>
                 </Grid>
             </TabItem>
+            <TabItem x:Name="tiSMacro" Header=" python sMacro " Width="136" Height="28" Background="#FFECECEC" HorizontalAlignment="Left"  Margin="25,0,-25,0" BorderBrush="#FF2E2E2E">
+                <Grid >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition x:Name="colSMacroFull" Width="800" MaxWidth="2000" MinWidth="200"/>
+                        <ColumnDefinition Width="2*"/>
+                    </Grid.ColumnDefinitions>
+                    <PyCodeLib:PyCodeUC x:Name="pyCode"/>
+                    <GridSplitter x:Name="gridSplitterSMacro" HorizontalAlignment="Left" Grid.Column="1" Margin="0" Width="3" Background="#FFE0EFFB"/>
+                </Grid>
+            </TabItem>
+
         </TabControl>
 
         <GridSplitter x:Name="gridSplitLeft" Grid.Column="1" HorizontalAlignment="Left" Margin="2,0" Width="12" ResizeDirection="Columns" MouseDoubleClick="gridSplitLeft_MouseDoubleClick" Visibility="Hidden">

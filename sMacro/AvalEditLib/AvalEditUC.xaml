@@ -1,0 +1,96 @@
+﻿<UserControl x:Class="AvalEditLib.AvalEditUC"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:forms="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
+             xmlns:local="clr-namespace:AvalEditLib"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <DockPanel>
+            <ToolBar DockPanel.Dock="Top" Background="#FFF6FBFF">
+                <ToolBar.Resources>
+                    <Style TargetType="{x:Type Image}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type ButtonBase}, AncestorLevel=1}, Path=IsEnabled}" Value="False">
+                                <Setter Property="Opacity" Value="0.30" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ToolBar.Resources>
+                <Button Click="openFileClick">
+                    <Image Source="Properties/Open.png" Height="16"/>
+                </Button>
+                <Button Click="saveFileClick">
+                    <Image Source="Properties/Save.png" Height="16"/>
+                </Button>
+                <Separator/>
+                <Button Command="Cut">
+                    <Image Source="Properties/Cut.png" Height="16"/>
+                </Button>
+                <Button Command="Copy">
+                    <Image Source="Properties/Copy.png" Height="16"/>
+                </Button>
+                <Button Command="Paste">
+                    <Image Source="Properties/Paste.png" Height="16"/>
+                </Button>
+                <Button Command="Delete">
+                    <Image Source="Properties/Delete.png" Height="16"/>
+                </Button>
+                <Separator/>
+                <Button Command="Undo">
+                    <Image Source="Properties/Undo.png" Height="16"/>
+                </Button>
+                <Button Command="Redo">
+                    <Image Source="Properties/Redo.png" Height="16"/>
+                </Button>
+                <Separator/>
+                <CheckBox IsChecked="{Binding ElementName=textEditor,Path=WordWrap}" Visibility="Collapsed">
+                    <Image Source="Properties/WordWrap.png" Height="16"/>
+                </CheckBox>
+                <CheckBox IsChecked="{Binding ElementName=textEditor,Path=ShowLineNumbers}">
+                    <TextBlock Width="16" TextAlignment="Center">#</TextBlock>
+                </CheckBox>
+                <CheckBox IsChecked="{Binding ElementName=textEditor,Path=Options.ShowEndOfLine}" Visibility="Collapsed">
+                    <TextBlock Width="16" TextAlignment="Center">¶</TextBlock>
+                </CheckBox>
+                <ComboBox Name="highlightingComboBox"
+				SelectedItem="{Binding SyntaxHighlighting, ElementName=textEditor}"
+				ItemsSource="{Binding Source={x:Static avalonEdit:HighlightingManager.Instance}, Path=HighlightingDefinitions}"
+				SelectionChanged="HighlightingComboBox_SelectionChanged" Margin="0" Width="60" Visibility="Collapsed"/>
+                <CheckBox x:Name="chkOptions" Margin="20,0,0,0" BorderBrush="#FFC8C8C8" Checked="chkOptions_Checked" Unchecked="chkOptions_Checked" HorizontalAlignment="Right">
+                    <Image Source="Properties/TripleBarGrey.png" Height="19"/>
+                </CheckBox>
+            </ToolBar>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition x:Name="columnProperty" Width="0"/>
+                </Grid.ColumnDefinitions>
+                <avalonEdit:TextEditor
+				Name="textEditor"
+				FontFamily="Consolas"
+				FontSize="10pt"
+				SyntaxHighlighting="Python"
+                   
+			>
+                </avalonEdit:TextEditor>
+                <GridSplitter Grid.Column="1" Width="4" HorizontalAlignment="Left" Background="#FFEEF5FD"/>
+                <DockPanel Grid.Column="1" Margin="4 0 0 0">
+                    <ComboBox Name="propertyGridComboBox" DockPanel.Dock="Top"
+				          SelectedIndex="0" SelectionChanged="propertyGridComboBoxSelectionChanged">
+                        <ComboBoxItem>TextEditor</ComboBoxItem>
+                        <ComboBoxItem>TextArea</ComboBoxItem>
+                        <ComboBoxItem>Options</ComboBoxItem>
+                    </ComboBox>
+                    <WindowsFormsHost DockPanel.Dock="Right" Name="propertyGridHost">
+                        <forms:PropertyGrid x:Name="propertyGrid"/>
+                    </WindowsFormsHost>
+                </DockPanel>
+            </Grid>
+        </DockPanel>
+
+    </Grid>
+</UserControl>

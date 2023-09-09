@@ -10,7 +10,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
             <RowDefinition Height="4*"/>
-            <RowDefinition x:Name="rowBottom" Height="42"/>
+            <RowDefinition x:Name="rowBottom" Height="60"/>
         </Grid.RowDefinitions>
         <StackPanel Margin="0" Orientation="Horizontal" HorizontalAlignment="Left">
             <Button x:Name="btnCopy" Margin="7,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Right" Background="{x:Null}" ToolTip="Edit preferences" Cursor="Hand" Width="30" Height="28" BorderBrush="#FFCECECE" Click="btnCopy_Click" >
@@ -41,7 +41,7 @@
                 <ColumnDefinition Width="60"/>
             </Grid.ColumnDefinitions>
 
-            <TextBox x:Name="tbCue" Margin="0" TextWrapping="Wrap" Text="" Background="White" IsReadOnly="True" FontSize="13" BorderThickness="0,1,0,0" HorizontalAlignment="Center" />
+            <TextBox x:Name="tbCue" Margin="0" TextWrapping="Wrap" Text="" Background="White" IsReadOnly="True" FontSize="13" BorderThickness="0,1,0,0" HorizontalAlignment="Center" VerticalScrollBarVisibility="Auto" />
             <ListBox x:Name="lboxMetadata" Margin="3,0,0.202,-0.076" Grid.Column="1" Visibility="Collapsed" BorderBrush="DarkGreen" ></ListBox>
             <CheckBox x:Name="chkExtra" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Background="#FFFDFEED" Content="Meta" FontSize="14" Margin="0,0,3,0" Checked="chkExtra_Checked" Unchecked="chkExtra_Unchecked" Foreground="DarkGreen"/>
         </Grid>
