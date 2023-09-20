@@ -93,7 +93,7 @@ namespace scripthea.master
             checkBoxes?.Clear(); dTable?.Rows?.Clear(); lstFiles?.Items?.Clear(); lbAdd2Depot.Content = "";
         }
         private List<CheckBox> checkBoxes = new List<CheckBox>();
-        public void LoadImages(string path)
+        public void LoadImages(string path, bool warning = true)
         {
             Clear();
             if (!Directory.Exists(path))
@@ -116,7 +116,7 @@ namespace scripthea.master
                 else orgFiles = new List<string>(Directory.GetFiles(imageFolder, "*.png"));
             }
             if (!Utils.isNull(depotFolder)) orgFiles = depotFolder.Extras();     
-            if (orgFiles.Count.Equals(0)) { Log("No image files to consider in " + path); return; }
+            if (orgFiles.Count.Equals(0) && warning) { Log("No image files to consider in " + path); return; }
             switch (tcMain.SelectedIndex)
             {
                 case 0: //tiList - redundant
@@ -248,7 +248,7 @@ namespace scripthea.master
             }
             finally
             {
-                if (rc > k) LoadImages(imageFolder);
+                if (rc > k) LoadImages(imageFolder, false);
                 else
                 {
                     dTable.Rows.Clear(); image.Source = null; lastLoadedPic = ""; GetChecked();

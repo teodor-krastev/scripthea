@@ -285,6 +285,7 @@ namespace scripthea.viewer
             List<Tuple<int, string, string>> itms = new List<Tuple<int, string, string>>();
             foreach (PicItemUC piUC in picItems)
             {
+                if (piUC.imgInfo == null) continue;
                 if (piUC.IsChecked == null) continue;
                 if ((bool)piUC.IsChecked)
                 {

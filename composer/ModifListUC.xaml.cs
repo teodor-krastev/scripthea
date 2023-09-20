@@ -89,7 +89,7 @@ namespace scripthea.composer
                 if (ss.StartsWith("["))
                 {                    
                     char[] charsToTrim = { '[', ']' };
-                    ModifListName = ss.Trim(charsToTrim);
+                    CategoryName = ss.Trim(charsToTrim);
                     isChecked = false;                   
                     i++; continue;
                 }
@@ -115,10 +115,22 @@ namespace scripthea.composer
             }
             return true;
         }
-        public string ModifListName
+        public string CategoryName
         {
             get { return Convert.ToString(chkCategory.Content); }
             set { chkCategory.Content = value; }
+        }
+        public ModifItemUC modifByName(string modifName)
+        {
+            ModifItemUC rmdf = null;
+            foreach (ModifItemUC mdf in modifList)
+                if (mdf.Text.Equals(modifName)) { rmdf = mdf; break; }
+            return rmdf;
+        }
+        public void Reset()
+        {           
+            foreach (ModifItemUC mdf in modifList) mdf.modifStatus = ModifStatus.Off;
+            isChecked = false;
         }
         public event RoutedEventHandler OnChange;        
         protected void Change(object sender, RoutedEventArgs e)

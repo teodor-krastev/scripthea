@@ -33,7 +33,7 @@
             </Grid>
 
             <TabControl x:Name="tcQuery" Margin="0"  SelectedIndex="0" SelectionChanged="tcQuery_SelectionChanged" >
-                <TabItem x:Name="tiSingle" Header="Single" Width="70" Height="25" Background="#FFECECEC" Margin="2,0,-9.063,0.089" HorizontalAlignment="Left" BorderBrush="#FF0A9401">
+                <TabItem x:Name="tiSingle" Header="Single" Width="90" Height="25" Background="#FFECECEC" Margin="2,0,-9.063,0.089" HorizontalAlignment="Left" BorderBrush="#FF0A9401">
                     <Grid>
                         <Button x:Name="btnCompose" Content="Compose a prompt" Height="30" Width="130" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,7,0,0" Click="btnCompose_Click" Background="#FFFAFAEB" FontSize="13"/>
                         <Button x:Name="btnQuery" Content="Generate image" Height="30" Width="120" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="150,7,0,0" Background="#FFEBF3FA" FontSize="13" Click="btnQuery_Click"/>
@@ -42,7 +42,7 @@
                         <CheckBox x:Name="chkOneLineCue" Content="One line cue" Width="87" Margin="105,50,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Checked="UpdateToOptions" Unchecked="UpdateToOptions" IsChecked="True" Visibility="Collapsed" />
                     </Grid>
                 </TabItem>
-                <TabItem x:Name="tiScan" Header="Scan" Height="25" Background="#FFECECEC" Margin="5,0,-9.063,0.089" HorizontalAlignment="Left" Width="69" BorderBrush="#FF6C009C" >
+                <TabItem x:Name="tiScan" Header="Scan" Height="25" Background="#FFECECEC" Margin="5,0,-9.063,0.089" HorizontalAlignment="Left" Width="90" BorderBrush="#FF6C009C" >
                     <Grid Background="White">
                         <Button x:Name="btnScan" Content="S c a n" Height="30" Width="77" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,7,0,0" FontWeight="Bold" Background="#FFFDFFED" Click="btnScan_Click" FontSize="13" BorderBrush="#FF0233A2"/>
                         <TextBox HorizontalAlignment="Right" Text="Combine all checked cues + fixed modifiers + some (by modif. sample number) of scanned modifiers." Width="162" Margin="0,0,-0.228,0" TextWrapping="Wrap" Background="{x:Null}" BorderBrush="{x:Null}" VerticalAlignment="Top" FontSize="12"/>
@@ -51,7 +51,7 @@
 
                     </Grid>
                 </TabItem>
-                <TabItem x:Name="tiOptions" Header="Options" Height="25" Background="#FFECECEC" Margin="10,0,-11,0.089" HorizontalAlignment="Left" Width="70">
+                <TabItem x:Name="tiOptions" Header="Options" Height="25" Background="#FFECECEC" Margin="10,0,-11,0.089" HorizontalAlignment="Left" Width="90">
                     <Grid >
                         <GroupBox x:Name="gbFolder" VerticalAlignment="Bottom" Header=" Depot folder for generated images"  Height="50" Background="#FFFBFBF4">
                             <Grid>

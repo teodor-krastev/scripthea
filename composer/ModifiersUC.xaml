@@ -1,15 +1,16 @@
-﻿<UserControl x:Class="scripthea.composer.ModifiersUC"
+﻿<UserControl
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:scripthea" xmlns:UtilsNS="clr-namespace:UtilsNS"
+             xmlns:local1="clr-namespace:scripthea.composer" x:Class="scripthea.composer.ModifiersUC"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Name="colMap" Width="155"/>
+            <ColumnDefinition x:Name="colMap" Width="155"/>
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
 
@@ -20,11 +21,11 @@
                 <RowDefinition Height="1*"/>
                 <RowDefinition Height="200"/>
             </Grid.RowDefinitions>
-            <Label Content="Modifiers Map" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="DarkGreen"></Label>
+            <Label Content="Modifiers Map" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="DarkGreen"/>
             <ListBox x:Name="listBox" Grid.Row="1"  Margin="2,0,2,2" />
-            <GridSplitter  Grid.Row="2" Cursor="SizeNS" VerticalAlignment="Top" HorizontalAlignment="Stretch" Height="3"></GridSplitter>
-            <StackPanel Grid.Row="2" Margin="0,5,0,0">
-                <Label Content="Mark (use ? * wildcards)"></Label>
+            <GridSplitter  Grid.Row="2" Cursor="SizeNS" VerticalAlignment="Top" HorizontalAlignment="Stretch" Height="3"/>
+            <StackPanel Grid.Row="2" Margin="0,5,2,0">
+                <Label Content="Mark (use ? * wildcards)"/>
                 <Grid x:Name="gridSearch" Height="23" >
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
@@ -35,39 +36,40 @@
                     <Button x:Name="btnSearch" Grid.Column="1" Content=" Mark " Click="btnSearch_Click" Background="#FFFEFBFB" Foreground="#FF009515" Margin="3.076,0,0,0" HorizontalAlignment="Left" FontWeight="Bold" />
                     <Button x:Name="btnClear" Grid.Column="1" Content=" X " Click="btnClear_Click" Foreground="#FFCB0202" FontWeight="Bold" Background="#FFFAFAFA" Margin="4,0,0,0" HorizontalAlignment="Right"/>
                 </Grid>
-                <ListBox x:Name="lbCategories" Margin="0,3,0,0" ScrollViewer.VerticalScrollBarVisibility="Visible" VerticalAlignment="Top"></ListBox>
+                <ListBox x:Name="lbCategories" Margin="0,3,0,0" ScrollViewer.VerticalScrollBarVisibility="Visible" VerticalAlignment="Top"/>
             </StackPanel>
             <GroupBox Header="Modifiers Options" Grid.Row="3" Margin="2">
                 <StackPanel x:Name="stackOptModifiers" Margin="2,8,2,2" >
-                    <Label Content="Scan. modif. sample #" ToolTip="Number of scanable modifiers in a prompt" FontWeight="Bold" Margin="0,-4,0,0" Background="MintCream"></Label>
+                    <Label Content="Scan. modif. sample #" ToolTip="Number of scanable modifiers in a prompt" FontWeight="Bold" Margin="0,-4,0,0" Background="MintCream"/>
                     <StackPanel Orientation="Horizontal" Margin="0,-3,0,5" Background="MintCream">
-                        <Label x:Name="lbSample" Content="in a prompt  " FontWeight="Bold"></Label>
-                        <UtilsNS:NumericBox x:Name="numSample" Width="40" Maximum="9" Minimum="1" ValueChanged="numSample_ValueChanged" FontWeight="Bold"></UtilsNS:NumericBox>
+                        <Label x:Name="lbSample" Content="in a prompt  " FontWeight="Bold"/>
+                        <UtilsNS:NumericBox x:Name="numSample" Width="40" Maximum="9" Minimum="1" ValueChanged="numSample_ValueChanged" FontWeight="Bold"/>
                     </StackPanel>
-                    <CheckBox x:Name="chkAddEmpty" Content="Add an empty modifier" Margin="0,5,0,10" ToolTip="Add an empty modfifier to the scan list" Checked="chkAddEmpty_Checked" Unchecked="chkAddEmpty_Checked"></CheckBox>
+                    <CheckBox x:Name="chkAddEmpty" Content="Add an empty modifier" Margin="0,5,0,10" ToolTip="Add an empty modfifier to the scan list" Checked="chkAddEmpty_Checked" Unchecked="chkAddEmpty_Checked"/>
                     <StackPanel Orientation="Horizontal" Margin="-2,10,0,7" Background="MintCream">
-                        <Label x:Name="lbSeparator" Content="Modif. Separator" FontWeight="Bold"></Label>
+                        <Label x:Name="lbSeparator" Content="Modif. Separator" FontWeight="Bold"/>
                         <TextBox x:Name="tbModifPrefix" Height="23" Margin="0,3,0,0" TextWrapping="Wrap" Text=";" VerticalAlignment="Top" Width="30" FontWeight="Bold" FontSize="13" TextChanged="tbModifPrefix_TextChanged"/>
                     </StackPanel>
-                    <CheckBox x:Name="chkRemoveDuplicates" Content="Remove duplicates" Margin="0,10,0,0" Checked="chkRemoveDuplicates_Checked" Unchecked="chkRemoveDuplicates_Unchecked" ToolTip="Remove duplicated modifiers"></CheckBox>
-                    
+                    <CheckBox x:Name="chkRemoveDuplicates" Content="Remove duplicates" Margin="0,10,0,0" Checked="chkRemoveDuplicates_Checked" Unchecked="chkRemoveDuplicates_Unchecked" ToolTip="Remove duplicated modifiers"/>
+
                 </StackPanel>
             </GroupBox>
         </Grid>
         <StackPanel x:Name="stackModifiers" Margin="0,0,0.203,0.228" Grid.Column = "1" Orientation="Horizontal">
+            <local1:mSetStackUC x:Name="mSetStack" Width="170"/>
         </StackPanel>
         <Button x:Name="btnModifMap" Width="27" HorizontalAlignment="Left" Margin="0,1,5,0" FontWeight="Bold"  Click="btnModifMap_Click" BorderBrush="#FF589B37" BorderThickness="0" Height="25" VerticalAlignment="Top" Background="White">
             <StackPanel>
                 <Button x:Name="btnOpenOpts" HorizontalAlignment="Left" VerticalAlignment="Bottom" Background="{x:Null}" Margin="0" BorderBrush="{x:Null}" >
                     <ContentControl>
                         <Image x:Name="imgOpen" Source="/Scripthea;component/Properties/right_black_arrow.png" ToolTip="Open modifiers map" Margin="0"   
-                       Cursor="Hand" HorizontalAlignment="Left" VerticalAlignment="Center"></Image>
+                       Cursor="Hand" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                     </ContentControl>
                 </Button>
                 <Button x:Name="btnCloseOpts" HorizontalAlignment="Left" VerticalAlignment="Bottom" Background="{x:Null}" Margin="0"  BorderBrush="{x:Null}" Visibility="Collapsed">
                     <ContentControl>
                         <Image x:Name="imgClose" Source="/Scripthea;component/Properties/left_black_arrow.png" ToolTip="Close modifiers map" Margin="0"  
-                       Cursor="Hand" HorizontalAlignment="Center" VerticalAlignment="Center"></Image>
+                       Cursor="Hand" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </ContentControl>
                 </Button>
 

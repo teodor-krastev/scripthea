@@ -25,16 +25,22 @@ namespace scripthea.composer
     public partial class ModifiersUC : UserControl
     {
         private string ModifiersFolder;
-        public List<ModifListUC> modifLists;
+        public List<ModifListUC> categories;
+        public Dictionary<string, ModifListUC> CategoriesAsDict()
+        {
+            Dictionary<string, ModifListUC> dct = new Dictionary<string, ModifListUC>();
+            foreach (ModifListUC itm in categories) dct.Add(itm.CategoryName, itm);
+            return dct;
+        }
         public Dictionary<string, bool> ModifMap;
         public List<ModifItemUC> modifItems
         {
             get
             {
                 List<ModifItemUC> mdf = new List<ModifItemUC>();
-                if (!Utils.isNull(modifLists))
+                if (!Utils.isNull(categories))
                 {
-                    foreach (ModifListUC mdl in modifLists)
+                    foreach (ModifListUC mdl in categories)
                         mdf.AddRange(mdl.modifList);
                 }
                 return mdf;
@@ -50,7 +56,7 @@ namespace scripthea.composer
             ModifiersFolder = System.IO.Path.Combine(Utils.basePath, "modifiers");
             opts = _opts; chkAddEmpty.IsChecked = opts.composer.AddEmptyModif; 
             numSample.Value = Utils.EnsureRange(opts.composer.ModifSample, 1,9);
-            modifLists = new List<ModifListUC>();
+            categories = new List<ModifListUC>();
             var files = new List<string>(Directory.GetFiles(ModifiersFolder, "*.mdfr"));
             if (File.Exists(mapFile))
             {
@@ -63,20 +69,21 @@ namespace scripthea.composer
                 ModifListUC cmu = new ModifListUC(fn, ref opts);
                 cmu.OnChange += new RoutedEventHandler(Change);
                 cmu.OnLog += new Utils.LogHandler(Log);
-                modifLists.Add(cmu);
+                categories.Add(cmu);
                 stackModifiers.Children.Add(cmu);
                 if (!Utils.isNull(ModifMap))
-                    if (ModifMap.ContainsKey(cmu.ModifListName))
-                        cmu.isVisible = ModifMap[cmu.ModifListName];
+                    if (ModifMap.ContainsKey(cmu.CategoryName))
+                        cmu.isVisible = ModifMap[cmu.CategoryName];
             }
             ShowMap = true; ShowMap = false; tbModifPrefix.Text = opts.composer.ModifPrefix;
             SetSingleScanMode(true);
+            mSetStack.Init(ref opts, ref categories, ModifiersFolder); 
         }
-
         public void Finish()
         {            
             ShowMap = false; // update ModifMap;
             System.IO.File.WriteAllText(mapFile, JsonConvert.SerializeObject(ModifMap));
+            mSetStack.Finish();
         }
         public event RoutedEventHandler OnChange;
         protected void Change(object sender, RoutedEventArgs e)
@@ -92,8 +99,8 @@ namespace scripthea.composer
         {
             foreach (CheckBox chk in listBox.Items)
                 ModifMap[chk.Content.ToString()] = chk.IsChecked.Value;
-            foreach (ModifListUC cmu in modifLists)
-                cmu.isVisible = ModifMap.ContainsKey(cmu.ModifListName) ? ModifMap[cmu.ModifListName] : true;
+            foreach (ModifListUC cmu in categories)
+                cmu.isVisible = ModifMap.ContainsKey(cmu.CategoryName) ? ModifMap[cmu.CategoryName] : true;
         }
         public string mapFile { get { return System.IO.Path.Combine(ModifiersFolder, "modifiers.map"); } }
         private bool _ShowMap;
@@ -107,13 +114,13 @@ namespace scripthea.composer
                 {
                     colMap.Width = new GridLength(180);
                     listBox.Items.Clear();
-                    foreach (var cmu in modifLists)
+                    foreach (var cmu in categories)
                     {
                         CheckBox chk = new CheckBox();
                         chk.Height = 23;
                         chk.Checked += new RoutedEventHandler(CatChange); chk.Unchecked += new RoutedEventHandler(CatChange);
-                        chk.IsChecked = ModifMap.ContainsKey(cmu.ModifListName) ? ModifMap[cmu.ModifListName] : true;
-                        chk.Content = cmu.ModifListName;
+                        chk.IsChecked = ModifMap.ContainsKey(cmu.CategoryName) ? ModifMap[cmu.CategoryName] : true;
+                        chk.Content = cmu.CategoryName;
                         listBox.Items.Add(chk);
                     }
                     btnOpenOpts.Visibility = Visibility.Collapsed; btnCloseOpts.Visibility = Visibility.Visible;
@@ -124,9 +131,9 @@ namespace scripthea.composer
                     colMap.Width = new GridLength(1);
                     CatChange(null, null);
                     bool firstSet = false;
-                    foreach (ModifListUC cmu in modifLists)
+                    foreach (ModifListUC cmu in categories)
                     {
-                        cmu.isVisible = ModifMap[cmu.ModifListName];
+                        cmu.isVisible = ModifMap[cmu.CategoryName];
                         if (cmu.isVisible && !firstSet) { cmu.SetHeaderPosition(true); firstSet = true; }
                         else cmu.SetHeaderPosition(false);
                     }
@@ -147,7 +154,7 @@ namespace scripthea.composer
         {
             List<string> ls = new List<string>();
             if (ms.Equals(ModifStatus.Scannable) && opts.composer.AddEmptyModif) ls.Add("");
-            foreach (ModifListUC sm in modifLists)
+            foreach (ModifListUC sm in categories)
             {
                 if (!sm.isChecked) continue;
                 foreach (ModifItemUC mdf in sm.modifList)
@@ -174,17 +181,17 @@ namespace scripthea.composer
         private void removeDuplicates()
         {
             Log("Removing duplicate modifiers... ");
-            for (int i = 0; i < modifLists.Count; i++)
+            for (int i = 0; i < categories.Count; i++)
             {
-                ModifListUC ml = modifLists[i]; // source               
+                ModifListUC ml = categories[i]; // source               
                 ml.chkCategory.FontWeight = FontWeights.Bold; ml.chkCategory.UpdateLayout(); Utils.DoEvents();
                 for (int j = 0; j < ml.modifList.Count; j++)
                 {
                     ModifItemUC mi = modifItems[j]; // inside the source
-                    for (int k = i + 1; k < modifLists.Count; k++)
+                    for (int k = i + 1; k < categories.Count; k++)
                     {
-                        if (modifLists[k].removeByText(mi.Text)) 
-                            modifLists[k].UpdateLayout();
+                        if (categories[k].removeByText(mi.Text)) 
+                            categories[k].UpdateLayout();
                     }
                 }
                 ml.chkCategory.FontWeight = FontWeights.Normal; ml.chkCategory.UpdateLayout();
@@ -196,28 +203,28 @@ namespace scripthea.composer
         }
         private void chkRemoveDuplicates_Unchecked(object sender, RoutedEventArgs e)
         {
-            for (int i = 0; i < modifLists.Count; i++)
+            for (int i = 0; i < categories.Count; i++)
             {
-                modifLists[i].OpenCat();
+                categories[i].OpenCat();
             }
         }
         private void btnSearch_Click(object sender, RoutedEventArgs e)
         {
             lbCategories.Items.Clear();
             if (tbSearch.Text == "") return;           
-            foreach (ModifListUC ml in modifLists)
+            foreach (ModifListUC ml in categories)
             {
                 int k = ml.markWithWildcard(tbSearch.Text);
                 if (k == 0) continue;
                 ListBoxItem lbi = new ListBoxItem();
-                lbi.Content = ml.ModifListName + " ("+k+")";
+                lbi.Content = ml.CategoryName + " ("+k+")";
                 lbCategories.Items.Add(lbi);
             }
         }
         private void btnClear_Click(object sender, RoutedEventArgs e)
         {
             tbSearch.Text = "";
-            foreach (ModifListUC ml in modifLists)
+            foreach (ModifListUC ml in categories)
                 ml.demark();
             lbCategories.Items.Clear();
         }

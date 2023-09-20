@@ -142,6 +142,12 @@
     <Compile Include="composer\ModifItemUC.xaml.cs">
       <DependentUpon>ModifItemUC.xaml</DependentUpon>
     </Compile>
+    <Compile Include="composer\mSetStackUC.xaml.cs">
+      <DependentUpon>mSetStackUC.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="composer\mSetUC.xaml.cs">
+      <DependentUpon>mSetUC.xaml</DependentUpon>
+    </Compile>
     <Compile Include="composer\QueryUC.xaml.cs">
       <DependentUpon>QueryUC.xaml</DependentUpon>
     </Compile>
@@ -243,6 +249,14 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="composer\ModifItemUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="composer\mSetStackUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="composer\mSetUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -497,6 +511,15 @@
       <Project>{a377a708-96b9-4569-bc22-0187d647611e}</Project>
       <Name>UtilsLib</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Properties\update.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Properties\plus.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Properties\minus.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -67,6 +67,7 @@ namespace scripthea.composer
             opts = _opts;
             if (!Directory.Exists(cuesFolder)) { Utils.TimedMessageBox("Fatal error: cues folder <" + cuesFolder + "> does not exist.", "Closng application", 4000); Application.Current.Shutdown(); }
             iPickerX.Init(ref _opts); iPickerX.Configure('X', new List<string>(), "Including modifiers", "", "Browse", true).Click += new RoutedEventHandler(Browse_Click);
+            iPickerX.chkCustom1.IsChecked = true;
             iPickerX.chkCustom1.Checked += new RoutedEventHandler(Modifiers_Checked); iPickerX.chkCustom1.Unchecked += new RoutedEventHandler(Modifiers_Checked);
             btnSDparams = new Button(); btnSDparams.Content = " set SD params ►>"; btnSDparams.Margin = new Thickness(7, 2, 0, 0); btnSDparams.Background = null;
             btnSDparams.VerticalAlignment = VerticalAlignment.Center; btnSDparams.Height = 26; btnSDparams.Click += new RoutedEventHandler(btnSDparams_Click); btnSDparams.IsEnabled = false;

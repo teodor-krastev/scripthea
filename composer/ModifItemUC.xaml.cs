@@ -20,7 +20,6 @@ namespace scripthea.composer
     {
         Off, Fixed, Scannable
     }
-
     /// <summary>
     /// Interaction logic for ModifItemUC.xaml
     /// </summary>
@@ -42,7 +41,6 @@ namespace scripthea.composer
         {
             if (OnLog != null) OnLog(txt, clr);
         }
-
         private ModifStatus _modifStatus;
         public ModifStatus modifStatus
         {

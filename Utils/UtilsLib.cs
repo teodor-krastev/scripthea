@@ -20,14 +20,11 @@ using System.Reflection;
 using System.Drawing;
 using System.Net;
 using System.Net.NetworkInformation;
+using MessageBox = System.Windows.Forms.MessageBox;
 
 using Label = System.Windows.Controls.Label;
 using FontFamily = System.Windows.Media.FontFamily;
 using System.Linq;
-
-//using NationalInstruments.Controls;
-//using Newtonsoft.Json;
-//using Newtonsoft.Json.Converters;
 
 
 namespace UtilsNS
@@ -774,8 +771,14 @@ namespace UtilsNS
         /// </summary>
         /// <param name="filename">yes, you guessed right...</param>
         /// <param name="ls">The list in question</param>
-        public static void writeList(string filename, List<string> ls)
+        public static void writeList(string filename, List<string> ls, bool skipIfEmpty = true)
         {
+            if (isNull(ls)) return;
+            if (skipIfEmpty)
+            {
+                if (ls.Count == 0) return;
+                if (string.Join("", ls.ToArray()).Trim().Equals("")) return;
+            }
             File.WriteAllLines(filename, ls.ToArray());
         }
         // 
@@ -1047,6 +1050,11 @@ namespace UtilsNS
             }
             return dict;
         }
+        public static bool ConfirmationMessageBox(string question)
+        {
+            return MessageBox.Show(question, "Confirmation", System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes;
+        }
+
         [DllImport("user32.dll", SetLastError = true)]
         static extern int MessageBoxTimeout(IntPtr hwnd, String text, String title, uint type, Int16 wLanguageId, Int32 milliseconds);
         /// <summary>
@@ -1925,7 +1933,7 @@ namespace UtilsNS
         {
             clickedOk = true;
             if (input.Text == "")
-                MessageBox.Show(errormessage, errortitle, MessageBoxButton.OK, MessageBoxImage.Error);
+                System.Windows.MessageBox.Show(errormessage, errortitle, MessageBoxButton.OK, MessageBoxImage.Error);
             else
             {
                 Box.Close();

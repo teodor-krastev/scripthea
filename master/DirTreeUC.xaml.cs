@@ -536,17 +536,19 @@ Color rgbColor = Color.FromRgb(r, g, b);
                         subitem.Header = s.Substring(s.LastIndexOf("\\") + 1);  // the name of the folder
                         subitem.Tag = s;                                        // the path to the folder
                         subitem.FontWeight = FontWeights.Normal; subitem.FontSize = tvFolders.FontSize;
-                        int checkImageDepot = ImgUtils.checkImageDepot(s, false); if (checkImageDepot < 0) continue;
+                        
+                        int checkImageDepot = ImgUtils.checkImageDepot(s, false); if (checkImageDepot < 0) continue;                       
                         if (checkImageDepot > 0)
                         {
                             subitem.FontSize = tvFolders.FontSize + 0.5;
-                            subitem.Foreground = Brushes.Blue; 
+                            subitem.Foreground = Brushes.Blue; subitem.ToolTip = "#"+ checkImageDepot.ToString();
                         }
                         checkImageDepot = ImgUtils.checkImageDepot(s, true); if (checkImageDepot < 0) continue;
                         if (checkImageDepot > 0)
                         {
                             subitem.FontSize = tvFolders.FontSize + 0.5;
-                            subitem.Foreground = Utils.ToSolidColorBrush("#FF02CB02"); // greenish             
+                            subitem.Foreground = Utils.ToSolidColorBrush("#FF02CB02"); // greenish
+                            subitem.ToolTip = "idf:" + checkImageDepot.ToString();                                                          
                         }
                         bool bc = true; ;
                         try

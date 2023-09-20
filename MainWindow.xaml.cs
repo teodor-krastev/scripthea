@@ -106,7 +106,7 @@ namespace scripthea
             if (opts.composer.SingleAuto) queryUC.btnCompose_Click(null, null);
             // pyCode Init
             
-            if (Utils.TheosComputer()) pyCode.Init(@"C:\Software\Python\Python310\python310.dll");
+            if (Utils.TheosComputer() && Utils.isInVisualStudio) pyCode.Init(@"C:\Software\Python\Python310\python310.dll");
             if (!pyCode.IsEnabled) tiSMacro.Visibility = Visibility.Collapsed;
             else
             {
