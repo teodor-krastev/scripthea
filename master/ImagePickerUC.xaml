@@ -46,12 +46,8 @@
                         </ContextMenu>
                     </Button.ContextMenu>
                 </Button>
-
-                <StackPanel Background="#FFEEF6FA" Width="135" Orientation="Horizontal" VerticalAlignment="Center" Margin="5,2,0,0">
-                    <Label Content="View" Margin="0,-2,0,0" VerticalAlignment="Center" FontSize="13"/>
-                    <RadioButton x:Name="rbList" Content="List" VerticalAlignment="Center" Margin="3,0" IsChecked="True" Checked="rbList_Checked" FontSize="13"/>
-                    <RadioButton x:Name="rbGrid" Content="Grid" VerticalAlignment="Center" Margin="3,0,0,0" Checked="rbList_Checked" FontSize="13"/>
-                </StackPanel>
+                <Grid Width="110">
+                </Grid>
                 <ComboBox x:Name="comboCustom" SelectedIndex="0" Background="White" Margin="10,0,0,0" VerticalAlignment="Center">
                     <ComboBoxItem Content="comboCustom"/>
                 </ComboBox>
@@ -60,11 +56,11 @@
             </StackPanel>
             <Label x:Name="lbChecked" Grid.Column="1" Content="# images" MouseDoubleClick="MCheckUncheck" Foreground="Blue" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,3.667,0" />
         </Grid>
-        <TabControl x:Name="tcMain" Grid.Row="2" BorderBrush="{x:Null}" SelectedIndex="0" Margin="0" BorderThickness="0" SelectionChanged="tcMain_SelectionChanged">
-            <TabItem x:Name="tiList" Header="List" Visibility="Collapsed">
+        <TabControl x:Name="tcMain" Grid.Row="1" BorderBrush="{x:Null}" SelectedIndex="0" Margin="0" BorderThickness="0" SelectionChanged="tcMain_SelectionChanged" Grid.RowSpan="2" Panel.ZIndex="100">
+            <TabItem x:Name="tiList" Header="List" Height="28" Width="50" Margin="25,-2,-50,0"  BorderBrush="Navy">
                 <viewer:TableViewUC x:Name="listView" Margin="0" />
             </TabItem>
-            <TabItem x:Name="tiGrid" Header="Grid" Visibility="Collapsed" >
+            <TabItem x:Name="tiGrid" Header="Grid" Height="28" Width="50" Margin="32,-2,-50,0" BorderBrush="DarkGreen">
                 <viewer:GridViewUC x:Name="gridView"  Margin="0"/>
             </TabItem>
         </TabControl>

@@ -63,12 +63,12 @@
                 <Label x:Name="lbDepotInfo" Content="" VerticalAlignment="Top" Margin="0,0,5,0" HorizontalAlignment="Left" ></Label>
             </StackPanel>
             <TabControl x:Name="tabCtrlViews" Grid.Row="1" SelectedIndex="0" BorderBrush="{x:Null}" Panel.ZIndex="10" SelectionChanged="tabCtrlViews_SelectionChanged">
-                <TabItem x:Name="tiTable" Header="Table view"  Height="25" Background="#FFECECEC" Width="120" >
+                <TabItem x:Name="tiTable" Header="List view"  Height="25" Background="#FFECECEC" Width="120" BorderBrush="Navy" >
                     <Grid>
                         <local:TableViewUC x:Name="tableViewUC"/>
                     </Grid>
                 </TabItem>
-                <TabItem x:Name="tiGrid" Header="Grid view" Height="25" Background="#FFECECEC"  Width="120" Margin="2.38,-1,-10.835,0.911">
+                <TabItem x:Name="tiGrid" Header="Grid view" Height="25" Background="#FFECECEC"  Width="120" Margin="2.38,-1,-10.835,0.911" BorderBrush="DarkGreen">
                     <Grid>
                         <local:GridViewUC x:Name="gridViewUC"/>
                     </Grid>

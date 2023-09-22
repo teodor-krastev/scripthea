@@ -240,7 +240,8 @@ namespace scripthea.master
             if (iDepot != null) 
                 if (iDepot.isEnabled) ChangeDepot(iDepot, null);
             lastTab = null;
-            rbList_Checked(null, null); GetChecked();
+            tcMain_SelectionChanged(null, null); 
+            GetChecked();
         }
         private void mi_Click(object sender, RoutedEventArgs e)
         {
@@ -278,11 +279,15 @@ namespace scripthea.master
             GetChecked();
         }
         TabItem lastTab = null;
-        private void rbList_Checked(object sender, RoutedEventArgs e)
+ /*       private void rbList_Checked(object sender, RoutedEventArgs e)
         {
             if (tcMain == null || iDepot == null) return;
             if (rbList.IsChecked.Value) tcMain.SelectedIndex = 0;            
             if (rbGrid.IsChecked.Value) tcMain.SelectedIndex = 1;
+        }*/
+        private void tcMain_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (tcMain == null || iDepot == null) return;            
             if (activeView.iDepot != null)
             {
                 if (!Utils.comparePaths(iDepot.path, activeView.loadedDepot)) // avoid reload already loaded depot
@@ -297,10 +302,6 @@ namespace scripthea.master
                 listView.SynchroChecked(gridView.GetItems(true, false));
             lastTab = (TabItem)tcMain.SelectedItem;
             GetChecked();
-        }
-        private void tcMain_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (tcMain == null || iDepot == null) return;            
         }
         private void image_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
