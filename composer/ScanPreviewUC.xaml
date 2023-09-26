@@ -11,12 +11,27 @@
             <RowDefinition Height="5*"/>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal">
-            <Button x:Name="btnScanChecked" Content="Scan All Checked" HorizontalAlignment="Left" Margin="10,0,0,0" Width="137" FontSize="13" Background="MintCream" Height="25" BorderBrush="#FF052A98"/>
-            <Button x:Name="btnQuerySelected" Content="Query Selected One" HorizontalAlignment="Left" Margin="5,0,0,0" Width="140" FontSize="13" Background="#FFFAFAEB" IsEnabled="False" Height="25" BorderBrush="#FF098302"/>
-            <Label x:Name="lbCheckCount" Content="Checked: " VerticalAlignment="Center" Margin="10,0,0,0"></Label>
-            <Button x:Name="btnCopy" Content="Copy" HorizontalAlignment="Left" Margin="10,0,0,0" Width="91" FontSize="13" Background="#FFEBF7FA" Click="btnCopy_Click" Height="25"/>
-            <Button x:Name="btnSaveAs" Content="Save As..." HorizontalAlignment="Left" Margin="5,0,0,0" Width="91" FontSize="13" Background="#FFEBF7FA" Click="btnSaveAs_Click" Height="25"/>
-            <Button x:Name="btnClose" Content="Close" HorizontalAlignment="Left" Margin="10,0,0,0" Width="91" FontSize="13" Background="#FFFAFAEB" Height="25" Visibility="Collapsed"/>
+            <Button x:Name="btnMenu" Width="25" Height="25" Margin="5,0,0,0" ToolTip="Local menu" Background="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Center" >
+                <ContentControl>
+                    <Image x:Name="imgMenu" Margin="0,1,0,0" VerticalAlignment="Center" Width="25" Height="25" Source="/Scripthea;component/Properties/TripleBarTeal.png" ToolTip="Single click - menu; Double left - invert" Cursor="Hand" HorizontalAlignment="Center" MouseDown="imgMenu_MouseDown" >
+                    </Image>
+                </ContentControl>
+                <Button.ContextMenu>
+                    <ContextMenu x:Name="cmImgMenu">
+                        <MenuItem Header="Check All" Click="mi_Click"/>
+                        <MenuItem Header="Uncheck All" Click="mi_Click"/>
+                        <MenuItem x:Name="miInvertChecking" Header="Invert Checking" Click="mi_Click" FontWeight="Bold"/>
+                        <MenuItem Header="Check with Mask" Click="mi_Click"/>
+                    </ContextMenu>
+                </Button.ContextMenu>
+            </Button>
+
+            <Button x:Name="btnScanChecked" Content="Scan All Checked" HorizontalAlignment="Left" Margin="10,0,0,0" Width="137" FontSize="13" Background="#FFFEFEEE" Height="25" BorderBrush="Maroon" Style="{StaticResource RoundedButtonStyle}"/>
+            <Button x:Name="btnQuerySelected" Content="Query Selected One" HorizontalAlignment="Left" Margin="5,0,0,0" Width="140" FontSize="13" Background="#FFFEFEEE" IsEnabled="False" Height="25" BorderBrush="#FF098302" Style="{StaticResource RoundedButtonStyle}"/>
+            <Label x:Name="lbCheckCount" Content="Checked: " VerticalAlignment="Center" Margin="10,0,0,0" FontSize="14" MouseDoubleClick="lbCheckCount_MouseDoubleClick"></Label>
+            <Button x:Name="btnCopy" Content="Copy" HorizontalAlignment="Left" Margin="10,0,0,0" Width="91" FontSize="13" Background="#FFEBF7FA" Click="btnCopy_Click" Height="25" Style="{StaticResource RoundedButtonStyle}"/>
+            <Button x:Name="btnSaveAs" Content="Save As..." HorizontalAlignment="Left" Margin="5,0,0,0" Width="91" FontSize="13" Background="#FFEBF7FA" Click="btnSaveAs_Click" Height="25" Style="{StaticResource RoundedButtonStyle}"/>
+            <Button x:Name="btnClose" Content="Close" HorizontalAlignment="Left" Margin="10,0,0,0" Width="91" FontSize="13" Background="#FFFAFAEB" Height="25" Visibility="Collapsed" Style="{StaticResource RoundedButtonStyle}"/>
         </StackPanel>
         <DataGrid x:Name="dGrid" Margin="0" Grid.Row="1" AutoGeneratingColumn="dGrid_AutoGeneratingColumn" SelectionMode="Single" MaxColumnWidth="1000" CanUserReorderColumns="False" SelectionChanged="dGrid_SelectionChanged" CanUserAddRows="False" VerticalScrollBarVisibility="Visible"/>
     </Grid>

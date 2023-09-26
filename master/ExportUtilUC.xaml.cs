@@ -38,7 +38,7 @@ namespace scripthea.master
             iPicker.Init(ref _opts);
             List<string> ls = new List<string>(new string[] { "keep image types", "export all as .PNG", "export all as .JPG" });
             iPicker.Configure(' ',ls, "Rename files to prompts", "Create web-page", "Export", true).Click += new RoutedEventHandler(Export);
-            OnChangeDepot(null, null);
+            OnChangeDepot(null, null); iPicker.chkCustom2.IsChecked = true;
             iPicker.OnChangeDepot += new RoutedEventHandler(OnChangeDepot);
             iPicker.AddMenuItem("Convert .PNG to .JPG").Click += new RoutedEventHandler(ConvertPNG2JPG); 
         }

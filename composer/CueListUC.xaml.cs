@@ -63,8 +63,8 @@ namespace scripthea.composer
                     {
                         Header = se,
                         Name = "ti" + se,
-                        FontSize = 14, FontStyle = FontStyles.Italic,
-                        Background = Utils.ToSolidColorBrush("#FFFFFFF8")
+                        FontSize = 14, FontStyle = FontStyles.Italic, Height = 27,
+                        Background = Utils.ToSolidColorBrush("#FFFFFFF8") 
                     };
                     tcLists.Items.Add(newTabItem); List<CueItemUC> ocl = new List<CueItemUC>(); localCues.Add(ocl);
                     ScrollViewer sv = new ScrollViewer(); sv.CanContentScroll = true; newTabItem.Content = sv; localScrolls.Add(sv);
@@ -93,7 +93,7 @@ namespace scripthea.composer
             for (int i = 0; i < tcLists.Items.Count; i++)
             {
                 if (selectedCues(i).Count > 0 && !radioMode) ((TabItem)tcLists.Items[i]).Background = Utils.ToSolidColorBrush("#FFFFF3DE");
-                else ((TabItem)tcLists.Items[i]).Background = Utils.ToSolidColorBrush("#FFFFFFF8");
+                else ((TabItem)tcLists.Items[i]).Background = Utils.ToSolidColorBrush("#FFFFFFF0");
             }
         }
         public event Utils.LogHandler OnLog;
@@ -241,8 +241,8 @@ namespace scripthea.composer
         private void mi_Click(object sender, RoutedEventArgs e)
         {            
             MenuItem mi = sender as MenuItem; string header = Convert.ToString(mi.Header);
-            if (header.Equals("Check with Mask")) bufMask = new InputBox("Check with Mask", bufMask, "").ShowDialog();
-            if (bufMask.Equals("")) return;
+            if (header.Equals("Check with Mask"))
+                { bufMask = new InputBox("Check with Mask", bufMask, "").ShowDialog(); if (bufMask.Equals("")) return; }
             foreach (CueItemUC os in localCues[tcLists.SelectedIndex])
             { 
                 switch (header)

@@ -301,16 +301,17 @@ namespace scripthea.composer
             List<List<string>> lls = cuePoolUC.activeCourier.GetCues();
             if (lls.Count.Equals(0)) { Log("Err: no cue is selected (err.code:96)"); return; }
             List<string> ScanModifs = CombiModifs(modifiersUC.ModifItemsByType(ModifStatus.Scannable), opts.composer.ModifPrefix, Utils.EnsureRange(opts.composer.ModifSample, 1, 9));
+            string fis = modifiersUC.FixItemsAsString();
             foreach (List<string> ls in lls)
             {
                 if (ScanModifs.Count.Equals(0))
                 {
-                    scanPrompts.Add(Compose(null, ls, modifiersUC.FixItemsAsString()));                    
+                    scanPrompts.Add(Compose(null, ls, fis));                    
                 }
                 else
                     foreach (string sc in ScanModifs)
                     {
-                        scanPrompts.Add(Compose(null, ls, modifiersUC.FixItemsAsString() + (sc.Equals("") ? "" : opts.composer.ModifPrefix) + sc));                        
+                        scanPrompts.Add(Compose(null, ls, fis + (sc.Equals("") ? "" : opts.composer.ModifPrefix) + sc));                        
                     }
             }            
         }
@@ -536,14 +537,16 @@ namespace scripthea.composer
         }
         private void btnScanPreview_Click(object sender, RoutedEventArgs e)
         {
+            scanPreviewUC.lbCheckCount.Content = "processing..."; scanPreviewUC.lbCheckCount.Foreground = Brushes.Tomato;
+            tcModScanPre.SelectedIndex = 1; tcModScanPre.UpdateLayout(); Utils.DoEvents(); //DateTime t0 = DateTime.Now;
             List<string> ls = (sender == btnAppend2Preview) ? new List<string>(scanPreviewUC.allPrompts) : new List<string>();
-            GetScanPrompts();
+            
+            GetScanPrompts(); //Log("time 1: " + ((DateTime.Now - t0).TotalSeconds).ToString("G3") + " [sec]");
             if (scanPrompts.Count == 0) { Log("Warning: No prompts generated"); return; };
-            ls.AddRange(scanPrompts);
-
-            tiModifiers.Visibility = Visibility.Visible; tiScanPreview.Visibility = Visibility.Visible; 
-            tcModScanPre.SelectedIndex = 1; Utils.DoEvents();
-            scanPreviewUC.LoadPrompts(ls);
+            ls.AddRange(scanPrompts); //Log("time 2: " + ((DateTime.Now - t0).TotalSeconds).ToString("G3") + " [sec]");
+            tiModifiers.Visibility = Visibility.Visible; tiScanPreview.Visibility = Visibility.Visible;
+            scanPreviewUC.lbCheckCount.Content = "loading...";
+            scanPreviewUC.LoadPrompts(ls); //Log("time 3: " + ((DateTime.Now - t0).TotalSeconds).ToString("G3") + " [sec]");
         }
         private void btnScanPreviewProcs_Click(object sender, RoutedEventArgs e)
         {

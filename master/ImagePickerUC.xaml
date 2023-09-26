@@ -24,43 +24,41 @@
                 <Button x:Name="btnCustom" Grid.Column="1" Content="btnCustom" HorizontalAlignment="Right" Margin="0,0,2.797,-0.051" Width="60" Foreground="#FF0049BB" FontWeight="Bold" Background="White"/>
             </Grid>
         </GroupBox>
-        <Grid Grid.Row="1">
+        <Button x:Name="btnMenu" Width="30" Margin="3,0,0,0" ToolTip="Local menu" Background="{x:Null}" Grid.Row="1" Panel.ZIndex="15" HorizontalAlignment="Left">
+            <ContentControl>
+                <Image x:Name="imgMenu" Margin="0,1,0,0" VerticalAlignment="Center" Width="28" Source="/Scripthea;component/Properties/TripleBarTeal.png" ToolTip="Single click - menu; Double left - invert" Cursor="Hand" HorizontalAlignment="Center" Height="28" MouseDown="imgMenu_MouseDown" >
+                </Image>
+            </ContentControl>
+            <Button.ContextMenu>
+                <ContextMenu x:Name="cmImgMenu">
+                    <MenuItem Header="Check All" Click="mi_Click"/>
+                    <MenuItem Header="Uncheck All" Click="mi_Click"/>
+                    <MenuItem Header="Invert Checking" Click="mi_Click" FontWeight="Bold"/>
+                    <MenuItem Header="Check with Mask" Click="mi_Click"/>
+                    <Separator/>
+                    <MenuItem Header="Refresh" Click="mi_Click"/>
+                </ContextMenu>
+            </Button.ContextMenu>
+        </Button>
+        <Grid Grid.Row="1" Panel.ZIndex="20" Margin="140,0,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition Width="120"/>
             </Grid.ColumnDefinitions>
-            <StackPanel x:Name="stPnl2" Orientation="Horizontal" Grid.ColumnSpan="2" Margin="0,1,-0.333,1" VerticalAlignment="Center" Height="28">
-                <Button x:Name="btnMenu" Width="30" Margin="3,0,0,0" ToolTip="Local menu" Background="{x:Null}" >
-                    <ContentControl>
-                        <Image x:Name="imgMenu" Margin="0,1,0,0" VerticalAlignment="Center" Width="28" Source="/Scripthea;component/Properties/TripleBarTeal.png" ToolTip="Single click - menu; Double left - invert" Cursor="Hand" HorizontalAlignment="Center" Height="28" MouseDown="imgMenu_MouseDown" >
-                        </Image>
-                    </ContentControl>
-                    <Button.ContextMenu>
-                        <ContextMenu x:Name="cmImgMenu">
-                            <MenuItem Header="Check All" Click="mi_Click"/>
-                            <MenuItem Header="Uncheck All" Click="mi_Click"/>
-                            <MenuItem Header="Check with Mask" Click="mi_Click"/>
-                            <MenuItem Header="Invert Checking" Click="mi_Click" FontWeight="Bold"/>
-                            <Separator/>
-                            <MenuItem Header="Refresh" Click="mi_Click"/>
-                        </ContextMenu>
-                    </Button.ContextMenu>
-                </Button>
-                <Grid Width="110">
-                </Grid>
-                <ComboBox x:Name="comboCustom" SelectedIndex="0" Background="White" Margin="10,0,0,0" VerticalAlignment="Center">
+            <StackPanel x:Name="stPnl2" Orientation="Horizontal" Grid.ColumnSpan="2" Margin="0,1,-0.333,1" VerticalAlignment="Center" Height="28" Panel.ZIndex="20">
+                <ComboBox x:Name="comboCustom" SelectedIndex="0" Background="White" Margin="10,0,0,0" VerticalAlignment="Center" Panel.ZIndex="11">
                     <ComboBoxItem Content="comboCustom"/>
                 </ComboBox>
-                <CheckBox x:Name="chkCustom1" Content="chkCustom1" Margin="10,0,0,0" VerticalAlignment="Center"/>
-                <CheckBox x:Name="chkCustom2" Content="chkCustom2" Margin="10,0,0,0" VerticalAlignment="Center" />
+                <CheckBox x:Name="chkCustom1" Content="chkCustom1" Margin="10,0,0,0" VerticalAlignment="Center" Panel.ZIndex="11"/>
+                <CheckBox x:Name="chkCustom2" Content="chkCustom2" Margin="10,0,0,0" VerticalAlignment="Center" Panel.ZIndex="11" />
             </StackPanel>
-            <Label x:Name="lbChecked" Grid.Column="1" Content="# images" MouseDoubleClick="MCheckUncheck" Foreground="Blue" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,3.667,0" />
+            <Label x:Name="lbChecked" Content="# images" MouseDoubleClick="MCheckUncheck" Foreground="Blue" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,3.667,0" Grid.Column="1" />
         </Grid>
-        <TabControl x:Name="tcMain" Grid.Row="1" BorderBrush="{x:Null}" SelectedIndex="0" Margin="0" BorderThickness="0" SelectionChanged="tcMain_SelectionChanged" Grid.RowSpan="2" Panel.ZIndex="100">
-            <TabItem x:Name="tiList" Header="List" Height="28" Width="50" Margin="25,-2,-50,0"  BorderBrush="Navy">
+        <TabControl x:Name="tcMain" Grid.Row="1" BorderBrush="{x:Null}" SelectedIndex="0" Margin="0" BorderThickness="0" SelectionChanged="tcMain_SelectionChanged" Grid.RowSpan="2" Panel.ZIndex="10">
+            <TabItem x:Name="tiList" Header="List" Height="28" Width="50" Margin="25,-2,-50,0"  BorderBrush="Navy" Style="{StaticResource RoundedTopTabItemStyle}">
                 <viewer:TableViewUC x:Name="listView" Margin="0" />
             </TabItem>
-            <TabItem x:Name="tiGrid" Header="Grid" Height="28" Width="50" Margin="32,-2,-50,0" BorderBrush="DarkGreen">
+            <TabItem x:Name="tiGrid" Header="Grid" Height="28" Width="50" Margin="32,-2,-50,0" BorderBrush="DarkGreen" Style="{StaticResource RoundedTopTabItemStyle}">
                 <viewer:GridViewUC x:Name="gridView"  Margin="0"/>
             </TabItem>
         </TabControl>

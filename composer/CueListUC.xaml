@@ -11,8 +11,8 @@
             <TabControl x:Name="tcLists" Margin="0" SelectionChanged="tabControl_SelectionChanged" BorderBrush="{x:Null}" FontStyle="Italic">
             </TabControl>
         </Grid>
-        <Image x:Name="imgRandom" HorizontalAlignment="Right" Margin="0,0,5,0" VerticalAlignment="Top" Width="30" Source="/Scripthea;component/Properties/random.png" ToolTip="Random select" Cursor="Hand" MouseDown="imgRandom_MouseDown"/>
-        <Button x:Name="btnMenu" Width="25" Height="25" Margin="3,0,0,0" ToolTip="Local menu" Background="{x:Null}" HorizontalAlignment="Right" VerticalAlignment="Top"  Visibility="Collapsed">
+        <Image x:Name="imgRandom" HorizontalAlignment="Right" Margin="0,0,5,0" VerticalAlignment="Top" Width="30" Source="/Scripthea;component/Properties/random.png" ToolTip="Random select" Cursor="Hand" MouseDown="imgRandom_MouseDown" Panel.ZIndex="1"/>
+        <Button x:Name="btnMenu" Width="25" Height="25" Margin="3,0,0,0" ToolTip="Local menu" Background="{x:Null}" HorizontalAlignment="Right" VerticalAlignment="Top" Visibility="Collapsed">
             <ContentControl>
                 <Image x:Name="imgMenu" Margin="0,1,0,0" VerticalAlignment="Center" Width="25" Height="25" Source="/Scripthea;component/Properties/TripleBarTeal.png" ToolTip="Single click - menu; Double left - invert" Cursor="Hand" HorizontalAlignment="Center" MouseDown="imgMenu_MouseDown" >
                 </Image>

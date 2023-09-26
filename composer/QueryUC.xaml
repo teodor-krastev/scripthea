@@ -32,26 +32,27 @@
                 <TextBox x:Name="tbModifier" Margin="0,3,0,0" TextWrapping="Wrap" Text=""  Background="MintCream" BorderBrush="#FFB1DE9E" Grid.Row="1" FontSize="13" AcceptsReturn="True"/>
             </Grid>
 
-            <TabControl x:Name="tcQuery" Margin="0"  SelectedIndex="0" SelectionChanged="tcQuery_SelectionChanged" >
-                <TabItem x:Name="tiSingle" Header="Single" Width="90" Height="25" Background="#FFECECEC" Margin="2,0,-9.063,0.089" HorizontalAlignment="Left" BorderBrush="#FF0A9401">
+            <TabControl x:Name="tcQuery" Margin="0,2,0,0"  SelectedIndex="0" SelectionChanged="tcQuery_SelectionChanged" >
+                <TabItem x:Name="tiSingle" Header="Single" Width="90" Height="28" Background="#FFECECEC" Margin="2,0,-9.063,0.089" HorizontalAlignment="Left" BorderBrush="#FF0A9401" Style="{StaticResource RoundedTopTabItemStyle}">
                     <Grid>
-                        <Button x:Name="btnCompose" Content="Compose a prompt" Height="30" Width="130" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,7,0,0" Click="btnCompose_Click" Background="#FFFAFAEB" FontSize="13"/>
-                        <Button x:Name="btnQuery" Content="Generate image" Height="30" Width="120" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="150,7,0,0" Background="#FFEBF3FA" FontSize="13" Click="btnQuery_Click"/>
-                        <Button x:Name="btnTest" Content="Test proc" Height="30" Width="120" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="150,7,0,10" Background="#FFEBF3FA" FontSize="13" Click="btnTest_Click"/>
+                        <Button x:Name="btnCompose" Content="Compose a prompt" Height="30" Width="130" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,7,0,0" Click="btnCompose_Click"  Background="#FFEEF7FF" FontSize="13" Style="{StaticResource RoundedButtonStyle}"/>
+                        <Button x:Name="btnQuery" Content="Generate image" Height="30" Width="120" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="150,7,0,0" Background="#FFFEFEEE" FontSize="13" Style="{StaticResource RoundedButtonStyle}" BorderBrush="#FF098302" Click="btnQuery_Click" />
+
+                        <Button x:Name="btnTest" Content="Test proc" Height="30" Width="120" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="150,7,0,10" Background="#FFEBF3FA" FontSize="13" Click="btnTest_Click" Style="{StaticResource RoundedButtonStyle}"/>
+
                         <CheckBox x:Name="chkAutoSingle" Content="Auto-refresh" Width="95" Margin="10,0,0,15" HorizontalAlignment="Left" VerticalAlignment="Bottom" Checked="chkAutoSingle_Checked" Unchecked="UpdateToOptions"/>
                         <CheckBox x:Name="chkOneLineCue" Content="One line cue" Width="87" Margin="105,50,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Checked="UpdateToOptions" Unchecked="UpdateToOptions" IsChecked="True" Visibility="Collapsed" />
                     </Grid>
                 </TabItem>
-                <TabItem x:Name="tiScan" Header="Scan" Height="25" Background="#FFECECEC" Margin="5,0,-9.063,0.089" HorizontalAlignment="Left" Width="90" BorderBrush="#FF6C009C" >
+                <TabItem x:Name="tiScan" Header="Scan" Height="28" Background="#FFECECEC" Margin="5,0,-9.063,0.089" HorizontalAlignment="Left" Width="90" BorderBrush="#FF6C009C" Style="{StaticResource RoundedTopTabItemStyle}">
                     <Grid Background="White">
-                        <Button x:Name="btnScan" Content="S c a n" Height="30" Width="77" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,7,0,0" FontWeight="Bold" Background="#FFFDFFED" Click="btnScan_Click" FontSize="13" BorderBrush="#FF0233A2"/>
+                        <Button x:Name="btnScan" Content="S c a n" Height="30" Width="77" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,7,0,0" FontWeight="Bold" Background="#FFFDFFED" Click="btnScan_Click" FontSize="13" BorderBrush="#FF0233A2" Style="{StaticResource RoundedButtonStyle}"/>
                         <TextBox HorizontalAlignment="Right" Text="Combine all checked cues + fixed modifiers + some (by modif. sample number) of scanned modifiers." Width="162" Margin="0,0,-0.228,0" TextWrapping="Wrap" Background="{x:Null}" BorderBrush="{x:Null}" VerticalAlignment="Top" FontSize="12"/>
-                        <Button x:Name="btnScanPreview" Content="Scan preview" Height="30" Width="98" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10,0,0,7" Background="#FFFFFFF5" FontSize="13" Click="btnScanPreview_Click" BorderBrush="#FF993109"/>
-                        <Button x:Name="btnAppend2Preview" Content="Append to preview" Height="30" Width="127" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="113,0,0,7.241" Background="#FFFFFFF5" FontSize="13" Click="btnScanPreview_Click" BorderBrush="#FF993109"/>
-
+                        <Button x:Name="btnScanPreview" Content="Scan preview" Height="30" Width="98" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10,0,0,7" Background="#FFFFFFF5" FontSize="13" Click="btnScanPreview_Click" BorderBrush="#FF993109" Style="{StaticResource RoundedButtonStyle}"/>
+                        <Button x:Name="btnAppend2Preview" Content="Append to preview" Height="30" Width="127" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="113,0,0,7.241" Background="#FFFFFFF5" FontSize="13" Click="btnScanPreview_Click" BorderBrush="#FF993109" Style="{StaticResource RoundedButtonStyle}"/>
                     </Grid>
                 </TabItem>
-                <TabItem x:Name="tiOptions" Header="Options" Height="25" Background="#FFECECEC" Margin="10,0,-11,0.089" HorizontalAlignment="Left" Width="90">
+                <TabItem x:Name="tiOptions" Header="Options" Height="28" Background="#FFECECEC" Margin="10,0,-11,0.089" HorizontalAlignment="Left" Width="90" Style="{StaticResource RoundedTopTabItemStyle}">
                     <Grid >
                         <GroupBox x:Name="gbFolder" VerticalAlignment="Bottom" Header=" Depot folder for generated images"  Height="50" Background="#FFFBFBF4">
                             <Grid>
@@ -92,20 +93,20 @@
                 <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
             <Grid x:Name="gridAPI" Margin="7,0,0,0"/>
-            <TabControl Grid.Row="1"  x:Name="tcModScanPre" Margin="5,0,0,0" BorderBrush="#FF19B995" BorderThickness="0,1,0,0" TabStripPlacement="Bottom" FontFamily="Lucida Sans" FontSize="14" >
-                <TabItem x:Name="tiModifiers" Header="Modifiers" Background="#FFECECEC"  Height="30" Width="150" Margin="5,-1,-5,-2" BorderBrush="#FF13A387" >
+            <TabControl Grid.Row="1"  x:Name="tcModScanPre" Margin="5,-3,0,0" BorderBrush="#FF19B995" BorderThickness="0,1,0,0" TabStripPlacement="Bottom" FontFamily="Lucida Sans" FontSize="14" >
+                <TabItem x:Name="tiModifiers" Header="Modifiers" Background="#FFECECEC"  Height="30" Width="150" Margin="5,-3,-5,0" BorderBrush="#FF13A387"  Style="{StaticResource RoundedBottomTabItemStyle}">
                     <Grid>
                         <ScrollViewer Margin="0" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto" FontFamily="Segoe UI" FontSize="13">
                             <local:ModifiersUC x:Name="modifiersUC"/>
                         </ScrollViewer>
                     </Grid>
                 </TabItem>
-                <TabItem x:Name="tiScanPreview" Header="Scan Preview" Background="#FFECECEC" Height="30" Width="150" Margin="10,-1,-10,-2" BorderBrush="#FF993109" >
+                <TabItem x:Name="tiScanPreview" Header="Scan Preview" Background="#FFECECEC" Height="30" Width="150" Margin="10,-3,-10,0" BorderBrush="#FF993109" Style="{StaticResource RoundedBottomTabItemStyle}">
                     <Grid>
                         <local:ScanPreviewUC x:Name="scanPreviewUC" Margin="0" FontFamily="Segoe UI" FontSize="13"/>
                     </Grid>
                 </TabItem>
-                <TabItem x:Name="tiSD_API" Header="Stable Diffusion" Background="#FFECECEC" Height="30" Width="150" Margin="20,-1,-20,-2" BorderBrush="#FF144397">
+                <TabItem x:Name="tiSD_API" Header="Stable Diffusion" Background="#FFECECEC" Height="30" Width="150" Margin="20,-3,-20,0" BorderBrush="#FF144397" Style="{StaticResource RoundedBottomTabItemStyle}">
                     <Grid>
                         <external:SD_params_UC x:Name="sd_params_UC" Margin="0" FontFamily="Segoe UI" FontSize="13"/>
                     </Grid>

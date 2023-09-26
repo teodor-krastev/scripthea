@@ -175,7 +175,6 @@ namespace scripthea.viewer
         {
             ChangeContent(this, null);
         }
-
         public int selectedIndex 
         {
             get 
@@ -275,7 +274,6 @@ namespace scripthea.viewer
             if (!Utils.isNull(e)) e.Handled = true;
             lastSelectedRow = dGrid.SelectedIndex;
         }
-
         private void dGrid_KeyDown(object sender, KeyEventArgs e)
         {
             int sr = dGrid.SelectedIndex;

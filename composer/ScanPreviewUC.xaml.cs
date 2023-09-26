@@ -28,13 +28,11 @@ namespace scripthea.composer
             InitializeComponent();
             allPrompts = new List<string>();
         }
-
         public event Utils.LogHandler OnLog;
         protected void Log(string txt, SolidColorBrush clr = null)
         {
             if (OnLog != null) OnLog(txt, clr);          
         }
-
         DataTable dTable; List<CheckBox> checks;
         public void LoadPrompts(List<string> prompts)
         {
@@ -63,7 +61,60 @@ namespace scripthea.composer
             }                            
             if (dTable.Rows.Count > 0) dGrid.SelectedIndex = 0; chkTable_Checked(null, null);
         }
+        public void BindData()
+        {
+            Binding binding = new Binding("."); //ItemsSource="{Binding Path=., Mode=TwoWay}"  SourceUpdated="OnTargetUpdated"
+            binding.BindsDirectlyToSource = true;
+            binding.Mode = BindingMode.TwoWay;
+            binding.Source = dTable;
+            dGrid.SetBinding(DataGrid.ItemsSourceProperty, binding);
+        }
 
+        string bufMask = "";
+        private void mi_Click(object sender, RoutedEventArgs e)
+        {
+            MenuItem mi = sender as MenuItem; string header = Convert.ToString(mi.Header);
+            if (header.Equals("Check with Mask"))
+                { bufMask = new InputBox("Check with Mask", bufMask, "").ShowDialog(); if (bufMask.Equals("")) return; }
+            foreach (DataRow row in dTable.Rows)
+            {
+                bool turn2 = false;
+                switch (header)
+                {
+                    case "Check All":
+                        turn2 = true;
+                        break;
+                    case "Uncheck All":
+                        turn2 = false;
+                        break;
+                    case "Check with Mask":
+                        string ss = Convert.ToString(row["Prompt"]);
+                        turn2 = Utils.IsWildCardMatch(ss, bufMask);
+                        break;
+                    case "Invert Checking":
+                        turn2 = !Convert.ToBoolean(row["On"]);
+                        break;
+                }
+                row["On"] = turn2;       
+            }
+            chkTable_Checked(null, null);
+        }
+        bool inverting = false;
+        private void imgMenu_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            inverting = false;
+            if (e.ChangedButton == MouseButton.Left)
+            {
+                if (e.ClickCount == 1)
+                {
+                    Utils.DelayExec(300, () => { btnMenu.ContextMenu.IsOpen = !inverting; });
+                }
+                if (e.ClickCount == 2)
+                {
+                    mi_Click(miInvertChecking, null);
+                }
+            }
+        }
         private bool _scanning = false;
         public bool scanning
         {
@@ -90,7 +141,7 @@ namespace scripthea.composer
         }
         private void chkTable_Checked(object sender, RoutedEventArgs e)
         {
-            lbCheckCount.Content = checkedPrompts().Count.ToString() + " out of " + dTable.Rows.Count.ToString();
+            lbCheckCount.Content = checkedPrompts().Count.ToString() + " out of " + dTable.Rows.Count.ToString(); lbCheckCount.Foreground = Brushes.Navy;
         }        
         private void dGrid_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
         {
@@ -128,15 +179,23 @@ namespace scripthea.composer
             if (Utils.isNull(dataRow)) return;
             selectedPrompt = Convert.ToString(dataRow.Row.ItemArray[2]);
             if (!Utils.isNull(e)) e.Handled = true;
+            lastSelectedRow = dGrid.SelectedIndex;
         }
         public List<string> allPrompts { get; private set; }
+        int lastSelectedRow = -1;
         public List<string> checkedPrompts()
         {
+            int sr = lastSelectedRow;
+            if (Utils.InRange(sr, 0, dTable.Rows.Count - 1))
+            {
+                CheckBox chk = DataGridHelper.GetCellByIndices(dGrid, sr, 1).FindVisualChild<CheckBox>();
+                if (chk != null) dTable.Rows[sr]["on"] = chk.IsChecked.Value;
+            }
             List<string> ls = new List<string>();                
-            for (int i = 0; i < dTable.Rows.Count; i++)
-            {                
-                if (checks[i].IsChecked.Value)
-                    ls.Add(Convert.ToString(dTable.Rows[i]["Prompt"]));
+            foreach (DataRow row in dTable.Rows)
+            {
+                if (Convert.ToBoolean(row["On"]))
+                    ls.Add(Convert.ToString(row["Prompt"]));
             }
             return ls;
         }
@@ -172,6 +231,10 @@ namespace scripthea.composer
             // Process open file dialog box results
             if (result != true) return;
             Utils.writeList(dlg.FileName, checkedPrompts());
+        }
+        private void lbCheckCount_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            chkTable_Checked(null, null);
         }
     }
 }
