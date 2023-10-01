@@ -169,6 +169,12 @@ namespace scripthea.composer
             //Log("conditions changed");           
             if (opts.composer.SingleAuto && tcQuery.SelectedItem.Equals(tiSingle)) btnCompose_Click(sender,e);
         }
+        private void SetbtnComposeEnabled(bool IsEnabled)
+        {
+            btnCompose.IsEnabled = IsEnabled;
+            if (IsEnabled) btnCompose.Foreground = Brushes.Black;
+            else btnCompose.Foreground = Brushes.DarkGray;
+        }
 
         private bool UpdatingOptions = false;
         private void UpdateFromOptions() // internal to visual options
@@ -177,7 +183,7 @@ namespace scripthea.composer
             UpdatingOptions = true;
             pnlCue.Height = new GridLength(Utils.EnsureRange(opts.composer.QueryRowHeight, 150, 500));
             colQuery.Width = new GridLength(opts.composer.QueryColWidth);
-            chkAutoSingle.IsChecked = opts.composer.SingleAuto; btnCompose.IsEnabled = !opts.composer.SingleAuto;              
+            chkAutoSingle.IsChecked = opts.composer.SingleAuto; SetbtnComposeEnabled(!opts.composer.SingleAuto);              
             chkOneLineCue.IsChecked = opts.composer.OneLineCue;           
 
             cbActiveAPI.Text = opts.composer.API; 
@@ -195,7 +201,7 @@ namespace scripthea.composer
             int QueryRowHeight = Convert.ToInt32(pnlCue.Height.Value);
             if (QueryRowHeight > 1) opts.composer.QueryRowHeight = QueryRowHeight;
             opts.composer.QueryColWidth = Convert.ToInt32(colQuery.Width.Value);
-            opts.composer.SingleAuto = chkAutoSingle.IsChecked.Value; btnCompose.IsEnabled = !opts.composer.SingleAuto;           
+            opts.composer.SingleAuto = chkAutoSingle.IsChecked.Value; SetbtnComposeEnabled(!opts.composer.SingleAuto);           
             opts.composer.OneLineCue = chkOneLineCue.IsChecked.Value;           
 
             opts.composer.API = cbActiveAPI.Text; 
@@ -255,7 +261,7 @@ namespace scripthea.composer
             else Log("@StartGeneration (single)");
             if (status.Equals(Status.Scanning) && scanPreviewUC.scanning) // move selection
                 scanPreviewUC.selectByPropmt(prompt);
-            API.Query(prompt, opts.composer.ImageDepotFolder); Log("---", Brushes.DarkOrange); 
+            API.Query(prompt, opts.composer.ImageDepotFolder); Log("-=-=-", Brushes.DarkOrange); 
         }
         protected void QueryComplete(string imageFilePath, bool success)
         {

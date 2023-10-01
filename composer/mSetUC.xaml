@@ -5,6 +5,13 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:scripthea.composer"
              mc:Ignorable="d" d:DesignWidth="300" Height="20">
+    <UserControl.ContextMenu>
+        <ContextMenu x:Name="cmImgMenu">
+            <MenuItem Header="Rename" Click="mi_Click"/>
+            <Separator/>
+            <MenuItem x:Name="miReadOnly" Header="Read-only" IsCheckable="True" Click="mi_Click"/>
+        </ContextMenu>
+    </UserControl.ContextMenu>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*"/>

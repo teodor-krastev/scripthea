@@ -88,7 +88,7 @@ namespace scripthea.composer
         public event RoutedEventHandler OnChange;
         protected void Change(object sender, RoutedEventArgs e)
         {
-            if (OnChange != null) OnChange(this, e);
+            if (OnChange != null) OnChange(this, e); mSetStack.ModifCount();
         }
         public event Utils.LogHandler OnLog;
         protected void Log(string txt, SolidColorBrush clr = null)

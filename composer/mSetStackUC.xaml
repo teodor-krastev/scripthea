@@ -26,6 +26,7 @@
         </StackPanel>
         <ListBox x:Name="mSetListBox" Margin="0" Grid.Row="2" BorderThickness="1,1,1,1" SelectionChanged="mSetListBox_SelectionChanged" IsSynchronizedWithCurrentItem="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled" KeyDown="mSetListBox_KeyDown">
         </ListBox>
-        <TextBlock HorizontalAlignment="Center" Margin="30,0,0,0" TextWrapping="Wrap" Text="mSets (styles)" VerticalAlignment="Center" FontSize="16" FontStyle="Italic"/>
+        <TextBlock x:Name="tbTitle" HorizontalAlignment="Center" Margin="0" TextWrapping="Wrap" Text="mSets" VerticalAlignment="Center" FontSize="16" FontStyle="Italic" MouseDown="tbTitle_MouseDown"/>
+        <Label x:Name="lbModifCount" Content="#0" HorizontalAlignment="Right" Foreground="#FF01019C" FontWeight="Bold" FontSize="14" VerticalAlignment="Center"></Label>
     </Grid>
 </UserControl>

@@ -37,7 +37,7 @@ namespace scripthea.composer
             opts = _opts;
             mSets = new List<mSetUC>();
             mSets.Clear();
-            mSets.Add(new mSetUC(resetName, new List<Tuple<string, string, ModifStatus>>()) { Height = 20 , Width = mSetListBox.ActualWidth }); mSets[0].ReadOnly = true; VisualUpdate();
+            mSets.Add(new mSetUC(resetName, new List<Tuple<string, string, ModifStatus>>()) { Height = 20 , Width = mSetListBox.ActualWidth, ReadOnly = true}); VisualUpdate();
 
             modifLists = _modifLists;
             if (!Directory.Exists(ModifiersFolder)) { Utils.TimedMessageBox("No modifiers directory: "+ ModifiersFolder); return; } 
@@ -49,9 +49,20 @@ namespace scripthea.composer
         public void Finish()
         {
             Dictionary<string, List<Tuple<string, string, ModifStatus>>> mSetsContent = new Dictionary<string, List<Tuple<string, string, ModifStatus>>>();
-            foreach (mSetUC ms in mSets) 
-                if (!ms.title.Equals(resetName)) mSetsContent.Add(ms.title, ms.mSet);
+            foreach (mSetUC ms in mSets)
+            {
+                if (ms.title.Equals(resetName)) continue;                
+                if (mSetsContent.ContainsKey(ms.title)) Utils.TimedMessageBox("The second instance of <" + ms.title + "> will not be saved.");
+                else mSetsContent.Add(ms.title, ms.mSet);
+            }
             File.WriteAllText(mSetFilename, JsonConvert.SerializeObject(mSetsContent));
+        }
+        public int ModifCount()
+        {
+            if (modifLists == null) return 0;
+            int cnt = GetModifs().Count;
+            lbModifCount.Content = "#" + cnt.ToString();
+            return cnt;
         }
         public mSetUC mSetByName(string mSetName)
         {
@@ -120,7 +131,6 @@ namespace scripthea.composer
             string newItem = new InputBox("New mSet name", "", "Text input").ShowDialog();
             if (newItem == "") return;
             if (mSetByName(newItem) != null) { Utils.TimedMessageBox("Error: <"+newItem+"> already exits."); return; }
-
             mSets.Add(new mSetUC(newItem, mSet)); VisualUpdate();
         }
         private void btnMinus_Click(object sender, RoutedEventArgs e)
@@ -175,6 +185,10 @@ namespace scripthea.composer
                 SetModifs_Click(mSets[k], null);
                 e.Handled = true;
             }
+        }
+        private void tbTitle_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ClickCount == 2) ModifCount();
         }
     }
 }
