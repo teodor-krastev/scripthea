@@ -19,12 +19,12 @@
             <ColumnDefinition Width="3*" MaxWidth="1000" MinWidth="100"/>
         </Grid.ColumnDefinitions>
         <AvalEditLib:AvalEditUC x:Name="avalEdit"/>
-        <Label Content="python sMacro" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold"></Label>
-        <Button x:Name="btnRun" Content="R U N" HorizontalAlignment="Right" Margin="0,3.667,3.333,2.333" Width="150" Height="27" Background="#FFEBFCE5" BorderBrush="#FF008B03" FontWeight="Bold" Grid.Row="1" Click="btnRun_Click" Foreground="#FF1B5301"/>
+        <Label Content="python sMacro" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="13" FontFamily="Segoe UI Semibold"/>
+        <Button x:Name="btnRun" Content="R U N" HorizontalAlignment="Right" Margin="0,3.667,3.333,2.333" Width="150" Height="27" Background="#FFEBFCE5" BorderBrush="#FF008B03" Grid.Row="1" Click="btnRun_Click" Foreground="#FF1B5301" FontFamily="Segoe UI Semibold" FontSize="14"/>
         <GridSplitter HorizontalAlignment="Left" Grid.Column="1" Width="3" Background="#FFFAF9EA"></GridSplitter>
         <RichTextBox x:Name="tbLog" Margin="4,0,0,0" Grid.Column="1"/>
         <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal">
-            <CheckBox x:Name="chkLog" VerticalAlignment="Center" Content="Log" Margin="10,0,0,0" FontWeight="Bold" IsChecked="True"/>
+            <CheckBox x:Name="chkLog" VerticalAlignment="Center" Content="Log" Margin="10,0,0,0" IsChecked="True" FontFamily="Segoe UI Semibold" FontSize="13"/>
             <CheckBox x:Name="chkDetails" VerticalAlignment="Center" Content="Details" Margin="10,0,0,0" IsChecked="True"/>
             <Button x:Name="btnClear" Content=" X " Foreground="#FF9C0202" Background="{x:Null}" VerticalAlignment="Center" FontSize="16" FontWeight="Bold" Margin="20,0,0,0" Click="btnClear_Click" HorizontalAlignment="Left" BorderBrush="#FFB9B8B8"/>
         </StackPanel>

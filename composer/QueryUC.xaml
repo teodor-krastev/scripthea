@@ -18,10 +18,10 @@
                 <RowDefinition Height="150" x:Name="pnlCue" MaxHeight="500"/>
                 <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
-            <Grid Grid.Row="1">
+            <Grid x:Name="gridPrompt" Grid.Row="1">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="20*"/>
-                    <RowDefinition Height="13*"/>
+                    <RowDefinition Height="20*" MaxHeight="700" MinHeight="15"/>
+                    <RowDefinition Height="13*" MaxHeight="500" MinHeight="10"/>
                 </Grid.RowDefinitions>
                 <TextBox x:Name="tbCue" Margin="0,2,0,0" TextWrapping="Wrap" Background="#FFFFFFF8" BorderBrush="#FFF9DE34" Text="" FontSize="13" TextChanged="tbCue_TextChanged" ContextMenuOpening="tbCue_ContextMenuOpening" AcceptsReturn="True">
                     <TextBox.ContextMenu>
@@ -66,7 +66,7 @@
                         </GroupBox>
                         <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
                             <Label x:Name="lbAPI" Content="API" Width="32" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                            <ComboBox x:Name="cbActiveAPI" HorizontalAlignment="Left" VerticalAlignment="Top" SelectedIndex="0" Width="90" FontSize="12" Background="White" Margin="3,3,0,0" SelectionChanged="cbActiveAPI_SelectionChanged" FontWeight="Bold">
+                            <ComboBox x:Name="cbActiveAPI" HorizontalAlignment="Left" VerticalAlignment="Top" SelectedIndex="0" Width="112" FontSize="13" Background="White" Margin="3,3,0,0" SelectionChanged="cbActiveAPI_SelectionChanged" FontWeight="Bold" FontFamily="Segoe UI Semibold">
                                 <ComboBoxItem Content="Simulation"/>
                                 <ComboBoxItem x:Name="cbiDiffusion" Content="SDiffusion"/>
                                 <ComboBoxItem x:Name="cbiCraiyon" Content="Craiyon"/>

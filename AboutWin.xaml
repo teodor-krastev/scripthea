@@ -12,7 +12,7 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
         <StackPanel Margin="0,2.899,-0.025,-0.456" Grid.Row="1">
-            <Label x:Name="lbDesc" Content="text-to-image prompt composer ...and more" HorizontalAlignment="Center" FontSize="14" FontWeight="Bold"/>
+            <Label x:Name="lbDesc" Content="text-to-image prompt composer ...and more" HorizontalAlignment="Center" FontSize="15" FontWeight="Bold" FontFamily="Segoe UI Semibold"/>
             <StackPanel Orientation="Horizontal" Width="250">
                 <Label x:Name="lbPreAuthor" Content="written and copyright" FontSize="14"/>
                 <TextBlock x:Name="lbAuthor" Text="Teodor Krastev" Foreground="Blue" TextDecorations="Underline" FontSize="14" Cursor="Hand" Margin="0,5,0,0" MouseDown="lbAuthor_MouseDown" ToolTip="Contact the author"/>

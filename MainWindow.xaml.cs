@@ -41,6 +41,7 @@ namespace scripthea
         string optionsFile;
         public Options opts;
         public PreferencesWindow preferencesWindow;
+        public Dictionary<string, string> clSwitches;
         private System.Drawing.Bitmap penpic;
 
         public FocusControl focusControl;
@@ -72,7 +73,19 @@ namespace scripthea
                 }
             }
             preferencesWindow = new PreferencesWindow(); preferencesWindow.Init(ref opts); preferencesWindow.btnCheck4Update.Click += new RoutedEventHandler(Check4Update);
-            
+
+            clSwitches = new Dictionary<string, string>(); opts.sMacro.pythonPanel = false;
+            List<string> clArgs = new List<string>(Environment.GetCommandLineArgs());
+            foreach (string arg in clArgs) 
+            {
+                if (arg.StartsWith("--python")) { opts.sMacro.pythonPanel = true; clSwitches.Add("python","True"); continue; }
+                string arg1 = arg.StartsWith("--") ? arg.Substring(2) : arg;
+                string[] args = arg1.Split('=');
+                if (args.Length == 1) { clSwitches.Add(args[0], ""); continue; } 
+                if (args.Length == 2) { clSwitches.Add(args[0], args[1]); continue; }
+                Log("Error: command line argument syntax problem");
+            }       
+
             Title = "Scripthea - options loaded";
             dirTreeUC.Init(ref opts);
             dirTreeUC.OnActive += new DirTreeUC.SelectHandler(Active);
@@ -92,10 +105,8 @@ namespace scripthea
             Log("> Welcome to Scripthea" + "  " + (opts.general.debug ? "(in debug mode)" : "")); Log("");
             Utils.DelayExec(2500, new Action(() => { aboutWin.Hide(); })); 
             queryUC.Init(ref opts);            
-            Left = opts.layout.Left;
-            Top = opts.layout.Top;
-            Width = Math.Abs(opts.layout.Width);
-            Height = opts.layout.Height;
+            Left = Utils.EnsureRange(opts.layout.Left, 0, 4000); Top = Utils.EnsureRange(opts.layout.Top, 0, 2000);
+            Width = Utils.EnsureRange(Math.Abs(opts.layout.Width), 100, 10000); Height = Utils.EnsureRange(opts.layout.Height, 100, 5000);
             if (opts.layout.Maximazed) WindowState = WindowState.Maximized; 
             pnlLog.Width = new GridLength(opts.layout.LogColWidth);            
             rowLogImage.Height = new GridLength(1);
@@ -106,7 +117,7 @@ namespace scripthea
             if (opts.composer.SingleAuto) queryUC.btnCompose_Click(null, null);
             // pyCode Init
             
-            if (Utils.TheosComputer() && Utils.isInVisualStudio) pyCode.Init(@"C:\Software\Python\Python310\python310.dll");
+            if (opts.sMacro.pythonPanel || (Utils.TheosComputer() && Utils.isInVisualStudio)) pyCode.Init(@"C:\Software\Python\Python310\python310.dll");
             if (!pyCode.IsEnabled) tiSMacro.Visibility = Visibility.Collapsed;
             else
             {
@@ -221,7 +232,7 @@ namespace scripthea
             {
                 string txt = msg.Trim(); bool skipLog = false;
                 if (txt.Length > 7)
-                    switch (txt.Substring(0, 8))
+                    switch (txt.Substring(0, 8)) // if starts with @ - command or mode switch; not real log.
                     {
                         case "@StartGe": // StartGeneration
                             if (Utils.isNull(dTimer))

@@ -490,10 +490,15 @@ namespace scripthea.composer
             else Log("@ExplorerPart=0");
             if (!Utils.isNull(opts))
             {
-                if (tcQuery.SelectedItem.Equals(tiSingle)) pnlCue.Height = new GridLength(Utils.EnsureRange(opts.composer.QueryRowHeight, 150,500));
+                if (tcQuery.SelectedItem.Equals(tiSingle))
+                {
+                    gridPrompt.Visibility = Visibility.Visible; gridSplitCue.Visibility = Visibility.Visible;
+                    pnlCue.Height = new GridLength(Utils.EnsureRange(opts.composer.QueryRowHeight, 150, 500));
+                }
                 else
                 {
                     opts.composer.QueryRowHeight = Convert.ToInt32(pnlCue.Height.Value);
+                    gridPrompt.Visibility = Visibility.Collapsed; gridSplitCue.Visibility = Visibility.Collapsed;
                     pnlCue.Height = new GridLength(1);
                 }
             }

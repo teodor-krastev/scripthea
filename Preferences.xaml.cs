@@ -96,6 +96,7 @@ namespace scripthea
             public int FullWidth;
             public int CodeWidth;
             public int LogWidth;
+            public bool pythonPanel;
         }
         [JsonIgnore]
         public Common common; // similar to broadcast in ControlAPI, fire an event every time prop changes 

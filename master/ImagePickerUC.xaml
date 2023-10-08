@@ -11,17 +11,17 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
             <RowDefinition Height="30"/>
-            <RowDefinition Height="300*"/>
-            <RowDefinition Height="200*"/>
+            <RowDefinition Height="300*" MinHeight="50"/>
+            <RowDefinition Height="200*" MinHeight="50"/>
         </Grid.RowDefinitions>
         <GroupBox x:Name="gbFolder" Header="Image depot folder " Margin="0" Background="#FFFBFBF4">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
-                    <ColumnDefinition x:Name="colButton" Width="66.835"/>
+                    <ColumnDefinition x:Name="colButton" Width="70"/>
                 </Grid.ColumnDefinitions>
                 <TextBox x:Name="tbImageDepot"  Margin="0,2,2.962,-2" IsReadOnly="True" TextChanged="tbImageDepot_TextChanged" BorderThickness="0" Background="{x:Null}" />
-                <Button x:Name="btnCustom" Grid.Column="1" Content="btnCustom" HorizontalAlignment="Right" Margin="0,0,2.797,-0.051" Width="60" Foreground="#FF0049BB" FontWeight="Bold" Background="White"/>
+                <Button x:Name="btnCustom" Grid.Column="1" Content="btnCustom" HorizontalAlignment="Right" Margin="0,0,2.797,-0.051" Width="67" Foreground="#FF0049BB" FontWeight="Bold" Background="White" FontSize="13" FontFamily="Segoe UI Semibold"/>
             </Grid>
         </GroupBox>
         <Button x:Name="btnMenu" Width="30" Margin="3,0,0,0" ToolTip="Local menu" Background="{x:Null}" Grid.Row="1" Panel.ZIndex="15" HorizontalAlignment="Left">

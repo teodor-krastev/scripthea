@@ -53,7 +53,7 @@
                         <TextBlock Text=" -" Width="25" Height="35" FontSize="32" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#FF0239B7" Margin="-6,-15,0,0"/>
                     </Button>
                 </StackPanel>
-                <CheckBox x:Name="chkAutoRefresh" Content="Auto-refresh" Margin="2,3" Checked="chkAutoRefresh_Checked" Unchecked="chkAutoRefresh_Checked"></CheckBox>
+                <CheckBox x:Name="chkAutoSynch" Content="Auto-synch" Margin="2,3" Checked="chkAutoRefresh_Checked" Unchecked="chkAutoRefresh_Checked"></CheckBox>
             </StackPanel>
         </GroupBox>
 

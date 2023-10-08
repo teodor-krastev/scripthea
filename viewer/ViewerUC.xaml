@@ -39,12 +39,12 @@
                     <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width="135"/>
                 </Grid.ColumnDefinitions>
-                <Label Content="Find" HorizontalAlignment="Left"></Label>
+                <Label Content="Find" HorizontalAlignment="Left" FontFamily="Segoe UI Semibold" VerticalAlignment="Center"></Label>
                 <TextBox x:Name="tbFind" Margin="34,3,5,3"/>
                 <StackPanel Grid.Column="1" Orientation="Horizontal">
                     <Image x:Name="btnFindUp"  Width="25" Source="/Scripthea;component/Properties/find_up.png" Margin="0,0,0,0" Cursor="Hand" ToolTip="Find Up" MouseDown="btnFindUp_MouseDown" Height="25"/>
                     <Image x:Name="btnFindDown"  Width="25" Source="/Scripthea;component/Properties/find_down.png" Margin="0,0,0,0" Cursor="Hand" ToolTip="Find Down" MouseDown="btnFindUp_MouseDown" Height="25"/>
-                    <Button x:Name="btnMark" FontWeight="Bold" Content=" Mark " Background="MintCream" Margin="5,0,5,0" Foreground="#FF058402" Click="btnMark_Click" ></Button>
+                    <Button x:Name="btnMark" FontWeight="Bold" Content=" Mark " Background="MintCream" Margin="5,0,5,0" Foreground="#FF058402" Click="btnMark_Click" FontSize="13" FontFamily="Segoe UI Semibold" ></Button>
                     <Button x:Name="btnClearMark" FontWeight="Bold" Content=" X " Background="White" Margin="0,0,0,0" Foreground="#FFA80303"   Click="btnMark_Click" ></Button>
                 </StackPanel>
             </Grid>

@@ -49,7 +49,7 @@ namespace scripthea.viewer
             bool modified = false; 
             if (chkExtra.IsChecked.Value) UpdateMeta(modified);
             
-            lbIndex.Content = "[" + idx.ToString() + "]";
+            lbIndex.Content = "[ " + idx.ToString() + " ]";
             tbPath.Text = System.IO.Path.GetDirectoryName(filePath)+"\\";
             tbName.Text = System.IO.Path.GetFileName(filePath);
             if (!File.Exists(filePath))
@@ -77,19 +77,18 @@ namespace scripthea.viewer
             modified = !Utils.GetMD5Checksum(filePath).Equals(ii.MD5Checksum);
             if (modified) UpdateMeta(modified);
         }
-        private int ZoomFactor
+        private int ZoomFactor // [%]
         {
             get 
             {
                 if (image == null) return -1;
                 if (image.Source == null) return -1;
                 ImageSource imageSource = image.Source;
-                double xScale = image.ActualWidth / imageSource.Width;
-                double yScale = image.ActualHeight / imageSource.Height; int scale = Convert.ToInt32(100 * (xScale + yScale) / 2);
+                double xScale = image.ActualWidth / imageSource.Width; double yScale = image.ActualHeight / imageSource.Height; 
+                int scale = Convert.ToInt32(100.0 * (xScale + yScale) / 2); // aver
                 lbZoomFactor.Content = scale.ToString() + " %";
                 return scale; 
             }
-            set { }
         }
         private int attemptCount = 0;
         private void UpdateMeta(bool? modified) // 

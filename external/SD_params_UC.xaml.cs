@@ -134,7 +134,7 @@ namespace scripthea.external
             
             sdList = new SDlist(); 
             sdList.UpdateCombo(opts.general.LastSDsetting, cbSettings); btnSetParams_Click(null, null);
-            chkAutoRefresh.IsChecked = opts.general.AutoRefreshSDsetting;
+            chkAutoSynch.IsChecked = opts.general.AutoRefreshSDsetting;
 
             nsWidth.OnValueChanged += new NumericSliderUC.ValueChangedHandler(SizeAdjust); nsHeight.OnValueChanged += new NumericSliderUC.ValueChangedHandler(SizeAdjust);
             nsSamplingSteps.numBox.ValueChanged += new RoutedEventHandler(visual2prms); nsCFGscale.numBox.ValueChanged += new RoutedEventHandler(visual2prms);
@@ -142,9 +142,9 @@ namespace scripthea.external
         }
         public void Finish()
         {
-            if (chkAutoRefresh.IsChecked.Value) btnGetParams_Click(null, null);
+            if (chkAutoSynch.IsChecked.Value) btnGetParams_Click(null, null);
             sdList.Save(); 
-            opts.general.LastSDsetting = (cbSettings.SelectedItem as ComboBoxItem).Content as string; ; opts.general.AutoRefreshSDsetting = chkAutoRefresh.IsChecked.Value;
+            opts.general.LastSDsetting = (cbSettings.SelectedItem as ComboBoxItem).Content as string; ; opts.general.AutoRefreshSDsetting = chkAutoSynch.IsChecked.Value;
         }
         private SDsetting _vPrms;
         public SDsetting vPrms
@@ -190,7 +190,7 @@ namespace scripthea.external
         protected void CheckDifference(SDsetting refSDs) // refSDs against the active SDsetting
         {
             if (Utils.isNull(refSDs) || Utils.isNull(ActiveSetting)) return;
-            grpSDsettings.Header = "SD parameters settings" + ((ActiveSetting.Compare2SDsetting(vPrms) || chkAutoRefresh.IsChecked.Value) ? "" : " *").ToString();
+            grpSDsettings.Header = "SD parameters settings" + ((ActiveSetting.Compare2SDsetting(vPrms) || chkAutoSynch.IsChecked.Value) ? "" : " *").ToString();
         }
 
         protected void SizeAdjust(object sender, double value)
@@ -239,7 +239,7 @@ namespace scripthea.external
         }
         private void cbSettings_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (!chkAutoRefresh.IsChecked.Value) return;
+            if (!chkAutoSynch.IsChecked.Value) return;
             string oldSel = cbSettings.Text;
             if (sdList.ContainsKey(oldSel)) sdList[oldSel].GetFromDict(vPrms); // old one
             else Utils.TimedMessageBox("Unknown setting: " + cbSettings.Text);
@@ -252,7 +252,7 @@ namespace scripthea.external
         }
         private void chkAutoRefresh_Checked(object sender, RoutedEventArgs e)
         {
-            if (chkAutoRefresh.IsChecked.Value)
+            if (chkAutoSynch.IsChecked.Value)
             {
                 btnSetParams.Visibility = Visibility.Collapsed; btnGetParams.Visibility = Visibility.Collapsed;
                 cbSettings.Width = 140+62; btnGetParams_Click(null, null); 
@@ -274,12 +274,12 @@ namespace scripthea.external
             sdList[newStg] = sds;
             if (newStg.Equals(selText))
             {
-                if (chkAutoRefresh.IsChecked.Value) Utils.TimedMessageBox("same name: <" + newStg + "> - no action");
+                if (chkAutoSynch.IsChecked.Value) Utils.TimedMessageBox("same name: <" + newStg + "> - no action");
                 else Utils.TimedMessageBox("<" + newStg + "> params setting updated"); 
             }
             else Utils.TimedMessageBox("<" + newStg + "> params setting added");
-            bool ar = chkAutoRefresh.IsChecked.Value; chkAutoRefresh.IsChecked = false; // prevent cbSettings_SelectionChanged
-            sdList.UpdateCombo(newStg, cbSettings); chkAutoRefresh.IsChecked = ar;
+            bool ar = chkAutoSynch.IsChecked.Value; chkAutoSynch.IsChecked = false; // prevent cbSettings_SelectionChanged
+            sdList.UpdateCombo(newStg, cbSettings); chkAutoSynch.IsChecked = ar;
         }
         private void btnDelParams_Click(object sender, RoutedEventArgs e)
         {
@@ -288,9 +288,9 @@ namespace scripthea.external
             else { Utils.TimedMessageBox("Unknown setting: " + selText); return; }
             Utils.TimedMessageBox(selText + " params setting removed");
 
-            bool ar = chkAutoRefresh.IsChecked.Value; chkAutoRefresh.IsChecked = false; // prevent cbSettings_SelectionChanged
+            bool ar = chkAutoSynch.IsChecked.Value; chkAutoSynch.IsChecked = false; // prevent cbSettings_SelectionChanged
             sdList.UpdateCombo(null, cbSettings); 
-            if (ar) btnSetParams_Click(null, null); chkAutoRefresh.IsChecked = ar;
+            if (ar) btnSetParams_Click(null, null); chkAutoSynch.IsChecked = ar;
         }
         double WxHratio; 
         private void chkKeepRatio_Checked(object sender, RoutedEventArgs e)

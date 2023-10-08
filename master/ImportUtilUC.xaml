@@ -23,7 +23,7 @@
                 </TextBox>
                 <Button x:Name="btnNewFolder" Grid.Column="1" Content="Browse" Click="btnNewFolder_Click" HorizontalAlignment="Left" Margin="5.038,0,0,-0.051" Width="60" Foreground="#FF0F8001" FontWeight="Bold" Background="#FFF4F4F4" Visibility="Collapsed">
                 </Button>
-                <Button x:Name="btnConvertFolder" Grid.Column="1" Content="Import" Click="btnConvertFolder_Click" HorizontalAlignment="Center" Margin="0" Width="65" Foreground="#FF0049BB" FontWeight="Bold" Background="#FFF4F4F4" IsEnabled="False"/>
+                <Button x:Name="btnConvertFolder" Grid.Column="1" Content="Import" Click="btnConvertFolder_Click" HorizontalAlignment="Center" Margin="0" Width="65" Foreground="#FF0049BB" FontWeight="Bold" Background="#FFF4F4F4" IsEnabled="False" FontSize="13" FontFamily="Segoe UI Semibold"/>
             </Grid>
         </GroupBox>
         <Grid Grid.Row="1">
