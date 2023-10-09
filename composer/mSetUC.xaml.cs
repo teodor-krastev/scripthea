@@ -32,16 +32,17 @@ namespace scripthea.composer
                 _title = value; tbTitle.Text = value;
             }
         }
+        public bool isReset() { return title.Equals("Reset"); }
         public List<Tuple<string, string, ModifStatus>> mSet
         {
             get { return _mSet; }
             set
             {
-                bool bReset = title.Equals("Reset"); string tip = "";
-                if (bReset) { miReadOnly.IsChecked = true; miReadOnly.IsEnabled = false; tip = "Reset all modifs to unchecked"; }
+                string tip = "";
+                if (isReset()) { miReadOnly.IsChecked = true; miReadOnly.IsEnabled = false; tip = "Reset all modifs to unchecked"; }
                 else { foreach (var mi in value) { tip += mi.Item2 + "; "; } }
                 ToolTip = tip; 
-                if (ReadOnly) Utils.TimedMessageBox(title + " is read-only mSet.");
+                if (ReadOnly && !isReset()) Utils.TimedMessageBox(title + " is read-only mSet.");
                 else _mSet = new List<Tuple<string, string, ModifStatus>>(value);
             }
         }
@@ -62,7 +63,7 @@ namespace scripthea.composer
             get
             {
                 if (title == null) return _ReadOnly;
-                else return _ReadOnly || title.Equals("Reset");
+                else return _ReadOnly || isReset();
             }
             set
             {

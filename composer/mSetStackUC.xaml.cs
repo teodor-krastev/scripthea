@@ -92,13 +92,15 @@ namespace scripthea.composer
         private void SetModifs_Click(object sender, RoutedEventArgs e)
         {
             if (!(sender is mSetUC)) return;
-            if (!SetModifs((sender as mSetUC).mSet, chkAdd.IsChecked.Value)) Utils.TimedMessageBox("Error: Not able to set all modifiers"); 
+            mSetUC mSetItem = (sender as mSetUC);
+            if (mSetItem.isReset()) { foreach (ModifListUC sm in modifLists) sm.Reset(); }
+            else { if (!SetModifs(mSetItem.mSet, chkAdd.IsChecked.Value)) Utils.TimedMessageBox("Error: Not able to set all modifiers"); }
         }
         public bool SetModifs(List<Tuple<string, string, ModifStatus>> mdfs, bool add) // write to modifiers
         {
             bool bb = true;      
-            if (!add)            
-                foreach (ModifListUC sm in modifLists) sm.Reset();            
+            if (!add)
+                foreach (ModifListUC sm in modifLists) sm.Reset();
             foreach (var mdf in mdfs)
             {
                 ModifListUC wsm = null;

@@ -432,6 +432,16 @@ namespace scripthea
         private void btnPreferences_Click(object sender, RoutedEventArgs e)
         {
             preferencesWindow.ShowWindow(tabControl.SelectedIndex);
-        }       
+        }
+
+        private void tbImageDepot_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ClickCount == 2)
+            {
+                string[] sa = tbImageDepot.Text.Split('>');
+                if (sa.Length != 2) return;
+                dirTreeUC.CatchAFolder(sa[1].Trim());
+            }
+        }
     }
 }
