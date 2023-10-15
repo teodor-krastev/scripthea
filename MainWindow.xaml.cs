@@ -73,7 +73,8 @@ namespace scripthea
                 }
             }
             preferencesWindow = new PreferencesWindow(); preferencesWindow.Init(ref opts); preferencesWindow.btnCheck4Update.Click += new RoutedEventHandler(Check4Update);
-
+            ImageDepotConvertor.ClearEntriesImageDepot = opts.iDutilities.MasterClearEntries; 
+            // command-line agruments
             clSwitches = new Dictionary<string, string>(); opts.sMacro.pythonPanel = false;
             List<string> clArgs = new List<string>(Environment.GetCommandLineArgs());
             foreach (string arg in clArgs) 

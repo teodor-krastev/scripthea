@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UtilsNS;
+using scripthea.viewer;
 using Path = System.IO.Path;
 using Microsoft.WindowsAPICodePack.Dialogs;
 
@@ -78,14 +79,14 @@ namespace scripthea
             public int ThumbZoom;
             public bool ThumbCue;
             public bool ThumbFilename;
-            public bool RemoveImages;
-            public bool ConvertImageDepot;
+            public bool RemoveImagesInIDF;
         }
         public IDutilities iDutilities; // Image Depot utilities
         public class IDutilities
         {
             public bool MasterValidationAsk;
             public int MasterWidth;
+            public bool MasterClearEntries;
             public int ImportWidth;
             public int ExportWidth;
         }
@@ -155,16 +156,16 @@ namespace scripthea
             if (!opts.general.NewVersion.Equals("")) lbNewVer.Content = "New version: " + opts.general.NewVersion;
             chkUpdates.IsChecked = opts.general.UpdateCheck;
             chkConfirmGoogling.IsChecked = opts.composer.ConfirmGoogling;
-            chkViewerRemoveImages.IsChecked = opts.viewer.RemoveImages;
-            chkConvertImageDepot.IsChecked = opts.viewer.ConvertImageDepot;
+            chkViewerRemoveImages.IsChecked = opts.viewer.RemoveImagesInIDF;
+            chkClearEntriesImageDepot.IsChecked = opts.iDutilities.MasterClearEntries; ;
             chkValidationAsk.IsChecked = opts.iDutilities.MasterValidationAsk;
         }
         public void visuals2opts()
         {
             opts.general.UpdateCheck = chkUpdates.IsChecked.Value;
             opts.composer.ConfirmGoogling = chkConfirmGoogling.IsChecked.Value;
-            opts.viewer.RemoveImages = chkViewerRemoveImages.IsChecked.Value;
-            opts.viewer.ConvertImageDepot = chkConvertImageDepot.IsChecked.Value;
+            opts.viewer.RemoveImagesInIDF = chkViewerRemoveImages.IsChecked.Value;
+            opts.iDutilities.MasterClearEntries = chkClearEntriesImageDepot.IsChecked.Value; ImageDepotConvertor.ClearEntriesImageDepot = opts.iDutilities.MasterClearEntries;
             opts.iDutilities.MasterValidationAsk = chkValidationAsk.IsChecked.Value;
         }
         public void ShowWindow(int tabIdx)

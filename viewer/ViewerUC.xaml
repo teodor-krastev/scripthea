@@ -22,7 +22,7 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
                         <ColumnDefinition x:Name="colRefresh"  Width="40"/>
-                        <ColumnDefinition Width="97"/>
+                        <ColumnDefinition Width="100"/>
                     </Grid.ColumnDefinitions>
                     <TextBox x:Name="tbImageDepot" Background="{x:Null}" TextChanged="tbImageDepot_TextChanged" Margin="0,2,2.962,-2" BorderThickness="0">
                     </TextBox>
@@ -31,7 +31,7 @@
                             <Image Source="/Scripthea;component/Properties/refresh.png"  Cursor="Hand"></Image>
                         </ContentControl>
                     </Button>
-                    <CheckBox x:Name="chkAutoRefresh" Grid.Column="2" Content="Auto-refresh" Foreground="#FF028500" HorizontalAlignment="Left"  Background="#FFF4F4F4" Margin="5,0,0,-0.051" VerticalAlignment="Center" Checked="chkAutoRefresh_Checked" Unchecked="chkAutoRefresh_Checked" />
+                    <CheckBox x:Name="chkAutoRefresh" Grid.Column="2" Content="Auto-refresh" Foreground="#FF028500" HorizontalAlignment="Center"  Background="#FFF4F4F4" Margin="2,0,3,0" VerticalAlignment="Center" Checked="chkAutoRefresh_Checked" Unchecked="chkAutoRefresh_Checked" FontSize="13" />
                 </Grid>
             </GroupBox>
             <Grid Grid.Row="2">

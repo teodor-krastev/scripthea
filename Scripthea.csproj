@@ -216,6 +216,7 @@
     <Compile Include="viewer\GridViewUC.xaml.cs">
       <DependentUpon>GridViewUC.xaml</DependentUpon>
     </Compile>
+    <Compile Include="viewer\ImageDepot.cs" />
     <Compile Include="viewer\PicItemUC.xaml.cs">
       <DependentUpon>PicItemUC.xaml</DependentUpon>
     </Compile>

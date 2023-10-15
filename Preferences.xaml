@@ -31,8 +31,8 @@
             </TabItem>
             <TabItem x:Name="tiViewer" Header=" Img.Depot Viewer " Height="28" Background="#FFECECEC" HorizontalAlignment="Left">
                 <StackPanel Margin="10,12,0,3" >
-                    <CheckBox x:Name="chkViewerRemoveImages" Content="Remove image files along with removed img.depot entries." HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,0,10"/>
-                    <CheckBox x:Name="chkConvertImageDepot" Content="Automatically convert old .idf files (before v1.5) to the current standard." HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,0,10" IsChecked="True" Visibility="Hidden"/>
+                    <CheckBox x:Name="chkClearEntriesImageDepot" Content="Remove image depot entries of missing image flies when depot opens." HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,0,10" IsChecked="True" />
+                    <CheckBox x:Name="chkViewerRemoveImages" Content="Remove image files along with removed img.depot entries in IDMaster." HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,0,10" IsChecked="True"/>
                 </StackPanel>
             </TabItem>
             <TabItem x:Name="tiIDutilities" Header=" Img.Depot Utilities " Height="28" Background="#FFECECEC" HorizontalAlignment="Left">

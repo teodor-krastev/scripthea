@@ -72,20 +72,31 @@ namespace scripthea.master
         }
         private void btnCopyA2B_Click(object sender, RoutedEventArgs e)
         {
-            int k = -1;
-            if (sender.Equals(btnCopyA2B)) k = Copy1to2(iPickerA, iPickerB); 
-            if (sender.Equals(btnCopyB2A)) k = Copy1to2(iPickerB, iPickerA);
-            if (k == -1) Utils.TimedMessageBox("Err: Issue during copying", "Error", 3000);
-            else Utils.TimedMessageBox(k+" files have been copied", "Information", 3000);
+            int k = -1; List<string> copied;
+            if (sender.Equals(btnCopyA2B)) k = Copy1to2(iPickerA, iPickerB, out copied); 
+            if (sender.Equals(btnCopyB2A)) k = Copy1to2(iPickerB, iPickerA, out copied);
+            switch (k)
+            {
+                case -1: Utils.TimedMessageBox("Err: Issue during copying", "Error", 3000);
+                    break;
+                default: Utils.TimedMessageBox(k+" images have been copied", "Information", 3000);
+                    break;
+            }            
         }
         private void btnMoveA2B_Click(object sender, RoutedEventArgs e)
         {
             int k = -1;
             if (sender.Equals(btnMoveA2B)) k = Move1to2(iPickerA, iPickerB);
             if (sender.Equals(btnMoveB2A)) k = Move1to2(iPickerB, iPickerA);
-            if (k == -1) Utils.TimedMessageBox("Err: Issue during moving", "Error", 3000);
-            else Utils.TimedMessageBox(k + " files have been moved", "Information", 3000);
-
+            switch (k)
+            {
+                case -1:
+                    Utils.TimedMessageBox("Err: Issue during moving", "Error", 3000);
+                    break;
+                default:
+                    Utils.TimedMessageBox(k + " images have been moved", "Information", 3000);
+                    break;
+            }
         }
         private void btnDeleteInA_Click(object sender, RoutedEventArgs e)
         {
@@ -93,10 +104,11 @@ namespace scripthea.master
             if (sender.Equals(btnDeleteInA)) k = DeleteIn1(iPickerA);
             if (sender.Equals(btnDeleteInB)) k = DeleteIn1(iPickerB);
             if (k == -1) Utils.TimedMessageBox("Err: Issue during deleting", "Error", 3000);
-            else Utils.TimedMessageBox(k + " files have been deleted", "Information", 3000);
+            else Utils.TimedMessageBox(k +  " have been deleted", "Information", 3000);
         }
-        public int Copy1to2(ImagePickerUC iPicker1, ImagePickerUC iPicker2)
+        public int Copy1to2(ImagePickerUC iPicker1, ImagePickerUC iPicker2, out List<string> copied)
         {
+            copied = new List<string>(); 
             if (ImgUtils.checkImageDepot(iPicker2.imageDepot, true) == -1)
             {
                 if (!iPicker1.isEnabled) return -1;
@@ -106,7 +118,7 @@ namespace scripthea.master
             }
             if (!iPicker1.isEnabled || !iPicker2.isEnabled)
             {
-                Log("Err: Depot " + iPicker1.letter + " has nothing to offer"); return -1;
+                Log("Err: Depot <" + iPicker1.letter + "> has nothing to offer"); return -1;
             }
             iPicker2.isChanging = true; int k = 0;
             List<ImageInfo> lii = iPicker1.imageInfos(true, false);
@@ -118,9 +130,9 @@ namespace scripthea.master
                 {
                     //Configure the message box
                     var messageBoxText =
-                        "Image file <" + target_path + "> already exists - overwrite?\r  Click \"Yes\" to overwrite the file, \"No\" to skip copying the file, or \"Cancel\" to exit operation.";
+                        "Image file <" + target_path + "> already exists - overwrite?\r\r  Click \"Yes\" to overwrite the file, or \"No\" to skip copying the file.";
                     var caption = "Image Depot Copying ";
-                    var button = MessageBoxButton.YesNoCancel;
+                    var button = MessageBoxButton.YesNo;
                     var icon = MessageBoxImage.Warning;
 
                     // Display message box
@@ -129,30 +141,45 @@ namespace scripthea.master
                     // Process message box results
                     switch (messageBoxResult)
                     {
-                        case MessageBoxResult.Yes: // correct entry list
-                            File.Delete(target_path); Utils.Sleep(200);
+                        case MessageBoxResult.Yes: // remove duplicated target
+                            int idx = iPicker2.iDepot.idxFromFilename(ii.filename);
+                            if (idx < 0) Log("Error: image <" + ii.filename + "> not found.");
+                            else iPicker2.iDepot.RemoveAt(idx, true); Utils.Sleep(200);
                             break;
-                        case MessageBoxResult.No: // skip this correction
-                            continue;
-                        case MessageBoxResult.Cancel: // exit validation
-                            return -1;
+                        case MessageBoxResult.No: // skip this copying
+                            continue;                        
                     }
                 }
                 if (!File.Exists(source_path))
                 {
                     Log("File <" + source_path + "> not found."); continue;
                 }
-                File.Copy(source_path, target_path); k++;
+                File.Copy(source_path, target_path); k++; copied.Add(Path.GetFileName(source_path));
                 if (!iPicker2.iDepot.Append(ii)) { Utils.TimedMessageBox("Error: image depot problem"); break; }
             }
             iPicker2.isChanging = false;
             return k;
-        }
-        
+        }        
         public int Move1to2(ImagePickerUC iPicker1, ImagePickerUC iPicker2)
         {
-            int k = Copy1to2(iPicker1, iPicker2);
-            if (k > -1) k = DeleteIn1(iPicker1);
+            List<string> copied;
+            int k = Copy1to2(iPicker1, iPicker2, out copied); int cnt1 = iPicker1.iDepot.items.Count;
+            if (!k.Equals(copied.Count)) Utils.TimedMessageBox("Error: index of image depot problem (485)");
+            if (k < 0) return k;
+            foreach (string fn in copied)
+            {
+                int idx = iPicker1.iDepot.idxFromFilename(fn);
+                if (idx < 0) Log("Error: image <" + fn + "> not found.");
+                else
+                {
+                    if (!iPicker1.iDepot.RemoveAt(idx, opts.viewer.RemoveImagesInIDF)) Utils.TimedMessageBox("Error: index of image depot problem (884)");
+                }
+            }
+            if ((cnt1 - iPicker1.iDepot.items.Count) != k) Utils.TimedMessageBox("Error: index of image depot problem (487)");
+            if (k > 0)
+            {
+                iPicker1.iDepot.Save(); iPicker1.ReloadDepot();
+            }
             return k;
         }
         public int DeleteIn1(ImagePickerUC iPicker1)
@@ -162,8 +189,17 @@ namespace scripthea.master
             int k = lot.Count - 1; int j = 0;
             while (k > -1)
             {
-                iPicker1.RemoveAt(lot[k].Item1 - 1);
+                int idx = lot[k].Item1 - 1;
+                if (idx < 0) Log("Error: invalid <" + idx + "> index.");
+                else
+                {
+                    if (!iPicker1.iDepot.RemoveAt(idx, opts.viewer.RemoveImagesInIDF)) Utils.TimedMessageBox("Error: index of image depot problem (885)");
+                }
                 k--; j++;
+            }
+            if (j > 0)
+            {
+                iPicker1.iDepot.Save(); iPicker1.ReloadDepot();
             }
             iPicker1.isChanging = false;
             return j;

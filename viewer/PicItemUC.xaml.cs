@@ -159,14 +159,14 @@ namespace scripthea.viewer
                 if (opts.viewer.ThumbCue) CueRow.Height = new GridLength(40);
                 else CueRow.Height = new GridLength(15);
             }
-            else CueRow.Height = new GridLength(1);
+            else CueRow.Height = new GridLength(0); 
             if (checkable) { chkChecked.Visibility = Visibility.Visible; tbCue.Margin = new Thickness(15, 0, 0, 0); }
             else { chkChecked.Visibility = Visibility.Collapsed; tbCue.Margin = new Thickness(0); }
             if (opts.viewer.ThumbCue) tbCue.Visibility = Visibility.Visible;
             else tbCue.Visibility = Visibility.Collapsed;
             // bottom
-            if (opts.viewer.ThumbFilename) FileRow.Height = new GridLength(25);
-            else FileRow.Height = new GridLength(1);
+            if (opts.viewer.ThumbFilename) { FileRow.Height = new GridLength(25); tbFile.Visibility = Visibility.Visible; }
+            else { tbFile.Visibility = Visibility.Collapsed; FileRow.Height = new GridLength(0); }
             // frame
             if (!opts.viewer.ThumbCue && !opts.viewer.ThumbFilename) grid.Margin = new Thickness(6);
             else grid.Margin = new Thickness(3);

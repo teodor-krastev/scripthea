@@ -39,7 +39,6 @@ namespace scripthea.master
         {
             return (SolidColorBrush)new BrushConverter().ConvertFromString(hex_code);
         }
-
         public static int checkImageDepot(string imageDepot, bool checkDesc = true) // return -1 if no access
         {
             string idepot = imageDepot.EndsWith("\\") ? imageDepot : imageDepot + "\\";

@@ -84,7 +84,7 @@ namespace scripthea.master
             }
             else
             {
-                btnCustom.Visibility = Visibility.Visible; colButton.Width = new GridLength(66);
+                btnCustom.Visibility = Visibility.Visible; colButton.Width = new GridLength(80);
             }
             return btnCustom;
         }
