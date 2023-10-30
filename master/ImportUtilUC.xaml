@@ -13,7 +13,7 @@
             <RowDefinition Height="300*"/>
             <RowDefinition Height="200*"/>
         </Grid.RowDefinitions>
-        <GroupBox x:Name="gbFolder" Header="Image folder to convert (import) to image depot" Margin="0" Background="#FFFBFBF4">
+        <GroupBox x:Name="gbFolder" Header="Image folder to convert (import) to image depot" Margin="0" Background="#FFFBFBF4" Foreground="#FF0C17D3">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
@@ -21,9 +21,9 @@
                 </Grid.ColumnDefinitions>
                 <TextBox x:Name="tbImageDepot" Background="{x:Null}" Margin="0,2,2.962,-2" IsReadOnly="True" BorderThickness="0" TextChanged="tbImageDepot_TextChanged" >
                 </TextBox>
-                <Button x:Name="btnNewFolder" Grid.Column="1" Content="Browse" Click="btnNewFolder_Click" HorizontalAlignment="Left" Margin="5.038,0,0,-0.051" Width="60" Foreground="#FF0F8001" FontWeight="Bold" Background="#FFF4F4F4" Visibility="Collapsed">
+                <Button x:Name="btnNewFolder" Grid.Column="1" Content="Browse" Click="btnNewFolder_Click" HorizontalAlignment="Left" Margin="5.038,0,0,-0.051" Width="60" Foreground="#FF0F8001" FontWeight="Bold" Background="White" Visibility="Collapsed">
                 </Button>
-                <Button x:Name="btnConvertFolder" Grid.Column="1" Content="Import" Click="btnConvertFolder_Click" HorizontalAlignment="Center" Margin="0" Width="65" Foreground="#FF0049BB" FontWeight="Bold" Background="#FFF4F4F4" IsEnabled="False" FontSize="13" FontFamily="Segoe UI Semibold"/>
+                <Button x:Name="btnConvertFolder" Grid.Column="1" Content="Import" Click="btnConvertFolder_Click" HorizontalAlignment="Center" Margin="0" Width="65" Foreground="#FF0049BB" FontWeight="Bold" Background="White" IsEnabled="False" FontSize="13" FontFamily="Segoe UI Semibold" Style="{StaticResource RoundedButtonStyle}"/>
             </Grid>
         </GroupBox>
         <Grid Grid.Row="1">

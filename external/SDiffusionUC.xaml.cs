@@ -144,8 +144,7 @@ namespace scripthea.external
             if (sender.Equals(lb1)) Utils.AskTheWeb("Stable+Diffusion+text-to-image+generator");
             if (sender.Equals(lb2)) Utils.CallTheWeb("https://stability.ai/");
             if (sender.Equals(lb3)) Utils.CallTheWeb("http://127.0.0.1:7860/");
-        }
-        
+        }        
         private void btnSDoptions_Click(object sender, RoutedEventArgs e)
         {
             bool bb = SDopts.opts.APIcomm;

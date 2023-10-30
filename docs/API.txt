@@ -1,0 +1,8 @@
+OpenAI's DALL·E: OpenAI's DALL·E is a text-to-image model that generates images from textual descriptions. While it may not have a public API at the time of my last update, OpenAI has been known to provide access to their models through APIs, so it's worth checking their website or developer resources for updates.
+
+Runway ML: Runway ML offers a variety of creative AI tools, including text-to-image generation. They provide an API that allows developers to integrate their models into applications and projects.
+
+DeepAI: DeepAI offers a text-to-image API that can generate images based on textual descriptions. It's a user-friendly option for developers looking to integrate this technology into their applications.
+
+Algorithmia: Algorithmia provides a platform for building and deploying machine learning models, including text-to-image generation. They offer an API that you can use to access their models and infrastructure.
+

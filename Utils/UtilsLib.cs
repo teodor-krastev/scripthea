@@ -153,7 +153,13 @@ namespace UtilsNS
         {
             Thread.Sleep(milisec);
         }
+        [DllImport("PowrProf.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
+        public static extern bool SetSuspendState(bool hibernate, bool forceCritical, bool disableWakeEvent);
 
+        public static bool GoToSleep()
+        {
+            return SetSuspendState(false, false, false);
+        }
         /// <summary>
         /// The developer computer. It shouldn't matter, but still..
         /// </summary>

@@ -54,7 +54,9 @@ namespace scripthea.composer
         public void Init(ref Options _opts)
         {           
             ModifiersFolder = System.IO.Path.Combine(Utils.basePath, "modifiers");
-            opts = _opts; chkAddEmpty.IsChecked = opts.composer.AddEmptyModif; 
+            opts = _opts;
+            chkMSetsEnabled.IsChecked = opts.composer.mSetsEnabled; chkMSetsEnabled_Checked(null, null);
+            chkAddEmpty.IsChecked = opts.composer.AddEmptyModif; 
             numSample.Value = Utils.EnsureRange(opts.composer.ModifSample, 1,9);
             categories = new List<ModifListUC>();
             var files = new List<string>(Directory.GetFiles(ModifiersFolder, "*.mdfr"));
@@ -243,6 +245,14 @@ namespace scripthea.composer
         private void tbModifPrefix_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (!Utils.isNull(opts)) opts.composer.ModifPrefix = tbModifPrefix.Text;
+        }
+
+        private void chkMSetsEnabled_Checked(object sender, RoutedEventArgs e)
+        {
+            if (opts == null) return;
+            if (sender != null) opts.composer.mSetsEnabled = chkMSetsEnabled.IsChecked.Value;
+            if (opts.composer.mSetsEnabled) mSetStack.Visibility = Visibility.Visible;
+            else mSetStack.Visibility = Visibility.Collapsed;
         }
     }
 }

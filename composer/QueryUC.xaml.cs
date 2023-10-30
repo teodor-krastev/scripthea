@@ -128,7 +128,7 @@ namespace scripthea.composer
         {
             if (showIt != null)
             {
-                if ((bool)showIt) tiSD_API.Visibility = Visibility.Visible;
+                if ((bool)showIt && API.activeAPIname.Equals("SDiffusion")) tiSD_API.Visibility = Visibility.Visible;
                 else tiSD_API.Visibility = Visibility.Collapsed;           
             }
             return sd_params_UC.vPrms;
@@ -140,7 +140,7 @@ namespace scripthea.composer
             get { return _showAPI; }
             set 
             {
-                if (value) rowAPI.Height = new GridLength(68);
+                if (value) rowAPI.Height = new GridLength(77);
                 else rowAPI.Height = new GridLength(1);
                 if (value) imgAPIdialog.Visibility = Visibility.Hidden;
                 else imgAPIdialog.Visibility = Visibility.Visible;
@@ -451,6 +451,7 @@ namespace scripthea.composer
                 API.activeAPI.Init(ref opts);
             }
             if (!Utils.isNull(e)) e.Handled = true;
+            OnAPIparams(API.activeAPIname.Equals("SDiffusion"));
         }
 
         private void imgAPIdialog_MouseDown(object sender, MouseButtonEventArgs e)

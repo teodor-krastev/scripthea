@@ -80,7 +80,7 @@
 
                 </Grid>
             </TabItem>
-            <TabItem x:Name="tiUtils" Header="Import/Export" Width="110" Height="33" Background="#FFECECEC" HorizontalAlignment="Left" Margin="15,0,-15,0" BorderBrush="#FFF0DC00"  Style="{StaticResource RoundedTopTabItemStyle}">
+            <TabItem x:Name="tiUtils" Header="Import/Export" Width="110" Height="33" Background="#FFECECEC" HorizontalAlignment="Left" Margin="15,0,-15,0" BorderBrush="#FFCE8A00"  Style="{StaticResource RoundedTopTabItemStyle}">
                 <Grid >
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition x:Name="colImportWidth" Width="600" MinWidth="400" MaxWidth="2000"/>
@@ -93,7 +93,7 @@
                     <GridSplitter x:Name="gridSplitterIO2" HorizontalAlignment="Left" Grid.Column="2" Margin="0" Width="5" Background="#FFE0EFFB"/>
                 </Grid>
             </TabItem>
-            <TabItem x:Name="tiSMacro" Header=" python sMacro " Width="136" Height="33" Background="#FFECECEC" HorizontalAlignment="Left"  Margin="25,0,-25,0" BorderBrush="#FF2E2E2E" Style="{StaticResource RoundedTopTabItemStyle}">
+            <TabItem x:Name="tiSMacro" Header=" python sMacro " Width="136" Height="33" Background="#FFECECEC" HorizontalAlignment="Left"  Margin="25,0,-25,0" BorderBrush="#FF787878" Style="{StaticResource RoundedTopTabItemStyle}">
                 <Grid >
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition x:Name="colSMacroFull" Width="800" MaxWidth="2000" MinWidth="200"/>

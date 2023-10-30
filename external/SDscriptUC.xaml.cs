@@ -42,7 +42,7 @@ namespace scripthea.external
         {
             if (_SDopts == null) _SDopts = new SDoptionsWindow();
             SDopts = _SDopts;
-            if (!SDopts.IsSDlocation(SDopts.opts.SDlocation, false)) Utils.DelayExec(3000, () => { Utils.TimedMessageBox("Go to Options and select your webUI SD instalation folder.", "Solution", 6000); }) ;
+            if (!SDopts.IsSDlocation(SDopts.opts.SDlocation, false)) { Utils.DelayExec(3000, () => { Utils.TimedMessageBox("Go to SD Options and select your webUI SD instalation folder.", "Solution", 6000); }); return; }
             reStartServers();
         }
         public void reStartServers(bool forced = false)

@@ -71,6 +71,7 @@ namespace scripthea
             public bool AddEmptyModif;
             public bool ConfirmGoogling;
             public int ModifSample;
+            public bool mSetsEnabled;
         }
         public Viewer viewer;
         public class Viewer
@@ -139,7 +140,7 @@ namespace scripthea
         Options opts;
         public void Init(ref Options _opts)
         {
-            opts = _opts; 
+            opts = _opts; tabControl.SelectedIndex = 0;
         } 
         public string configFilename = Path.Combine(Utils.configPath, "Scripthea.cfg");  
         /// <summary>
@@ -170,7 +171,9 @@ namespace scripthea
         }
         public void ShowWindow(int tabIdx)
         {
-            tabControl.SelectedIndex = Utils.EnsureRange(tabIdx, 0, 2) + 1;
+            //tabControl.SelectedIndex = Utils.EnsureRange(tabIdx, 0, 2) + 1;
+            if (Utils.InRange(tabIdx, 0, 1)) tabControl.SelectedItem = tiGeneral;
+            if (Utils.InRange(tabIdx, 2, 3)) tabControl.SelectedItem = tiIDutilities;
             opts2visuals();
             ShowDialog();
         }

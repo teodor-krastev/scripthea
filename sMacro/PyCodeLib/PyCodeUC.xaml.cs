@@ -66,9 +66,21 @@ namespace PyCodeLib
         public Dictionary<string,object> scripted; // register scripted components <name,component> HERE! 
         public double colCodeWidth { get { return colCode.Width.Value; } set { colCode.Width = new GridLength(value); } }
         public double colLogWidth { get { return colLog.Width.Value; } set { colLog.Width = new GridLength(value); } }
+        public string getPythonPath(string SDpath, bool popupError = true)
+        {
+            void popupMsg(string msg) { if (popupError) Utils.TimedMessageBox(msg, "Error", 5000); }
+            if (!Directory.Exists(SDpath)) { popupMsg("SD path <" + SDpath + "> does not exists."); return ""; }
+            string envPath = Path.Combine(SDpath, "venv");
+            if (!Directory.Exists(envPath)) { popupMsg("SD venv path <" + envPath + "> does not exists."); return ""; }
+            envPath = Path.Combine(envPath, "pyvenv.cfg");
+            if (!File.Exists(envPath)) { popupMsg("SD venv configuration file <" + envPath + "> does not exists."); return ""; }
+            Dictionary<string, string> config = Utils.readDict(envPath);
+            return envPath;
+        }
         
         public bool Init(string pyPath) // @"C:\Software\Python\Python310\python310.dll";
         {
+            //string foundPyPath = getPythonPath(@"c:\Software\stable-diffusion-webui-1-6\"); IsEnabled = false; return false;
             if (!File.Exists(pyPath)) { Log("Error: python path <"+pyPath+"> not found."); IsEnabled = false; return false; }
             //Environment.SetEnvironmentVariable("PYTHONNET_PYDLL", pyPath);
             try

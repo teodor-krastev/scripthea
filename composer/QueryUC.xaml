@@ -47,14 +47,14 @@
                 <TabItem x:Name="tiScan" Header="Scan" Height="28" Background="#FFECECEC" Margin="5,0,-9.063,0.089" HorizontalAlignment="Left" Width="90" BorderBrush="#FF6C009C" Style="{StaticResource RoundedTopTabItemStyle}">
                     <Grid Background="White">
                         <Button x:Name="btnScan" Content="S c a n" Height="30" Width="77" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,7,0,0" FontWeight="Bold" Background="#FFFDFFED" Click="btnScan_Click" FontSize="13" BorderBrush="#FF0233A2" Style="{StaticResource RoundedButtonStyle}"/>
-                        <TextBox HorizontalAlignment="Right" Text="Combine all checked cues + fixed modifiers + some (by modif. sample number) of scanned modifiers." Width="162" Margin="0,0,-0.228,0" TextWrapping="Wrap" Background="{x:Null}" BorderBrush="{x:Null}" VerticalAlignment="Top" FontSize="12"/>
-                        <Button x:Name="btnScanPreview" Content="Scan preview" Height="30" Width="98" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10,0,0,7" Background="#FFFFFFF5" FontSize="13" Click="btnScanPreview_Click" BorderBrush="#FF993109" Style="{StaticResource RoundedButtonStyle}"/>
-                        <Button x:Name="btnAppend2Preview" Content="Append to preview" Height="30" Width="127" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="113,0,0,7.241" Background="#FFFFFFF5" FontSize="13" Click="btnScanPreview_Click" BorderBrush="#FF993109" Style="{StaticResource RoundedButtonStyle}"/>
+                        <TextBox HorizontalAlignment="Right" Text="Combine all checked cues + fixed modifiers + some (by modif. sample number) of scanned modifiers." Width="200" Margin="0,0,-0.667,0" TextWrapping="Wrap" Background="{x:Null}" BorderBrush="{x:Null}" VerticalAlignment="Top" FontSize="12"/>
+                        <Button x:Name="btnScanPreview" Content="Scan preview" Height="30" Width="98" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10,0,0,4" Background="#FFFFFFF5" FontSize="13" Click="btnScanPreview_Click" BorderBrush="#FF993109" Style="{StaticResource RoundedButtonStyle}"/>
+                        <Button x:Name="btnAppend2Preview" Content="Append to preview" Height="30" Width="127" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="113,0,0,4" Background="#FFFFFFF5" FontSize="13" Click="btnScanPreview_Click" BorderBrush="#FF993109" Style="{StaticResource RoundedButtonStyle}"/>
                     </Grid>
                 </TabItem>
                 <TabItem x:Name="tiOptions" Header="Options" Height="28" Background="#FFECECEC" Margin="10,0,-11,0.089" HorizontalAlignment="Left" Width="90" Style="{StaticResource RoundedTopTabItemStyle}">
                     <Grid >
-                        <GroupBox x:Name="gbFolder" VerticalAlignment="Bottom" Header=" Depot folder for generated images"  Height="50" Background="#FFFBFBF4">
+                        <GroupBox x:Name="gbFolder" VerticalAlignment="Bottom" Header=" Depot folder for generated images"  Height="50" Background="#FFFBFBF4" Foreground="#FF0C17D3">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="1*"/>
@@ -64,9 +64,9 @@
                                 <Button x:Name="btnNewFolder" Grid.Column="1" Content=" Browse " Click="btnNewFolder_Click" Foreground="#FF0F8001" FontWeight="Bold" Background="#FFF4F4F4" Margin="3,0,0,0" Visibility="Hidden"/>
                             </Grid>
                         </GroupBox>
-                        <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
-                            <Label x:Name="lbAPI" Content="API" Width="32" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                            <ComboBox x:Name="cbActiveAPI" HorizontalAlignment="Left" VerticalAlignment="Top" SelectedIndex="0" Width="112" FontSize="13" Background="White" Margin="3,3,0,0" SelectionChanged="cbActiveAPI_SelectionChanged" FontWeight="Bold" FontFamily="Segoe UI Semibold">
+                        <StackPanel Orientation="Horizontal" Margin="0,5,0,0" VerticalAlignment="Top">
+                            <Label x:Name="lbAPI" Content="Text-to-image generator" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                            <ComboBox x:Name="cbActiveAPI" HorizontalAlignment="Left" SelectedIndex="0" Width="112" FontSize="13" Background="White" Margin="3,2,0,0" SelectionChanged="cbActiveAPI_SelectionChanged" FontWeight="Bold" FontFamily="Segoe UI Semibold">
                                 <ComboBoxItem Content="Simulation"/>
                                 <ComboBoxItem x:Name="cbiDiffusion" Content="SDiffusion"/>
                                 <ComboBoxItem x:Name="cbiCraiyon" Content="Craiyon"/>
@@ -89,7 +89,7 @@
         <GridSplitter x:Name="gridSplitRight" Grid.Column="1" HorizontalAlignment="Left" Margin="0" Width="5" />
         <Grid Grid.Column="1" >
             <Grid.RowDefinitions>
-                <RowDefinition x:Name="rowAPI" Height="65"/>
+                <RowDefinition x:Name="rowAPI" Height="77"/>
                 <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
             <Grid x:Name="gridAPI" Margin="7,0,0,0"/>
