@@ -58,6 +58,7 @@ namespace scripthea.composer
             chkMSetsEnabled.IsChecked = opts.composer.mSetsEnabled; chkMSetsEnabled_Checked(null, null);
             chkAddEmpty.IsChecked = opts.composer.AddEmptyModif; 
             numSample.Value = Utils.EnsureRange(opts.composer.ModifSample, 1,9);
+            chkConfirmGoogle.IsChecked = opts.composer.ConfirmGoogling; 
             categories = new List<ModifListUC>();
             var files = new List<string>(Directory.GetFiles(ModifiersFolder, "*.mdfr"));
             if (File.Exists(mapFile))
@@ -236,15 +237,19 @@ namespace scripthea.composer
         }
         private void chkAddEmpty_Checked(object sender, RoutedEventArgs e)
         {
-            opts.composer.AddEmptyModif = chkAddEmpty.IsChecked.Value;
+            if (!Utils.isNull(opts)) opts.composer.AddEmptyModif = chkAddEmpty.IsChecked.Value;
         }
         private void numSample_ValueChanged(object sender, RoutedEventArgs e)
         {
-            opts.composer.ModifSample = numSample.Value; 
+            if (!Utils.isNull(opts)) opts.composer.ModifSample = numSample.Value; 
         }
         private void tbModifPrefix_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (!Utils.isNull(opts)) opts.composer.ModifPrefix = tbModifPrefix.Text;
+        }
+        private void chkConfirmGoogle_Checked(object sender, RoutedEventArgs e)
+        {
+            if (!Utils.isNull(opts)) opts.composer.ConfirmGoogling = chkConfirmGoogle.IsChecked.Value;
         }
 
         private void chkMSetsEnabled_Checked(object sender, RoutedEventArgs e)
@@ -254,5 +259,6 @@ namespace scripthea.composer
             if (opts.composer.mSetsEnabled) mSetStack.Visibility = Visibility.Visible;
             else mSetStack.Visibility = Visibility.Collapsed;
         }
+
     }
 }

@@ -162,6 +162,8 @@ namespace scripthea.master
                 else return iDepot.isEnabled;
             } 
         }
+        public bool? isValidFolder { get; private set; } // false - invalid; true - valid and not empty; null - valid and empty !!! future use
+
         private bool _isChanging = false;
         
         public bool isChanging
@@ -217,15 +219,19 @@ namespace scripthea.master
         {
             if (ImgUtils.checkImageDepot(tbImageDepot.Text, false) > 0) tbImageDepot.Foreground = Brushes.Black;
             else tbImageDepot.Foreground = Brushes.Red;
-            if (ImgUtils.checkImageDepot(tbImageDepot.Text, true) > -1)
+            int iCount = ImgUtils.checkImageDepot(tbImageDepot.Text, true); 
+            if (iCount > -1)
             {
-                iDepot = new ImageDepot(tbImageDepot.Text, ImageInfo.ImageGenerator.FromDescFile, IsReadOnly);                
+                iDepot = new ImageDepot(tbImageDepot.Text, ImageInfo.ImageGenerator.FromDescFile, IsReadOnly);
+                if (iCount == 0) isValidFolder = null;
+                else isValidFolder = true;
             }
             else 
             {
                 if (Directory.Exists(tbImageDepot.Text)) 
                     iDepot = new ImageDepot(tbImageDepot.Text, ImgUtils.DefaultImageGenerator, IsReadOnly);
                 else iDepot = null;
+                isValidFolder = false;
             }
             if (!chkCustom1.IsChecked.Value && Convert.ToString(chkCustom1.Content).Equals("Including modifiers") && iDepot != null)
             {

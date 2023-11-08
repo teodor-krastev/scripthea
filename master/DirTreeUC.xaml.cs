@@ -39,7 +39,7 @@ namespace scripthea.master
         {
             return (SolidColorBrush)new BrushConverter().ConvertFromString(hex_code);
         }
-        public static int checkImageDepot(string imageDepot, bool checkDesc = true) // return -1 if no access
+        public static int checkImageDepot(string imageDepot, bool checkDesc = true) // return -1 if no access (does not exist)
         {
             string idepot = imageDepot.EndsWith("\\") ? imageDepot : imageDepot + "\\";
             if (!Directory.Exists(idepot)) return -1;
@@ -48,7 +48,7 @@ namespace scripthea.master
                 DirectoryInfo di = new DirectoryInfo(idepot);
                 if ((di.Attributes & FileAttributes.System) == FileAttributes.System) return -1; // system dir            
             }
-            catch { /* Utils.TimedMessageBox("no access to " + idepot);*/ return -1; }
+            catch { /*Utils.TimedMessageBox("no access to " + idepot);*/ return -1; }
             try
             {
                 if (checkDesc)

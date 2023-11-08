@@ -114,10 +114,9 @@ namespace scripthea
             colMasterWidth.Width = new GridLength(opts.iDutilities.MasterWidth);
             colImportWidth.Width = new GridLength(opts.iDutilities.ImportWidth);
             colExportWidth.Width = new GridLength(opts.iDutilities.ExportWidth);
-
             if (opts.composer.SingleAuto) queryUC.btnCompose_Click(null, null);
-            // pyCode Init
 
+            // pyCode Init
             if (opts.sMacro.pythonPanel || (Utils.TheosComputer() && Utils.isInVisualStudio)) pyCode.Init( @"C:\Software\Python\Python310\python310.dll"); 
             if (!pyCode.IsEnabled) tiSMacro.Visibility = Visibility.Collapsed;
             else

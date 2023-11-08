@@ -801,14 +801,14 @@ namespace UtilsNS
             {
                 Utils.TimedMessageBox("File not found: " + filename, "Warning", 3000); return dict;
             }
-            List<string> ls = new List<string>();
+            //List<string> ls = new List<string>();
             foreach (string line in File.ReadLines(filename))
             {
                 string ss = skipRem ? skimRem(line) : line;
                 if (ss.Equals("")) continue;
                 string[] sb = ss.Split('=');
                 if (sb.Length != 2) break;
-                dict[sb[0]] = sb[1];
+                dict.Add(sb[0].Trim(), sb[1].Trim());
             }
             return dict;
         }

@@ -46,12 +46,13 @@
                         <Label x:Name="lbSample" Content="in a prompt  " FontWeight="Bold" FontFamily="Segoe UI Semibold"/>
                         <UtilsNS:NumericBox x:Name="numSample" Width="40" Maximum="9" Minimum="1" ValueChanged="numSample_ValueChanged" FontWeight="Bold"/>
                     </StackPanel>
-                    <CheckBox x:Name="chkAddEmpty" Content="Add an empty modifier" Margin="0,5,0,10" ToolTip="Add an empty modfifier to the scan list" Checked="chkAddEmpty_Checked" Unchecked="chkAddEmpty_Checked"/>
-                    <StackPanel Orientation="Horizontal" Margin="-2,10,0,7" Background="MintCream">
+                    <CheckBox x:Name="chkAddEmpty" Content="Add an empty modifier" Margin="0,5,0,3" ToolTip="Add an empty modfifier to the scan list" Checked="chkAddEmpty_Checked" Unchecked="chkAddEmpty_Checked"/>
+                    <StackPanel Orientation="Horizontal" Margin="-2,5,0,7" Background="MintCream">
                         <Label x:Name="lbSeparator" Content="Modif. Separator" FontWeight="Bold" FontFamily="Segoe UI Semibold"/>
                         <TextBox x:Name="tbModifPrefix" Height="23" Margin="0,3,0,0" TextWrapping="Wrap" Text=";" VerticalAlignment="Top" Width="30" FontWeight="Bold" FontSize="13" TextChanged="tbModifPrefix_TextChanged"/>
                     </StackPanel>
-                    <CheckBox x:Name="chkRemoveDuplicates" Content="Remove duplicates" Margin="0,10,0,0" Checked="chkRemoveDuplicates_Checked" Unchecked="chkRemoveDuplicates_Unchecked" ToolTip="Remove duplicated modifiers"/>
+                    <CheckBox x:Name="chkConfirmGoogle" Content="Confirm Google search" Margin="0" ToolTip="Confirm Google search before execution" Foreground="Navy" Checked="chkConfirmGoogle_Checked" Unchecked="chkConfirmGoogle_Checked" />
+                    <CheckBox x:Name="chkRemoveDuplicates" Content="Remove duplicated mdfs" Margin="0,5,0,0" Checked="chkRemoveDuplicates_Checked" Unchecked="chkRemoveDuplicates_Unchecked" ToolTip="Remove duplicated modifiers"/>
 
                 </StackPanel>
             </GroupBox>

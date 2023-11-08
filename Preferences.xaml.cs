@@ -156,7 +156,6 @@ namespace scripthea
         {
             if (!opts.general.NewVersion.Equals("")) lbNewVer.Content = "New version: " + opts.general.NewVersion;
             chkUpdates.IsChecked = opts.general.UpdateCheck;
-            chkConfirmGoogling.IsChecked = opts.composer.ConfirmGoogling;
             chkViewerRemoveImages.IsChecked = opts.viewer.RemoveImagesInIDF;
             chkClearEntriesImageDepot.IsChecked = opts.iDutilities.MasterClearEntries; ;
             chkValidationAsk.IsChecked = opts.iDutilities.MasterValidationAsk;
@@ -164,7 +163,6 @@ namespace scripthea
         public void visuals2opts()
         {
             opts.general.UpdateCheck = chkUpdates.IsChecked.Value;
-            opts.composer.ConfirmGoogling = chkConfirmGoogling.IsChecked.Value;
             opts.viewer.RemoveImagesInIDF = chkViewerRemoveImages.IsChecked.Value;
             opts.iDutilities.MasterClearEntries = chkClearEntriesImageDepot.IsChecked.Value; ImageDepotConvertor.ClearEntriesImageDepot = opts.iDutilities.MasterClearEntries;
             opts.iDutilities.MasterValidationAsk = chkValidationAsk.IsChecked.Value;

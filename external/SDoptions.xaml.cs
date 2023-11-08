@@ -137,7 +137,7 @@ namespace scripthea.external
             if (!IsSDlocation(opts.SDlocation)) return false; 
             string sdLoc = Path.Combine(opts.SDlocation, "scripts", pyScript);
             if (Utils.GetMD5Checksum(orgLoc) == Utils.GetMD5Checksum(sdLoc)) { ValidScript = true; return true; }
-            if (MessageBox.Show("Scripthea python script is missing (or old) from scripts folder of SD\r\r Copy <prompts_from_scripthea_1_5.py> to SD script folder?", "",
+            if (MessageBox.Show("Scripthea python script is missing (or old) from scripts folder of SD\r\r Copy <prompts_from_scripthea_1_5.py> to SD script folder?\r Yes - recommended", "",
                 MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No) return false;
             File.Copy(orgLoc, sdLoc, true); Utils.Sleep(200);
             ValidScript = Utils.GetMD5Checksum(orgLoc) == Utils.GetMD5Checksum(sdLoc);

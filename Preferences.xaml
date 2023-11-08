@@ -21,10 +21,6 @@
                             </StackPanel>
                         </GroupBox>
                     <CheckBox x:Name="chkClearEntriesImageDepot" Content="Remove image depot entries of missing image flies when depot opens." HorizontalAlignment="Left" VerticalAlignment="Top" Margin="7,8,0,0" IsChecked="True" />
-                    <GroupBox Header="Modifiers" Height="55" Margin="0,8,0,0">
-                        <CheckBox x:Name="chkConfirmGoogling" Content="Confirm google search when right click on modifier." HorizontalAlignment="Left" VerticalAlignment="Top" Margin="7,8,0,0"/>
-                    </GroupBox>
-
                 </StackPanel>
             </TabItem>
             <TabItem x:Name="tiComposer"  Header=" Prompt composer " Height="28" HorizontalAlignment="Left" Background="#FFF1F0F0" Visibility="Collapsed">

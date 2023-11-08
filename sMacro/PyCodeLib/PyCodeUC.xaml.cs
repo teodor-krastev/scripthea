@@ -69,13 +69,18 @@ namespace PyCodeLib
         public string getPythonPath(string SDpath, bool popupError = true)
         {
             void popupMsg(string msg) { if (popupError) Utils.TimedMessageBox(msg, "Error", 5000); }
-            if (!Directory.Exists(SDpath)) { popupMsg("SD path <" + SDpath + "> does not exists."); return ""; }
+            if (!Directory.Exists(SDpath)) { popupMsg("SD path <" + SDpath + "> does not exist."); return ""; }
             string envPath = Path.Combine(SDpath, "venv");
-            if (!Directory.Exists(envPath)) { popupMsg("SD venv path <" + envPath + "> does not exists."); return ""; }
+            if (!Directory.Exists(envPath)) { popupMsg("SD venv path <" + envPath + "> does not exist."); return ""; }
             envPath = Path.Combine(envPath, "pyvenv.cfg");
-            if (!File.Exists(envPath)) { popupMsg("SD venv configuration file <" + envPath + "> does not exists."); return ""; }
-            Dictionary<string, string> config = Utils.readDict(envPath);
-            return envPath;
+            if (!File.Exists(envPath)) { popupMsg("SD venv configuration file <" + envPath + "> does not exist."); return ""; }
+            Dictionary<string, string> config = Utils.readDict(envPath); 
+            if (!config.ContainsKey("version")) return "";          
+            string[] ver = config["version"].Split('.'); if (ver.Length < 2) return "";
+            string fl = "python" + ver[0] + ver[1] + ".dll"; 
+            if (!config.ContainsKey("home")) return "";
+            string pyPath = Path.Combine(config["home"], fl);
+            return File.Exists(pyPath) ? pyPath : "";
         }
         
         public bool Init(string pyPath) // @"C:\Software\Python\Python310\python310.dll";
