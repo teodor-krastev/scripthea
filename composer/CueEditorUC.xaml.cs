@@ -178,7 +178,7 @@ namespace scripthea.composer
             filename = dialog.FileName;  
             if (inputKind) // .cues
             {
-                if (!File.Exists(filename)) { Log("Err: no <" + filename + "> file found"); return; }
+                if (!File.Exists(filename)) { Log("Error[96]: no <" + filename + "> file found"); return; }
                 List<string> cueText = new List<string>(File.ReadAllLines(filename));
                 List<string> cueList = new List<string>();
                 foreach (string ss in cueText)
@@ -254,7 +254,7 @@ namespace scripthea.composer
                     RemoveAt(selected);
                     selected = Utils.EnsureRange(selected, 0, cues.Count - 1);
                 }
-                else Log("err: index out of range");
+                else Log("Error[54]: index out of range");
             }
         }
         private void btnDoIt_Click(object sender, RoutedEventArgs e)

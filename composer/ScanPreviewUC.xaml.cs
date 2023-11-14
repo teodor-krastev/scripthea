@@ -38,7 +38,7 @@ namespace scripthea.composer
         {
             if (prompts.Count == 0)
             {
-                Log("Error: no prompts in the list"); return;
+                Log("Error[742]: no prompts in the list"); return;
             }
             allPrompts = new List<string>(prompts);
             dTable = new DataTable(); checks = new List<CheckBox>(); 
@@ -53,9 +53,9 @@ namespace scripthea.composer
             for (int i = 0; i < prompts.Count; i++)
             {
                 DataGridCell dgc = DataGridHelper.GetCellByIndices(dGrid, i, 1);
-                if (Utils.isNull(dgc)) { Log("Error: missing cell #" + i.ToString()); continue; }
+                if (Utils.isNull(dgc)) { Log("Error[449]: missing cell #" + i.ToString()); continue; }
                 CheckBox chk = dgc.FindVisualChild<CheckBox>();
-                if (Utils.isNull(chk)) { Log("Error: missing check #" + i.ToString()); continue; }                
+                if (Utils.isNull(chk)) { Log("Error[448]: missing check #" + i.ToString()); continue; }                
                 chk.Checked += new RoutedEventHandler(chkTable_Checked); chk.Unchecked += new RoutedEventHandler(chkTable_Checked);
                 checks.Add(chk);
             }                            

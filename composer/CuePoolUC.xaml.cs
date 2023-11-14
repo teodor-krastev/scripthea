@@ -77,7 +77,7 @@ namespace scripthea.composer
             {
                 string json = System.IO.File.ReadAllText(mapFile);
                 poolMap = JsonConvert.DeserializeObject<List<Dictionary<string, bool>>>(json);
-                if (!poolMap.Count.Equals(poolCount)) throw new Exception("Error: Broken pool-map file. Fix or delete it and restart.");
+                if (!poolMap.Count.Equals(poolCount)) throw new Exception("Error[359]: Broken pool-map file. Fix or delete it and restart.");
                 for (int i = 0; i < poolCount; i++)
                 {
                     string nf = missingCues(i);

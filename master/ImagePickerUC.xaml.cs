@@ -100,12 +100,12 @@ namespace scripthea.master
 
         public bool RemoveAt(int idx, bool inclFile = true) // idx in iDepot
         {
-            if (!Utils.InRange(idx, 0, iDepot.items.Count-1, true)) { Log("Err: index out of range"); return false; }
+            if (!Utils.InRange(idx, 0, iDepot.items.Count-1, true)) { Log("Error[485]: index out of range"); return false; }
             if (inclFile)
             {
                 string filepath = Path.Combine(imageDepot, iDepot.items[idx].filename);
                 if (File.Exists(filepath)) File.Delete(filepath);
-                else Log("Err: file <" + filepath + " not found");
+                else Log("Error[365]: file <" + filepath + " not found");
             }
             iDepot.items.RemoveAt(idx);
             return true;
@@ -179,7 +179,7 @@ namespace scripthea.master
                         iDepot.Save(!IsReadOnly); // save the changes on disk
                         activeView.Clear();
                         if (!activeView.FeedList(ref iDepot))  // update from iDepot
-                            { Log("Err: fail to update image depot"); return; }                        
+                            { Log("Error[256]: fail to update image depot"); return; }                        
                         GetChecked();
                     }
                 }
@@ -207,7 +207,7 @@ namespace scripthea.master
         private int GetChecked(bool print = true) // returns numb. of checked
         {
             if (print) lbChecked.Content = "---";
-            if (!isEnabled || activeView == null) { /*Log("Err: No active image depot found.");*/ return -1; }
+            if (!isEnabled || activeView == null) { /*Log("Error[]: No active image depot found.");*/ return -1; }
             List<Tuple<int, string, string>> itms = activeView.GetItems(true, false);
             if (print)
                 lbChecked.Content = itms.Count.ToString() + " out of " + activeView.Count.ToString();
@@ -297,10 +297,10 @@ namespace scripthea.master
             if (activeView.iDepot != null)
             {
                 if (!Utils.comparePaths(iDepot.path, activeView.loadedDepot)) // avoid reload already loaded depot
-                    activeView.FeedList(ref iDepot); //if (!) Log("Err: fail to create grid image depot(1)");
+                    activeView.FeedList(ref iDepot); //if (!) Log("Error[]: fail to create grid image depot(1)");
             }
             else
-                activeView.FeedList(ref iDepot); // if (!) Log("Err: fail to create grid image depot(2)");
+                activeView.FeedList(ref iDepot); // if (!) Log("Error[]: fail to create grid image depot(2)");
             if (lastTab == null) { lastTab = (TabItem)tcMain.SelectedItem; return; } // first load
             if (tcMain.SelectedItem.Equals(tiGrid))            
                 gridView.SynchroChecked(listView.GetItems(true, false));

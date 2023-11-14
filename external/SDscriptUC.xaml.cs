@@ -105,7 +105,7 @@ namespace scripthea.external
         public bool GenerateImage(string prompt, string imageDepotFolder, out string filename) // returns the filename of saved/copied in ImageDepoFolder image 
         {
             filename = Utils.timeName(); // target image 
-            if (Utils.isNull(server2s) || Utils.isNull(server2c)) { inLog("Err: communication issue"); return false; }
+            if (Utils.isNull(server2s) || Utils.isNull(server2c)) { inLog("Error[159]: communication issue"); return false; }
             string folder = imageDepotFolder.EndsWith("\\") ? imageDepotFolder : imageDepotFolder + "\\"; opts["folder"] = folder;
             string fullFN = Path.Combine(folder, Path.ChangeExtension(filename, ".png"));
             if (File.Exists(fullFN))
@@ -116,19 +116,19 @@ namespace scripthea.external
 
             int k = 0; // wait for expect state
             while (!server2s.status.Equals(SDServer.Status.promptExpect) && (k < (2 * SDopts.opts.TimeOutImgGen))) { Thread.Sleep(500); k++; }
-            if (!server2s.status.Equals(SDServer.Status.promptExpect)) { inLog("Err: time-out at promptExpect"); return false; }
+            if (!server2s.status.Equals(SDServer.Status.promptExpect)) { inLog("Error[35]: time-out at promptExpect"); return false; }
 
             Dictionary<string, string> jsn = new Dictionary<string, string>();
             jsn.Add("prompt", prompt); jsn.Add("folder", folder); jsn.Add("filename", filename);
             filename = Path.ChangeExtension(filename, ".png");
-            if (!server2c.Send(JsonConvert.SerializeObject(jsn))) { inLog("Err: fail to send a message to the client"); return false; }
+            if (!server2c.Send(JsonConvert.SerializeObject(jsn))) { inLog("Error[471]: fail to send a message to the client"); return false; }
 
             k = 0; bool bir = imageReady; // wait for image gen.
             while (!bir && (k < (5 * SDopts.opts.TimeOutImgGen))) { Thread.Sleep(200); k++; if (!bir) bir = imageReady; }
-            if (!bir) { inLog("Err: time-out at imageReady"); return false; }
+            if (!bir) { inLog("Error[842]: time-out at imageReady"); return false; }
 
             //if (server.debug && bir) SimulatorImage(fullFN);
-            if (!File.Exists(fullFN)) { inLog("Err: image file <" + fullFN + "> not found"); return false; }
+            if (!File.Exists(fullFN)) { inLog("Error[14]: image file <" + fullFN + "> not found"); return false; }
 
             return bir;
         }

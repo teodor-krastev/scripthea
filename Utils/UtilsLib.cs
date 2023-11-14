@@ -483,7 +483,7 @@ namespace UtilsNS
                         if (Object.ReferenceEquals(t, typeof(double))) { rp1 = ((double)pair.Value).ToString("G5"); found = true; }
                         if (Object.ReferenceEquals(t, typeof(string))) { rp1 = (string)pair.Value; found = true; }
                         if (found) s = s.Replace(brKey, rp1);
-                        else TimedMessageBox("Error: " + s);
+                        else TimedMessageBox("Error[739]: " + s);
                     }
                 }
                 if (found) rs.Add(s);

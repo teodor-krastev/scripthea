@@ -84,7 +84,7 @@ namespace scripthea
                 string[] args = arg1.Split('=');
                 if (args.Length == 1) { clSwitches.Add(args[0], ""); continue; } 
                 if (args.Length == 2) { clSwitches.Add(args[0], args[1]); continue; }
-                Log("Error: command line argument syntax problem");
+                Log("Error[225]: command line argument syntax problem");
             }       
 
             Title = "Scripthea - options loaded";
@@ -244,14 +244,17 @@ namespace scripthea
                             dti = 0; dTimer.Start(); txt = msg.Substring(1);
                             break;
                         case "@EndGene": // EndGeneration
-                            if (Utils.isNull(dTimer)) { Utils.TimedMessageBox("Err: broken timer", "Warning", 3500); return; }
-                            dTimer.Stop();  lbProcessing.Content = "";
-                            imgAbout.Source = ImgUtils.BitmapToBitmapImage(penpic, System.Drawing.Imaging.ImageFormat.Png); 
+                            Log("@StopRun");
                             string fn = msg.Equals("@EndGeneration") ? "" : txt.Substring(15).Trim();
                             if (rowLogImage.Height.Value < 2) rowLogImage.Height = new GridLength(pnlLog.ActualWidth);
                             if (File.Exists(fn)) imgLast.Source = ImgUtils.UnhookedImageLoad(fn); // success
-                            else { imgLast.Source = ImgUtils.file_not_found; Log("Error: file not found " + fn); } 
+                            else { imgLast.Source = ImgUtils.file_not_found; Log("Error[486]: file not found " + fn); } 
                             txt = msg.Substring(1);
+                            break;
+                        case "@StopRun":
+                            if (Utils.isNull(dTimer)) { Utils.TimedMessageBox("Error[777]: broken timer", "Warning", 3500); return; }
+                            dTimer.Stop();  lbProcessing.Content = "";
+                            imgAbout.Source = ImgUtils.BitmapToBitmapImage(penpic, System.Drawing.Imaging.ImageFormat.Png); 
                             break;
                         case "@CancelR": // CancelRequest 
                             queryUC.Request2Cancel();

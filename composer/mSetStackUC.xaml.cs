@@ -94,7 +94,7 @@ namespace scripthea.composer
             if (!(sender is mSetUC)) return;
             mSetUC mSetItem = (sender as mSetUC);
             if (mSetItem.isReset()) { foreach (ModifListUC sm in modifLists) sm.Reset(); }
-            else { if (!SetModifs(mSetItem.mSet, chkAdd.IsChecked.Value)) Utils.TimedMessageBox("Error: Not able to set all modifiers"); }
+            else { if (!SetModifs(mSetItem.mSet, chkAdd.IsChecked.Value)) Utils.TimedMessageBox("Error[713]: Not able to set all modifiers"); }
         }
         public bool SetModifs(List<Tuple<string, string, ModifStatus>> mdfs, bool add) // write to modifiers
         {
@@ -132,7 +132,7 @@ namespace scripthea.composer
             if (mSet.Count == 0) { Utils.TimedMessageBox("No checked modifiers to be saved."); return; }
             string newItem = new InputBox("New mSet name", "", "Text input").ShowDialog();
             if (newItem == "") return;
-            if (mSetByName(newItem) != null) { Utils.TimedMessageBox("Error: <"+newItem+"> already exits."); return; }
+            if (mSetByName(newItem) != null) { Utils.TimedMessageBox("Error[156]: <"+newItem+"> already exits."); return; }
             mSets.Add(new mSetUC(newItem, mSet)); VisualUpdate();
         }
         private void btnMinus_Click(object sender, RoutedEventArgs e)
@@ -140,11 +140,11 @@ namespace scripthea.composer
             int k = mSetListBox.SelectedIndex;
             if (!Utils.InRange(k, 0, mSets.Count - 1))
             {
-                Utils.TimedMessageBox("Error: No mSet is selected."); return;
+                Utils.TimedMessageBox("Error[156]: No mSet is selected."); return;
             }
             if (mSets[k].ReadOnly)
             {
-                Utils.TimedMessageBox("Error: <" +  mSets[k].title + "> mSet is read-only."); return;
+                Utils.TimedMessageBox("Error[245]: <" +  mSets[k].title + "> mSet is read-only."); return;
             }
             if (!Utils.ConfirmationMessageBox("Do you want to remove <" + mSets[k].title + "> mSet ?")) return;
             //Utils.TimedMessageBox(mSets[k].title+" mSet has been removed.");
@@ -156,16 +156,16 @@ namespace scripthea.composer
             int k = mSetListBox.SelectedIndex;
             if (!Utils.InRange(k, 0, mSets.Count - 1))
             {
-                Utils.TimedMessageBox("Error: No mSet is selected."); return;
+                Utils.TimedMessageBox("Error[748]: No mSet is selected."); return;
             }
             if (mSets[k].ReadOnly)
             {
-                Utils.TimedMessageBox("Error: <" + mSets[k].title + "> mSet is read-only."); return;
+                Utils.TimedMessageBox("Error[354]: <" + mSets[k].title + "> mSet is read-only."); return;
             }
             List<Tuple<string, string, ModifStatus>> mSet = GetModifs();
             if (mSet.Count == 0)
             {
-                Utils.TimedMessageBox("Error: No modifiers checked."); return;
+                Utils.TimedMessageBox("Error[45]: No modifiers checked."); return;
             }
             mSets[k].mSet = mSet;
             Utils.TimedMessageBox("<"+mSets[k].title + "> mSet has been updated.");
@@ -182,7 +182,7 @@ namespace scripthea.composer
                 int k = mSetListBox.SelectedIndex;
                 if (!Utils.InRange(k, 0, mSets.Count - 1))
                 {
-                    Utils.TimedMessageBox("Error: No mSet is selected."); return;
+                    Utils.TimedMessageBox("Error[369]: No mSet is selected."); return;
                 }
                 SetModifs_Click(mSets[k], null);
                 e.Handled = true;

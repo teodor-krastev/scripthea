@@ -608,7 +608,7 @@ Color rgbColor = Color.FromRgb(r, g, b);
             ComboBoxItem cbf = null;
             foreach (ComboBoxItem cbi in cbDrives.Items)
                 if (cbi.Content.ToString().Equals(fld[0] + "\\")) { cbf = cbi; break; }
-            if (cbf.Equals(null)) Log("Error: no drive: " + fld[0] + "\\");
+            if (cbf.Equals(null)) Log("Error[397]: no drive: " + fld[0] + "\\");
             if (pth.Length > AppData.Length)
                 if (pth.Substring(0, AppData.Length).Equals(AppData, StringComparison.InvariantCultureIgnoreCase))
                     cbf = cbDrives.Items[0] as ComboBoxItem;
@@ -627,7 +627,7 @@ Color rgbColor = Color.FromRgb(r, g, b);
                         item.IsExpanded = true; prn = item; bb = true; break;
                     }
                 }
-                if (!bb) Log("Error: no folder found: " + fld[i]);
+                if (!bb) Log("Error[395]: no folder found: " + fld[i]);
             }
             if (bb) prn.IsSelected = true;
             return bb;

@@ -148,15 +148,15 @@ namespace scripthea.viewer
         {
             if (dTable == null) return false;
             Clear();
-            if (!Directory.Exists(imageDepot)) { Log("Err: no such folder -> " + imageDepot); return false; }
-            //if (ImgUtils.checkImageDepot(imageDepot) == 0) { Log("Err: not image depot folder -> " + imageDepot); return false; }
+            if (!Directory.Exists(imageDepot)) { Log("Error[651]: no such folder -> " + imageDepot); return false; }
+            //if (ImgUtils.checkImageDepot(imageDepot) == 0) { Log("Error[]: not image depot folder -> " + imageDepot); return false; }
             ImageDepot _iDepot = new ImageDepot(imageDepot, ImageInfo.ImageGenerator.FromDescFile);
             return FeedList(ref _iDepot);        
         }
         public bool FeedList(ref ImageDepot _iDepot) // update from existitng iDepot
         {
             if ((dTable == null) || (_iDepot == null)) return false;
-            if (!Directory.Exists(_iDepot.path)) { Log("Err: no such folder -> " + _iDepot.path); return false; }
+            if (!Directory.Exists(_iDepot.path)) { Log("Error[486]: no such folder -> " + _iDepot.path); return false; }
             iDepot = _iDepot; loadedDepot = iDepot.path; 
             UpdateVis();
             if (dTable.Rows.Count > 0) dGrid.SelectedIndex = 0;

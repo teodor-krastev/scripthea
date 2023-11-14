@@ -86,7 +86,7 @@ namespace scripthea.master
                 Mouse.OverrideCursor = Cursors.Wait; iPicker.btnCustom.Background = Brushes.Coral; Utils.DoEvents();
 
                 List<Tuple<int, string, string>> lot = iPicker.ListOfTuples(true, false); // idx (1 based), filename, prompt
-                if (lot.Count.Equals(0)) { Log("Error: not checked images."); return; }
+                if (lot.Count.Equals(0)) { Log("Error[887]: not checked images."); return; }
 
                 string sourceFolder = iPicker.iDepot.path; string targetFolder = "";
                 CommonOpenFileDialog dialog = new CommonOpenFileDialog();
@@ -97,7 +97,7 @@ namespace scripthea.master
                 else return;
                 if (targetFolder.Equals(sourceFolder, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    Log("Error: source and target folders must be different."); return;
+                    Log("Error[761]: source and target folders must be different."); return;
                 }
                 string tfn = ""; List<Tuple<int, string, string>> filter = new List<Tuple<int, string, string>>();
                 foreach (var itm in lot)

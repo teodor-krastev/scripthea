@@ -240,15 +240,15 @@ namespace scripthea.viewer
         public bool FeedList(string imageDepot) 
         {
             Clear();
-            if (!Directory.Exists(imageDepot)) { Log("Err: no such folder -> " + imageDepot); return false; }
-            //if (ImgUtils.checkImageDepot(imageDepot) == 0) { Log("Err: not image depot folder -> " + imageDepot); return false; }
+            if (!Directory.Exists(imageDepot)) { Log("Error[986]: no such folder -> " + imageDepot); return false; }
+            //if (ImgUtils.checkImageDepot(imageDepot) == 0) { Log("Error[]: not image depot folder -> " + imageDepot); return false; }
             ImageDepot _iDepot = new ImageDepot(imageDepot, ImageInfo.ImageGenerator.FromDescFile);
             return FeedList(ref _iDepot);
         }
         public bool FeedList(ref ImageDepot _iDepot) // external iDepot; regular use
         {
             if (_iDepot == null) return false;
-            if (!Directory.Exists(_iDepot.path)) { Log("Err: no such folder -> " + _iDepot.path); return false; }
+            if (!Directory.Exists(_iDepot.path)) { Log("Error[785]: no such folder -> " + _iDepot.path); return false; }
             iDepot = _iDepot; loadedDepot = iDepot.path;
             UpdateVis();
             return true;
@@ -272,7 +272,7 @@ namespace scripthea.viewer
                     if (piUC.selected) { piUC.focused = true; piUC2 = piUC; }
                 } 
                 if (piUC2 == null) 
-                    { Log("Err: internal selected index"); return; }
+                    { Log("Error[352]: internal selected index"); return; }
                 scrollToIdx(value);
                 if (piUC2 != null)
                     OnSelect(piUC2.idx, iDepot.path, SelectedItem(piUC2.idx-1));

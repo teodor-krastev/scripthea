@@ -56,7 +56,7 @@ namespace scripthea.viewer
                 }
                 filename = Path.GetFileName(suggestedName);
             }
-            catch (System.IO.IOException IOe) { filename = ""; Utils.TimedMessageBox("Error: (" + System.IO.Path.GetFileName(fullfilename) + ") " + IOe.Message); }
+            catch (System.IO.IOException IOe) { filename = ""; Utils.TimedMessageBox("Error["+IOe.HResult+"]: (" + System.IO.Path.GetFileName(fullfilename) + ") " + IOe.Message); }
         }
         private List<string> SplitFilename(string fn, char sep) // pattern <txt><sep><txt><sep><cue><ext>
         {
@@ -298,7 +298,7 @@ namespace scripthea.viewer
                 if (!isReadOnly)
                 {
                     bool? bb = ImageDepotConvertor.CheckFileVersion(_folder);
-                    if (bb == null) { Utils.TimedMessageBox("Error: Corrupted Scripthea image depot!", "Error", 4000); return; }
+                    if (bb == null) { Utils.TimedMessageBox("Error[482]: Corrupted Scripthea image depot!", "Error", 4000); return; }
                     if (!(bool)bb) // old version
                     {
                         if (ImageDepotConvertor.AutoConvert) ImageDepotConvertor.Old2New(_folder); // convert 
@@ -320,7 +320,7 @@ namespace scripthea.viewer
                     if (header.ContainsKey("application"))
                     {
                         string[] sa = header["application"].Split(' ');
-                        if (sa[0] != "Scripthea" || sa.Length != 2) { Utils.TimedMessageBox("Error: NOT Scripthea image depot file!", "Error", 5000); return; }
+                        if (sa[0] != "Scripthea" || sa.Length != 2) { Utils.TimedMessageBox("Error[125]: NOT Scripthea image depot file!", "Error", 5000); return; }
                         string[] sb = sa[1].Split('.'); if (sb.Length != 4) return;
                         appBuilt = Convert.ToInt32(sb[3]); oldVersion = appBuilt < 70;
                     }
@@ -378,7 +378,7 @@ namespace scripthea.viewer
                 foreach (var itm in filter)
                 {
                     ImageInfo ii = items[itm.Item1 - 1];
-                    if (ii.prompt != itm.Item3) { Utils.TimedMessageBox("Error: broken filter"); break; }
+                    if (ii.prompt != itm.Item3) { Utils.TimedMessageBox("Error[664]: broken filter"); break; }
                     ii.filename = itm.Item2;
                     dp.items.Add(ii);
                 }

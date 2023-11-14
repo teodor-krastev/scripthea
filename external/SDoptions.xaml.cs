@@ -133,7 +133,7 @@ namespace scripthea.external
             ValidScript = false;
             string pyScript = "prompts_from_scripthea_1_5.py";
             string orgLoc = Path.Combine(Utils.configPath, pyScript);
-            if (!File.Exists(orgLoc)) { Log("Err: file " + orgLoc + " is missing."); return false; }
+            if (!File.Exists(orgLoc)) { Log("Error[784]: file " + orgLoc + " is missing."); return false; }
             if (!IsSDlocation(opts.SDlocation)) return false; 
             string sdLoc = Path.Combine(opts.SDlocation, "scripts", pyScript);
             if (Utils.GetMD5Checksum(orgLoc) == Utils.GetMD5Checksum(sdLoc)) { ValidScript = true; return true; }

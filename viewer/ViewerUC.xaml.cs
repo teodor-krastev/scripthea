@@ -228,10 +228,10 @@ namespace scripthea.viewer
                 if (iDepot.isEnabled && Directory.Exists(iDepot.path))  folder = iDepot.path;
                 else folder = imageFolder;
             }
-            if (!Directory.Exists(folder)) { Log("Err: Missing directory > " + folder); return; }
+            if (!Directory.Exists(folder)) { Log("Error[874]: Missing directory > " + folder); return; }
 
             iDepot = new ImageDepot(imageFolder);
-            if (!iDepot.isEnabled) { Log("Error: This is not an image depot."); return; }
+            if (!iDepot.isEnabled) { Log("Error[96]: This is not an image depot."); return; }
             else lbDepotInfo.Content = iDepot.items.Count.ToString() + " images"; 
             List<Tuple<int, string, string>> decompImageDepot = iDepot.Export2Viewer(); 
             if (!Utils.isNull(decompImageDepot))

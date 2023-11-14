@@ -118,7 +118,7 @@ namespace scripthea.external
                 case "SDiffusion": // take imageFolder, imageName (filename) and success
                     if (success)
                     {
-                        if (!Directory.Exists(imageFolder)) { Log("Error: folder not found"); return; }
+                        if (!Directory.Exists(imageFolder)) { Log("Error[348]: folder not found"); return; }
                         if (File.Exists(Path.Combine(imageFolder, iInfo.filename)))
                         {
                             string desc = Path.Combine(imageFolder, ImgUtils.descriptionFile);
@@ -132,11 +132,11 @@ namespace scripthea.external
                                 bool bb = iInfo != null;
                                 if (bb) bb &= iInfo.IsEnabled(); 
                                 if (bb) sw.WriteLine(iInfo.To_String());
-                                else Log("Error: wrong image file");                                
+                                else Log("Error[342]: wrong image file");                                
                             }
                             QueryComplete(Path.Combine(imageFolder, iInfo.filename), true); // hooray ;)
                         }
-                        else { Log("Error: image file lost"); return; } 
+                        else { Log("Error[195]: image file lost"); return; } 
                     }
                     else  // sadly :(   
                     {

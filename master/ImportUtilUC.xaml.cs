@@ -138,7 +138,7 @@ namespace scripthea.master
                     btnConvertFolder.IsEnabled = dTable.Rows.Count > 0;
                     break;
                 default:
-                    Log("Error: intrernal error 23");
+                    Log("Error[23]: intrernal error");
                     break;
             }
             checkBoxes.Clear();
@@ -206,7 +206,7 @@ namespace scripthea.master
             }
             else // Stable Diffusion
             {
-                Utils.TimedMessageBox("Error: no implementation");
+                Utils.TimedMessageBox("Error[666]: no implementation");
             }
             return true;
         }
@@ -289,7 +289,7 @@ namespace scripthea.master
             });
             string fn = System.IO.Path.Combine(imageFolder,System.IO.Path.ChangeExtension(Convert.ToString(dataRow.Row.ItemArray[1]), ".png"));
             if (File.Exists(fn)) { image.Source = ImgUtils.UnhookedImageLoad(fn, ImageFormat.Png); lastLoadedPic = fn; }
-            else { Log("Error: file not found-> " + fn); lastLoadedPic = ""; }
+            else { Log("Error[158]: file not found-> " + fn); lastLoadedPic = ""; }
             if (!Utils.isNull(e)) e.Handled = true;
             // int sr = dGrid.SelectedIndex; 
             // TextBlock textBlock = DataGridHelper.GetCellByIndices(dGrid, sr, 1).FindVisualChild<TextBlock>();

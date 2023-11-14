@@ -86,14 +86,14 @@ namespace PyCodeLib
         public bool Init(string pyPath) // @"C:\Software\Python\Python310\python310.dll";
         {
             //string foundPyPath = getPythonPath(@"c:\Software\stable-diffusion-webui-1-6\"); IsEnabled = false; return false;
-            if (!File.Exists(pyPath)) { Log("Error: python path <"+pyPath+"> not found."); IsEnabled = false; return false; }
+            if (!File.Exists(pyPath)) { Log("Error[548]: python path <"+pyPath+"> not found."); IsEnabled = false; return false; }
             //Environment.SetEnvironmentVariable("PYTHONNET_PYDLL", pyPath);
             try
             {
                 Runtime.PythonDLL = pyPath;
                 PythonEngine.Initialize();
             }
-            catch (PythonException e) { Log("Error[1]: " + e.Message); return false; }
+            catch (PythonException e) { Log("Error[111]: " + e.Message); return false; }
             IsEnabled = Test1() && Test2(); if (!IsEnabled) return false;
             scripted = new Dictionary<string,object>();
             st = new St(ref tbLog);

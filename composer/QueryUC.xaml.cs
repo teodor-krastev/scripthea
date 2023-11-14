@@ -267,7 +267,7 @@ namespace scripthea.composer
         {
             if (!success)
             {
-                if (imageFilePath == "") { Log("Error: Stable Diffusion is not connected!", Brushes.Red); status = Status.Idle; }
+                if (imageFilePath == "") { Log("Error[887]: Stable Diffusion is not connected!"); Log("@StopRun"); status = Status.Idle; }
                 else Log("Error with " + imageFilePath);
             }
             bool scanEnd = false;
@@ -303,9 +303,9 @@ namespace scripthea.composer
         private void GetScanPrompts()
         {        
             scanPrompts = new List<string>(); 
-            if (cuePoolUC.activeCourier == null) { Log("Err: no cue is selected (err.code:12)"); return; }
+            if (cuePoolUC.activeCourier == null) { Log("Error[145]: no cue is selected (err.code:12)"); return; }
             List<List<string>> lls = cuePoolUC.activeCourier.GetCues();
-            if (lls.Count.Equals(0)) { Log("Err: no cue is selected (err.code:96)"); return; }
+            if (lls.Count.Equals(0)) { Log("Error[96]: no cue is selected"); return; }
             List<string> ScanModifs = CombiModifs(modifiersUC.ModifItemsByType(ModifStatus.Scannable), opts.composer.ModifPrefix, Utils.EnsureRange(opts.composer.ModifSample, 1, 9));
             string fis = modifiersUC.FixItemsAsString();
             foreach (List<string> ls in lls)
@@ -327,7 +327,7 @@ namespace scripthea.composer
             if (ScanModifs.Count == 0) return rslt;
             if ((ScanModifs.Count == 1) && ScanModifs[0].Equals("")) return rslt;
             if (sample >= ScanModifs.Count)
-                { Log("Error: number of scannable modifiers: " + ScanModifs.Count.ToString() + " must be bigger than modifiers sample: " +sample.ToString()); return rslt; }
+                { Log("Error[364]: number of scannable modifiers: " + ScanModifs.Count.ToString() + " must be bigger than modifiers sample: " +sample.ToString()); return rslt; }
             List<string> line = new List<string>(); 
             IEnumerable<IEnumerable<int>> combinations = CombiIndexes(sample, ScanModifs.Count);
             foreach (var combination in combinations)
@@ -408,9 +408,10 @@ namespace scripthea.composer
         public string stStatus { get { return status.ToString(); } }
         private void btnScan_Click(object sender, RoutedEventArgs e)
         {
+            if (cuePoolUC.activeCourier.GetCues().Count == 0) { Log("Error[97]: no cue is selected"); return; } 
             if (Convert.ToString(btnScan.Content).Equals(strScan))
             {
-                if (API.IsBusy) { Log("Err: busy with previous query"); return; }
+                if (API.IsBusy) { Log("Error[11]: busy with previous query"); return; }
                 switch (status) // if out of place
                 {
                     case Status.SingeQuery:
@@ -418,19 +419,19 @@ namespace scripthea.composer
                     case Status.Request2Cancel:
                         Log("Warning: Your request for cancelation has been already accepted.", Brushes.Tomato); return;
                     case Status.Scanning:
-                        Log("Err: internal error #45"); return;
+                        Log("Error[45]: internal error"); return;
                 }
                 status = Status.Scanning; btnScan.Content = "Cancel"; btnScan.Background = Brushes.Coral;
                 btnScanPreview.IsEnabled = false; btnAppend2Preview.IsEnabled = false;
             }
-            else
+            else // if button title is Cancel
             {
                 if (status == Status.Scanning) Log("Warning: User cancelation!", Brushes.Tomato);
                 status = Status.Request2Cancel; btnScan.Content = strScan; btnScan.Background = Brushes.MintCream;
                 btnScanPreview.IsEnabled = true; btnAppend2Preview.IsEnabled = true; return;
             }
             GetScanPrompts();
-            if (scanPrompts.Count == 0) { Log("Err: no prompt generated"); return; }
+            if (scanPrompts.Count == 0) { Log("Error[141]: no prompt generated"); return; }
             scanPromptIdx = 0; QueryAPI(scanPrompts[0]);
         }
         private void chkAutoSingle_Checked(object sender, RoutedEventArgs e)
@@ -456,16 +457,16 @@ namespace scripthea.composer
 
         private void imgAPIdialog_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (Utils.isNull(API)) { Log("Err: no API is selected. (55)"); return; }
-            if (Utils.isNull(API.activeAPI)) { Log("Err: no API is selected. (22)"); return; }           
+            if (Utils.isNull(API)) { Log("Error[55]: no API is selected."); return; }
+            if (Utils.isNull(API.activeAPI)) { Log("Error[22]: no API is selected."); return; }           
             API.activeAPI.opts["folder"] = opts.composer.ImageDepotFolder;
             API.about2Show(ref opts);
             API.ShowDialog();
         }
         private bool CheckAPIready()
         {
-            if (Utils.isNull(API)) { Log("Err: no API is selected. (56)"); return false; }
-            if (Utils.isNull(API.activeAPI)) { Log("Err: no API is selected. (21)"); return false; }
+            if (Utils.isNull(API)) { Log("Error[56]: no API is selected."); return false; }
+            if (Utils.isNull(API.activeAPI)) { Log("Error[21]: no API is selected."); return false; }
             if (API.IsBusy || status != Status.Idle)
                 { Utils.TimedMessageBox("API is busy, try again later...", "Warning"); return false;  }
             return true;
@@ -572,14 +573,14 @@ namespace scripthea.composer
                 else
                 {
                     scanPrompts = scanPreviewUC.checkedPrompts();
-                    if (scanPrompts.Count == 0) { Log("Err: no prompts checked"); return; }
+                    if (scanPrompts.Count == 0) { Log("Error[285]: no prompts checked"); return; }
                     status = Status.Scanning; scanPreviewUC.scanning = true; btnScanPreview.IsEnabled = false; btnAppend2Preview.IsEnabled = false;
                     scanPromptIdx = 0; QueryAPI(scanPrompts[0]);
                 }
             }
             if (sender.Equals(scanPreviewUC.btnQuerySelected))
             {               
-                if (scanPreviewUC.selectedPrompt == "") { Log("Err: no prompt selected"); return; }                
+                if (scanPreviewUC.selectedPrompt == "") { Log("Error[74]: no prompt selected"); return; }                
                 QueryAPI(scanPreviewUC.selectedPrompt);
             }
         }        

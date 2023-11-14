@@ -56,9 +56,9 @@ namespace scripthea.composer
                 allCues = new List<CueItemUC>(); localCues = new List<List<CueItemUC>>(); 
                 foreach (string sf in _cueFiles)
                 {
-                    if (!File.Exists(sf)) { Log("Error: File <" + sf + "> is missing."); continue; }
+                    if (!File.Exists(sf)) { Log("Error[74]: File <" + sf + "> is missing."); continue; }
                     string se = System.IO.Path.GetFileNameWithoutExtension(sf);
-                    if (!Utils.IsValidVarName(se)) { Log("Error: <" + se + "> is not valid cue list name. (no special char.)"); continue; }
+                    if (!Utils.IsValidVarName(se)) { Log("Error[741]: <" + se + "> is not valid cue list name. (no special char.)"); continue; }
                     TabItem newTabItem = new TabItem()
                     {
                         Header = se,
@@ -103,7 +103,7 @@ namespace scripthea.composer
         }
         protected void AddCues(StackPanel sp, ref List<CueItemUC> ocl, string fn)
         {
-            if (!File.Exists(fn)) { Log("Err: no <" + fn + "> file found"); return; }
+            if (!File.Exists(fn)) { Log("Error[22]: no <" + fn + "> file found"); return; }
             List<string> cueText = new List<string>(File.ReadAllLines(fn));
             List<string> cueList = new List<string>();
             foreach (string ss in cueText)
