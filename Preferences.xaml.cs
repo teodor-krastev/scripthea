@@ -64,7 +64,8 @@ namespace scripthea
             public bool SingleAuto;
             public bool OneLineCue;
             // query 
-            public string ImageDepotFolder;        
+            public string ImageDepotFolder;
+            public string StartupImageDepotFolder;
             public string API;
             // modifiers
             public string ModifPrefix;
@@ -142,7 +143,8 @@ namespace scripthea
         {
             opts = _opts; tabControl.SelectedIndex = 0;
         } 
-        public string configFilename = Path.Combine(Utils.configPath, "Scripthea.cfg");  
+        public string configFilename = Path.Combine(Utils.configPath, "Scripthea.cfg");
+        private List<string> history;
         /// <summary>
         /// the point of the dialog, readable everywhere
         /// </summary>
@@ -156,6 +158,14 @@ namespace scripthea
         {
             if (!opts.general.NewVersion.Equals("")) lbNewVer.Content = "New version: " + opts.general.NewVersion;
             chkUpdates.IsChecked = opts.general.UpdateCheck;
+            cbStartupImageDepotFolder.Text = opts.composer.StartupImageDepotFolder == null ? "": opts.composer.StartupImageDepotFolder;
+            if (history != null)
+            {
+                foreach(string ss in history)
+                {
+                    cbStartupImageDepotFolder.Items.Add(new ComboBoxItem() { Content = ss });
+                }
+            }
             chkViewerRemoveImages.IsChecked = opts.viewer.RemoveImagesInIDF;
             chkClearEntriesImageDepot.IsChecked = opts.iDutilities.MasterClearEntries; ;
             chkValidationAsk.IsChecked = opts.iDutilities.MasterValidationAsk;
@@ -163,15 +173,17 @@ namespace scripthea
         public void visuals2opts()
         {
             opts.general.UpdateCheck = chkUpdates.IsChecked.Value;
+            opts.composer.StartupImageDepotFolder = cbStartupImageDepotFolder.Text;
             opts.viewer.RemoveImagesInIDF = chkViewerRemoveImages.IsChecked.Value;
             opts.iDutilities.MasterClearEntries = chkClearEntriesImageDepot.IsChecked.Value; ImageDepotConvertor.ClearEntriesImageDepot = opts.iDutilities.MasterClearEntries;
             opts.iDutilities.MasterValidationAsk = chkValidationAsk.IsChecked.Value;
         }
-        public void ShowWindow(int tabIdx)
+        public void ShowWindow(int tabIdx, List<string> _history)
         {
             //tabControl.SelectedIndex = Utils.EnsureRange(tabIdx, 0, 2) + 1;
             if (Utils.InRange(tabIdx, 0, 1)) tabControl.SelectedItem = tiGeneral;
             if (Utils.InRange(tabIdx, 2, 3)) tabControl.SelectedItem = tiIDutilities;
+            history = new List<string>(_history);
             opts2visuals();
             ShowDialog();
         }

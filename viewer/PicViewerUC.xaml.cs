@@ -140,6 +140,18 @@ namespace scripthea.viewer
             m.Top += v; m.Bottom -= v;
             image.Margin = m;           
         }
+        public void zoomControl(int zoomWay) // -1 -> zoomOut; 0 -> fit in; 1 -> zoomIn
+        {
+            switch (zoomWay)
+            {
+                case -1: imgZoomIn_MouseDown(imgZoomOut, null);
+                    break;
+                case 0: imgZoomFit_MouseDown(imgZoomFit, null);
+                    break;
+                case 1: imgZoomIn_MouseDown(imgZoomIn, null);
+                    break;
+            }
+        }
         bool scrollable = false;
         private void imgZoomIn_MouseDown(object sender, MouseButtonEventArgs e)
         {

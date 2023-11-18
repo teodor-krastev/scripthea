@@ -58,11 +58,12 @@ namespace scripthea
             {
                 string json = System.IO.File.ReadAllText(optionsFile);
                 opts = JsonConvert.DeserializeObject<Options>(json);
+                if (opts.composer.StartupImageDepotFolder != "") opts.composer.ImageDepotFolder = opts.composer.StartupImageDepotFolder;
                 if (opts.composer.ImageDepotFolder == null) opts.composer.ImageDepotFolder = "";
-                if (opts.composer.ImageDepotFolder.Equals("<default.image.depot>")) opts.composer.ImageDepotFolder = ImgUtils.defaultImageDepot; 
+                if (opts.composer.ImageDepotFolder.Equals("<default.image.depot>")) opts.composer.ImageDepotFolder = ImgUtils.defaultImageDepot;
             }
             else opts = new Options();
-            opts.general.debug = Utils.isInVisualStudio || Utils.localConfig; aboutWin.Init(ref opts);
+            opts.general.debug = Utils.isInVisualStudio || Utils.localConfig; aboutWin.Init(ref opts); 
             if (opts.general.UpdateCheck) Check4Update(null,null);
             else
             {
@@ -434,7 +435,7 @@ namespace scripthea
         }
         private void btnPreferences_Click(object sender, RoutedEventArgs e)
         {
-            preferencesWindow.ShowWindow(tabControl.SelectedIndex);
+            preferencesWindow.ShowWindow(tabControl.SelectedIndex, dirTreeUC.history);
         }
 
         private void tbImageDepot_MouseDown(object sender, MouseButtonEventArgs e)

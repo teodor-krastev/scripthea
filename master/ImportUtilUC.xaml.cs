@@ -98,7 +98,7 @@ namespace scripthea.master
             Clear();
             if (!Directory.Exists(path))
             {
-                Log("Err: Directory <" + path + "> does not exist. "); return;
+                Log("Error[998]: Directory <" + path + "> does not exist. "); return;
             }            
             if (!Utils.isNull(depotFolder))
             {
@@ -330,7 +330,7 @@ namespace scripthea.master
         }       
         private void mi_Click(object sender, RoutedEventArgs e)
         {
-            if (dTable.Rows.Count == 0) { Log("Err: No loaded images found."); return; }
+            if (dTable.Rows.Count == 0) { Log("Error[222]: No loaded images found."); return; }
             MenuItem mi = sender as MenuItem; string header = Convert.ToString(mi.Header);
             foreach (DataRow dr in dTable.Rows)
             {
@@ -352,7 +352,7 @@ namespace scripthea.master
         bool inverting = false;
         private void imgMenu_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (dTable.Rows.Count == 0) { Log("Err: No loaded images found."); return; }
+            if (dTable.Rows.Count == 0) { Log("Error[223]: No loaded images found."); return; }
             inverting = false;
             if (e.ChangedButton == MouseButton.Left)
             {

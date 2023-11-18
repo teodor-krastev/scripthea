@@ -323,6 +323,19 @@ namespace scripthea.viewer
         }        
         private void ucViewer_PreviewKeyDown(object sender, KeyEventArgs e)
         {
+            if (Keyboard.Modifiers == ModifierKeys.Control && e.Key != Key.LeftCtrl && e.Key != Key.RightCtrl)
+            {
+                switch (e.Key)
+                {
+                    case Key.Add: picViewerUC.zoomControl(1);
+                        break;
+                        case Key.NumPad0: picViewerUC.zoomControl(0);
+                        break;
+                    case Key.Subtract: picViewerUC.zoomControl(-1);
+                        break;
+                }
+                e.Handled = true; return;
+            }
             if (!activeView.HasTheFocus) return;
             if ((e.Key.Equals(Key.Delete) || e.Key.Equals(Key.NumPad0))) //Utils.DelayExec(100, () => {  } );
             {

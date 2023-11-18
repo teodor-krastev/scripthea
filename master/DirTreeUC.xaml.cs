@@ -471,7 +471,7 @@ Color rgbColor = Color.FromRgb(r, g, b);
             }
         }
         protected Options opts;
-        List<string> history; string historyFile;
+        public List<string> history; string historyFile;
         public void Init(ref Options _opts)
         {
             opts = _opts;

@@ -13,6 +13,9 @@
         <TabControl x:Name="tabControl" Margin="3,0" Grid.Column="1" BorderBrush="{x:Null}" >
             <TabItem x:Name="tiGeneral" Header="  General  " Height="28" Background="#FFECECEC" HorizontalAlignment="Left">
                     <StackPanel Margin="7,7,0,0">
+                        <GroupBox Height="60" Margin="0,3" Header="Startup image depot folder (if empty - the last working one)">
+                            <ComboBox x:Name="cbStartupImageDepotFolder" Background="{x:Null}" Margin="0,5" IsEditable="True"/>
+                        </GroupBox>
                         <GroupBox Height="47">
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,4,0,0">
                                 <CheckBox x:Name="chkUpdates" Content="Biweekly check for updates" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5,0,0,0"></CheckBox>
