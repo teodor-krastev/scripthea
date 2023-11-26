@@ -259,9 +259,18 @@ namespace scripthea.master
                     break;
                 case "Uncheck All": activeView.SetChecked(false);
                     break;
-                case "Check with Mask":
-                    string msk = new InputBox("Check with Mask", activeView.markMask, "").ShowDialog();
-                    activeView.Mark(msk);
+                case "Check with Mask or Range":
+                    string msk = new InputBox("Check with Mask or Range [#..#]", activeView.markMask, "").ShowDialog().Trim(); 
+                    if (msk.StartsWith("[") && msk.EndsWith("]")) 
+                    {
+                        msk = msk.TrimStart('[').TrimEnd(']');
+                        string[] ma = msk.Split(new string[] { ".." }, System.StringSplitOptions.None);
+                        if (ma.Length != 2) { Log("Error[574]: Wrong range syntax, it must be [num..num] .");  return; }                    
+                        int i0, i1; 
+                        if (int.TryParse(ma[0], out i0) && int.TryParse(ma[1], out i1)) activeView.CheckRange(i0,i1);
+                        else { Log("Error[575]: Wrong range syntax, it must be [num..num] ."); return; }
+                    } 
+                    else activeView.MarkWithMask(msk);
                     break;
                 case "Invert Checking": activeView.SetChecked(null);
                     break;
@@ -341,3 +350,14 @@ namespace scripthea.master
         }
      }
 }
+
+/* Single Tree in a Sparse Landscape: A lone tree in an otherwise empty field or desert, emphasizing simplicity and isolation.; Henri Matisse
+Zen Garden: A carefully raked sand garden with a few strategically placed rocks, symbolizing tranquility and mindfulness.; Henri Matisse
+Minimalist Seascape: A calm sea with a clear horizon line, perhaps with a solitary boat or bird in the distance.; Henri Matisse
+Silhouette Against a Sunset: A simple outline of a figure or object set against the backdrop of a colorful yet uncluttered sunset.; Henri Matisse
+Snow-Covered Branches: Close-up of tree branches lightly covered in snow, showcasing the beauty of nature in a subdued palette.; Henri Matisse
+Single Drop of Water: A macro shot of a water droplet, possibly on a leaf or surface, highlighting the elegance in small details.; Henri Matisse
+Minimalist Still Life: A composition with one or two objects, such as a bowl and a piece of fruit, arranged in a clean, uncluttered space.; Henri Matisse
+Shadow Play: The play of light and shadow on a wall or floor, creating geometric or abstract forms.; Henri Matisse
+
+*/

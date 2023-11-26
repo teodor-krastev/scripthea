@@ -26,11 +26,11 @@
                 </Button.ContextMenu>
             </Button>
 
-            <Button x:Name="btnScanChecked" Content="Scan All Checked" HorizontalAlignment="Left" Margin="10,0,0,0" Width="137" FontSize="13" Background="#FFFEFEEE" Height="25" BorderBrush="Maroon" Style="{StaticResource RoundedButtonStyle}"/>
-            <Button x:Name="btnQuerySelected" Content="Query Selected One" HorizontalAlignment="Left" Margin="5,0,0,0" Width="140" FontSize="13" Background="#FFFEFEEE" IsEnabled="False" Height="25" BorderBrush="#FF098302" Style="{StaticResource RoundedButtonStyle}"/>
+            <Button x:Name="btnScanChecked" Content="Scan All Checked" HorizontalAlignment="Left" Margin="10,0,0,0" Width="137" FontSize="13" Background="#FFFEFEEE" Height="25" BorderBrush="Maroon" Style="{StaticResource RoundedButtonStyle}" ToolTip="Scan over all checked prompts"/>
+            <Button x:Name="btnQuerySelected" Content="Query Selected One" HorizontalAlignment="Left" Margin="5,0,0,0" Width="140" FontSize="13" Background="#FFFEFEEE" IsEnabled="False" Height="25" BorderBrush="#FF098302" Style="{StaticResource RoundedButtonStyle}" ToolTip="Quesry the selected prompt"/>
             <Label x:Name="lbCheckCount" Content="Checked: " VerticalAlignment="Center" Margin="10,0,0,0" FontSize="14" MouseDoubleClick="lbCheckCount_MouseDoubleClick"></Label>
-            <Button x:Name="btnCopy" Content="Copy" HorizontalAlignment="Left" Margin="10,0,0,0" Width="91" FontSize="13" Background="#FFEBF7FA" Click="btnCopy_Click" Height="25" Style="{StaticResource RoundedButtonStyle}"/>
-            <Button x:Name="btnSaveAs" Content="Save As..." HorizontalAlignment="Left" Margin="5,0,0,0" Width="91" FontSize="13" Background="#FFEBF7FA" Click="btnSaveAs_Click" Height="25" Style="{StaticResource RoundedButtonStyle}"/>
+            <Button x:Name="btnCopy" Content="Copy" HorizontalAlignment="Left" Margin="10,0,0,0" Width="91" FontSize="13" Background="#FFEBF7FA" Click="btnCopy_Click" Height="25" Style="{StaticResource RoundedButtonStyle}" ToolTip="Copy the prompt list to the clipboard"/>
+            <Button x:Name="btnSaveAs" Content="Save As..." HorizontalAlignment="Left" Margin="5,0,0,0" Width="91" FontSize="13" Background="#FFEBF7FA" Click="btnSaveAs_Click" Height="25" Style="{StaticResource RoundedButtonStyle}" ToolTip="Save the prompt list to a file"/>
             <Button x:Name="btnClose" Content="Close" HorizontalAlignment="Left" Margin="10,0,0,0" Width="91" FontSize="13" Background="#FFFAFAEB" Height="25" Visibility="Collapsed" Style="{StaticResource RoundedButtonStyle}"/>
         </StackPanel>
         <DataGrid x:Name="dGrid" Margin="0" Grid.Row="1" AutoGeneratingColumn="dGrid_AutoGeneratingColumn" SelectionMode="Single" MaxColumnWidth="1000" CanUserReorderColumns="False" SelectionChanged="dGrid_SelectionChanged" CanUserAddRows="False" VerticalScrollBarVisibility="Visible"/>

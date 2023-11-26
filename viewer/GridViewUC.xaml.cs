@@ -220,10 +220,15 @@ namespace scripthea.viewer
             picItems.Clear(); GC.Collect(); wrapPics.Children.Clear(); wrapPics.UpdateLayout();
         }
         public string imageFolder { get { return iDepot.path; } }
+        public void CheckRange(int first, int last)
+        {
+            foreach (PicItemUC piUC in picItems)
+                if (checkable) piUC.IsChecked = Utils.InRange(piUC.idx, first, last);                
+        }
         private string _markMask = "";
         public string markMask { get { return _markMask; } }
-        public void Mark(string mask)
-        {
+        public void MarkWithMask(string mask)
+        {            
             _markMask = mask;
             foreach (PicItemUC piUC in picItems)
             {

@@ -586,7 +586,7 @@ namespace scripthea.composer
         }        
         private void btnCopy_Click(object sender, RoutedEventArgs e)
         {
-            Clipboard.SetText(prompt);
+            Clipboard.SetText(prompt); 
         }
         public List<Tuple<string, string>> HelpList()
         {

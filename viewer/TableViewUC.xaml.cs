@@ -119,9 +119,14 @@ namespace scripthea.viewer
             if (bb) dRow.Background = Brushes.MintCream;  //ImgUtils.ToSolidColorBrush("#FFE6FFF3");
             else dRow.Background = Brushes.White;
         }
+        public void CheckRange(int first, int last)
+        {
+            foreach (DataRow row in dTable.Rows)
+                if (checkable) row["on"] = Utils.InRange(Convert.ToInt32(row["#"]), first,last);
+        }
         private string _markMask = "";
         public string markMask { get { return _markMask; } }
-        public void Mark(string mask) // mask = "" unmask all 
+        public void MarkWithMask(string mask)  
         {
             _markMask = mask;
             foreach (DataRow row in dTable.Rows)

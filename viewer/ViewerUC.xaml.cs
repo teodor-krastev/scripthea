@@ -37,7 +37,8 @@ namespace scripthea.viewer
         void SynchroChecked(List<Tuple<int, string, string>> chks);
         void SetChecked(bool? check); // if null invert; returns checked
         string markMask { get; }
-        void Mark(string mask); // mark some items; if "" unmark all 
+        void CheckRange(int first, int last);
+        void MarkWithMask(string mask); // mark some items; if "" unmark all 
         void Clear(bool inclDepotItems = false);
         int selectedIndex { get; set; } // one based index in no-checkable mode
         int Count { get; }
@@ -175,14 +176,14 @@ namespace scripthea.viewer
             if (!iDepot.isEnabled) { Log("current image depot - not active"); return -1; }
             // restore selection, masked and animation  
             activeView.selectedIndex = Utils.EnsureRange(idx0, 0, iDepot.items.Count - 1) + 1;
-            activeView.Mark(markMask);
+            activeView.MarkWithMask(markMask);
             if (anim) animation = true;
             if (iDepot.isEnabled) lbDepotInfo.Content = iDepot.items.Count.ToString() + " images";
             return idx0;
         } 
         public void Clear() 
         {
-            activeView?.Clear(); picViewerUC?.Clear(); activeView?.Mark(""); undo?.Clear();
+            activeView?.Clear(); picViewerUC?.Clear(); activeView?.MarkWithMask(""); undo?.Clear();
         }
         private bool updating = false; private bool showing = false;
         public bool ShowImageDepot(string imageDepot)
@@ -358,14 +359,14 @@ namespace scripthea.viewer
                 }
                 if (bb) Log("Recover a deleted image", Brushes.Crimson);
                 activeView.selectedIndex = Utils.EnsureRange(si, 1, iDepot.items.Count);
-                activeView.Mark(tbFind.Text);
+                activeView.MarkWithMask(tbFind.Text);
                 checkImageDepot();
             }                
         }
         private void btnMark_Click(object sender, RoutedEventArgs e)
         {
-            if (sender.Equals(btnMark)) activeView.Mark(tbFind.Text);
-            else activeView.Mark("");
+            if (sender.Equals(btnMark)) activeView.MarkWithMask(tbFind.Text);
+            else activeView.MarkWithMask("");
         }
     }
 }

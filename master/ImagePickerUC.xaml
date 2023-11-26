@@ -34,7 +34,7 @@
                     <MenuItem Header="Check All" Click="mi_Click"/>
                     <MenuItem Header="Uncheck All" Click="mi_Click"/>
                     <MenuItem Header="Invert Checking" Click="mi_Click" FontWeight="Bold"/>
-                    <MenuItem Header="Check with Mask" Click="mi_Click"/>
+                    <MenuItem Header="Check with Mask or Range" Click="mi_Click"/>
                     <Separator/>
                     <MenuItem Header="Refresh" Click="mi_Click"/>
                 </ContextMenu>

@@ -658,7 +658,9 @@ Color rgbColor = Color.FromRgb(r, g, b);
         {
             cmFolders.Items.Clear();
             MenuItem mi = new MenuItem(); mi.Header = "New folder (subfolder to the selected)"; mi.Click += mi_Click; cmFolders.Items.Add(mi);
-            MenuItem mj = new MenuItem(); mj.Header = "Rename"; mj.Click += mi_Click; cmFolders.Items.Add(mj);
+            MenuItem mj = new MenuItem(); mj.Header = "Rename folder"; mj.Click += mi_Click; cmFolders.Items.Add(mj);
+            cmFolders.Items.Add(new Separator());
+            MenuItem mk = new MenuItem(); mk.Header = "Copy folder path to clipbrd"; mk.Click += mi_Click; cmFolders.Items.Add(mk);
         }
         void mi_Click(object sender, RoutedEventArgs e)
         {
@@ -679,7 +681,7 @@ Color rgbColor = Color.FromRgb(r, g, b);
                         Directory.CreateDirectory(dir); refreshTree(); CatchAFolder(prn);
                     }
                     break;
-                case "Rename":
+                case "Rename folder":
                     string lastDir = Path.GetFileName(pth); string parentDir = Path.GetDirectoryName(pth);
                     prn1 = parentDir.Length > maxLen ? "..." + parentDir.Substring(prn.Length - maxLen) : parentDir;
                     input = new InputBox("Rename <" + lastDir + "> in " + prn1, lastDir, "").ShowDialog();
@@ -690,6 +692,9 @@ Color rgbColor = Color.FromRgb(r, g, b);
                     {
                         Directory.Move(pth, dir); refreshTree(); CatchAFolder(dir);
                     }
+                    break;
+                case "Copy folder path to clipbrd":
+                    System.Windows.Clipboard.SetText(pth + "\\");
                     break;
                 default: Utils.TimedMessageBox("internal error #951");
                     break;

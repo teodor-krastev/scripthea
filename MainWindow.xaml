@@ -23,7 +23,7 @@
             </Grid.RowDefinitions>
 
             <StackPanel Margin="0,0,0,0" Orientation="Horizontal" HorizontalAlignment="Left">
-                <CheckBox x:Name="chkLog" Content="Log" VerticalAlignment="Center" Margin="8,0,0,0" IsChecked="True"/>
+                <CheckBox x:Name="chkLog" Content="Log" VerticalAlignment="Center" Margin="8,0,0,0" IsChecked="True" ToolTip="Logging On/Off"/>
                 <Button x:Name="btnClear" Content="X" Width="24" Margin="8,6,0,4" Click="btnClear_Click" Foreground="#FF9E0202" FontWeight="Bold" FontSize="14" ToolTip="Clear log" Background="{x:Null}"/>
                 <Button x:Name="btnRefresh" Width="26"  Height="26" Margin="8,0,0,0" ToolTip="Refresh directory tree" Click="btnRefresh_Click" Background="{x:Null}">
                     <ContentControl>

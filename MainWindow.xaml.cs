@@ -149,7 +149,7 @@ namespace scripthea
                 Log("1. Check and modify (if needed) the default preferences (three bar button above).", Brushes.Blue);
                 Log("2. If you have Stable Diffusion WebUI installed go to SD panel (here top/right), open Options and on the second tab point the Stable Diffusion WebUI locaton", Brushes.Blue);
                 Log(""); Log("Press F1 for Scripthea online help.", Brushes.Green);
-            }
+            }           
         }
         public void Check4Update(object sender, RoutedEventArgs e)
         {
@@ -282,7 +282,7 @@ namespace scripthea
                     }
                 if (chkLog.IsChecked.Value && !skipLog)
                 {                
-                    if (txt.StartsWith("@") && !opts.general.debug) return; // skips internal messages if not debug    
+                    if (txt.StartsWith("@") && !opts.general.debug) return; // skips showing internal messages if not debug    
                     if (ExplorerPart.Equals(100)) 
                     { 
                         if (!txt.StartsWith("@") && !txt.StartsWith("StartGe") && !txt.Equals("---")) 
