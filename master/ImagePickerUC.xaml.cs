@@ -260,7 +260,8 @@ namespace scripthea.master
                 case "Uncheck All": activeView.SetChecked(false);
                     break;
                 case "Check with Mask or Range":
-                    string msk = new InputBox("Check with Mask or Range [#..#]", activeView.markMask, "").ShowDialog().Trim(); 
+                    string msk = new InputBox("Check with Mask or Range [#..#]", activeView.markMask, "").ShowDialog().Trim();
+                    if (msk.Equals("")) return;
                     if (msk.StartsWith("[") && msk.EndsWith("]")) 
                     {
                         msk = msk.TrimStart('[').TrimEnd(']');

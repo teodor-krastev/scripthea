@@ -460,8 +460,8 @@ namespace UtilsNS
         /// <returns></returns>
         public static string timeName(string prefix = "")
         {
-            if (prefix.Equals("")) return DateTime.Now.ToString("yy-MM-dd_H-mm-ss");
-            else return DateTime.Now.ToString("yy-MM-dd_H-mm-ss") + "_" + prefix;
+            if (prefix.Equals("")) return DateTime.Now.ToString("yy-MM-dd_HH-mm-ss");
+            else return DateTime.Now.ToString("yy-MM-dd_HH-mm-ss") + "_" + prefix;
         }
         // template (usually html) with fields $fct$ to be replaced by res depending of the dict.type 
         // if the type is List<string> -> multiline substitution

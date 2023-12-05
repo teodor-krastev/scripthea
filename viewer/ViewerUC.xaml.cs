@@ -106,19 +106,25 @@ namespace scripthea.viewer
         ///     - "+" to restore
         /// work only with tableView
         /// </summary>
-        private class Undo
+        private class Undo // now - only for table view; later - maybe unify with grid view
         {   
-            private ImageDepot imageDepot; private int idx; private bool inclFile;
+            private ImageDepot imageDepot; private int idx; private bool inclFile; private BitmapImage bitmapImage;
             private ImageInfo ii;
             public Undo(ref ImageDepot _imageDepot, int idx0, bool _inclFile) // buffer the entry when created
             {
-                imageDepot = _imageDepot; idx = idx0; inclFile = _inclFile;
+                imageDepot = _imageDepot; idx = idx0; inclFile = _inclFile;               
                 if (Utils.InRange(idx, 0, imageDepot.items.Count - 1))
-                    ii = imageDepot.items[idx]; // by ref ?
+                    ii = imageDepot.items[idx]; // by ref ?                
             }
-            public void Clear()
+            public event Utils.LogHandler OnLog;
+            protected void Log(string txt, SolidColorBrush clr = null)
             {
-                ii = null; idx = -1;
+                if (OnLog != null) OnLog(txt, clr);
+            }
+
+            public void ClearState()
+            {
+                ii = null; idx = -1; bitmapImage = null;
             }
             private bool checkOut()
             {
@@ -132,7 +138,8 @@ namespace scripthea.viewer
             {
                 if (!checkOut()) return false;
                 imageDepot.items.Insert(idx, ii); imageDepot.Save();
-                Clear();
+                if (inclFile && bitmapImage != null) ImgUtils.SaveBitmapImageToDisk(bitmapImage, Path.Combine(imageDepot.path, ii.filename));
+                ClearState();
                 return true;
             }
             public void realRemove() // get it back
@@ -140,10 +147,9 @@ namespace scripthea.viewer
                 if (inclFile && checkOut())
                 {
                     string fn = Path.Combine(imageDepot.path, ii.filename);
-                    if (File.Exists(fn)) File.Delete(fn);
-                    else Utils.TimedMessageBox("File <" + fn + "> does not exist");
+                    if (File.Exists(fn)) { bitmapImage = inclFile ? ImgUtils.UnhookedImageLoad(Path.Combine(fn)) : null; File.Delete(fn); }
+                    else Log("Error: File <" + fn + "> does not exist");
                 }
-                Clear();
             }
         }
         private Undo undo = null;
@@ -153,27 +159,27 @@ namespace scripthea.viewer
             if (!activeView.HasTheFocus) return -1;
             string ss = inclFile ? "and image file" : ""; bool anim = animation; animation = false;
             Log("Deleting image #" + activeView.selectedIndex.ToString()+ " entry "+ ss, Brushes.Tomato);
-            if (iDepot == null) { Log("no active image depot found"); return -1; }
-            if (!iDepot.isEnabled) { Log("current image depot - not active"); return -1; }
+            if (iDepot == null) { Log("Error: no active image depot found"); return -1; }
+            if (!iDepot.isEnabled) { Log("Error: current image depot - not active"); return -1; }
             int idx0 = activeView.selectedIndex - 1;
             if (!Utils.InRange(idx0, 0, iDepot.items.Count - 1)) { Log("index out of limits"); return -1; }
 
             string markMask = activeView.markMask;
-            if (tabCtrlViews.SelectedIndex == 0) // tableView
-            {                
-                if (undo != null) undo.realRemove();
-                undo = new Undo(ref iDepot, idx0, inclFile); // 
-                if (iDepot.RemoveAt(idx0, opts.viewer.RemoveImagesInIDF)) iDepot.Save(); // iDepot correction
-                else { Log("Unsuccessful delete operation"); return -1; }
+            if (tabCtrlViews.SelectedItem == tiTable) // tableView
+            {                                
+                undo = new Undo(ref iDepot, idx0, inclFile); undo.OnLog += new Utils.LogHandler(Log); 
+                undo.realRemove(); // 
+                if (iDepot.RemoveAt(idx0, false)) iDepot.Save(); // iDepot correction
+                else { Log("Error: Unsuccessful delete operation"); return -1; }
                 Refresh(); 
             }
             else // gridView
             {
                 gridViewUC.RemoveAt(inclFile);
                 if (iDepot.RemoveAt(idx0, opts.viewer.RemoveImagesInIDF)) iDepot.Save(); // iDepot correction
-                else { Log("Unsuccessful delete operation"); return -1; }
+                else { Log("Error[237]: Unsuccessful delete operation"); return -1; }
             }
-            if (!iDepot.isEnabled) { Log("current image depot - not active"); return -1; }
+            if (!iDepot.isEnabled) { Log("Error[238]: current image depot - not active"); return -1; }
             // restore selection, masked and animation  
             activeView.selectedIndex = Utils.EnsureRange(idx0, 0, iDepot.items.Count - 1) + 1;
             activeView.MarkWithMask(markMask);
@@ -183,7 +189,7 @@ namespace scripthea.viewer
         } 
         public void Clear() 
         {
-            activeView?.Clear(); picViewerUC?.Clear(); activeView?.MarkWithMask(""); undo?.Clear();
+            activeView?.Clear(); picViewerUC?.Clear(); activeView?.MarkWithMask(""); undo?.ClearState();
         }
         private bool updating = false; private bool showing = false;
         public bool ShowImageDepot(string imageDepot)

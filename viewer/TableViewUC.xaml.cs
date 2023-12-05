@@ -242,7 +242,7 @@ namespace scripthea.viewer
                     col.Width = new DataGridLength(1, DataGridLengthUnitType.Auto);
                     break;
                 case ("Image Filename"):
-                    col.Width = new DataGridLength(1, DataGridLengthUnitType.SizeToHeader);
+                    col.Width = new DataGridLength(1, DataGridLengthUnitType.SizeToCells); //SizeToHeader
                     break;
                 case ("Prompt"):
                     var style = new Style(typeof(TextBlock));

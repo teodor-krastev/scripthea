@@ -119,6 +119,7 @@ namespace scripthea.viewer
             imgPic.Source = null;   
         }
         public ImageInfo imgInfo { get; private set; }
+        public BitmapImage bitmapImage { get; private set; }
         public bool file_not_found { get; private set; }
         public bool ContentUpdate(int index, string imageDir, ImageInfo ii)
         {
@@ -130,7 +131,8 @@ namespace scripthea.viewer
             {
                 //imgPic.Dispatcher.InvokeAsync(() => // slower for some reason !
                 //{
-                imgPic.Source = ImgUtils.UnhookedImageLoad(filePath);
+                bitmapImage = ImgUtils.UnhookedImageLoad(filePath);
+                imgPic.Source = bitmapImage;
                 //});
                 if (imgPic.Source == null) return false;
             }

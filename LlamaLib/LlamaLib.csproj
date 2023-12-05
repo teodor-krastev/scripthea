@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{94589C5F-F241-45B0-A685-BCAFD624661A}</ProjectGuid>
+    <ProjectGuid>{0E5C820B-F5B4-4D97-A258-80DD51885428}</ProjectGuid>
     <OutputType>library</OutputType>
-    <RootNamespace>PyCodeLib</RootNamespace>
-    <AssemblyName>PyCodeLib</AssemblyName>
+    <RootNamespace>LlamaLib</RootNamespace>
+    <AssemblyName>LlamaLib</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -32,12 +32,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Python.Runtime, Version=3.0.1.0, Culture=neutral, PublicKeyToken=5000fea6cba702dd, processorArchitecture=MSIL">
-      <HintPath>..\packages\pythonnet.3.0.1\lib\netstandard2.0\Python.Runtime.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -47,29 +43,19 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
-    <Reference Include="UtilsLib">
-      <HintPath>..\..\Utils\bin\UtilsLib.dll</HintPath>
-    </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HelpTreeUC.xaml.cs">
-      <DependentUpon>HelpTreeUC.xaml</DependentUpon>
-    </Compile>
-    <Page Include="PyCodeUC.xaml">
+    <Page Include="LlamaUC.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="PyCodeUC.xaml.cs">
-      <DependentUpon>PyCodeUC.xaml</DependentUpon>
+    <Compile Include="LlamaUC.xaml.cs">
+      <DependentUpon>LlamaUC.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="HelpTreeUC.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -89,17 +75,10 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\AvalEditLib\AvalEditLib.csproj">
-      <Project>{25a33493-04b0-43ca-aef8-43ffe47b0418}</Project>
-      <Name>AvalEditLib</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

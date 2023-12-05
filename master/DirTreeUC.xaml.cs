@@ -450,11 +450,32 @@ Color rgbColor = Color.FromRgb(r, g, b);
             catch (Exception e) { Utils.TimedMessageBox("Error (I/O): " + e.Message, "Error message", 3000); return false; }
             return itemMap.Count > 0;
         }
+        public static void SaveBitmapImageToDisk(BitmapImage bitmapImage, string filePath) // in PNG format
+        {
+            // Create a BitmapEncoder object
+            BitmapEncoder encoder = null;
+            if (GetImageFormat(filePath) == ImageFormat.Jpeg) { encoder = new JpegBitmapEncoder(); }
+            if (GetImageFormat(filePath) == ImageFormat.Png) { encoder = new PngBitmapEncoder(); }
+            if (encoder == null) { Utils.TimedMessageBox("Unknown image type of file: " + filePath); return; }
+
+            // Create a BitmapFrame object from the BitmapImage
+            BitmapFrame frame = BitmapFrame.Create(bitmapImage);
+
+            // Add the frame to the encoder
+            encoder.Frames.Add(frame);
+
+            // Create a FileStream object
+            using (FileStream fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                // Save the image to the file
+                encoder.Save(fileStream);
+            }
+        }
     }
-    /// <summary>
-    /// display folders and subfolders in a treeview wpf c#
-    /// </summary>
-    public partial class DirTreeUC : UserControl
+/// <summary>
+/// display folders and subfolders in a treeview wpf c#
+/// </summary>
+public partial class DirTreeUC : UserControl
     {
         public DirTreeUC()
         {

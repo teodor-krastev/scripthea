@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
+using scripthea.master;
 using UtilsNS;
 
 namespace scripthea.viewer
@@ -166,8 +167,9 @@ namespace scripthea.viewer
         {
             if (OnLog != null) OnLog(txt, clr);
         }
+        private void ClearUndoRec() { undoRec = new UndoRec(); undoRec.idx0 = -1; undoRec.piUC = null; undoRec.ii = null; undoRec.inclFile = false; } // clear buffer
         struct UndoRec { public int idx0; public PicItemUC piUC; public ImageInfo ii; public bool inclFile; } // undo buffer
-        UndoRec undoRec;
+        UndoRec undoRec = new UndoRec();
 
         public void RemoveAt(bool inclFile, int idx = -1) // default selected
         {
@@ -180,7 +182,7 @@ namespace scripthea.viewer
                     if (File.Exists(fn)) File.Delete(fn);
                     else Log("Wrn: Image file <" + fn + "> is missing");
                 }
-                undoRec.idx0 = -1; undoRec.piUC = null; undoRec.ii = null; undoRec.inclFile = false; // clear buffer
+                ClearUndoRec();
             }
             int si = selectedIndex;
             int j = idx.Equals(-1) ? selectedIndex - 1 : idx;
@@ -200,6 +202,7 @@ namespace scripthea.viewer
             bool bb = undoRec.idx0 > -1 && undoRec.piUC != null && undoRec.ii != null; // valid buffer
             if (bb)
             {
+                ImgUtils.SaveBitmapImageToDisk(undoRec.piUC.bitmapImage, Path.Combine(iDepot.path, undoRec.ii.filename));
                 wrapPics.Children.Insert(undoRec.idx0, undoRec.piUC);
                 picItems.Insert(undoRec.idx0, undoRec.piUC);
                 iDepot.items.Insert(undoRec.idx0, undoRec.ii); iDepot.Save();
