@@ -73,7 +73,12 @@ namespace scripthea.composer
             sd_params_UC.Init(ref opts);
             cuePoolUC.OnSDparams += new Utils.LogHandler(sd_params_UC.ImportImageInfo);
             
-            if (Utils.TheosComputer() && Utils.isInVisualStudio) { btnTest.Visibility = Visibility.Visible; }
+            if (Utils.TheosComputer() && Utils.isInVisualStudio) 
+            { 
+                btnTest.Visibility = Visibility.Visible;
+                cbActiveAPI.Items.Add(new ComboBoxItem() { Name = "cbiSPlugin", Content = "sPlugin" });
+                cbActiveAPI.SelectedIndex = 3;
+            }
             else { btnTest.Visibility = Visibility.Collapsed; }              
         }
         public void Finish()

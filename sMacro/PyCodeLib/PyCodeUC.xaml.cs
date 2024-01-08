@@ -104,7 +104,7 @@ namespace PyCodeLib
         }
         public void Finish()
         {
-            File.WriteAllText(Path.Combine(avalEdit.sMacroFolder, "_last.py"), Code);
+            if (Code.Trim() != "") File.WriteAllText(Path.Combine(avalEdit.sMacroFolder, "_last.py"), Code);
         }
         public bool Register(string moduleName, object moduleObject, List<Tuple<string,string>> help) // method help -> <syntax,description> 
         {

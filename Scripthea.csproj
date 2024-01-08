@@ -172,6 +172,9 @@
     <Compile Include="external\SD_params_UC.xaml.cs">
       <DependentUpon>SD_params_UC.xaml</DependentUpon>
     </Compile>
+    <Compile Include="external\sPluginUC.xaml.cs">
+      <DependentUpon>sPluginUC.xaml</DependentUpon>
+    </Compile>
     <Compile Include="external\tempRegulatorUC.xaml.cs">
       <DependentUpon>tempRegulatorUC.xaml</DependentUpon>
     </Compile>
@@ -290,6 +293,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="external\SD_params_UC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="external\sPluginUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

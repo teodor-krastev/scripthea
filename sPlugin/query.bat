@@ -1,0 +1,1 @@
+python d:\Projects\Scripthea\sPlugin\query.py

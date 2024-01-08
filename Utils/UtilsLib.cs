@@ -123,6 +123,25 @@ namespace UtilsNS
             string imageSwitch = imagesTab ? "&tbm=isch" : ""; 
             CallTheWeb("https://www." + Convert.ToString(searchEngine) + ".com/search?q=" + query.Trim().Replace(' ', '+')+imageSwitch);
         }
+        public static void RunBatchFile(string pathToBatchFile)
+        {
+            ProcessStartInfo processStartInfo = new ProcessStartInfo()
+            {
+                FileName = pathToBatchFile,
+                RedirectStandardOutput = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+
+            using (Process process = Process.Start(processStartInfo))
+            {
+                using (StreamReader reader = process.StandardOutput)
+                {
+                    string result = reader.ReadToEnd();
+                    Console.WriteLine(result);
+                }
+            }
+        }
 
         public static string my_python_path = @"c:\Program Files (x86)\Microsoft Visual Studio\Shared\Python37_64\python.exe";
         // https://ernest-bonat.medium.com/using-c-to-run-python-scripts-with-machine-learning-models-a82cff74b027

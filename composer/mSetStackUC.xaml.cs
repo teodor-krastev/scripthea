@@ -55,7 +55,7 @@ namespace scripthea.composer
                 if (mSetsContent.ContainsKey(ms.title)) Utils.TimedMessageBox("The second instance of <" + ms.title + "> will not be saved.");
                 else mSetsContent.Add(ms.title, ms.mSet);
             }
-            File.WriteAllText(mSetFilename, JsonConvert.SerializeObject(mSetsContent));
+            if (mSetsContent.Count > 0) File.WriteAllText(mSetFilename, JsonConvert.SerializeObject(mSetsContent));
         }
         public int ModifCount()
         {

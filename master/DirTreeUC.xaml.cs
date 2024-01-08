@@ -196,9 +196,14 @@ namespace scripthea.master
             }
             return newBitmap;
         }
+        public static double HueFromPercents(double percents) // from 0 to 100 -> 250 to 0 
+        {
+            if (!Utils.InRange(percents, 0, 100)) return Double.NaN;
+            return Math.Abs(percents - 100) * 2.5;
+        }
         public static Color ColorFromHue(double hue)
         {
-            if (!Utils.InRange(hue, 0, 360)) return new Color();
+            if (!Utils.InRange(hue, 0, 360)) return new Color();           
             // Convert hue to RGB
             double H = hue / 60;
             int i = (int)Math.Floor(H);
@@ -472,10 +477,10 @@ Color rgbColor = Color.FromRgb(r, g, b);
             }
         }
     }
-/// <summary>
-/// display folders and subfolders in a treeview wpf c#
-/// </summary>
-public partial class DirTreeUC : UserControl
+    /// <summary>
+    /// display folders and subfolders in a treeview wpf c#
+    /// </summary>
+    public partial class DirTreeUC : UserControl
     {
         public DirTreeUC()
         {

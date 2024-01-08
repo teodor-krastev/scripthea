@@ -49,10 +49,10 @@ namespace scripthea.external
             InitializeComponent(); opts = _opts;
             interfaceAPIs = new Dictionary<string, interfaceAPI>();
             visualControl("Simulation", new SimulatorUC()).OnLog += new Utils.LogHandler(Log);
-            //visualControl("DeepAI", new DeepAIUC()); Later plugin...
+            visualControl("sPlugin", new sPluginUC()).OnLog += new Utils.LogHandler(Log);
             visualControl("Craiyon", new CraiyonWebUC()).OnLog += new Utils.LogHandler(Log);
             visualControl("SDiffusion", new SDiffusionUC()).OnLog += new Utils.LogHandler(Log); 
-            _activeAPIname = "Simulation"; tabControl.SelectedIndex = 0;
+            _activeAPIname = "sPlugin"; tabControl.SelectedIndex = 1;
 
             backgroundWorker1 = new BackgroundWorker();
             backgroundWorker1.DoWork += backgroundWorker1_DoWork;
