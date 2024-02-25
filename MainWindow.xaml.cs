@@ -109,7 +109,7 @@ namespace scripthea
             queryUC.Init(ref opts);            
             Left = Utils.EnsureRange(opts.layout.Left, 0, 4000); Top = Utils.EnsureRange(opts.layout.Top, 0, 2000);
             Width = Utils.EnsureRange(Math.Abs(opts.layout.Width), 100, 10000); Height = Utils.EnsureRange(opts.layout.Height, 100, 5000);
-            if (opts.layout.Maximazed) WindowState = WindowState.Maximized; 
+            if (opts.layout.Maximized) WindowState = WindowState.Maximized; 
             pnlLog.Width = new GridLength(opts.layout.LogColWidth);            
             rowLogImage.Height = new GridLength(1);
             colMasterWidth.Width = new GridLength(opts.iDutilities.MasterWidth);
@@ -200,7 +200,7 @@ namespace scripthea
             opts.layout.Top = Convert.ToInt32(Top);
             opts.layout.Width = Convert.ToInt32(Width);
             opts.layout.Height = Convert.ToInt32(Height);
-            opts.layout.Maximazed = WindowState == WindowState.Maximized;
+            opts.layout.Maximized = WindowState == WindowState.Maximized;
             opts.layout.LogColWidth = Convert.ToInt32(pnlLog.Width.Value);
             opts.iDutilities.MasterWidth = Convert.ToInt32(colMasterWidth.Width.Value);
             opts.iDutilities.ImportWidth = Convert.ToInt32(colImportWidth.Width.Value);

@@ -260,15 +260,19 @@ namespace scripthea.master
                 case "Uncheck All": activeView.SetChecked(false);
                     break;
                 case "Check with Mask or Range":
-                    string msk = new InputBox("Check with Mask or Range [#..#]", activeView.markMask, "").ShowDialog().Trim();
+                    string msk = new InputBox("Check with Mask or Range [#..#] exp. [3..8] ", activeView.markMask, "").ShowDialog().Trim();
                     if (msk.Equals("")) return;
                     if (msk.StartsWith("[") && msk.EndsWith("]")) 
                     {
                         msk = msk.TrimStart('[').TrimEnd(']');
-                        string[] ma = msk.Split(new string[] { ".." }, System.StringSplitOptions.None);
-                        if (ma.Length != 2) { Log("Error[574]: Wrong range syntax, it must be [num..num] .");  return; }                    
+                        int ip = msk.IndexOf(".."); if (ip == -1) { Log("Error[574]: Wrong range syntax, it must be [num..num] .");  return; }
+                        string ma = string.Empty; string mb = string.Empty;
+                        if (ip.Equals(0)) ma = "1";
+                        else ma = msk.Substring(0, ip);
+                        if (ip.Equals(msk.Length - ip)) mb = "1000000";
+                        else mb = msk.Substring(ip+2);
                         int i0, i1; 
-                        if (int.TryParse(ma[0], out i0) && int.TryParse(ma[1], out i1)) activeView.CheckRange(i0,i1);
+                        if (int.TryParse(ma, out i0) && int.TryParse(mb, out i1)) activeView.CheckRange(i0,i1);
                         else { Log("Error[575]: Wrong range syntax, it must be [num..num] ."); return; }
                     } 
                     else activeView.MarkWithMask(msk);

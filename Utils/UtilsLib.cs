@@ -123,24 +123,127 @@ namespace UtilsNS
             string imageSwitch = imagesTab ? "&tbm=isch" : ""; 
             CallTheWeb("https://www." + Convert.ToString(searchEngine) + ".com/search?q=" + query.Trim().Replace(' ', '+')+imageSwitch);
         }
-        public static void RunBatchFile(string pathToBatchFile)
+        /// <summary>
+        /// start batch file and when it's time to close it: 
+        /// 
+        /// //Close the batch file
+        /// //Try to close gracefully
+        /// if (!process.CloseMainWindow())
+        /// {
+        /// //If the main window cannot be closed, kill the process
+        ///    process.Kill();
+        /// }
+        /// </summary>
+        /// <param name="pathToBatchFile"></param>
+        /// <returns></returns>
+        public static Process RunBatchFile(string pathToBatchFile, bool showShell = true)
         {
+            Process process = null;
+            try
+            {
+                if (!File.Exists(pathToBatchFile))
+                {
+                    string msg = "No batch file: " + pathToBatchFile;
+                    TimedMessageBox(msg, "Problem", 3500); Console.WriteLine(msg);
+                    return null;
+                }
+                ProcessStartInfo processStartInfo = new ProcessStartInfo()
+                {
+                    FileName = pathToBatchFile,
+                    WorkingDirectory = Path.GetDirectoryName(pathToBatchFile),
+
+                    RedirectStandardOutput = !showShell,
+                    RedirectStandardError = !showShell,
+
+                    UseShellExecute = showShell,
+                    CreateNoWindow = !showShell
+                };
+                process = Process.Start(processStartInfo);
+                if (!showShell) // later if needed
+                {
+                    string output = process.StandardOutput.ReadToEnd();
+                    string error = process.StandardError.ReadToEnd();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception: " + ex.Message);
+            }
+            return process;
+        }
+
+        /*public static Process RunBatchFile(string pathToBatchFile, bool showShell = true)
+        {
+            if (!File.Exists(pathToBatchFile))
+            {
+                string msg = "No batch file: " + pathToBatchFile;
+                TimedMessageBox(msg, "Problem", 3500); Console.WriteLine(msg);
+                return null;
+            }
             ProcessStartInfo processStartInfo = new ProcessStartInfo()
             {
                 FileName = pathToBatchFile,
-                RedirectStandardOutput = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
+                WorkingDirectory = Path.GetDirectoryName(pathToBatchFile),
+                UseShellExecute = showShell,
+                CreateNoWindow = !showShell
             };
+            return Process.Start(processStartInfo);
+        }*/
 
-            using (Process process = Process.Start(processStartInfo))
+        /// <summary>
+        /// Get Python version if there
+        /// </summary>
+        /// <returns> python version #.#.#; <none> or starting with "Error:"</returns>         
+        public static string PythonVersion()
+        {
+            string rslt = "";
+            // Command to check Python version
+            string pythonCommand = "python --version";
+            try
             {
-                using (StreamReader reader = process.StandardOutput)
+                // Create a new process start info
+                ProcessStartInfo processStartInfo = new ProcessStartInfo
                 {
-                    string result = reader.ReadToEnd();
-                    Console.WriteLine(result);
+                    FileName = "cmd.exe",
+                    RedirectStandardInput = true,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                };
+                // Start the process
+                using (Process process = Process.Start(processStartInfo))
+                {
+                    // Execute the Python version command
+                    process.StandardInput.WriteLine(pythonCommand);
+                    process.StandardInput.Flush();
+                    process.StandardInput.Close();
+                    process.WaitForExit();
+
+                    // Read the output to get the Python version
+                    string output = process.StandardOutput.ReadToEnd();
+                    string error = process.StandardError.ReadToEnd();
+
+                    // Print the Python version if available
+                    if (!string.IsNullOrEmpty(output))
+                    {
+                        int i = output.IndexOf("Python ");
+                        if (i < 0) return "<none>";
+                        string ss = output.Substring(i); i = ss.IndexOf('\r');
+                        if (i < 0) return "<none>";
+                        rslt = ss.Substring(7, i - 7);
+                    }
+                    if (!string.IsNullOrEmpty(error))
+                    {
+                        rslt = "Error: " + error;
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                rslt = "Error:" + ex.Message;
+            }
+            return rslt;
         }
 
         public static string my_python_path = @"c:\Program Files (x86)\Microsoft Visual Studio\Shared\Python37_64\python.exe";

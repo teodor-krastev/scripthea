@@ -49,7 +49,12 @@ namespace scripthea.external
         {
             serverMonitor = null; GC.Collect(); GC.WaitForPendingFinalizers();
         }
-        
+        public event EventHandler ActiveEvent;
+        protected virtual void OnActiveEvent()
+        {
+            // Check if there are any subscribers
+            ActiveEvent?.Invoke(this, EventArgs.Empty);
+        }
         private bool _active;
         public bool active 
         {
@@ -59,6 +64,7 @@ namespace scripthea.external
                 _active = value;
                 if (value) { lbStatus.Content = "API: active"; lbStatus.Foreground = Brushes.Green; }
                 else { lbStatus.Content = "API: not active"; lbStatus.Foreground = Brushes.DarkRed; }
+                OnActiveEvent();
             }
         }
         public void serverAwakeness()

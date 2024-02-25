@@ -21,6 +21,7 @@
                         <CheckBox x:Name="chkAutoOpenSession" Content="Open session when needed" Margin="0,5,0,0" Visibility="Collapsed"/>
                         <CheckBox x:Name="chkAutoCloseSession" Content="Close session after py-script scan" Margin="0,10,0,0"/>
                         <CheckBox x:Name="chkMeasureGPUtemp" Content="Measure nVidia GPU temperature (if any)" Height="20" Margin="0,5,0,0" Checked="chkMeasureGPUtemp_Checked" Unchecked="chkMeasureGPUtemp_Checked"/>
+                        <CheckBox x:Name="chkAutoCloseCmd" Content="Auto close SD server window at Scripthea exit" Margin="0,10,0,0"/>
                     </StackPanel>
                 </Grid>
             </TabItem>
@@ -38,8 +39,7 @@
                         </Grid>
                     </GroupBox>
                     <StackPanel Background="WhiteSmoke">
-                        <TextBlock Text="   When SD communication is via Py script" Margin="0,10,0,5" FontSize="14"/>
-                        <GroupBox x:Name="gbSDlocation" Header=" Stable Diffusion (A1111) location" Height="57" Margin="0,0,-0.456,0" BorderBrush="Silver">
+                        <GroupBox x:Name="gbSDlocation" Header=" Stable Diffusion (A1111 or Forge) location" Height="57" Margin="0,5,-0.456,0" BorderBrush="Silver">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="1*"/>

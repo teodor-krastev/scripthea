@@ -16,6 +16,7 @@ using System.Windows.Shapes;
 using System.IO;
 using System.Net;
 using System.Threading;
+using System.Diagnostics;
 using System.Net.Sockets;
 using Newtonsoft.Json;
 using Path = System.IO.Path;
@@ -37,17 +38,22 @@ namespace scripthea.external
         }
         SDoptionsWindow SDopts; private bool localDebug = true;
         public Dictionary<string, string> opts { get; set; } // interfaceAPI: main (non API specific) options 
-
+        private Process process4batch = null;
         private Options genOpts;
         public void Init(ref Options _opts) // init and update visuals from opts
         {
             genOpts = _opts;
             sd_api_uc.btnSDoptions.Click -= btnSDoptions_Click; sd_api_uc.btnSDoptions.Click += btnSDoptions_Click;
+            sd_api_uc.ActiveEvent -= OnActiveEvent; sd_api_uc.ActiveEvent += OnActiveEvent;
             sdScriptUC.btnSDoptions.Click -= btnSDoptions_Click; sdScriptUC.btnSDoptions.Click += btnSDoptions_Click;
 
             if (SDopts == null) SDopts = new SDoptionsWindow();
             tempRegulator.Init(ref SDopts.opts); SDopts.nVidiaHwAvailable = tempRegulator.nVidiaHWAvailable;
             opts2Visual(true);
+        }
+        private void OnActiveEvent(object sender, EventArgs e)
+        {
+            PossibleRunServer();
         }
         private bool lastAPIcomm = false;
         private void opts2Visual(bool first)
@@ -72,11 +78,25 @@ namespace scripthea.external
                 var ap = OnAPIparams(SDopts.opts.APIcomm);
             }
             tempRegulator.opts2Visual();
+            PossibleRunServer();
+        }
+        private bool PossibleRunServer()
+        {
+            btnRunServer.IsEnabled = SDopts.IsSDlocation(SDopts.opts.SDlocation, false);
+            if (SDopts.opts.APIcomm)
+            {
+                btnRunServer.IsEnabled &= !sd_api_uc.active;
+            }
+            else { }
+            if (btnRunServer.IsEnabled) btnRunServer.Foreground = Brushes.DarkRed;
+            else btnRunServer.Foreground = Brushes.Black;
+            return btnRunServer.IsEnabled;
         }
         public void Finish()
         {
             tempRegulator.Finish();
             sd_api_uc.Finish(); sdScriptUC.Finish();
+            if (SDopts.opts.autoCloseCmd) closeProcess();
             SDopts.keepOpen = false; SDopts.Close(); SDopts = null;
         }
         public void Broadcast(string msg)
@@ -142,14 +162,48 @@ namespace scripthea.external
         private void lb1_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (sender.Equals(lb1)) Utils.AskTheWeb("Stable+Diffusion+text-to-image+generator");
-            if (sender.Equals(lb2)) Utils.CallTheWeb("https://stability.ai/");
-            if (sender.Equals(lb3)) Utils.CallTheWeb("http://127.0.0.1:7860/");
+            if (sender.Equals(lb2))
+            {
+                closeProcess();
+            }
+
+            //Utils.CallTheWeb("https://stability.ai/");
+            //if (sender.Equals(btnRunServer)) Utils.CallTheWeb("http://127.0.0.1:7860/");
         }        
         private void btnSDoptions_Click(object sender, RoutedEventArgs e)
         {
             bool bb = SDopts.opts.APIcomm;
             SDopts.opts2Visual(); SDopts.ShowDialog();
             opts2Visual(bb != SDopts.opts.APIcomm);
+        }
+        private void closeProcess()
+        {
+            try
+            {
+                if (process4batch == null) return;
+                if (process4batch.HasExited)
+                {
+                    Console.WriteLine($"Process exited with code: {process4batch.ExitCode}");
+                    Console.WriteLine($"Process exit time: {process4batch.ExitTime}");
+                    return;
+                }                   
+                if (!process4batch.CloseMainWindow())
+                {
+                    //If the main window cannot be closed, kill the process
+                    process4batch.Kill();
+                }
+            }
+            catch (Exception ex) { Log("Error: SD server -> " + ex.Message); } 
+        }
+        private void btnRunServer_Click(object sender, RoutedEventArgs e)
+        {
+            if (!SDopts.IsSDlocation(SDopts.opts.SDlocation, true)) return;
+            process4batch = Utils.RunBatchFile(Path.Combine(SDopts.opts.SDlocation, "webui-user.bat"));
+            if (process4batch.HasExited)
+            {
+                Console.WriteLine($"Process exited with code: {process4batch.ExitCode}");
+                Console.WriteLine($"Process exit time: {process4batch.ExitTime}");                
+            }
         }
     }
 }

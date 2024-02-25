@@ -73,13 +73,13 @@ namespace scripthea.composer
             sd_params_UC.Init(ref opts);
             cuePoolUC.OnSDparams += new Utils.LogHandler(sd_params_UC.ImportImageInfo);
             
-            if (Utils.TheosComputer() && Utils.isInVisualStudio) 
+            /*if (Utils.TheosComputer() && Utils.isInVisualStudio) 
             { 
                 btnTest.Visibility = Visibility.Visible;
                 cbActiveAPI.Items.Add(new ComboBoxItem() { Name = "cbiSPlugin", Content = "sPlugin" });
                 cbActiveAPI.SelectedIndex = 3;
             }
-            else { btnTest.Visibility = Visibility.Collapsed; }              
+            else { btnTest.Visibility = Visibility.Collapsed; }         */     
         }
         public void Finish()
         {
@@ -560,7 +560,7 @@ namespace scripthea.composer
             List<string> ls = (sender == btnAppend2Preview) ? new List<string>(scanPreviewUC.allPrompts) : new List<string>();
             
             GetScanPrompts(); //Log("time 1: " + ((DateTime.Now - t0).TotalSeconds).ToString("G3") + " [sec]");
-            if (scanPrompts.Count == 0) { Log("Warning: No prompts generated"); return; };
+            if (scanPrompts.Count == 0) { Log("Warning: No prompts generated"); scanPreviewUC.lbCheckCount.Content = ""; return; }
             ls.AddRange(scanPrompts); //Log("time 2: " + ((DateTime.Now - t0).TotalSeconds).ToString("G3") + " [sec]");
             tiModifiers.Visibility = Visibility.Visible; tiScanPreview.Visibility = Visibility.Visible;
             scanPreviewUC.lbCheckCount.Content = "loading...";

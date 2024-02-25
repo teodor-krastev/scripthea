@@ -526,7 +526,7 @@ Color rgbColor = Color.FromRgb(r, g, b);
         }
         public void Finish()
         {
-            Utils.writeList(historyFile, history);
+            if (history.Count > 0) Utils.writeList(historyFile, history);
         }
 
         public delegate void SelectHandler(string path);

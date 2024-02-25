@@ -31,6 +31,7 @@ namespace scripthea.external
         public int TimeOutImgGen;
         public bool closeAtEndOfScan;
         public bool measureGPUtemp;
+        public bool autoCloseCmd;
         // Initial settings
         public string SDlocation;
         public bool GPUtemperature;
@@ -83,6 +84,7 @@ namespace scripthea.external
             opts.closeAtEndOfScan = chkAutoCloseSession.IsChecked.Value;
             opts.TimeOutImgGen = numTimeOutImgGen.Value;
             opts.measureGPUtemp = chkMeasureGPUtemp.IsChecked.Value;
+            opts.autoCloseCmd = chkAutoCloseCmd.IsChecked.Value;
 
             opts.GPUtemperature = chkGPUtemperature.IsChecked.Value;
             opts.GPUThreshold = numGPUThreshold.Value;
@@ -97,6 +99,8 @@ namespace scripthea.external
             chkAutoCloseSession.IsChecked = opts.closeAtEndOfScan;
             numTimeOutImgGen.Value = opts.TimeOutImgGen;
             chkMeasureGPUtemp.IsChecked = opts.measureGPUtemp;
+            chkAutoCloseCmd.IsChecked = opts.autoCloseCmd;
+
             chkGPUtemperature.IsChecked = opts.GPUtemperature;
             numGPUThreshold.Value = opts.GPUThreshold; 
             numGPUstackDepth.Value = opts.GPUstackDepth;
@@ -147,7 +151,7 @@ namespace scripthea.external
         public bool IsSDlocation(string folder, bool warning = true) 
         {
             bool bb = Directory.Exists(folder);
-            if (bb) bb &=  Directory.Exists(Path.Combine(folder, "scripts")) && Directory.Exists(Path.Combine(folder, "modules"));
+            if (bb) bb &=  Directory.Exists(Path.Combine(folder, "scripts")) && Directory.Exists(Path.Combine(folder, "modules")) && File.Exists(Path.Combine(folder, "webui-user.bat"));
             if (!bb && warning && !folder.Equals("")) Utils.TimedMessageBox("The folder <" + folder + "> does not look like a Stable Diffusion webUI installation.", "Problem", 5000);
             if (bb) gbSDlocation.BorderBrush = Brushes.Silver;
             else gbSDlocation.BorderBrush = Brushes.OrangeRed;

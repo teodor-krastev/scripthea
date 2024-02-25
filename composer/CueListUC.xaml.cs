@@ -58,11 +58,12 @@ namespace scripthea.composer
                 {
                     if (!File.Exists(sf)) { Log("Error[74]: File <" + sf + "> is missing."); continue; }
                     string se = System.IO.Path.GetFileNameWithoutExtension(sf);
-                    if (!Utils.IsValidVarName(se)) { Log("Error[741]: <" + se + "> is not valid cue list name. (no special char.)"); continue; }
+                    if (!Utils.IsValidVarName(se.Replace('-','_'))|| (se.IndexOf('_') > -1)) 
+                        { Log("Error[741]: <" + se + "> is not valid cue list name. (only special char allowed is dash.)"); continue; }
                     TabItem newTabItem = new TabItem()
                     {
                         Header = se,
-                        Name = "ti" + se,
+                        Name = "ti" + se.Replace('-', '_'),
                         FontSize = 14, FontStyle = FontStyles.Italic, Height = 27,
                         Background = Utils.ToSolidColorBrush("#FFFFFFF8") 
                     };
