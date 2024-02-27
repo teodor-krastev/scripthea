@@ -215,7 +215,7 @@ namespace scripthea.composer
         private void btnCopy_Click(object sender, RoutedEventArgs e)
         {
             List<string> ls = checkedPrompts(); string ss = "";
-            foreach (var s in ls) ss += s + "\r";
+            foreach (var s in ls) ss += s + Environment.NewLine;
             Clipboard.SetText(ss);
         }
         private void btnSaveAs_Click(object sender, RoutedEventArgs e)

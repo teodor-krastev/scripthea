@@ -502,7 +502,7 @@ namespace UtilsNS
                       richText.Document.Blocks.Add(paragraph);
                   }
                   rangeOfText1 = new TextRange(richText.Document.ContentEnd, richText.Document.ContentEnd);
-                  rangeOfText1.Text = Utils.RemoveLineEndings(txt) + "\r";
+                  rangeOfText1.Text = Utils.RemoveLineEndings(txt) + Environment.NewLine;
                   SolidColorBrush clr1 = System.Windows.Media.Brushes.Black; // default
                   if (isNull(clr))
                   {
@@ -769,15 +769,20 @@ namespace UtilsNS
                 ls.Add(skimRem(ss));
             return ls;
         }
-        public static string flattenTextBox(TextBox textBox, bool noComment)
+        public static List<string> listFlatTextBox(TextBox textBox, bool noComment)
         {
-            string st = ""; 
-            var lines = textBox.Text.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
-            foreach (var line in lines)
+            string[] sa = textBox.Text.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+            return skimRem(new List<string>(sa));
+        }
+
+        public static string stringFlatTextBox(TextBox textBox, bool noComment)
+        {
+            string st = "";
+            List<string> ls = listFlatTextBox(textBox, noComment);
+            foreach (var line in ls)
             {
-                string ss = line.Trim();
-                if (noComment) ss = Utils.skimRem(ss);
-                if (ss.Equals("")) continue;
+                string ss = line.Trim();                
+                if (ss.Equals("")) continue; //skip empties
                 st += " " + ss;
             }            
             //if (st.Equals("")) st = textBox.Text;

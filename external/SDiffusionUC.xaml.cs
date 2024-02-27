@@ -88,8 +88,8 @@ namespace scripthea.external
                 btnRunServer.IsEnabled &= !sd_api_uc.active;
             }
             else { }
-            if (btnRunServer.IsEnabled) btnRunServer.Foreground = Brushes.DarkRed;
-            else btnRunServer.Foreground = Brushes.Black;
+            if (btnRunServer.IsEnabled) { btnRunServer.Foreground = Brushes.DarkRed; btnRunServer.BorderBrush = Brushes.DarkRed; }
+            else { btnRunServer.Foreground = Brushes.DarkGray; btnRunServer.BorderBrush = Brushes.DarkGray; }
             return btnRunServer.IsEnabled;
         }
         public void Finish()
@@ -162,12 +162,7 @@ namespace scripthea.external
         private void lb1_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (sender.Equals(lb1)) Utils.AskTheWeb("Stable+Diffusion+text-to-image+generator");
-            if (sender.Equals(lb2))
-            {
-                closeProcess();
-            }
-
-            //Utils.CallTheWeb("https://stability.ai/");
+            if (sender.Equals(lb2)) Utils.CallTheWeb("https://stability.ai/");            
             //if (sender.Equals(btnRunServer)) Utils.CallTheWeb("http://127.0.0.1:7860/");
         }        
         private void btnSDoptions_Click(object sender, RoutedEventArgs e)

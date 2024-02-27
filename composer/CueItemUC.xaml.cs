@@ -34,7 +34,7 @@ namespace scripthea.composer
         {
             InitializeComponent(); radioChecked = _radioChecked;
             tbCue.Text = ""; 
-            foreach (string line in text) tbCue.Text += line + "\r";
+            foreach (string line in text) tbCue.Text += line + Environment.NewLine;
             tbCue.Text = tbCue.Text.Trim().Trim('\"');
         }
         public event Utils.LogHandler OnLog;
@@ -80,27 +80,18 @@ namespace scripthea.composer
         }
         public string cueTextAsString(bool noComment)
         {
-            return Utils.flattenTextBox(tbCue, noComment).Trim().Trim('\"').Trim();
+            return Utils.stringFlatTextBox(tbCue, noComment).Trim().Trim('\"').Trim();
         }
         public List<string> cueTextAsList(bool noComment)
         {
-            List<string> ls = new List<string>();
             cueText = cueText.Trim(); tbCue.UpdateLayout();
-            int lineCount = tbCue.LineCount; string st = "";
-            for (int line = 0; line < lineCount; line++)
-            {                
-                string ss = tbCue.GetLineText(line);
-                bool bb = ss.EndsWith("\r\n");
-                if (noComment) ss = Utils.skimRem(ss);
-                if (ss.Trim().Equals("")) continue;
-                if (bb || (line == lineCount - 1))
-                {
-                    ls.Add((st + " " + ss).Replace("  ", " ").Trim()); st = ""; 
-                }                                 
-                else 
-                    st += " " + ss;                 
+            List<string> ls = Utils.listFlatTextBox(tbCue, noComment);
+            List<string> lt = new List<string>();
+            foreach(string ss in ls)
+            {
+                if (!ss.Trim().Equals(string.Empty)) lt.Add(ss.Trim());
             }
-            return ls;
+            return lt;
         }
     }
 }

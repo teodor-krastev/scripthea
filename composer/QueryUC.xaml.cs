@@ -233,7 +233,7 @@ namespace scripthea.composer
         }
         public string prompt
         {
-            get { return Utils.flattenTextBox(tbCue, true) + Utils.flattenTextBox(tbModifier,true); }
+            get { return Utils.stringFlatTextBox(tbCue, true) + Utils.stringFlatTextBox(tbModifier,true); }
         }
         public string Compose(object sender, List<string> selectedCue, string modifiers) // , bool OneLineCue = true ->redundant 
         {
@@ -246,7 +246,7 @@ namespace scripthea.composer
                     if (line.Equals("")) continue;
                     if (line.Length > 1)
                         if (line.Substring(0, 2).Equals("##")) continue;
-                    tbCue.Text += line + (opts.composer.OneLineCue ? ' ' : '\r');
+                    tbCue.Text += line + (opts.composer.OneLineCue ? " " : Environment.NewLine);
                 }
             }
             if (sender == null || sender == btnCompose || sender == tcQuery || sender == modifiersUC || sender == chkAutoSingle)
@@ -308,7 +308,7 @@ namespace scripthea.composer
         private void GetScanPrompts()
         {        
             scanPrompts = new List<string>(); 
-            if (cuePoolUC.activeCourier == null) { Log("Error[145]: no cue is selected (err.code:12)"); return; }
+            if (cuePoolUC.activeCourier == null) { Log("Error[145]: no cue is selected"); return; }
             List<List<string>> lls = cuePoolUC.activeCourier.GetCues();
             if (lls.Count.Equals(0)) { Log("Error[96]: no cue is selected"); return; }
             List<string> ScanModifs = CombiModifs(modifiersUC.ModifItemsByType(ModifStatus.Scannable), opts.composer.ModifPrefix, Utils.EnsureRange(opts.composer.ModifSample, 1, 9));
@@ -320,10 +320,12 @@ namespace scripthea.composer
                     scanPrompts.Add(Compose(null, ls, fis));                    
                 }
                 else
+                {                
                     foreach (string sc in ScanModifs)
                     {
                         scanPrompts.Add(Compose(null, ls, fis + (sc.Equals("") ? "" : opts.composer.ModifPrefix) + sc));                        
                     }
+                }
             }            
         }
         public List<string> CombiModifs(List<string> ScanModifs, string separator, int sample = 1) 
