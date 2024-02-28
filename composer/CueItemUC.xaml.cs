@@ -85,13 +85,8 @@ namespace scripthea.composer
         public List<string> cueTextAsList(bool noComment)
         {
             cueText = cueText.Trim(); tbCue.UpdateLayout();
-            List<string> ls = Utils.listFlatTextBox(tbCue, noComment);
-            List<string> lt = new List<string>();
-            foreach(string ss in ls)
-            {
-                if (!ss.Trim().Equals(string.Empty)) lt.Add(ss.Trim());
-            }
-            return lt;
+            List<string> ls = Utils.listFlatTextBox(tbCue, noComment);            
+            return ls;
         }
     }
 }

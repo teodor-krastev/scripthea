@@ -622,6 +622,7 @@ namespace scripthea.composer
             Log("time taken = "+t.ToString("G3")+" [sec]  "+ns.ToString()+" files OK");
             Log("time " + (t / ns).ToString("G3") + " [sec] per file");*/
             //CombiIndexes(3, 5);
+            Log("=============================");
         }
 
     }

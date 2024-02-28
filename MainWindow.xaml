@@ -9,7 +9,6 @@
         x:Name="MainWindow1" x:Class="scripthea.MainWindow"
         mc:Ignorable="d"
         Title="Scripthea - text-to-image prompt composer" Height="450" Width="1080.709" Loaded="MainWindow1_Loaded" Closing="MainWindow1_Closing" Icon="Properties/penzy4.png" FontSize="13" KeyDown="MainWindow1_KeyDown" PreviewKeyDown="MainWindow1_PreviewKeyDown">
-    
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="300" x:Name="pnlLog" MinWidth="100" MaxWidth="1000"/>

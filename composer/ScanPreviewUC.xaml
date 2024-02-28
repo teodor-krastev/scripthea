@@ -22,6 +22,8 @@
                         <MenuItem Header="Uncheck All" Click="mi_Click"/>
                         <MenuItem x:Name="miInvertChecking" Header="Invert Checking" Click="mi_Click" FontWeight="Bold"/>
                         <MenuItem Header="Check with Mask" Click="mi_Click"/>
+                        <Separator></Separator>
+                        <MenuItem x:Name="miReadOnly" Header="Read Only" Click="mi_Click" IsCheckable="True" IsChecked="True"/>
                     </ContextMenu>
                 </Button.ContextMenu>
             </Button>
@@ -33,6 +35,6 @@
             <Button x:Name="btnSaveAs" Content="Save As..." HorizontalAlignment="Left" Margin="5,0,0,0" Width="91" FontSize="13" Background="#FFEBF7FA" Click="btnSaveAs_Click" Height="25" Style="{StaticResource RoundedButtonStyle}" ToolTip="Save the prompt list to a file"/>
             <Button x:Name="btnClose" Content="Close" HorizontalAlignment="Left" Margin="10,0,0,0" Width="91" FontSize="13" Background="#FFFAFAEB" Height="25" Visibility="Collapsed" Style="{StaticResource RoundedButtonStyle}"/>
         </StackPanel>
-        <DataGrid x:Name="dGrid" Margin="0" Grid.Row="1" AutoGeneratingColumn="dGrid_AutoGeneratingColumn" SelectionMode="Single" MaxColumnWidth="1000" CanUserReorderColumns="False" SelectionChanged="dGrid_SelectionChanged" CanUserAddRows="False" VerticalScrollBarVisibility="Visible"/>
+        <DataGrid x:Name="dGrid" Margin="0" Grid.Row="1" AutoGeneratingColumn="dGrid_AutoGeneratingColumn" SelectionMode="Single" MaxColumnWidth="1000" CanUserReorderColumns="False" SelectionChanged="dGrid_SelectionChanged" CanUserAddRows="False" VerticalScrollBarVisibility="Visible" />
     </Grid>
 </UserControl>

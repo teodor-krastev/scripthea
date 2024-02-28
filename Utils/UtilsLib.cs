@@ -502,7 +502,7 @@ namespace UtilsNS
                       richText.Document.Blocks.Add(paragraph);
                   }
                   rangeOfText1 = new TextRange(richText.Document.ContentEnd, richText.Document.ContentEnd);
-                  rangeOfText1.Text = Utils.RemoveLineEndings(txt) + Environment.NewLine;
+                  rangeOfText1.Text = Utils.RemoveLineEndings(txt) + "\r"; //Environment.NewLine;
                   SolidColorBrush clr1 = System.Windows.Media.Brushes.Black; // default
                   if (isNull(clr))
                   {
@@ -772,20 +772,21 @@ namespace UtilsNS
         public static List<string> listFlatTextBox(TextBox textBox, bool noComment)
         {
             string[] sa = textBox.Text.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
-            return skimRem(new List<string>(sa));
+            List<string> ls = new List<string>(sa); List<string> lt;
+            if (noComment) lt = skimRem(ls);
+            else lt = new List<string>(ls);
+            return lt;
         }
-
         public static string stringFlatTextBox(TextBox textBox, bool noComment)
         {
             string st = "";
             List<string> ls = listFlatTextBox(textBox, noComment);
             foreach (var line in ls)
             {
-                string ss = line.Trim();                
-                if (ss.Equals("")) continue; //skip empties
-                st += " " + ss;
-            }            
-            //if (st.Equals("")) st = textBox.Text;
+                string ss = line.Trim();
+                if (ss.StartsWith("#") && !noComment) { st += ss + Environment.NewLine; continue; }
+                st += ss + " ";
+            }                        
             return st.Replace("  ", " ").Trim();
         }
         private static String WildCardToRegular(String value) // If you want to implement both "*" and "?"
@@ -1206,7 +1207,7 @@ namespace UtilsNS
         public static bool localConfig = File.Exists(Path.ChangeExtension(System.Reflection.Assembly.GetEntryAssembly().Location, ".PDB"));
         public enum BaseLocation { oneUp, twoUp, appData, auto }
         public static BaseLocation baseLocation = BaseLocation.auto;
-        private static string GetBaseLOcation(BaseLocation bl)
+        public static string GetBaseLocation(BaseLocation bl)
         {
             switch (bl)
             {
@@ -1229,14 +1230,14 @@ namespace UtilsNS
                 {
                     if (localConfig)
                     {
-                        if (Directory.Exists(Path.Combine(GetBaseLOcation(BaseLocation.oneUp), requiredFolder))) baseLocation = BaseLocation.oneUp;
-                        if (Directory.Exists(Path.Combine(GetBaseLOcation(BaseLocation.twoUp), requiredFolder))) baseLocation = BaseLocation.twoUp;
+                        if (Directory.Exists(Path.Combine(GetBaseLocation(BaseLocation.oneUp), requiredFolder))) baseLocation = BaseLocation.oneUp;
+                        if (Directory.Exists(Path.Combine(GetBaseLocation(BaseLocation.twoUp), requiredFolder))) baseLocation = BaseLocation.twoUp;
                     }
                     else baseLocation = BaseLocation.appData;
                 }
-                if (!Directory.Exists(Path.Combine(GetBaseLOcation(baseLocation), requiredFolder)))
-                    TimedMessageBox(Path.Combine(GetBaseLOcation(baseLocation), requiredFolder) + " is expected but does not exist.", "Error", 3000);
-                return GetBaseLOcation(baseLocation);
+                if (!Directory.Exists(Path.Combine(GetBaseLocation(baseLocation), requiredFolder)))
+                    TimedMessageBox(Path.Combine(GetBaseLocation(baseLocation), requiredFolder) + " is expected but does not exist.", "Error", 3000);
+                return GetBaseLocation(baseLocation);
             }
         }
         public static string configPath { get { return Path.Combine(basePath,"Config")+"\\"; } }

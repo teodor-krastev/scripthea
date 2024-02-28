@@ -104,7 +104,7 @@ namespace scripthea
             exportUtilUC.Init(ref opts);
 
             oldTab = tiComposer;
-            Log("> Welcome to Scripthea" + "  " + (opts.general.debug ? "(in debug mode)" : "")); Log("");
+            Log("> Welcome to Scripthea" + "  " + (opts.general.debug ? "(in debug mode)" : "")); //Log("");
             Utils.DelayExec(2500, new Action(() => { aboutWin.Hide(); })); 
             queryUC.Init(ref opts);            
             Left = Utils.EnsureRange(opts.layout.Left, 0, 4000); Top = Utils.EnsureRange(opts.layout.Top, 0, 2000);

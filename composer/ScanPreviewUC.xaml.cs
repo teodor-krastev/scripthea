@@ -94,6 +94,9 @@ namespace scripthea.composer
                     case "Invert Checking":
                         turn2 = !Convert.ToBoolean(row["On"]);
                         break;
+                    case "Read Only":
+                        col.IsReadOnly = miReadOnly.IsChecked;// to be dealt with later...
+                        break;  
                 }
                 row["On"] = turn2;       
             }
@@ -142,21 +145,23 @@ namespace scripthea.composer
         private void chkTable_Checked(object sender, RoutedEventArgs e)
         {
             lbCheckCount.Content = checkedPrompts().Count.ToString() + " out of " + dTable.Rows.Count.ToString(); lbCheckCount.Foreground = Brushes.Navy;
-        }        
+        }
+        private DataGridTextColumn col; 
         private void dGrid_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
         {
-            var col = e.Column as DataGridTextColumn; if (Utils.isNull(col)) return;
             switch (e.Column.Header.ToString())
             {
                 case ("#"):
                 case ("On"):
-                    col.Width = new DataGridLength(1, DataGridLengthUnitType.Auto);
+                    var cl = e.Column as DataGridTextColumn; if (Utils.isNull(cl)) return;
+                    cl.Width = new DataGridLength(1, DataGridLengthUnitType.Auto);
                     break;
                 case ("Prompt"):
+                    col = e.Column as DataGridTextColumn; if (Utils.isNull(col)) return;
                     var style = new Style(typeof(TextBlock));
                     style.Setters.Add(new Setter(TextBlock.TextWrappingProperty, TextWrapping.Wrap));
                     style.Setters.Add(new Setter(TextBlock.VerticalAlignmentProperty, VerticalAlignment.Center));
-                    col.ElementStyle = style;
+                    col.ElementStyle = style; col.IsReadOnly = miReadOnly.IsChecked;
                     col.Width = new DataGridLength(1, DataGridLengthUnitType.Star);
                     break;
             }
