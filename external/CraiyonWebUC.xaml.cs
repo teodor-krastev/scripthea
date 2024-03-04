@@ -45,7 +45,7 @@ namespace scripthea.external
         public bool isDocked { get { return false; } }
         public UserControl userControl { get { return this as UserControl; } }
         public bool isEnabled { get { return true; } }
-        public bool GenerateImage(string prompt, string imageDepotFolder, out ImageInfo ii)
+        public bool GenerateImage(string prompt, string imageDepotFolder, ref ImageInfo ii)
         {
             Utils.CallTheWeb("https://craiyon.com/?prompt=" + prompt.Trim().Replace(' ', '+'));
             ii = new ImageInfo();

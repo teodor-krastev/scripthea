@@ -131,14 +131,14 @@ namespace scripthea.external
         {
             File.Copy(SimulFolder.RandomImageFile, filepath);
         }
-        public bool GenerateImage(string prompt, string imageDepotFolder, out ImageInfo ii) // returns the filename of saved/copied in ImageDepoFolder image 
+        public bool GenerateImage(string prompt, string imageDepotFolder, ref ImageInfo ii) // returns the filename of saved/copied in ImageDepoFolder image 
         {
             if (!isEnabled) { ii = null; return false; } 
             tempRegulator.tempRegulate(); bool rslt = false; 
             if (SDopts.opts.APIcomm) // API
             {
                 string filename = Utils.timeName(); // target image 
-                string folder = imageDepotFolder.EndsWith("\\") ? imageDepotFolder : imageDepotFolder + "\\"; opts["folder"] = folder;
+                string folder = imageDepotFolder.EndsWith("\\") ? imageDepotFolder : imageDepotFolder + "\\"; opts["IDfolder"] = folder;
                 string fullFN = Path.Combine(folder, Path.ChangeExtension(filename, ".png"));
                 if (File.Exists(fullFN))
                 {

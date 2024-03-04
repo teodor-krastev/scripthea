@@ -91,6 +91,8 @@ namespace scripthea
             public bool MasterClearEntries;
             public int ImportWidth;
             public int ExportWidth;
+            // AddonGen
+            public string AddonGenFolder;
         }
         public SMacro sMacro;
         public class SMacro

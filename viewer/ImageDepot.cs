@@ -24,7 +24,7 @@ namespace scripthea.viewer
 {
     public class ImageInfo
     {
-        public enum ImageGenerator { StableDiffusion, Crayion, FromDescFile }
+        public enum ImageGenerator { StableDiffusion, AddonGen, Crayion, FromDescFile }
         public ImageInfo()
         {
 
@@ -37,6 +37,7 @@ namespace scripthea.viewer
             switch (imageGenerator)
             {
                 case ImageGenerator.StableDiffusion:
+                case ImageGenerator.AddonGen:
                     bb = FromSDFile(fullfilename, out suggestedName);
                     if (!bb)
                     {

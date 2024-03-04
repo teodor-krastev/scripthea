@@ -28,14 +28,14 @@ namespace scripthea.external
     {
         Dictionary<string, string> opts { get; set; } // visual adjustable options to that particular API, keep it in synchro with the visuals 
         void Init(ref Options _opts); // coupled with Finish
-        void Finish(); // couped with Init (not constructor)
+        void Finish(); // coupled with Init (not a destructor)
         void Broadcast(string msg);
         event Utils.LogHandler OnLog; // @ is for internal comm
         event APIparamsHandler APIparamsEvent;
         bool isDocked { get; }
         UserControl userControl { get; }
         bool isEnabled { get; } // connected and working (depends on the API)
-        bool GenerateImage(string prompt, string imageDepotFolder, out ImageInfo ii); // returns ImageInfo of saved in imageDepoFolder image 
+        bool GenerateImage(string prompt, string imageDepotFolder, ref ImageInfo ii); // returns ImageInfo of saved in imageDepoFolder image 
     }
     /// <summary>
     /// Interaction logic for controlAPI.xaml
@@ -49,10 +49,10 @@ namespace scripthea.external
             InitializeComponent(); opts = _opts;
             interfaceAPIs = new Dictionary<string, interfaceAPI>();
             visualControl("Simulation", new SimulatorUC()).OnLog += new Utils.LogHandler(Log);
-            visualControl("sPlugin", new sPluginUC()).OnLog += new Utils.LogHandler(Log);
+            visualControl("AddonGen", new AddonGenUC()).OnLog += new Utils.LogHandler(Log);
             visualControl("Craiyon", new CraiyonWebUC()).OnLog += new Utils.LogHandler(Log);
             visualControl("SDiffusion", new SDiffusionUC()).OnLog += new Utils.LogHandler(Log); 
-            _activeAPIname = "sPlugin"; tabControl.SelectedIndex = 1;
+            _activeAPIname = "AddonGen"; tabControl.SelectedIndex = 0;
 
             backgroundWorker1 = new BackgroundWorker();
             backgroundWorker1.DoWork += backgroundWorker1_DoWork;
@@ -102,8 +102,8 @@ namespace scripthea.external
 
         private void backgroundWorker1_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
-            iInfo = null;
-            success = activeAPI.GenerateImage(prompt2api, imageFolder, out iInfo); // calling API
+            iInfo = new ImageInfo();
+            success = activeAPI.GenerateImage(prompt2api, imageFolder, ref iInfo); // calling API
         }
         private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
@@ -115,6 +115,9 @@ namespace scripthea.external
                 case "Craiyon":
                     QueryComplete("", true);
                     break;
+                case "AddonGen":
+                    //QueryComplete(Path.Combine(imageFolder, iInfo.filename), success);
+                    //break;
                 case "SDiffusion": // take imageFolder, imageName (filename) and success
                     if (success)
                     {
@@ -124,7 +127,7 @@ namespace scripthea.external
                             string desc = Path.Combine(imageFolder, ImgUtils.descriptionFile);
                             if (!File.Exists(desc)) // create an empty iDepot 
                             {
-                                ImageDepot df = new ImageDepot(imageFolder, ImageInfo.ImageGenerator.StableDiffusion, true);
+                                ImageDepot df = new ImageDepot(imageFolder, activeAPIname.Equals("SDiffusion") ? ImageInfo.ImageGenerator.StableDiffusion : ImageInfo.ImageGenerator.AddonGen, true);
                                 df.Save(true); df = null;
                             }
                             using (StreamWriter sw = File.AppendText(desc))
@@ -162,7 +165,9 @@ namespace scripthea.external
             {               
                 if (ti.Header.Equals(activeAPIname))
                 {
-                    tabControl.SelectedItem = ti; break;
+                    tabControl.SelectedItem = ti;
+                    Title = "Text-to-image generator: " + activeAPIname;
+                    break;
                 }
             }
         }

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:scripthea.external"
         mc:Ignorable="d"
-        Title="API control dialog" Height="450" Width="800" WindowStyle="ToolWindow" WindowStartupLocation="CenterScreen" FontSize="12" Closing="controlAPIwin_Closing">
+        Title="Text-to-image generator:" Height="450" Width="800" WindowStyle="ToolWindow" WindowStartupLocation="CenterScreen" FontSize="12" Closing="controlAPIwin_Closing">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"/>

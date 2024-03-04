@@ -106,7 +106,7 @@ namespace scripthea.external
         {
             filename = Utils.timeName(); // target image 
             if (Utils.isNull(server2s) || Utils.isNull(server2c)) { inLog("Error[159]: communication issue"); return false; }
-            string folder = imageDepotFolder.EndsWith("\\") ? imageDepotFolder : imageDepotFolder + "\\"; opts["folder"] = folder;
+            string folder = imageDepotFolder.EndsWith("\\") ? imageDepotFolder : imageDepotFolder + "\\"; opts["IDfolder"] = folder;
             string fullFN = Path.Combine(folder, Path.ChangeExtension(filename, ".png"));
             if (File.Exists(fullFN))
             {
@@ -119,7 +119,7 @@ namespace scripthea.external
             if (!server2s.status.Equals(SDServer.Status.promptExpect)) { inLog("Error[35]: time-out at promptExpect"); return false; }
 
             Dictionary<string, string> jsn = new Dictionary<string, string>();
-            jsn.Add("prompt", prompt); jsn.Add("folder", folder); jsn.Add("filename", filename);
+            jsn.Add("prompt", prompt); jsn.Add("IDfolder", folder); jsn.Add("filename", filename);
             filename = Path.ChangeExtension(filename, ".png");
             if (!server2c.Send(JsonConvert.SerializeObject(jsn))) { inLog("Error[471]: fail to send a message to the client"); return false; }
 

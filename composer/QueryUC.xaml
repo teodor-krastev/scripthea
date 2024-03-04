@@ -67,7 +67,7 @@
                         <StackPanel Orientation="Horizontal" Margin="0,5,0,0" VerticalAlignment="Top">
                             <Label x:Name="lbAPI" Content="Text-to-image generator" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                             <ComboBox x:Name="cbActiveAPI" HorizontalAlignment="Left" SelectedIndex="0" Width="112" FontSize="13" Background="White" Margin="3,2,0,0" SelectionChanged="cbActiveAPI_SelectionChanged" FontWeight="Bold" FontFamily="Segoe UI Semibold">
-                                <ComboBoxItem Content="Simulation"/>
+                                <ComboBoxItem x:Name = "cbiAddonGen" Content = "AddonGen"/>
                                 <ComboBoxItem x:Name="cbiDiffusion" Content="SDiffusion"/>
                                 <ComboBoxItem x:Name="cbiCraiyon" Content="Craiyon"/>
                             </ComboBox>
@@ -106,7 +106,7 @@
                         <local:ScanPreviewUC x:Name="scanPreviewUC" Margin="0" FontFamily="Segoe UI" FontSize="13"/>
                     </Grid>
                 </TabItem>
-                <TabItem x:Name="tiSD_API" Header="Stable Diffusion" Background="#FFECECEC" Height="30" Width="150" Margin="20,-3,-20,0" BorderBrush="#FF144397" Style="{StaticResource RoundedBottomTabItemStyle}">
+                <TabItem x:Name="tiSD_API" Header="SD Parameters" Background="#FFECECEC" Height="30" Width="150" Margin="20,-3,-20,0" BorderBrush="#FF144397" Style="{StaticResource RoundedBottomTabItemStyle}">
                     <Grid>
                         <external:SD_params_UC x:Name="sd_params_UC" Margin="0" FontFamily="Segoe UI" FontSize="13"/>
                     </Grid>

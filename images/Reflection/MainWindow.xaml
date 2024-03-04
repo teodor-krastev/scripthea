@@ -5,14 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Reflection"
         mc:Ignorable="d"
-        Title="Reflection" Height="450" Width="800" Loaded="btnMakeImage_Click">
+        Title="Reflection" Height="450" Width="800" Loaded="wndReflection_Loaded" FontSize="13" >
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="684*"/>
             <ColumnDefinition Width="109"/>
         </Grid.ColumnDefinitions>
         <TextBox x:Name="tbLog" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap"></TextBox>
-        <Button x:Name="btnMakeImage" Content="Make an image" Grid.Column="1" Margin="5" VerticalAlignment="Top" Background="{x:Null}" BorderBrush="#FF138A01" Click="btnMakeImage_Click"/>
+        <Button x:Name="btnMakeImage" Content="Make an image" Grid.Column="1" Margin="5,5,5.333,0" VerticalAlignment="Top" Background="{x:Null}" BorderBrush="#FF138A01" Click="btnMakeImage_Click" Height="32" FontFamily="Segoe UI Semibold" Foreground="#FF0D5A01"/>
 
     </Grid>
 </Window>

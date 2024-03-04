@@ -65,15 +65,15 @@ namespace scripthea.external
         public bool isDocked { get { return false; } }
         public UserControl userControl { get { return this as UserControl; } }
         public bool isEnabled { get { return true; } }
-        public bool GenerateImage(string prompt, string imageDepotFolder, out ImageInfo ii)
+        public bool GenerateImage(string prompt, string imageDepotFolder, ref ImageInfo ii)
         {
-            if (Directory.Exists(imageDepotFolder)) opts["folder"] = imageDepotFolder;
-            else opts["folder"] = ImgUtils.defaultImageDepot;
+            if (Directory.Exists(imageDepotFolder)) opts["IDfolder"] = imageDepotFolder;
+            else opts["IDfolder"] = ImgUtils.defaultImageDepot;
 
             Utils.Sleep(10000);
 
             string filename = Path.ChangeExtension(Utils.timeName(), ".png");
-            File.Copy(SimulFolder.RandomImageFile, Path.Combine(opts["folder"], filename));
+            File.Copy(SimulFolder.RandomImageFile, Path.Combine(opts["IDfolder"], filename));
             ii = new ImageInfo(Path.Combine(imageDepotFolder,filename), ImageInfo.ImageGenerator.StableDiffusion, true); 
             return true;
         }        

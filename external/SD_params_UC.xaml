@@ -56,6 +56,5 @@
                 <CheckBox x:Name="chkAutoSynch" Content="Auto-synch" Margin="2,3" Checked="chkAutoRefresh_Checked" Unchecked="chkAutoRefresh_Checked"></CheckBox>
             </StackPanel>
         </GroupBox>
-
     </Grid>
 </UserControl>

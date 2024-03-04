@@ -67,19 +67,22 @@ namespace scripthea.composer
             API = new ControlAPI(ref opts); 
             if (API.interfaceAPIs.ContainsKey("SDiffusion"))             
                 API.interfaceAPIs["SDiffusion"].APIparamsEvent += new APIparamsHandler(OnAPIparams);
+            if (API.interfaceAPIs.ContainsKey("AddonGen"))
+                API.interfaceAPIs["AddonGen"].APIparamsEvent += new APIparamsHandler(OnAPIparams);
+
             cbActiveAPI_SelectionChanged(null, null);
             API.OnQueryComplete += new ControlAPI.APIEventHandler(QueryComplete);
             API.OnLog += new Utils.LogHandler(Log);
             sd_params_UC.Init(ref opts);
             cuePoolUC.OnSDparams += new Utils.LogHandler(sd_params_UC.ImportImageInfo);
             
-            /*if (Utils.TheosComputer() && Utils.isInVisualStudio) 
+            if (Utils.isInVisualStudio) 
             { 
                 btnTest.Visibility = Visibility.Visible;
-                cbActiveAPI.Items.Add(new ComboBoxItem() { Name = "cbiSPlugin", Content = "sPlugin" });
-                cbActiveAPI.SelectedIndex = 3;
+                cbActiveAPI.Items.Add(new ComboBoxItem() { Name = "cbiSimulation", Content = "Simulation" }); 
+                //cbActiveAPI.SelectedIndex = 3;
             }
-            else { btnTest.Visibility = Visibility.Collapsed; }         */     
+            else { btnTest.Visibility = Visibility.Collapsed; }             
         }
         public void Finish()
         {
@@ -133,7 +136,7 @@ namespace scripthea.composer
         {
             if (showIt != null)
             {
-                if ((bool)showIt && API.activeAPIname.Equals("SDiffusion")) tiSD_API.Visibility = Visibility.Visible;
+                if ((bool)showIt && (API.activeAPIname.Equals("SDiffusion") || API.activeAPIname.Equals("AddonGen"))) tiSD_API.Visibility = Visibility.Visible;
                 else tiSD_API.Visibility = Visibility.Collapsed;           
             }
             return sd_params_UC.vPrms;
@@ -459,14 +462,14 @@ namespace scripthea.composer
                 API.activeAPI.Init(ref opts);
             }
             if (!Utils.isNull(e)) e.Handled = true;
-            OnAPIparams(API.activeAPIname.Equals("SDiffusion"));
+            OnAPIparams(API.activeAPIname.Equals("SDiffusion") || API.activeAPIname.Equals("AddonGen"));
         }
 
         private void imgAPIdialog_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (Utils.isNull(API)) { Log("Error[55]: no API is selected."); return; }
             if (Utils.isNull(API.activeAPI)) { Log("Error[22]: no API is selected."); return; }           
-            API.activeAPI.opts["folder"] = opts.composer.ImageDepotFolder;
+            API.activeAPI.opts["IDfolder"] = opts.composer.ImageDepotFolder;
             API.about2Show(ref opts);
             API.ShowDialog();
         }
@@ -475,7 +478,7 @@ namespace scripthea.composer
             if (Utils.isNull(API)) { Log("Error[56]: no API is selected."); return false; }
             if (Utils.isNull(API.activeAPI)) { Log("Error[21]: no API is selected."); return false; }
             if (API.IsBusy || status != Status.Idle)
-                { Utils.TimedMessageBox("API is busy, try again later...", "Warning"); return false;  }
+                { Utils.TimedMessageBox("API is busy, try again later...", "Warning"); return false; }
             return true;
         }
         private void btnQuery_Click(object sender, RoutedEventArgs e)
