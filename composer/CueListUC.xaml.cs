@@ -84,7 +84,7 @@ namespace scripthea.composer
 
         }
         public event RoutedEventHandler OnChange;
-        protected void Change(object sender, RoutedEventArgs e)
+        public void Change(object sender, RoutedEventArgs e)
         {
             if (radioMode)
             {
@@ -123,13 +123,24 @@ namespace scripthea.composer
                     cue.OnLog += new Utils.LogHandler(Log);
                     cue.rbChecked.Checked += new RoutedEventHandler(Change); //cue.rbChecked.Unchecked += new RoutedEventHandler(Change);
                     cue.checkBox.Checked += new RoutedEventHandler(Change); cue.checkBox.Unchecked += new RoutedEventHandler(Change);
-                    allCues.Add(cue); ocl.Add(cue);
+                    
+                    allCues.Add(cue); cue.index = ocl.Count; ocl.Add(cue); 
                     sp.Children.Add(cue); ls.Clear();
                 }
                 else
                 {
                     ls.Add(ss);
                 }
+            }
+        }
+        protected void PoolChecking(bool? bl)
+        {
+            if (allCues == null) return;
+            if (radioMode) return;
+            foreach (CueItemUC ci in allCues)
+            {
+                if (bl == null) ci.boxChecked = !ci.boxChecked;
+                else ci.boxChecked = (bool)bl;
             }
         }
         public List<CueItemUC> selectedCues(int tabIdx = -1) // -1 -> allCues in non-radio mode
@@ -151,7 +162,7 @@ namespace scripthea.composer
             else
             {
                 List<CueItemUC> ssf;
-                if (Utils.InRange(tabIdx, 0, tcLists.Items.Count - 1)) ssf = localCues[tabIdx];
+                if (Utils.InRange(tabIdx, 0, tcLists.Items.Count - 1, true)) ssf = localCues[tabIdx];
                 else ssf = allCues;
                 foreach (CueItemUC os in ssf)
                     if (os.boxChecked) ssd.Add(os);                
@@ -237,7 +248,7 @@ namespace scripthea.composer
             if (si.Equals(localCueIdx)) si = rand.Next(ssd.Count);
             localCueIdx = si;
         }
-        private readonly string[] miTitles = { "Check All", "Uncheck All", "Invert Checking" };
+        private readonly string[] miTitles = { "Check All", "Uncheck All", "Invert Checking", "Invert Pool Checking" };
         string bufMask = "";
         private void mi_Click(object sender, RoutedEventArgs e)
         {            
@@ -261,8 +272,9 @@ namespace scripthea.composer
                         os.boxChecked = !os.boxChecked;
                         break;
                 }
-            }            
-        }
+            }
+            if (header.Equals("Invert Pool Checking")) PoolChecking(null);
+        }        
         bool inverting = false;
         private void imgMenu_MouseDown(object sender, MouseButtonEventArgs e)
         {

@@ -12,7 +12,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Teodor Krastev")]
 [assembly: AssemblyProduct("Scripthea software")]
-[assembly: AssemblyCopyright("Teodor Krastev ©  2022-2023")]
+[assembly: AssemblyCopyright("Teodor Krastev ©  2022-2024")]
 [assembly: AssemblyTrademark("Scripthea")]
 [assembly: AssemblyCulture("")]
 
@@ -51,5 +51,5 @@ using System.Windows;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.6.2.86")]
-[assembly: AssemblyFileVersion("1.6.2.86")]
+[assembly: AssemblyVersion("1.7.1.88")]
+[assembly: AssemblyFileVersion("1.7.1.88")]

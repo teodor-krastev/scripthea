@@ -126,7 +126,8 @@ namespace scripthea.master
         }
         public List<ImageInfo> imageInfos(bool check, bool uncheck)
         {
-            if (!iDepot.isEnabled || activeView.Equals(null) || !checkable) return null;
+            if (activeView == null || iDepot == null) return null;
+            if (!iDepot.isEnabled || !checkable) return null;
             List<ImageInfo> lii = new List<ImageInfo>();
             List<Tuple<int, string, string>> lt = activeView.GetItems(check, uncheck);
             foreach (var ii in lt)
@@ -141,6 +142,10 @@ namespace scripthea.master
         {
             if (!iDepot.isEnabled || activeView.Equals(null) || !checkable) return null;
             return activeView?.GetItems(check, uncheck);
+        }
+        public void SelectItem(int idx)
+        {
+            activeView.selectedIndex = idx;
         }
         private List<iPicList> views;
         iPicList activeView { get { return views[tcMain.SelectedIndex]; } }
@@ -204,13 +209,17 @@ namespace scripthea.master
             if (OnLog != null) OnLog(txt, clr);
             else Utils.TimedMessageBox(txt, "Information", 3000);
         }
+        public void SetCheckLabel(string txt)
+        {
+            lbChecked.Content = txt; lbChecked.UpdateLayout(); Utils.DoEvents();
+        }
         private int GetChecked(bool print = true) // returns numb. of checked
         {
-            if (print) lbChecked.Content = "---";
+            //if (print) SetCheckLabel("---");
             if (!isEnabled || activeView == null) { /*Log("Error[]: No active image depot found.");*/ return -1; }
             List<Tuple<int, string, string>> itms = activeView.GetItems(true, false);
             if (print)
-                lbChecked.Content = itms.Count.ToString() + " out of " + activeView.Count.ToString();
+                SetCheckLabel(itms.Count.ToString() + " out of " + activeView.Count.ToString());
             if (activeView.Count == 0) image.Source = null;
             return itms.Count; 
         }
@@ -224,7 +233,7 @@ namespace scripthea.master
             {
                 iDepot = new ImageDepot(tbImageDepot.Text, ImageInfo.ImageGenerator.FromDescFile, IsReadOnly);
                 if (iCount == 0) isValidFolder = null;
-                else isValidFolder = true;
+                else { isValidFolder = true; SetCheckLabel("processing..."); }
             }
             else 
             {
@@ -260,20 +269,14 @@ namespace scripthea.master
                 case "Uncheck All": activeView.SetChecked(false);
                     break;
                 case "Check with Mask or Range":
-                    string msk = new InputBox("Check with Mask or Range [#..#] exp. [3..8] ", activeView.markMask, "").ShowDialog().Trim();
+                    string mask = new InputBox("Check with Mask or Range [#..#] e.g.[3..8] ", activeView.markMask, "").ShowDialog().Trim();
+                    string msk = mask.Trim();
                     if (msk.Equals("")) return;
                     if (msk.StartsWith("[") && msk.EndsWith("]")) 
                     {
-                        msk = msk.TrimStart('[').TrimEnd(']');
-                        int ip = msk.IndexOf(".."); if (ip == -1) { Log("Error[574]: Wrong range syntax, it must be [num..num] .");  return; }
-                        string ma = string.Empty; string mb = string.Empty;
-                        if (ip.Equals(0)) ma = "1";
-                        else ma = msk.Substring(0, ip);
-                        if (ip.Equals(msk.Length - ip)) mb = "1000000";
-                        else mb = msk.Substring(ip+2);
-                        int i0, i1; 
-                        if (int.TryParse(ma, out i0) && int.TryParse(mb, out i1)) activeView.CheckRange(i0,i1);
-                        else { Log("Error[575]: Wrong range syntax, it must be [num..num] ."); return; }
+                        int i0, i1; (i0, i1) = ImgUtils.rangeMask(msk, activeView.Count);
+                        if (i0 == -1 || i1 == -1) { Log("Error[575]: Wrong range syntax, it must be [num..num] ."); return; }
+                        else activeView.CheckRange(i0,i1);
                     } 
                     else activeView.MarkWithMask(msk);
                     break;
@@ -289,6 +292,8 @@ namespace scripthea.master
             GetChecked();
         }
         public event RoutedEventHandler OnPicSelect;
+        //public delegate void PicViewerHandler(int idx, string imageDir, ImageInfo ii);
+        public event TableViewUC.PicViewerHandler OnSelectEvent; // to the master
         string lastLoadedPic = "";
         public void loadPic(int idx, string imageDir, ImageInfo ii)
         {
@@ -296,6 +301,7 @@ namespace scripthea.master
             if (File.Exists(filePath)) { image.Source = ImgUtils.UnhookedImageLoad(filePath, ImageFormat.Png); lastLoadedPic = filePath; }
             else { image.Source = ImgUtils.file_not_found; lastLoadedPic = ""; }
             if (OnPicSelect != null) OnPicSelect(ii.prompt, null);
+            if (OnSelectEvent != null) OnSelectEvent(idx, imageDir, ii);
             GetChecked();
         }
         TabItem lastTab = null;

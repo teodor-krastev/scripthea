@@ -57,7 +57,7 @@ namespace scripthea
             if (File.Exists(optionsFile))
             {
                 string json = System.IO.File.ReadAllText(optionsFile);
-                opts = JsonConvert.DeserializeObject<Options>(json);
+                opts = JsonConvert.DeserializeObject<Options>(json);                
                 if (opts.composer.StartupImageDepotFolder != "") opts.composer.ImageDepotFolder = opts.composer.StartupImageDepotFolder;
                 if (opts.composer.ImageDepotFolder == null) opts.composer.ImageDepotFolder = "";
                 if (opts.composer.ImageDepotFolder.Equals("<default.image.depot>")) opts.composer.ImageDepotFolder = ImgUtils.defaultImageDepot;
@@ -73,7 +73,8 @@ namespace scripthea
                     aboutWin.lbMessage.Foreground = System.Windows.Media.Brushes.Green; aboutWin.lbMessage.Content = "New release (" + opts.general.NewVersion + ") is available at Scripthea.com !";
                 }
             }
-            preferencesWindow = new PreferencesWindow(); preferencesWindow.Init(ref opts); preferencesWindow.btnCheck4Update.Click += new RoutedEventHandler(Check4Update);
+            preferencesWindow = new PreferencesWindow(); preferencesWindow.Init(ref opts); preferencesWindow.btnCheck4Update.Click += new RoutedEventHandler(Check4Update);           
+
             ImageDepotConvertor.ClearEntriesImageDepot = opts.iDutilities.MasterClearEntries; 
             // command-line agruments
             clSwitches = new Dictionary<string, string>(); opts.sMacro.pythonPanel = false;

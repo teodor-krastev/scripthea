@@ -14,6 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Controls.Primitives;
+using scripthea.master;
 using UtilsNS;
 
 namespace scripthea.composer
@@ -49,7 +50,10 @@ namespace scripthea.composer
                 dTable.Rows.Add(i + 1, true, prompts[i]);
             dGrid.ItemsSource = dTable.DefaultView; 
             if (!this.IsVisible) return;
-            Utils.DoEvents(); 
+            Utils.DoEvents();
+
+            //chkTable_Checked(null, null); return;
+            
             for (int i = 0; i < prompts.Count; i++)
             {
                 DataGridCell dgc = DataGridHelper.GetCellByIndices(dGrid, i, 1);
@@ -59,7 +63,8 @@ namespace scripthea.composer
                 chk.Checked += new RoutedEventHandler(chkTable_Checked); chk.Unchecked += new RoutedEventHandler(chkTable_Checked);
                 checks.Add(chk);
             }                            
-            if (dTable.Rows.Count > 0) dGrid.SelectedIndex = 0; chkTable_Checked(null, null);
+            if (dTable.Rows.Count > 0) dGrid.SelectedIndex = 0;
+            Utils.DelayExec(1000, () => { chkTable_Checked(null, null); }); 
         }
         public void BindData()
         {
@@ -74,31 +79,56 @@ namespace scripthea.composer
         private void mi_Click(object sender, RoutedEventArgs e)
         {
             MenuItem mi = sender as MenuItem; string header = Convert.ToString(mi.Header);
-            if (header.Equals("Check with Mask"))
-                { bufMask = new InputBox("Check with Mask", bufMask, "").ShowDialog(); if (bufMask.Equals("")) return; }
-            foreach (DataRow row in dTable.Rows)
-            {
-                bool turn2 = false;
-                switch (header)
+            if (header.Equals("Check with Mask or Range"))
+            { 
+                bufMask = new InputBox("Check with Mask or Range [#..#] e.g.[3..8]", bufMask, "").ShowDialog(); string msk = bufMask.Trim();
+                if (bufMask.Equals("")) return;
+                int i0; int i1; (i0, i1) = ImgUtils.rangeMask(msk, dTable.Rows.Count);
+                if (!(i0 == -1 && i1 == -1))
                 {
-                    case "Check All":
-                        turn2 = true;
-                        break;
-                    case "Uncheck All":
-                        turn2 = false;
-                        break;
-                    case "Check with Mask":
-                        string ss = Convert.ToString(row["Prompt"]);
-                        turn2 = Utils.IsWildCardMatch(ss, bufMask);
-                        break;
-                    case "Invert Checking":
-                        turn2 = !Convert.ToBoolean(row["On"]);
-                        break;
-                    case "Read Only":
-                        col.IsReadOnly = miReadOnly.IsChecked;// to be dealt with later...
-                        break;  
+                    foreach (DataRow row in dTable.Rows)
+                    {
+                        int j = (int)row["#"];
+                        row["On"] = Utils.InRange(j, i0,i1,true);
+                    }
+                    chkTable_Checked(null, null);
+                    return;
                 }
-                row["On"] = turn2;       
+            }
+            if (header.Equals("Remove Checked"))
+            {
+                for (int i = dTable.Rows.Count - 1; i >=0; i--)
+                {
+                    DataRow row = dTable.Rows[i];
+                    if ((bool)row["On"]) dTable.Rows.RemoveAt(i);                    
+                }                
+            }
+            else
+            {
+                foreach (DataRow row in dTable.Rows)
+                {
+                    bool? turn2 = null;
+                    switch (header)
+                    {
+                        case "Check All":
+                            turn2 = true;
+                            break;
+                        case "Uncheck All":
+                            turn2 = false;
+                            break;
+                        case "Check with Mask":
+                            string ss = Convert.ToString(row["Prompt"]);
+                            turn2 = Utils.IsWildCardMatch(ss, bufMask);
+                            break;
+                        case "Invert Checking":
+                            turn2 = !Convert.ToBoolean(row["On"]);
+                            break;
+                        case "Read Only":
+                            col.IsReadOnly = miReadOnly.IsChecked;// to be dealt with later...
+                            break;  
+                    }
+                    if (turn2 != null) row["On"] = (bool)turn2;       
+                }
             }
             chkTable_Checked(null, null);
         }

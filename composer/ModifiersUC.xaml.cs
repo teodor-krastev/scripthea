@@ -148,6 +148,7 @@ namespace scripthea.composer
         }
         public string Composite() // for single mode
         {
+            if (opts == null) return "";
             string ss = "";
             foreach (string sc in ModifItemsByType(ModifStatus.Scannable))
                 ss += sc.Equals("") ? "" : opts.composer.ModifPrefix + sc + " ";
@@ -156,7 +157,8 @@ namespace scripthea.composer
         public List<string> ModifItemsByType(ModifStatus ms)
         {
             List<string> ls = new List<string>();
-            if (ms.Equals(ModifStatus.Scannable) && opts.composer.AddEmptyModif) ls.Add("");
+            if (opts != null)
+                if (ms.Equals(ModifStatus.Scannable) && opts.composer.AddEmptyModif) ls.Add("");
             foreach (ModifListUC sm in categories)
             {
                 if (!sm.isChecked) continue;

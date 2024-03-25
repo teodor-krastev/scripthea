@@ -37,6 +37,12 @@ namespace scripthea.composer
             foreach (string line in text) tbCue.Text += line + Environment.NewLine;
             tbCue.Text = tbCue.Text.Trim().Trim('\"');
         }
+        private int _index = 0; // zero based
+        public int index 
+        { 
+            get { return _index; } 
+            set { _index = value; gridFullFrame.Background = (index % 2).Equals(0) ? Utils.ToSolidColorBrush("#FFFFFEF2") /*yellowish*/ : Utils.ToSolidColorBrush("#FFF5F7EA"); } // greenish
+        }
         public event Utils.LogHandler OnLog;
         protected void Log(string txt, SolidColorBrush clr = null)
         {

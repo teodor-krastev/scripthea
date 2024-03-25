@@ -5,25 +5,37 @@
         Title=" Screpthea Preferences" Height="491.087" Width="486.152" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" ShowInTaskbar="False" Closing="wndSDOptions_Closing" FontSize="13" Icon="Properties/TripleBarBlack.png">
     <Grid Margin="0,0,4.127,0.987">
         <Grid.RowDefinitions>
-            
-             <RowDefinition/>
+
+            <RowDefinition/>
             <RowDefinition Height="47.429"/>
         </Grid.RowDefinitions>
 
         <TabControl x:Name="tabControl" Margin="3,0" Grid.Column="1" BorderBrush="{x:Null}" >
             <TabItem x:Name="tiGeneral" Header="  General  " Height="28" Background="#FFECECEC" HorizontalAlignment="Left">
-                    <StackPanel Margin="7,7,0,0">
-                        <GroupBox Height="60" Margin="0,3" Header="Startup image depot folder (if empty - the last working one)">
-                            <ComboBox x:Name="cbStartupImageDepotFolder" Background="{x:Null}" Margin="0,5" IsEditable="True"/>
-                        </GroupBox>
-                        <GroupBox Height="47">
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,4,0,0">
-                                <CheckBox x:Name="chkUpdates" Content="Biweekly check for updates" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5,0,0,0"></CheckBox>
-                                <Button x:Name="btnCheck4Update" Content="Check Now " HorizontalAlignment="Left" VerticalAlignment="Center" Background="#FFFAF5E5" Margin="10,0,0,0" Height="26" Width="80" ></Button>
-                                <Label x:Name="lbNewVer" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="6,0,0,0"></Label>
-                            </StackPanel>
-                        </GroupBox>
+                <StackPanel Margin="7,7,0,0">
+                    <GroupBox Height="60" Margin="0,3" Header="Startup image depot folder (if empty - the last working one)">
+                        <ComboBox x:Name="cbStartupImageDepotFolder" Background="{x:Null}" Margin="5" IsEditable="True"/>
+                    </GroupBox>
+                    <GroupBox Height="47">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,4,0,0">
+                            <CheckBox x:Name="chkUpdates" Content="Biweekly check for updates" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5,0,0,0"></CheckBox>
+                            <Button x:Name="btnCheck4Update" Content="Check Now " HorizontalAlignment="Left" VerticalAlignment="Center" Background="#FFFAF5E5" Margin="10,0,0,0" Height="26" Width="80" ></Button>
+                            <Label x:Name="lbNewVer" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="6,0,0,0"></Label>
+                        </StackPanel>
+                    </GroupBox>
                     <CheckBox x:Name="chkClearEntriesImageDepot" Content="Remove image depot entries of missing image flies when depot opens." HorizontalAlignment="Left" VerticalAlignment="Top" Margin="7,8,0,0" IsChecked="True" />
+                    <GroupBox Height="95" Margin="0,10,0.333,3" Header="Cues folder (if empty - the factory one)" Visibility="Collapsed">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="38"/>
+                                <RowDefinition Height="1*"/>
+                            </Grid.RowDefinitions>
+                            <TextBox x:Name="tbCuesFolder" Background="{x:Null}" Margin="5" Height="26" VerticalAlignment="Top" />
+                            <Button x:Name="btnBrowse" Content="Browse " HorizontalAlignment="Right" VerticalAlignment="Center" Background="#FFF5FAE5" Margin="0,0,5,0" Height="26" Width="111" Grid.Row="1" FontFamily="Segoe UI Semibold" ></Button>
+                            <CheckBox x:Name="chkAsDefault" Content="Use it at start-up" Margin="10,0,0,0" VerticalAlignment="Center" Grid.Row="1" HorizontalAlignment="Left" IsChecked="True"/>
+                        </Grid>
+                    </GroupBox>
+
                 </StackPanel>
             </TabItem>
             <TabItem x:Name="tiComposer"  Header=" Prompt composer " Height="28" HorizontalAlignment="Left" Background="#FFF1F0F0" Visibility="Collapsed">
@@ -34,7 +46,7 @@
                 <StackPanel Margin="10,12,0,3" >
                 </StackPanel>
             </TabItem>
-            <TabItem x:Name="tiIDutilities" Header=" Img.Depot Utilities " Height="28" Background="#FFECECEC" HorizontalAlignment="Left">
+            <TabItem x:Name="tiIDutilities" Header=" Img.Depot Utilities " Height="28" Background="#FFECECEC" Margin="-1.667,-1,1.667,1">
                 <StackPanel Margin="0,7,0,3" >
                     <GroupBox Header="Image Depot Master" Height="80">
                         <StackPanel>
@@ -44,11 +56,13 @@
                     </GroupBox>
                 </StackPanel>
             </TabItem>
+
         </TabControl>
 
         <Grid Grid.Row="3">
-           <Button x:Name="btnOK" Content="OK" HorizontalAlignment="Right" Margin="0,11.143,127.286,11.286" VerticalAlignment="Center" Width="90" Click="OKButton_Click" Grid.Row="1" Height="25" FontWeight="Bold" IsDefault="True" Background="#FFF0F0F0" BorderBrush="#FF0468B2"/>
-            <Button x:Name="btnCancel" Content="Cancel" HorizontalAlignment="Right" Margin="0,11.143,17.286,11.286" VerticalAlignment="Center" Width="95" Grid.Row="1" Height="25" RenderTransformOrigin="0.502,0.5" Click="btnCancel_Click" IsCancel="True" Background="#FFF0F0F0"/>
+            <Button x:Name="btnOK" Content="OK" HorizontalAlignment="Right" Margin="0,0,127.286,0" VerticalAlignment="Center" Width="90" Click="OKButton_Click" Grid.Row="1" Height="25" FontWeight="Bold" IsDefault="True" Background="#FFF7F7F7" BorderBrush="#FF0468B2"/>
+            <Button x:Name="btnCancel" Content="Cancel" HorizontalAlignment="Right" Margin="0,0,17.286,0" VerticalAlignment="Center" Width="95" Grid.Row="1" Height="25" RenderTransformOrigin="0.502,0.5" Click="btnCancel_Click" IsCancel="True" Background="#FFF7F7F7"/>
+
         </Grid>
     </Grid>
 </Window>

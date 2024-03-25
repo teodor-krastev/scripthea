@@ -49,12 +49,11 @@ namespace scripthea.master
             if (OnLog != null) OnLog(txt, clr);
             else Utils.TimedMessageBox(txt,"Informaion",3000);
         }
-
         private void OnChangeDepot(object sender, RoutedEventArgs e)
         {
             iPicker.btnCustom.IsEnabled = iPicker.isEnabled; 
             ImageDepot df = sender as ImageDepot;
-            df?.Validate(null);
+            df?.Validate(null); 
         }
         private void ConvertPNG2JPG(object sender, RoutedEventArgs e)
         {

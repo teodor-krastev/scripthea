@@ -120,6 +120,7 @@ namespace scripthea.external
             {
                 outParams = JsonConvert.DeserializeObject<Dictionary<string, object>>(info);
                 outParams["filename"] = Path.GetFileName(imgFile);
+                outParams["MD5Checksum"] = Utils.GetMD5Checksum(imgFile);
             }
             return rslt;
         }

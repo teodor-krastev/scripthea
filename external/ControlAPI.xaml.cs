@@ -143,8 +143,9 @@ namespace scripthea.external
                     }
                     else  // sadly :(   
                     {
-                        if (Utils.isNull(iInfo)) QueryComplete("", false);
-                        else QueryComplete(Path.Combine(imageFolder, iInfo.filename), false); 
+                        if (Utils.isNull(iInfo)) { QueryComplete("", false); return; }
+                        if (Utils.isNull(iInfo.filename)) { QueryComplete("", false); return; }
+                        QueryComplete(Path.Combine(imageFolder, iInfo.filename), false);
                     }
                     break;
             }        

@@ -32,8 +32,8 @@ namespace scripthea.master
         {
             opts = _opts;
             SetIPicker(ref iPickerA, 'A'); SetIPicker(ref iPickerB, 'B');
+            iPickerA.OnSelectEvent += new TableViewUC.PicViewerHandler(PicSelectA);
             ChangeDepot(null,null);
-
         }
         MenuItem mi1; MenuItem mi2;  MenuItem mi3;
         private void SetIPicker(ref ImagePickerUC iPicker, char letter)
@@ -206,7 +206,8 @@ namespace scripthea.master
         }
         ImagePickerUC iPickerByName(char letter) 
         { 
-            switch (letter) {
+            switch (letter) 
+            {
                 case 'A': return iPickerA;
                 case 'B': return iPickerB;
                 default: return null;
@@ -252,6 +253,14 @@ namespace scripthea.master
                 if (bb) Log("The image depot is synchronized");
                 else Log("Error[364]: Problem with the image depot synchronization.");
             }
+        }
+        protected void PicSelectA(int idx, string imageDir, ImageInfo ii)
+        {
+            if (!chkSynch.IsChecked.Value) return;
+            List<ImageInfo> lii = iPickerB.imageInfos(true, true);
+            if (lii == null) return;
+            if (lii.Count == 0) return;
+            iPickerB.SelectItem(Utils.EnsureRange(idx, 1,lii.Count)); //iPickerA.Focus();
         }
     }
 }

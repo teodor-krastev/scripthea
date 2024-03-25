@@ -23,13 +23,13 @@
                     <RowDefinition Height="20*" MaxHeight="700" MinHeight="15"/>
                     <RowDefinition Height="13*" MaxHeight="500" MinHeight="10"/>
                 </Grid.RowDefinitions>
-                <TextBox x:Name="tbCue" Margin="0,2,0,0" TextWrapping="Wrap" Background="#FFFFFFF8" BorderBrush="#FFF9DE34" Text="" FontSize="13" TextChanged="tbCue_TextChanged" ContextMenuOpening="tbCue_ContextMenuOpening" AcceptsReturn="True">
+                <TextBox x:Name="tbCue" Margin="0,2,0,0" TextWrapping="Wrap" Background="#FFFFFFF8" BorderBrush="#FFF9DE34" Text="" FontSize="13" TextChanged="tbCue_TextChanged" ContextMenuOpening="tbCue_ContextMenuOpening" AcceptsReturn="True" VerticalScrollBarVisibility="Auto">
                     <TextBox.ContextMenu>
                         <ContextMenu x:Name="cmCue"/>
                     </TextBox.ContextMenu>
                 </TextBox>
                 <GridSplitter x:Name="gridSplitInCue" HorizontalAlignment="Stretch" Height="3" Margin="0" Grid.Row="1" VerticalAlignment="Top"/>
-                <TextBox x:Name="tbModifier" Margin="0,3,0,0" TextWrapping="Wrap" Text=""  Background="MintCream" BorderBrush="#FFB1DE9E" Grid.Row="1" FontSize="13" AcceptsReturn="True"/>
+                <TextBox x:Name="tbModifier" Margin="0,3,0,0" TextWrapping="Wrap" Text=""  Background="MintCream" BorderBrush="#FFB1DE9E" Grid.Row="1" FontSize="13" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
             </Grid>
 
             <TabControl x:Name="tcQuery" Margin="0,2,0,0"  SelectedIndex="0" SelectionChanged="tcQuery_SelectionChanged" >
@@ -49,7 +49,7 @@
                         <Button x:Name="btnScan" Content="S c a n" Height="30" Width="77" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,7,0,0" FontWeight="Bold" Background="#FFFDFFED" Click="btnScan_Click" FontSize="13" BorderBrush="#FF0233A2" Style="{StaticResource RoundedButtonStyle}" ToolTip="Scan over checked cues and scanned modifiers "/>
                         <TextBox HorizontalAlignment="Right" Text="Combine all checked cues + fixed modifiers + some (by modif. sample number) of scanned modifiers." Width="200" Margin="0,0,-0.667,0" TextWrapping="Wrap" Background="{x:Null}" BorderBrush="{x:Null}" VerticalAlignment="Top" FontSize="12"/>
                         <Button x:Name="btnScanPreview" Content="Scan preview" Height="30" Width="98" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10,0,0,4" Background="#FFFFFFF5" FontSize="13" Click="btnScanPreview_Click" BorderBrush="#FF993109" Style="{StaticResource RoundedButtonStyle}" ToolTip="Pour scan prompts in the preview table"/>
-                        <Button x:Name="btnAppend2Preview" Content="Append to preview" Height="30" Width="127" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="113,0,0,4" Background="#FFFFFFF5" FontSize="13" Click="btnScanPreview_Click" BorderBrush="#FF993109" Style="{StaticResource RoundedButtonStyle}" ToolTip="Similar to the one on the left but adding to existent prompts"/>
+                        <Button x:Name="btnAppend2Preview" Content="Append to the preview" Height="30" Width="150" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="113,0,0,4" Background="#FFFFFFF5" FontSize="13" Click="btnScanPreview_Click" BorderBrush="#FF993109" Style="{StaticResource RoundedButtonStyle}" ToolTip="Similar to the one on the left but adding to existent prompts"/>
                     </Grid>
                 </TabItem>
                 <TabItem x:Name="tiOptions" Header="Options" Height="28" Background="#FFECECEC" Margin="10,0,-11,0.089" HorizontalAlignment="Left" Width="90" Style="{StaticResource RoundedTopTabItemStyle}">

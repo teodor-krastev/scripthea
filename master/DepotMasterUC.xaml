@@ -35,6 +35,9 @@
             <Button x:Name="btnDeleteInB" HorizontalAlignment="Center" Margin="0,5,0,0" Width="38" Height="38" Background="#FFFFFFFF"  Click="btnDeleteInA_Click" Cursor="Hand">
                 <Image Source="/Scripthea;component/Properties/del_right.png" ToolTip="Delete all checked in B" Width="35"></Image>
             </Button>
+            <CheckBox x:Name="chkSynch" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,20,0,-3" ></CheckBox>
+            <Label Content="Synch" FontFamily="Segoe UI Semibold" Margin="0,0,0,-4"></Label>
+            <Label Content="A ► B" FontFamily="Segoe UI Semibold" Margin="0,-3,0,0"/>
         </StackPanel>
         <local:ImagePickerUC x:Name="iPickerB" Grid.Column="2" Margin="0"/>
     </Grid>

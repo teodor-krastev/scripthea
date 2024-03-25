@@ -37,7 +37,7 @@ namespace scripthea.composer
             InitializeComponent();
             cues = new ObservableCollection<CueItemUC>();
             cues.CollectionChanged += new NotifyCollectionChangedEventHandler(NotifyCollectionChanged);
-            AddCue(new CueItemUC("", radioMode));
+            int k = AddCue(new CueItemUC("", radioMode)); cues[k].index = k; 
         }
         private string filename = "";
         private Options opts;
@@ -45,7 +45,9 @@ namespace scripthea.composer
         {
             opts = _opts; 
             if (cues.Count.Equals(0))
-                AddCue(new CueItemUC("", radioMode));
+            {
+                int k = AddCue(new CueItemUC("", radioMode)); cues[k].index = k;
+            }
             cues[0].radioChecked = true;
         }
         public event Utils.LogHandler OnLog;
@@ -234,9 +236,10 @@ namespace scripthea.composer
                 ls.Add("---");
             }
             string fn = Path.GetFileName(Path.ChangeExtension(filename, null)); 
-            filename = new InputBox("Cues filename", fn, "").ShowDialog();
+            filename = new InputBox("Cues filename in the active cues pool", fn, "").ShowDialog(); // name only
             if (filename.Equals("")) return;
-            filename = Path.Combine(Utils.basePath, "cues", filename);
+            string folder = Directory.Exists(opts.composer.WorkCuesFolder) ? opts.composer.WorkCuesFolder : Path.Combine(Utils.basePath, "cues");
+            filename = Path.Combine(folder, filename);
             Utils.writeList(Path.ChangeExtension(filename, ".cues"), ls);
             Log("Saved in " + filename, Brushes.Tomato); newCues = true;
         }

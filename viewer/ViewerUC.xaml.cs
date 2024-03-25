@@ -64,11 +64,12 @@ namespace scripthea.viewer
         public void Init(ref Options _opts) // ■▬►
         {
             opts = _opts;
-            chkAutoRefresh.IsChecked = opts.viewer.Autorefresh; imageFolder = opts.composer.ImageDepotFolder; 
+            imageFolder = opts.composer.ImageDepotFolder; chkAutoRefresh.IsChecked = opts.viewer.Autorefresh; iDepot = null;
             colListWidth.Width = new GridLength(opts.composer.ViewColWidth);
             ImageDepotConvertor.AutoConvert = true; 
             foreach (iPicList ipl in views)
-                ipl.Init(ref opts, false);            
+                ipl.Init(ref opts, false);
+            picViewerUC.Init(ref _opts);
         }
         public void Finish()
         {
@@ -76,6 +77,7 @@ namespace scripthea.viewer
             opts.viewer.Autorefresh = chkAutoRefresh.IsChecked.Value;
             foreach (iPicList ipl in views)
                 ipl.Finish();
+            picViewerUC.Finish();
         }
         public UserControl parrent { get { return this; } }
         public GroupBox groupFolder { get { return gbFolder; } }
@@ -227,15 +229,17 @@ namespace scripthea.viewer
             else { lbDepotInfo.Content = "This is not an image depot."; lbDepotInfo.Foreground = Brushes.Tomato; }
             return cnt;
         }
-        public void Refresh(string iFolder = "")
+        public void Refresh(string iFolder = "", object sender = null) 
         {
             string folder = iFolder;
             if (iDepot != null && iFolder == "")
             {
-                if (iDepot.isEnabled && Directory.Exists(iDepot.path))  folder = iDepot.path;
+                if (iDepot.isEnabled && Directory.Exists(iDepot.path)) folder = iDepot.path;
                 else folder = imageFolder;
             }
             if (!Directory.Exists(folder)) { Log("Error[874]: Missing directory > " + folder); return; }
+            if (iDepot != null)
+                if (iDepot.SameAs(iFolder) && sender != tabCtrlViews) return;
 
             iDepot = new ImageDepot(imageFolder);
             if (!iDepot.isEnabled) { Log("Error[96]: This is not an image depot."); return; }
@@ -255,15 +259,18 @@ namespace scripthea.viewer
             {
                 if ((sender == btnRefresh) || (sender == tbImageDepot)) Clear();
             }
-            else Refresh(imageFolder);
+            else Refresh(imageFolder, sender);
             if (!Utils.isNull(e)) e.Handled = true;
         }
         private void tbImageDepot_TextChanged(object sender, TextChangedEventArgs e)
         {           
             if (checkImageDepot() > 0)
             {
-                tbImageDepot.Foreground = Brushes.Black; 
-                if (chkAutoRefresh.IsChecked.Value) btnRefresh_Click(sender, e);
+                tbImageDepot.Foreground = Brushes.Black;
+                if (chkAutoRefresh.IsChecked.Value)
+                {
+                    btnRefresh_Click(sender, e);
+                }
             }
             else 
             { 

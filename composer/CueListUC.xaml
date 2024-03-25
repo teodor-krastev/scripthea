@@ -23,6 +23,8 @@
                     <MenuItem Header="Uncheck All" Click="mi_Click"/>
                     <MenuItem Header="Invert Checking" Click="mi_Click" FontWeight="Bold"/>
                     <MenuItem Header="Check with Mask" Click="mi_Click"/>
+                    <Separator></Separator>
+                    <MenuItem Header="Invert Pool Checking" Click="mi_Click"/>
                 </ContextMenu>
             </Button.ContextMenu>
         </Button>

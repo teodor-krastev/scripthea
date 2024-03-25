@@ -34,7 +34,6 @@ namespace scripthea.external
             InitializeComponent(); localDebug = Utils.isInVisualStudio;
             opts = new Dictionary<string, string>();
         }
-
         private PipeServer2S server2s; private PipeServer2C server2c;
         SDoptionsWindow SDopts; private bool localDebug = true;
         public Dictionary<string, string> opts { get; set; } // interfaceAPI: main (non API specific) options 

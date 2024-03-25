@@ -63,7 +63,8 @@ namespace scripthea
             // query single
             public bool SingleAuto;
             public bool OneLineCue;
-            // query 
+            // query
+            public string WorkCuesFolder;
             public string ImageDepotFolder;
             public string StartupImageDepotFolder;
             public string API;
@@ -82,6 +83,8 @@ namespace scripthea
             public bool ThumbCue;
             public bool ThumbFilename;
             public bool RemoveImagesInIDF;
+            public int PicViewPromptH;
+            public int PicViewMetaW;
         }
         public IDutilities iDutilities; // Image Depot utilities
         public class IDutilities
@@ -169,6 +172,7 @@ namespace scripthea
                 }
             }
             chkViewerRemoveImages.IsChecked = opts.viewer.RemoveImagesInIDF;
+            tbCuesFolder.Text = opts.composer.WorkCuesFolder;
             chkClearEntriesImageDepot.IsChecked = opts.iDutilities.MasterClearEntries; ;
             chkValidationAsk.IsChecked = opts.iDutilities.MasterValidationAsk;
         }
@@ -212,5 +216,30 @@ namespace scripthea
         {
             e.Cancel = keepOpen; Hide();
         }
+        /*public string CheckCuesFolder(string cuesFolder)
+        {
+            if (Directory.Exists(cuesFolder))
+            {
+                string cuesMap = Path.Combine(cuesFolder, "cue_pools.map");
+                if (!File.Exists(cuesMap)) File.WriteAllText(cuesMap, "[{},{}]"); // write an empty "cue_pools.map"
+                return cuesFolder;
+            }
+            string defaultCuesFolder = Path.Combine(Utils.basePath, "cues");
+            if (!Directory.Exists(defaultCuesFolder)) throw new Exception("Error: Corrupt installation. Missing <" + defaultCuesFolder + "> folder");
+            else Utils.TimedMessageBox("Warning: folder <" + cuesFolder + "> does not exist. \n\n Switch to default cues folder.");
+            return defaultCuesFolder;
+        }
+        private void btnBrowse_Click(object sender, RoutedEventArgs e)
+        {
+            CommonOpenFileDialog dialog = new CommonOpenFileDialog();
+            dialog.InitialDirectory = Path.Combine(Utils.configPath, "Cues");
+            dialog.Title = "Select a folder for the *.cues files";
+            dialog.IsFolderPicker = true;
+            if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+            {
+                opts.composer.WorkCuesFolder = CheckCuesFolder(dialog.FileName); tbCuesFolder.Text = opts.composer.WorkCuesFolder;
+                if (chkAsDefault.IsChecked.Value) opts.composer.StartCuesFolder = opts.composer.WorkCuesFolder;
+            }            
+        }*/
     }
 }

@@ -21,7 +21,9 @@
                         <MenuItem Header="Check All" Click="mi_Click"/>
                         <MenuItem Header="Uncheck All" Click="mi_Click"/>
                         <MenuItem x:Name="miInvertChecking" Header="Invert Checking" Click="mi_Click" FontWeight="Bold"/>
-                        <MenuItem Header="Check with Mask" Click="mi_Click"/>
+                        <MenuItem Header="Check with Mask or Range" Click="mi_Click"/>
+                        <Separator></Separator>
+                        <MenuItem x:Name="miRemoveChecked" Header="Remove Checked" Click="mi_Click"/>
                         <Separator></Separator>
                         <MenuItem x:Name="miReadOnly" Header="Read Only" Click="mi_Click" IsCheckable="True" IsChecked="True"/>
                     </ContextMenu>

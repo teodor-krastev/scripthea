@@ -7,7 +7,7 @@
              xmlns:master="clr-namespace:scripthea.master" x:Class="scripthea.composer.CuePoolUC"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    
+
     <Grid>
         <TabControl x:Name="tabControl" Margin="0,0,0,4" TabStripPlacement="Bottom" SelectionChanged="tabControl_SelectionChanged" FontSize="14" Padding="2" >
             <TabItem x:Name="tiA_pool" Header="A-pool" Height="30" Width="70" Margin="3,-2,-9,0" Background="#FFEEEDED" BorderBrush="#FF0331BE" Style="{StaticResource RoundedBottomTabItemStyle}" />
@@ -15,20 +15,33 @@
             <TabItem x:Name="tiPoolMap" Header="Pools Map" Width="100"  Margin="8,-2,-9,0" Background="#FFEEEDED" BorderBrush="#FF0441F8" Style="{StaticResource RoundedBottomTabItemStyle}" Height="30">
                 <Grid>
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="36"/>
                         <RowDefinition Height="1*"/>
                         <RowDefinition Height="34"/>
                         <RowDefinition Height="1*"/>
                     </Grid.RowDefinitions>
-                    <GroupBox Header=" A-pool" Grid.Row="0"  FontSize="14">
+                    <StackPanel Orientation="Horizontal" Background="#FFF6FBFC">
+                        <Label Content="Cues' folders" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5,0,0,0"></Label>
+                        <ComboBox x:Name="cbCuesFolders" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5,0,0,0" Width="180" SelectionChanged="cbCuesFolders_SelectionChanged">
+                            <ComboBox.Background>
+                                <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+                                    <GradientStop Color="#FFF0F0F0" Offset="0"/>
+                                    <GradientStop Color="#FFF1F1F1" Offset="1"/>
+                                </LinearGradientBrush>
+                            </ComboBox.Background>
+                        </ComboBox>
+                        <Button x:Name="btnLoad" Margin="5,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Content="Load" Background="#FFF0FEF9" Width="70" Style="{StaticResource RoundedButtonStyle}" Height="26" BorderBrush="#FF017133" Click="btnLoad_Click" FontFamily="Segoe UI Semibold" ></Button>
+                    </StackPanel>
+                    <GroupBox Header=" A-pool" Grid.Row="1"  FontSize="14" Margin="0,5,0,0">
                         <Grid>
-                            <ListBox x:Name="lBoxApool" BorderBrush="{x:Null}" FontSize="13"/>
+                            <ListBox x:Name="lBoxApool" BorderBrush="{x:Null}" FontSize="13" Margin="0"/>
                         </Grid>
                     </GroupBox>
-                    <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,5,0,0">
+                    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,5,0,0">
                         <Image x:Name="imgDown" Source="/Scripthea;component/Properties/down_arrow.png" Margin="0,0,5,0" Cursor="Hand" Stretch="Fill" Width="25" MouseDown="imgDown_MouseDown"/>
                         <Image x:Name="imgUp" Source="/Scripthea;component/Properties/up_arrow.png" Margin="5,0,0,0" Cursor="Hand" Width="25" Stretch="Fill" MouseDown="imgUp_MouseDown"/>
                     </StackPanel>
-                    <GroupBox Header=" B-pool" Grid.Row="2" FontSize="14">
+                    <GroupBox Header=" B-pool" Grid.Row="3" FontSize="14">
                         <Grid>
                             <ListBox x:Name="lBoxBpool" BorderBrush="{x:Null}" FontSize="13"/>
                         </Grid>

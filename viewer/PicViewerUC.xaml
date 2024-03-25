@@ -31,19 +31,19 @@
         </StackPanel>
         <ScrollViewer x:Name="scrollViewer" Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Visibility="Collapsed">
         </ScrollViewer>
-        <Grid x:Name="noscrollGrid" Grid.Row="1">
+        <Grid x:Name="noscrollGrid" Grid.Row="1" Margin="0,5,0,0">
             <Image x:Name="image" Margin="5" PreviewMouseLeftButtonDown="image_PreviewMouseLeftButtonDown" SizeChanged="image_SizeChanged" />
         </Grid>
-        <Grid Grid.Row="2" Background="White" Margin="7,0,0,0" >
+        <GridSplitter Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" Background="#FFEAE0CE" Height="3"></GridSplitter>
+        <Grid Grid.Row="2" Background="White" Margin="7,4,0,0" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"/>
-                <ColumnDefinition x:Name="columnMeta" Width="1"/>
-                <ColumnDefinition Width="60"/>
+                <ColumnDefinition x:Name="colMeta" Width="60" MinWidth="5"/>
             </Grid.ColumnDefinitions>
 
             <TextBox x:Name="tbCue" Margin="0" TextWrapping="Wrap" Text="" Background="White" IsReadOnly="True" FontSize="13" BorderThickness="0,1,0,0" HorizontalAlignment="Center" VerticalScrollBarVisibility="Auto" />
-            <ListBox x:Name="lboxMetadata" Margin="3,0,0.202,-0.076" Grid.Column="1" Visibility="Collapsed" BorderBrush="DarkGreen" ></ListBox>
-            <CheckBox x:Name="chkExtra" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Background="#FFFDFEED" Content="Meta" FontSize="14" Margin="0,0,3,0" Checked="chkExtra_Checked" Unchecked="chkExtra_Unchecked" Foreground="DarkGreen"/>
+            <GridSplitter Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Stretch" Background="#FFECEFE2" Width="3"></GridSplitter>
+            <ListBox x:Name="lboxMetadata" Margin="4,0,0,0" Grid.Column="1" ></ListBox>
         </Grid>
     </Grid>
 </UserControl>

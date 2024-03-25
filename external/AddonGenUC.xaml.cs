@@ -76,9 +76,9 @@ namespace scripthea.external
             Dictionary<string, object> apIn = OnAPIparams(null);
             ii = new ImageInfo(apIn); iii = ii;
             if (!Directory.Exists(opts["addonFolder"])) 
-                { Log("Error: folder <" + opts["addonFolder"] + "> - not found."); return false; }
+                { Utils.TimedMessageBox("Error: Addon folder <" + opts["addonFolder"] + "> - not found."); return false; }
             if (!Directory.Exists(imageDepotFolder))
-                { Log("Error: folder <" + imageDepotFolder + "> - not found."); return false; }
+                { Utils.TimedMessageBox("Error: image folder <" + imageDepotFolder + "> - not found."); return false; }
             opts["IDfolder"] = imageDepotFolder;
             running = true;
             string msgFile = Path.Combine(opts["addonFolder"], "msgback.txt");
@@ -194,7 +194,7 @@ namespace scripthea.external
                 string targetImg = testMode ? e.FullPath : Path.Combine(opts["IDfolder"], ii.filename);
                 ShowIt("Last created file: ", targetImg);
                 if (!testMode) File.Move(e.FullPath, targetImg);
-                Utils.Sleep(200); running = false;
+                Utils.Sleep(200); ii.MD5Checksum = Utils.GetMD5Checksum(targetImg); running = false;
             }
             else { ShowIt("Addon gen. time out !!!",""); }                        
                         

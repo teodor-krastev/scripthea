@@ -48,14 +48,13 @@ namespace scripthea.composer
 
             Log("@_Header=loading cues files (*.cues)");              
             cuePoolUC.OnLog += new Utils.LogHandler(Log);
-            cuePoolUC.Init(ref opts);
-            foreach (Courier cr in cuePoolUC.couriers)
-                cr.OnCueSelection += new Courier.CueSelectionHandler(ChangeCue);            
+            Courier.CueSelectionHandler ChageCueRef = new Courier.CueSelectionHandler(ChangeCue);
+            cuePoolUC.Init(ref opts, ref ChageCueRef);                       
             
             Log("@_Header=loading modifiers files (*.mdfr)");
-            modifiersUC.OnChange += new RoutedEventHandler(ChangeModif);
             modifiersUC.OnLog += new Utils.LogHandler(Log);
             modifiersUC.Init(ref opts);
+            modifiersUC.OnChange += new RoutedEventHandler(ChangeModif);
 
             scanPreviewUC.OnLog += new Utils.LogHandler(Log);
             scanPreviewUC.btnClose.Click += new RoutedEventHandler(btnScanPreviewProcs_Click);
@@ -275,7 +274,7 @@ namespace scripthea.composer
         {
             if (!success)
             {
-                if (imageFilePath == "") { Log("Error[887]: Stable Diffusion is not connected!"); Log("@StopRun"); status = Status.Idle; }
+                if (imageFilePath == "") { Log("Error[887]: Image generator/server is not connected!"); Log("@StopRun"); status = Status.Idle; }
                 else Log("Error with " + imageFilePath);
             }
             bool scanEnd = false;

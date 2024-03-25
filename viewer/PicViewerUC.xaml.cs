@@ -30,13 +30,24 @@ namespace scripthea.viewer
         {
             InitializeComponent(); iDepot = null;
         }
+        private Options opts;
+        public void Init(ref Options _opts)
+        {
+            opts = _opts;
+            rowBottom.Height = new GridLength(Utils.EnsureRange(opts.viewer.PicViewPromptH, 30, 500));
+            colMeta.Width = new GridLength(Utils.EnsureRange(opts.viewer.PicViewMetaW, 3,500));
+        }
+        public void Finish()
+        {
+            opts.viewer.PicViewPromptH = (int)rowBottom.Height.Value;
+            opts.viewer.PicViewMetaW = (int)colMeta.Width.Value;
+        }
         public event Utils.LogHandler OnLog;
         protected void Log(string txt, SolidColorBrush clr = null)
         {
             if (OnLog != null) OnLog(txt, clr);
         }
         public ImageDepot iDepot { get; set; }
-        public ImageInfo imgInfo { get; private set; }
         public void Clear()
         {
             lbIndex.Content = ""; tbPath.Text = ""; tbName.Text = "";
@@ -45,9 +56,8 @@ namespace scripthea.viewer
         }
         public void loadPic(int idx, string imageDir, ImageInfo ii)
         {
-            string filePath = Path.Combine(imageDir, ii.filename);
-            bool modified = false; 
-            if (chkExtra.IsChecked.Value) UpdateMeta(modified);
+            string filePath = Path.Combine(imageDir, ii.filename);             
+            UpdateMeta(imageDir, ii, null); // clear
             
             lbIndex.Content = "[ " + idx.ToString() + " ]";
             tbPath.Text = System.IO.Path.GetDirectoryName(filePath)+"\\";
@@ -66,16 +76,17 @@ namespace scripthea.viewer
                     { Log("Exhausted resources - use table view instead", Brushes.Red); return; }
             }
             //var uri = new Uri(filePath); var bitmap = new BitmapImage(uri);  image.Source = bitmap.Clone(); image.UpdateLayout(); bitmap = null;
-            tbCue.Text = ii.prompt; imgInfo = ii.Clone();
+            tbCue.Text = ii.prompt; 
             // iDepot compare
-            if (chkExtra.IsChecked.Value) return;
+            //if (chkExtra.IsChecked.Value) return; ?
             if (iDepot == null) return;
             if (!iDepot.isEnabled) return;
             if (!Utils.InRange(idx, 1, iDepot.items.Count, true)) return;
             if (!ii.prompt.Equals(ii.prompt, StringComparison.InvariantCultureIgnoreCase)) return;
             if (!ii.filename.Equals(tbName.Text, StringComparison.InvariantCultureIgnoreCase)) return;
-            modified = !Utils.GetMD5Checksum(filePath).Equals(ii.MD5Checksum);
-            if (modified) UpdateMeta(modified);
+            bool modified = !String.IsNullOrEmpty(ii.MD5Checksum);
+            if (modified) modified = !Utils.GetMD5Checksum(filePath).Equals(ii.MD5Checksum);           
+            UpdateMeta(imageDir, ii, modified);
         }
         private int ZoomFactor // [%]
         {
@@ -91,41 +102,42 @@ namespace scripthea.viewer
             }
         }
         private int attemptCount = 0;
-        private void UpdateMeta(bool? modified) // 
+        private void UpdateMeta(string imageDir, ImageInfo ii, bool? modified) // null -> clear
         {
-            if (iDepot == null || imgInfo == null) return;
-            string filePath = Path.Combine(iDepot.path, imgInfo.filename);
+            if (modified == null) // get it here (later)
+            {
+                lboxMetadata.Items.Clear(); return;
+            }            
+            if (ii == null) return;
+            string filePath = Path.Combine(imageDir, ii.filename);
             if (!File.Exists(filePath)) return;
             Dictionary<string, string> meta;
             if (ImgUtils.GetMetaDataItems(filePath, out meta)) {  attemptCount = 0; }
             else
             {
                 if (attemptCount < 2) // retry in case it's still opening
-                    Utils.DelayExec(1000, new Action(() => { attemptCount++; UpdateMeta(modified); }));
+                    Utils.DelayExec(1000, new Action(() => { attemptCount++; UpdateMeta(imageDir, ii, modified); }));
                 //meta.Add("No access to Meta data: ", ""); meta.Add(" the info is missing or ", ""); meta.Add("file is opened by a process.", "");
-                meta = Utils.dictObject2String(imgInfo.ToDictionary(true));
+                meta = Utils.dictObject2String(ii.ToDictionary(true));
             } 
             // clean up meta
             meta.Remove("prompt");   
-            void removeMetaItem(string key, string val)
+            void removeMetaItem(string key, string val) // remove some defaults
             {
                 if (meta.ContainsKey(key))
                     if (meta[key] == val) meta.Remove(key);
             }
             removeMetaItem("history", "");
+            removeMetaItem("tags", "");
             removeMetaItem("negative_prompt", "");
             removeMetaItem("batch_size", "1");
             removeMetaItem("denoising_strength", "0");
             removeMetaItem("restore_faces", "False");
-             
-            Utils.dict2ListBox(meta, lboxMetadata);
-            bool modif = false;
-            if (modified == null) // get it here (later)
-            {
+            if (meta.ContainsKey("MD5Checksum")) meta.Remove("MD5Checksum");
 
-            }
-            else modif = (bool)modified;
-            if (modif)
+            Utils.dict2ListBox(meta, lboxMetadata);
+           
+            if ((bool)modified)
             {
                 ListBoxItem lbi = new ListBoxItem();
                 lbi.Content = "--MODIFIED--"; lbi.Foreground = System.Windows.Media.Brushes.Red;
@@ -174,20 +186,6 @@ namespace scripthea.viewer
             }
             image.Width = Double.NaN; image.Height = Double.NaN;
         }
-        private void chkExtra_Checked(object sender, RoutedEventArgs e)
-        {
-            lboxMetadata.Visibility = Visibility.Visible;
-            columnMeta.Width = new GridLength(250);
-            rowBottom.Height = new GridLength(140);
-            UpdateMeta(false);
-        }
-
-        private void chkExtra_Unchecked(object sender, RoutedEventArgs e)
-        {
-            lboxMetadata.Visibility = Visibility.Collapsed;
-            columnMeta.Width = new GridLength(1);
-            rowBottom.Height = new GridLength(42);
-        }
         private void image_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             string filePath = Path.Combine(tbPath.Text, tbName.Text);
@@ -195,12 +193,10 @@ namespace scripthea.viewer
             // Start the drag-and-drop operation
             DragDrop.DoDragDrop(image, data, DragDropEffects.Copy);
         }
-
         private void image_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             int i = ZoomFactor;
         }
-
         private void btnCopy_Click(object sender, RoutedEventArgs e)
         {
             Clipboard.SetImage((BitmapSource)image.Source);

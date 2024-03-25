@@ -40,6 +40,7 @@ namespace Reflection
         }
         private void wndReflection_Loaded(object sender, RoutedEventArgs e)
         {
+            UpdateLayout(); Utils.DoEvents(); 
             btnMakeImage_Click(sender, null);
             if (addon_type2) 
             {

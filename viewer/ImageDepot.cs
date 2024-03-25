@@ -270,7 +270,7 @@ namespace scripthea.viewer
         {
             bool bb = false;
             string desc = Path.Combine(folder, ImgUtils.descriptionFile);
-            if (!File.Exists(desc)) return null;
+            if (!File.Exists(desc)) return null; 
             List<string> body = Utils.readList(desc, false);
             if (body.Count == 0) return null;
             if (body[0].StartsWith("#"))
@@ -307,7 +307,7 @@ namespace scripthea.viewer
                     }                   
                 }
                 // reading header
-                List<string> body = Utils.readList(desc, false);
+                List<string> body = Utils.readList(desc, false); descText = File.ReadAllText(desc);
                 if (body.Count == 0) return; bool oldVersion = false;
                 if (body[0].StartsWith("#"))
                 {
@@ -347,6 +347,7 @@ namespace scripthea.viewer
         }
         public int appBuilt { get; private set; }
         public bool isReadOnly { get; private set; }
+        public string descText { get; private set; }
         public Dictionary<string, string> header;
         public List<ImageInfo> items;
         public int idxFromFilename(string fn) // only filename
@@ -395,6 +396,12 @@ namespace scripthea.viewer
                 bb &= items[i].SameAs(imageDepot.items[i]);
             }
             return bb;
+        }
+        public bool SameAs(string imageFolder) // compare DESCRIPTION.idf and location
+        {
+            bool bb = Directory.Exists(imageFolder) && Utils.comparePaths(imageFolder, path);
+            if (!bb) return false;           
+            return descText == File.ReadAllText(Path.Combine(imageFolder, ImgUtils.descriptionFile));
         }
         public List<string> allImages() // in this folder 
         {

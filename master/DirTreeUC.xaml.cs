@@ -34,6 +34,28 @@ namespace scripthea.master
         { get { return System.IO.Path.Combine(Utils.basePath, "images"); } }
         public static ImageInfo.ImageGenerator DefaultImageGenerator = ImageInfo.ImageGenerator.StableDiffusion;
 
+        public static (int, int) rangeMask(string mask, int count) // range 1..count
+        {
+            int i0 = -1; int i1 = -1; 
+            if (mask.StartsWith("[") && mask.EndsWith("]"))
+            {
+                string msk = mask.TrimStart('[').TrimEnd(']');
+                int ip = msk.IndexOf(".."); if (ip == -1) { Utils.TimedMessageBox("Error[574]: Wrong range syntax, it must be [num..num] ."); return (-1, -1); }
+                string ma = string.Empty; string mb = string.Empty;
+
+                if (msk.StartsWith("..")) ma = "1";
+                else ma = msk.Substring(0, ip);
+
+                if (msk.EndsWith("..")) mb = count.ToString();
+                else mb = msk.Substring(ip + 2);
+                
+                if (!(int.TryParse(ma, out i0) && int.TryParse(mb, out i1))) // activeView.CheckRange(i0, i1);
+                    { Utils.TimedMessageBox("Error[575]: Wrong range syntax, it must be [num..num] ."); return (-1, -1); }
+                if (i0 > i1) (i0, i1) = (i1, i0); 
+            }
+            return (i0, i1);
+        }
+
         public static BitmapImage file_not_found { get { return UnhookedImageLoad(Path.Combine(Utils.configPath,"file_not_found.jpg"), ImageFormat.Jpeg); } }
         public static SolidColorBrush ToSolidColorBrush(string hex_code)
         {

@@ -90,10 +90,14 @@ namespace UtilsNS
         /// <param name="dp"></param>
         public static void DoEvents(DispatcherPriority dp = DispatcherPriority.Background)
         {
-            DispatcherFrame frame = new DispatcherFrame();
-            Dispatcher.CurrentDispatcher.BeginInvoke(dp,
-                new DispatcherOperationCallback(ExitFrame), frame);
-            Dispatcher.PushFrame(frame);
+            try
+            {
+                DispatcherFrame frame = new DispatcherFrame();
+                Dispatcher.CurrentDispatcher.BeginInvoke(dp,
+                    new DispatcherOperationCallback(ExitFrame), frame);
+                Dispatcher.PushFrame(frame);
+            }
+            finally { }
         }
         public static object ExitFrame(object f)
         {

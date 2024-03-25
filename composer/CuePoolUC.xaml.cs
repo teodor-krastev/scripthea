@@ -28,8 +28,9 @@ namespace scripthea.composer
         {
             InitializeComponent();            
         }
-        public string cuesFolder { get { return Path.Combine(Utils.basePath, "cues"); } }
-        public string mapFile { get { return System.IO.Path.Combine(Utils.basePath, "cues", "cue_pools.map"); } }
+        public string rootCuesFolder = Path.Combine(Utils.basePath, "cues");
+        public string cuesFolder { get; private set; }
+        public string mapFile { get { return Path.Combine(cuesFolder, "cue_pools.map"); } }
         private int poolCount { get { return tabControl.Items.Count - 3; } }
         private List<Dictionary<string, bool>> poolMap;
         public List<string> GetLists(int idx) // full path
@@ -38,7 +39,7 @@ namespace scripthea.composer
             if (!Utils.InRange(idx, 0, poolCount - 1)) return ls;
             foreach (var pair in poolMap[idx])
                 if (pair.Value)
-                    ls.Add(System.IO.Path.Combine(Utils.basePath, "cues", Path.ChangeExtension(pair.Key, ".cues")));
+                    ls.Add(System.IO.Path.Combine(cuesFolder, Path.ChangeExtension(pair.Key, ".cues")));
             return ls;
         }
         private List<CueListUC> cueLists;
@@ -54,25 +55,57 @@ namespace scripthea.composer
         {
             foreach (var pair in poolMap[poolIdx])
             {
-                if (!File.Exists(System.IO.Path.Combine(Utils.basePath, "cues", Path.ChangeExtension(pair.Key,".cues"))))
+                if (!File.Exists(Path.Combine(cuesFolder, Path.ChangeExtension(pair.Key,".cues"))))
                 {
                     return pair.Key;
                 }
             }            
             return "";
         }
-        private Options opts; Button btnSDparams;
-        public void Init(ref Options _opts)
+        private Options opts; Button btnSDparams; Courier.CueSelectionHandler ChangeCue;
+        public void Init(ref Options _opts, ref Courier.CueSelectionHandler _ChangeCue)
         {
-            opts = _opts;
-            if (!Directory.Exists(cuesFolder)) { Utils.TimedMessageBox("Fatal error: cues folder <" + cuesFolder + "> does not exist.", "Closng application", 4000); Application.Current.Shutdown(); }
+            opts = _opts; ChangeCue = _ChangeCue;
+            if (Directory.Exists(opts.composer.WorkCuesFolder)) cuesFolder = opts.composer.WorkCuesFolder;
+            else { cuesFolder = rootCuesFolder; Utils.TimedMessageBox("Error: cues folder <" + cuesFolder + "> does not exist.\n\n Set to default."); }
+            List<string> cfs = cuesFolders(); cfs.Insert(0, "<root>"); 
+            foreach (string cf in cfs)
+            {
+                cbCuesFolders.Items.Add(new ComboBoxItem() { Content = cf });                
+            }
+            int spot = workCuesIndex();
+            if (spot < 0) { cuesFolder = rootCuesFolder; cbCuesFolders.SelectedIndex = 0; }
+            else cbCuesFolders.SelectedIndex = spot;
+
             iPickerX.Init(ref _opts); iPickerX.Configure('X', new List<string>(), "Including modifiers", "", "Browse", true).Click += new RoutedEventHandler(Browse_Click);
             iPickerX.chkCustom1.IsChecked = true;
             iPickerX.chkCustom1.Checked += new RoutedEventHandler(Modifiers_Checked); iPickerX.chkCustom1.Unchecked += new RoutedEventHandler(Modifiers_Checked);
-            btnSDparams = new Button(); btnSDparams.Content = " set SD params ►>"; btnSDparams.Margin = new Thickness(7, 2, 0, 0); btnSDparams.Background = null;
-            btnSDparams.VerticalAlignment = VerticalAlignment.Center; btnSDparams.Height = 26; btnSDparams.Click += new RoutedEventHandler(btnSDparams_Click); btnSDparams.IsEnabled = false;
-            iPickerX.stPnl2.Children.Add(btnSDparams);
+            btnSDparams = new Button() { Content = "set SD params ►>", Background = null, VerticalAlignment = VerticalAlignment.Center, Height = 26, Width = 130, IsEnabled = false,
+                    ToolTip = "Copy parameters from selected image to SD parameters tab", Margin = new Thickness(7, 2, 0, 0) };
+            btnSDparams.Click += new RoutedEventHandler(btnSDparams_Click); 
+            iPickerX.stPnl2.Children.Add(btnSDparams);                        
 
+            updateCuesFolder(cuesFolder);
+            
+            // editor tab
+            cueEditor.Init(ref opts);
+        }
+        private int workCuesIndex()
+        {
+            int k = 0; int spot = -1;  string workCuesName = cuesFolderNameByPath(cuesFolder);
+            foreach (ComboBoxItem cbi in cbCuesFolders.Items)
+            {
+                if (workCuesName.Equals(Convert.ToString(cbi.Content), StringComparison.InvariantCultureIgnoreCase))  { spot = k; cbi.FontFamily = new FontFamily("Segoe UI Semibold"); }
+                else cbi.FontFamily = new FontFamily("Segoe UI");
+                k++;
+            }
+            if (spot < 0) ((ComboBoxItem)cbCuesFolders.Items[0]).FontFamily = new FontFamily("Segoe UI Semibold");
+            return spot;
+        }
+        public void updateCuesFolder(string _cuesFolder)
+        {
+            cuesFolder = Directory.Exists(_cuesFolder) ? _cuesFolder : rootCuesFolder;
+            opts.composer.WorkCuesFolder = cuesFolder;
             if (File.Exists(mapFile))
             {
                 string json = System.IO.File.ReadAllText(mapFile);
@@ -97,10 +130,11 @@ namespace scripthea.composer
             // check for new cues
             List<string> files = new List<string>(Directory.GetFiles(cuesFolder, "*.cues"));
             for (int j = 0; j < files.Count; j++) // strip all but the name
-                files[j] = System.IO.Path.GetFileNameWithoutExtension(files[j]);            
-            for (int i = 0; i < poolCount; i++ )
+                files[j] = Path.GetFileNameWithoutExtension(files[j]);  
+            
+            for (int i = 0; i < poolCount; i++ ) // remove missing
             {
-                foreach (var pair in poolMap[i])
+                foreach (var pair in poolMap[i]) 
                 {
                     int found = -1;
                     for (int j = 0; j < files.Count; j++)
@@ -115,7 +149,9 @@ namespace scripthea.composer
             }
             foreach (string fn in files) 
                 poolMap[0].Add(fn, true);
+
             UpdateVisualsFromPoolMap();
+
             // go for visuals
             cueLists = new List<CueListUC>(); couriers = new List<Courier>();
             for (int i = 0; i < poolCount; i++)
@@ -126,21 +162,22 @@ namespace scripthea.composer
                 couriers.Add(new Courier(ref clu));
                 (tabControl.Items[i] as TabItem).Content = clu;
             }
+            // ImageDepot tab
+            couriers.Add(new Courier(ref iPickerX));
+
+            foreach (Courier cr in couriers)
+                { cr.OnCueSelection -= ChangeCue; cr.OnCueSelection += ChangeCue;}               
             if (cueLists.Count > 0)
                 if (cueLists[0].allCues.Count > 0)
-                    cueLists[0].allCues[0].radioChecked = true;
-            // ImageDepot
-            couriers.Add(new Courier(ref iPickerX)); 
-            // editor
-            cueEditor.Init(ref opts);
+                    { cueLists[0].allCues[0].radioChecked = true; cueLists[0].Change(null, null); }
         }
         protected void Browse_Click(object sender, RoutedEventArgs e)
         {
             CommonOpenFileDialog dialog = new CommonOpenFileDialog();
             if (Directory.Exists(opts.composer.ImageDepotFolder)) dialog.InitialDirectory = opts.composer.ImageDepotFolder;
             dialog.Title = "Select an image depot folder ";
-            dialog.IsFolderPicker = true;
-            if (dialog.ShowDialog() != CommonFileDialogResult.Ok) return;
+            dialog.IsFolderPicker = true; iPickerX.lbChecked.Content = "loading...";
+            if (dialog.ShowDialog() != CommonFileDialogResult.Ok) { iPickerX.lbChecked.Content = "---"; return; }
             iPickerX.tbImageDepot.Text = dialog.FileName; btnSDparams.IsEnabled = Directory.Exists(dialog.FileName);
         }
         public event Utils.LogHandler OnSDparams;
@@ -182,8 +219,7 @@ namespace scripthea.composer
                 ListBoxByIndex(i).Items.Clear();
                 foreach (var pair in poolMap[i])
                 {
-                    CheckBox chk = new CheckBox()
-                    { Content = pair.Key, IsChecked = pair.Value, Margin = new Thickness(3) };
+                    CheckBox chk = new CheckBox() { Content = pair.Key, IsChecked = pair.Value, Margin = new Thickness(3) };
                     ListBoxByIndex(i).Items.Add(chk);
                 }
             }
@@ -201,12 +237,14 @@ namespace scripthea.composer
                 }
             }
         }
-        public void Finish()
+        
+        public void Finish() 
         {
             foreach (CueListUC clu in cueLists)
                 clu.Finish();
             UpdatePoolMapFromVisuals();
-            System.IO.File.WriteAllText(mapFile, JsonConvert.SerializeObject(poolMap));
+            File.WriteAllText(mapFile, JsonConvert.SerializeObject(poolMap));
+            opts.composer.WorkCuesFolder = cuesFolder;
         }
         private void imgDown_MouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -239,7 +277,9 @@ namespace scripthea.composer
             int idx = tabControl.SelectedIndex;
             if (tiEditor.Equals(lastTab) && Utils.InRange(idx, 0, poolCount+1) && cueEditor.newCues) // out of editor tab
             {
-                Init(ref opts); cueEditor.newCues = false;
+                if (cuesFolder == string.Empty) Init(ref opts, ref ChangeCue);
+                else updateCuesFolder(cuesFolder);
+                cueEditor.newCues = false;
             }
             if (tiPoolMap.Equals(lastTab) && Utils.InRange(idx, 0,poolCount-1)) // out of map tab
             {
@@ -258,7 +298,6 @@ namespace scripthea.composer
             if (tabControl.SelectedItem.Equals(tiEditor)) cueEditor.selected = 0;
             if (!Utils.isNull(e)) e.Handled = true;
         }
-
         public List<Courier> couriers;
         public Courier activeCourier
         { 
@@ -275,8 +314,48 @@ namespace scripthea.composer
         {
             iPickerX.ReloadDepot();
         }
+        // multi-folder for cues
+        public string cuesFolderPathByName(string nm)
+        {
+            if (nm.Equals(string.Empty)) return "";
+            if (nm.Equals("<root>")) return rootCuesFolder;
+            string folder = Path.Combine(rootCuesFolder, nm);
+            if (Directory.Exists(folder)) return folder;
+            else return "";
+        }
+        public string cuesFolderNameByPath(string path)
+        {
+            if (path.Equals(string.Empty)) return "";
+            if (Utils.comparePaths(path, rootCuesFolder)) return "<root>";
+            DirectoryInfo directoryInfo = new DirectoryInfo(path);          
+            return directoryInfo.Name;
+        }
+        public List<string> cuesFolders(bool OnlyNames = true) 
+        {
+            List<string> ls = new List<string>();            
+            string[] subdirectoryEntries = Directory.GetDirectories(rootCuesFolder, "*", SearchOption.AllDirectories);
+            foreach (string subdirectory in subdirectoryEntries)
+            {
+                string[] files = Directory.GetFiles(subdirectory, "*.cues");
+                if (files.Length == 0) continue;
+                if (OnlyNames) ls.Add(cuesFolderNameByPath(subdirectory));
+                else ls.Add(subdirectory);
+            }
+            return ls;
+        }       
+        private void cbCuesFolders_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            cbCuesFolders.ToolTip = cuesFolderPathByName(Convert.ToString(((ComboBoxItem)cbCuesFolders.SelectedItem).Content));
+            btnLoad.IsEnabled = !Utils.comparePaths(Convert.ToString(cbCuesFolders.ToolTip), cuesFolder);
+            btnLoad.Foreground = btnLoad.IsEnabled ? Brushes.Black : Brushes.Silver;
+        }
+        private void btnLoad_Click(object sender, RoutedEventArgs e)
+        {
+            UpdatePoolMapFromVisuals(); File.WriteAllText(mapFile, JsonConvert.SerializeObject(poolMap));
+            updateCuesFolder(cuesFolderPathByName(Convert.ToString(((ComboBoxItem)cbCuesFolders.SelectedItem).Content)));
+            cbCuesFolders_SelectionChanged(null, null); workCuesIndex();
+        }
     }
-
     public class Courier // two ways messenger between (the active pool or image depot) and queryUC
     {
         public bool cueSrc { get; private set; }
@@ -298,7 +377,8 @@ namespace scripthea.composer
             if (cueSrc)
             { 
                 if (!cueList.radioMode) return null;
-                cueSel.AddRange(cueList.selectedCues()[0].cueTextAsList(true));
+                List<CueItemUC> cil = cueList.selectedCues();
+                if (cil.Count > 0) cueSel.AddRange(cil[0].cueTextAsList(true));
             }
             else
             {
@@ -307,7 +387,6 @@ namespace scripthea.composer
             }
             return cueSel;
         }
-
         public delegate void CueSelectionHandler(List<string> cueSelection);
         public event CueSelectionHandler OnCueSelection;        
         protected void Change(object sender, RoutedEventArgs e) // only for radioMode

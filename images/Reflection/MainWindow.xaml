@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Reflection"
         mc:Ignorable="d"
-        Title="Reflection" Height="450" Width="800" Loaded="wndReflection_Loaded" FontSize="13" >
+        Title="Reflection Addon" Height="450" Width="800" Loaded="wndReflection_Loaded" FontSize="13" >
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="684*"/>
