@@ -165,7 +165,7 @@ namespace scripthea.composer
             }
             bool inputKind = cbOption.SelectedIndex == 0;
             if (inputKind) dialog.InitialDirectory = Path.Combine(Utils.basePath, "cues");
-            else dialog.InitialDirectory = ImgUtils.defaultImageDepot;            
+            else dialog.InitialDirectory = SctUtils.defaultImageDepot;            
             if (inputKind) // .cues
             { 
                 dialog.DefaultExtension = ".cues";

@@ -78,6 +78,7 @@ namespace scripthea.viewer
                     else dTable.Rows.Add(itm.Item1, itm.Item3, itm.Item2);
                 }
                 BindData();
+                selectedIndex = 1;
             }
             else dGrid.ItemsSource = null;            
         }

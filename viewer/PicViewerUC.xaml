@@ -10,7 +10,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
             <RowDefinition Height="4*"/>
-            <RowDefinition x:Name="rowBottom" Height="60"/>
+            <RowDefinition x:Name="rowBottom" Height="100" MinHeight="8"/>
         </Grid.RowDefinitions>
         <StackPanel Margin="0" Orientation="Horizontal" HorizontalAlignment="Left">
             <Button x:Name="btnCopy" Margin="7,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Right" Background="{x:Null}" ToolTip="Edit preferences" Cursor="Hand" Width="30" Height="28" BorderBrush="#FFCECECE" Click="btnCopy_Click" >
@@ -35,13 +35,21 @@
             <Image x:Name="image" Margin="5" PreviewMouseLeftButtonDown="image_PreviewMouseLeftButtonDown" SizeChanged="image_SizeChanged" />
         </Grid>
         <GridSplitter Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" Background="#FFEAE0CE" Height="3"></GridSplitter>
-        <Grid Grid.Row="2" Background="White" Margin="7,4,0,0" >
+        <Grid Grid.Row="2" Background="White" Margin="5,4,0,0" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"/>
-                <ColumnDefinition x:Name="colMeta" Width="60" MinWidth="5"/>
+                <ColumnDefinition x:Name="colMeta" Width="100" MinWidth="8"/>
             </Grid.ColumnDefinitions>
 
-            <TextBox x:Name="tbCue" Margin="0" TextWrapping="Wrap" Text="" Background="White" IsReadOnly="True" FontSize="13" BorderThickness="0,1,0,0" HorizontalAlignment="Center" VerticalScrollBarVisibility="Auto" />
+            <TextBox x:Name="tbCue" Margin="3" TextWrapping="Wrap" Text="" Background="White" IsReadOnly="True" FontSize="13" BorderThickness="0,0,0,0" HorizontalAlignment="Center" VerticalScrollBarVisibility="Auto" />
+            <Slider x:Name="sldRank" HorizontalAlignment="Right" Margin="0" Width="20" Value="3" Orientation="Vertical"  MouseDoubleClick="sldRank_MouseDoubleClick" Visibility="Collapsed">
+                <Slider.Background>
+                    <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                        <GradientStop x:Name="topGradient" Color="#FFFE9177"/>
+                        <GradientStop x:Name="bottomGradient" Color="#FF7FB4FF" Offset="1"/>
+                    </LinearGradientBrush>
+                </Slider.Background>
+            </Slider>
             <GridSplitter Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Stretch" Background="#FFECEFE2" Width="3"></GridSplitter>
             <ListBox x:Name="lboxMetadata" Margin="4,0,0,0" Grid.Column="1" ></ListBox>
         </Grid>

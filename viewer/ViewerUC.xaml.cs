@@ -89,7 +89,7 @@ namespace scripthea.viewer
             get
             {
                 if (Directory.Exists(tbImageDepot.Text)) _imageFolder = tbImageDepot.Text;
-                else _imageFolder = ImgUtils.defaultImageDepot;
+                else _imageFolder = SctUtils.defaultImageDepot;
                 return _imageFolder.EndsWith("\\") ? _imageFolder: _imageFolder + "\\";
             }
             set
@@ -224,7 +224,7 @@ namespace scripthea.viewer
         }
         private int checkImageDepot()
         {
-            int cnt = ImgUtils.checkImageDepot(imageFolder);
+            int cnt = SctUtils.checkImageDepot(imageFolder);
             if (cnt > 0) { lbDepotInfo.Content = cnt.ToString() + " images"; lbDepotInfo.Foreground = Brushes.Blue; }
             else { lbDepotInfo.Content = "This is not an image depot."; lbDepotInfo.Foreground = Brushes.Tomato; }
             return cnt;

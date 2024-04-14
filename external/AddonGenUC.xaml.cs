@@ -39,7 +39,7 @@ namespace scripthea.external
         {
             optsRef = _opts;
             if (Directory.Exists(optsRef.iDutilities.AddonGenFolder)) lbTargetFolder.Text = "Addon Gen. folder: " + optsRef.iDutilities.AddonGenFolder;
-            else { lbTargetFolder.Text = "Addon Gen.folder - not found"; optsRef.iDutilities.AddonGenFolder = @"d:\Projects\Scripthea\images\Reflection\"; }
+            else { lbTargetFolder.Text = "Addon Gen.folder - not found"; optsRef.iDutilities.AddonGenFolder = @"d:\Scripthea\images\Reflection\"; }
             opts["addonFolder"] = optsRef.iDutilities.AddonGenFolder;
 
             testMode = false;

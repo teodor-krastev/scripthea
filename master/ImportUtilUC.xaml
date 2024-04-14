@@ -49,9 +49,10 @@
                     </Button.ContextMenu>
                 </Button>
                 <Label Content="Source" Margin="0,2,0,0"/>
-                <ComboBox SelectedIndex="0" Background="White" Margin="3">
+                <ComboBox x:Name="cbSource" SelectedIndex="0" Background="White" Margin="3">
                     <ComboBoxItem Content="Stable Diffusion"/>
-                    <ComboBoxItem Content="Craiyon" IsEnabled="False"/>
+                    <ComboBoxItem Content="External Generator"/>
+                    <ComboBoxItem Content="Craiyon WebSrv"/>
                 </ComboBox>
                 <CheckBox x:Name="chkKeepNames" Content="Keep the names" Margin="10,6,0,0"></CheckBox>
                 <CheckBox x:Name="chkDeleteUnchecked" Content="Delete unchecked images" Margin="10,6,0,0" Checked="chkDeleteUnchecked_Checked" Unchecked="chkDeleteUnchecked_Unchecked" ></CheckBox>

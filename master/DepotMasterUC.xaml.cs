@@ -109,11 +109,11 @@ namespace scripthea.master
         public int Copy1to2(ImagePickerUC iPicker1, ImagePickerUC iPicker2, out List<string> copied)
         {
             copied = new List<string>(); 
-            if (ImgUtils.checkImageDepot(iPicker2.imageDepot, true) == -1)
+            if (SctUtils.checkImageDepot(iPicker2.imageDepot, true) == -1)
             {
                 if (!iPicker1.isEnabled) return -1;
-                List<string> ls = new List<string>(File.ReadAllLines(Path.Combine(iPicker1.imageDepot, ImgUtils.descriptionFile)));
-                File.WriteAllText(Path.Combine(iPicker2.tbImageDepot.Text, ImgUtils.descriptionFile), ls[0]);
+                List<string> ls = new List<string>(File.ReadAllLines(Path.Combine(iPicker1.imageDepot, SctUtils.descriptionFile)));
+                File.WriteAllText(Path.Combine(iPicker2.tbImageDepot.Text, SctUtils.descriptionFile), ls[0]);
                 iPicker2.ReloadDepot();
             }
             if (!iPicker1.isEnabled || !iPicker2.isEnabled)

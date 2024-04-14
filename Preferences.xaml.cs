@@ -85,6 +85,7 @@ namespace scripthea
             public bool RemoveImagesInIDF;
             public int PicViewPromptH;
             public int PicViewMetaW;
+            public bool BnWrank;
         }
         public IDutilities iDutilities; // Image Depot utilities
         public class IDutilities

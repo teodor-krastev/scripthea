@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
+//using System.Drawing;
+//using System.Drawing.Imaging;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -58,7 +58,7 @@ namespace scripthea.master
         private void ConvertPNG2JPG(object sender, RoutedEventArgs e)
         {
             CommonOpenFileDialog dialog = new CommonOpenFileDialog();
-            dialog.InitialDirectory = ImgUtils.defaultImageDepot;
+            dialog.InitialDirectory = SctUtils.defaultImageDepot;
             dialog.Title = "Select a PNG File";
             dialog.Multiselect = true; 
             dialog.DefaultExtension = ".png"; dialog.Filters.Add(new CommonFileDialogFilter("PNG images", "png"));
@@ -69,9 +69,9 @@ namespace scripthea.master
                 Mouse.OverrideCursor = Cursors.Wait;               
                 foreach (string filePath in dialog.FileNames)
                 {
-                    Bitmap image = new Bitmap(filePath);
+                    BitmapImage image = ImgUtils.LoadBitmapImageFromFile(filePath);
                     string newFilePath = Utils.AvoidOverwrite(Path.ChangeExtension(filePath, ".jpg"));
-                    image.Save(newFilePath, ImageFormat.Jpeg); cnt++;
+                    ImgUtils.SaveBitmapImageToDisk(image,newFilePath); cnt++;
                     fd = Path.GetDirectoryName(filePath);
                 }
             } finally { Mouse.OverrideCursor = null; }
@@ -107,21 +107,21 @@ namespace scripthea.master
                     if (!Utils.validFileName(tfn)) tfn = itm.Item2; // prompt text not suitable for filename
                     string sffn = Path.Combine(iPicker.imageDepot, itm.Item2); // src full path
                     string tffn = Path.Combine(targetFolder, tfn);
-                    ImageFormat iFormat = null;
+                    ImgUtils.ImageType iFormat = ImgUtils.ImageType.Unknown;
                     switch (iPicker.comboCustom.SelectedIndex)
                     {
                         case 0:
-                            iFormat = ImgUtils.GetImageFormat(sffn);
+                            iFormat = ImgUtils.GetImageType(sffn);
                             break;
                         case 1:
-                            iFormat = ImageFormat.Png;
+                            iFormat = ImgUtils.ImageType.Png;
                             break;
                         case 2:
-                            iFormat = ImageFormat.Jpeg;
+                            iFormat = ImgUtils.ImageType.Jpg;
                             break;
                     }
-                    ImgUtils.CopyToImageFormat(sffn, tffn, iFormat);
-                    filter.Add(new Tuple<int, string, string>(itm.Item1, tfn, itm.Item3));
+                    tffn = ImgUtils.CopyToImageToFormat(sffn, tffn, iFormat);
+                    if (tffn != "") filter.Add(new Tuple<int, string, string>(itm.Item1, Path.GetFileName(tffn), itm.Item3));
                 }
                 if (iPicker.chkCustom2.IsChecked.Value)
                 {

@@ -21,7 +21,6 @@ using scripthea.external;
 using scripthea.master;
 using UtilsNS;
 using Path = System.IO.Path;
-using Color = System.Drawing.Color;
 using PyCodeLib;
 
 namespace scripthea
@@ -42,7 +41,7 @@ namespace scripthea
         public Options opts;
         public PreferencesWindow preferencesWindow;
         public Dictionary<string, string> clSwitches;
-        private System.Drawing.Bitmap penpic;
+        private BitmapImage penpic;
 
         public FocusControl focusControl;
         private void MainWindow1_Loaded(object sender, RoutedEventArgs e)
@@ -60,7 +59,7 @@ namespace scripthea
                 opts = JsonConvert.DeserializeObject<Options>(json);                
                 if (opts.composer.StartupImageDepotFolder != "") opts.composer.ImageDepotFolder = opts.composer.StartupImageDepotFolder;
                 if (opts.composer.ImageDepotFolder == null) opts.composer.ImageDepotFolder = "";
-                if (opts.composer.ImageDepotFolder.Equals("<default.image.depot>")) opts.composer.ImageDepotFolder = ImgUtils.defaultImageDepot;
+                if (opts.composer.ImageDepotFolder.Equals("<default.image.depot>")) opts.composer.ImageDepotFolder = SctUtils.defaultImageDepot;
             }
             else opts = new Options();
             opts.general.debug = Utils.isInVisualStudio || Utils.localConfig; aboutWin.Init(ref opts); 
@@ -139,8 +138,8 @@ namespace scripthea
             focusControl.Register("idmB",depotMaster.iPickerB);
             //focusControl.Register("idfX", queryUC.cuePoolUC.iPickerX);
             string penpicFile = Path.Combine(Utils.configPath, "penpic1.png");
-            if (!File.Exists(penpicFile)) throw new Exception(penpicFile +" file is missing");
-            penpic = new System.Drawing.Bitmap(penpicFile); imgAbout.Source = ImgUtils.BitmapToBitmapImage(penpic, System.Drawing.Imaging.ImageFormat.Png);
+            if (File.Exists(penpicFile)) { penpic = ImgUtils.LoadBitmapImageFromFile(penpicFile); imgAbout.Source = penpic.Clone(); }
+            else throw new Exception(penpicFile + " file is missing");
             ExplorerPart = 0;
             gridSplitLeft_MouseDoubleClick(null, null);
             Title = "Scripthea - text-to-image prompt composer v" + Utils.getAppFileVersion;   
@@ -250,13 +249,13 @@ namespace scripthea
                             string fn = msg.Equals("@EndGeneration") ? "" : txt.Substring(15).Trim();
                             if (rowLogImage.Height.Value < 2) rowLogImage.Height = new GridLength(pnlLog.ActualWidth);
                             if (File.Exists(fn)) imgLast.Source = ImgUtils.UnhookedImageLoad(fn); // success
-                            else { imgLast.Source = ImgUtils.file_not_found; Log("Error[486]: file not found " + fn); } 
+                            else { imgLast.Source = SctUtils.file_not_found; Log("Error[486]: file not found " + fn); } 
                             txt = msg.Substring(1);
                             break;
                         case "@StopRun":
                             if (Utils.isNull(dTimer)) { Utils.TimedMessageBox("Error[777]: broken timer", "Warning", 3500); return; }
                             dTimer.Stop();  lbProcessing.Content = "";
-                            imgAbout.Source = ImgUtils.BitmapToBitmapImage(penpic, System.Drawing.Imaging.ImageFormat.Png); 
+                            imgAbout.Source = penpic.Clone(); 
                             break;
                         case "@CancelR": // CancelRequest 
                             queryUC.Request2Cancel();
@@ -327,17 +326,16 @@ namespace scripthea
             dti++;
             lbProcessing.Content = ch;
 
-            System.Drawing.Bitmap clrBitmap = ImgUtils.ChangeColor(penpic, ImgUtils.ColorFromHue((dti % 20) * 18));
-            imgAbout.Source = ImgUtils.BitmapToBitmapImage(clrBitmap, System.Drawing.Imaging.ImageFormat.Png);
+            imgAbout.Source = ImgUtils.ChangeColor(penpic, ImgUtils.ColorFromHue((dti % 20) * 18));           
         }
         TabItem oldTab;
         private void tabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             string nextDepotFolder(string firstGuess)
             {
-                if (ImgUtils.checkImageDepot(firstGuess) > -1) return firstGuess;
-                if (ImgUtils.checkImageDepot(opts.composer.ImageDepotFolder) > -1) return opts.composer.ImageDepotFolder;
-                return ImgUtils.defaultImageDepot;
+                if (SctUtils.checkImageDepot(firstGuess) > -1) return firstGuess;
+                if (SctUtils.checkImageDepot(opts.composer.ImageDepotFolder) > -1) return opts.composer.ImageDepotFolder;
+                return SctUtils.defaultImageDepot;
             }
             if (sender != tabControl) return;
             if (tabControl.SelectedItem.Equals(tiComposer))
@@ -415,7 +413,7 @@ namespace scripthea
                     if (sender.Equals(viewerUC.tbImageDepot) && tabControl.SelectedItem.Equals(tiViewer)) fld = viewerUC.tbImageDepot.Text;
                     if (sender.Equals(importUtilUC.tbImageDepot) && tabControl.SelectedItem.Equals(tiUtils)) fld = importUtilUC.tbImageDepot.Text;
                     if (sender.Equals(exportUtilUC.iPicker.tbImageDepot) && tabControl.SelectedItem.Equals(tiUtils)) fld = exportUtilUC.iPicker.tbImageDepot.Text; 
-                    if (ImgUtils.checkImageDepot(fld) > 0) dirTreeUC.CatchAFolder(fld);
+                    if (SctUtils.checkImageDepot(fld) > 0) dirTreeUC.CatchAFolder(fld);
                     break;
             }
         }

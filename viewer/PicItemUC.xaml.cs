@@ -138,7 +138,7 @@ namespace scripthea.viewer
             }
             else
             {
-                imgPic.Source = ImgUtils.file_not_found; tbFile.Foreground = Brushes.Tomato;
+                imgPic.Source = SctUtils.file_not_found; tbFile.Foreground = Brushes.Tomato;
             }
             tbFile.Text = ii.filename; tbFile.ToolTip = filePath;
             idx = index; tbCue.Text = ii.prompt; tbCue.ToolTip = ii.prompt;

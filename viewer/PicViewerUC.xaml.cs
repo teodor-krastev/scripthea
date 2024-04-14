@@ -12,8 +12,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.Drawing;
-using System.Drawing.Imaging;
 using scripthea.master;
 using UtilsNS;
 using Path = System.IO.Path;
@@ -36,6 +34,7 @@ namespace scripthea.viewer
             opts = _opts;
             rowBottom.Height = new GridLength(Utils.EnsureRange(opts.viewer.PicViewPromptH, 30, 500));
             colMeta.Width = new GridLength(Utils.EnsureRange(opts.viewer.PicViewMetaW, 3,500));
+            sldRank_MouseDoubleClick(null, null);
         }
         public void Finish()
         {
@@ -64,14 +63,14 @@ namespace scripthea.viewer
             tbName.Text = System.IO.Path.GetFileName(filePath);
             if (!File.Exists(filePath))
             {
-                image.Source = ImgUtils.file_not_found;
+                image.Source = SctUtils.file_not_found;
                 tbName.Foreground = System.Windows.Media.Brushes.Red;
                 return;
             }
             tbName.Foreground = System.Windows.Media.Brushes.Navy;
             if (File.Exists(filePath))
             {
-                image.Source = ImgUtils.UnhookedImageLoad(filePath, ImageFormat.Png);
+                image.Source = ImgUtils.UnhookedImageLoad(filePath, ImgUtils.ImageType.Png);
                 if (image.Source == null)
                     { Log("Exhausted resources - use table view instead", Brushes.Red); return; }
             }
@@ -201,6 +200,16 @@ namespace scripthea.viewer
         {
             Clipboard.SetImage((BitmapSource)image.Source);
             Utils.TimedMessageBox("The image has been copied to the clipboard");
+        }
+
+        private void sldRank_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (opts == null) return;
+            bool bb = Convert.ToBoolean(opts.viewer.BnWrank);
+            if (!Utils.isNull(sender)) bb = !bb;
+            if (bb) {topGradient.Color = Brushes.White.Color; bottomGradient.Color = Utils.ToSolidColorBrush("#FF636363").Color; }
+            else { topGradient.Color = Utils.ToSolidColorBrush("#FFFE9177").Color; bottomGradient.Color = Utils.ToSolidColorBrush("#FF7FB4FF").Color; }
+            opts.viewer.BnWrank = bb;
         }
     }
 }

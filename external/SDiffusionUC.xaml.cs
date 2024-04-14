@@ -155,7 +155,7 @@ namespace scripthea.external
             {
                 string filename;
                 rslt = sdScriptUC.GenerateImage(prompt, imageDepotFolder, out filename);
-                ii = new ImageInfo(Path.Combine(imageDepotFolder, filename), ImageInfo.ImageGenerator.StableDiffusion, true);
+                ii = new ImageInfo() { filename = filename, imageGenerator = ImageInfo.ImageGenerator.StableDiffusion };
             }
             return rslt;
         }

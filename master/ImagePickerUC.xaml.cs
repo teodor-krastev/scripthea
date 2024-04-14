@@ -17,9 +17,7 @@ using System.Windows.Shapes;
 using scripthea.viewer;
 using UtilsNS;
 using Path = System.IO.Path;
-using System.Drawing;
 using Brushes = System.Windows.Media.Brushes;
-using System.Drawing.Imaging;
 
 namespace scripthea.master
 {
@@ -154,7 +152,7 @@ namespace scripthea.master
             get
             {
                 string _imageDepot;
-                if (iDepot == null) _imageDepot = ImgUtils.defaultImageDepot;
+                if (iDepot == null) _imageDepot = SctUtils.defaultImageDepot;
                 else _imageDepot = iDepot.path;
                 return _imageDepot.EndsWith("\\") ? _imageDepot : _imageDepot + "\\";
             }
@@ -211,7 +209,7 @@ namespace scripthea.master
         }
         public void SetCheckLabel(string txt)
         {
-            lbChecked.Content = txt; lbChecked.UpdateLayout(); Utils.DoEvents();
+            Utils.DelayExec(300, () => { lbChecked.Content = txt; }); //lbChecked.UpdateLayout(); //Utils.DoEvents();
         }
         private int GetChecked(bool print = true) // returns numb. of checked
         {
@@ -226,9 +224,9 @@ namespace scripthea.master
         public bool converting = false; public ImageDepot iDepot = null;
         private void tbImageDepot_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (ImgUtils.checkImageDepot(tbImageDepot.Text, false) > 0) tbImageDepot.Foreground = Brushes.Black;
+            if (SctUtils.checkImageDepot(tbImageDepot.Text, false) > 0) tbImageDepot.Foreground = Brushes.Black;
             else tbImageDepot.Foreground = Brushes.Red;
-            int iCount = ImgUtils.checkImageDepot(tbImageDepot.Text, true); 
+            int iCount = SctUtils.checkImageDepot(tbImageDepot.Text, true); 
             if (iCount > -1)
             {
                 iDepot = new ImageDepot(tbImageDepot.Text, ImageInfo.ImageGenerator.FromDescFile, IsReadOnly);
@@ -238,7 +236,7 @@ namespace scripthea.master
             else 
             {
                 if (Directory.Exists(tbImageDepot.Text)) 
-                    iDepot = new ImageDepot(tbImageDepot.Text, ImgUtils.DefaultImageGenerator, IsReadOnly);
+                    iDepot = new ImageDepot(tbImageDepot.Text, SctUtils.DefaultImageGenerator, IsReadOnly);
                 else iDepot = null;
                 isValidFolder = false;
             }
@@ -274,7 +272,7 @@ namespace scripthea.master
                     if (msk.Equals("")) return;
                     if (msk.StartsWith("[") && msk.EndsWith("]")) 
                     {
-                        int i0, i1; (i0, i1) = ImgUtils.rangeMask(msk, activeView.Count);
+                        int i0, i1; (i0, i1) = SctUtils.rangeMask(msk, activeView.Count);
                         if (i0 == -1 || i1 == -1) { Log("Error[575]: Wrong range syntax, it must be [num..num] ."); return; }
                         else activeView.CheckRange(i0,i1);
                     } 
@@ -298,8 +296,8 @@ namespace scripthea.master
         public void loadPic(int idx, string imageDir, ImageInfo ii)
         {
             string filePath = Path.Combine(imageDir, ii.filename);
-            if (File.Exists(filePath)) { image.Source = ImgUtils.UnhookedImageLoad(filePath, ImageFormat.Png); lastLoadedPic = filePath; }
-            else { image.Source = ImgUtils.file_not_found; lastLoadedPic = ""; }
+            if (File.Exists(filePath)) { image.Source = ImgUtils.UnhookedImageLoad(filePath, ImgUtils.ImageType.Png); lastLoadedPic = filePath; }
+            else { image.Source = SctUtils.file_not_found; lastLoadedPic = ""; }
             if (OnPicSelect != null) OnPicSelect(ii.prompt, null);
             if (OnSelectEvent != null) OnSelectEvent(idx, imageDir, ii);
             GetChecked();

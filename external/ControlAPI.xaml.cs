@@ -124,7 +124,7 @@ namespace scripthea.external
                         if (!Directory.Exists(imageFolder)) { Log("Error[348]: folder not found"); return; }
                         if (File.Exists(Path.Combine(imageFolder, iInfo.filename)))
                         {
-                            string desc = Path.Combine(imageFolder, ImgUtils.descriptionFile);
+                            string desc = Path.Combine(imageFolder, SctUtils.descriptionFile);
                             if (!File.Exists(desc)) // create an empty iDepot 
                             {
                                 ImageDepot df = new ImageDepot(imageFolder, activeAPIname.Equals("SDiffusion") ? ImageInfo.ImageGenerator.StableDiffusion : ImageInfo.ImageGenerator.AddonGen, true);

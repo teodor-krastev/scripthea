@@ -83,7 +83,7 @@ namespace scripthea.composer
             { 
                 bufMask = new InputBox("Check with Mask or Range [#..#] e.g.[3..8]", bufMask, "").ShowDialog(); string msk = bufMask.Trim();
                 if (bufMask.Equals("")) return;
-                int i0; int i1; (i0, i1) = ImgUtils.rangeMask(msk, dTable.Rows.Count);
+                int i0; int i1; (i0, i1) = SctUtils.rangeMask(msk, dTable.Rows.Count);
                 if (!(i0 == -1 && i1 == -1))
                 {
                     foreach (DataRow row in dTable.Rows)

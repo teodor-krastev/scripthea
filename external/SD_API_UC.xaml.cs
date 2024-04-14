@@ -109,9 +109,8 @@ namespace scripthea.external
                     byte[] imageBytes = Convert.FromBase64String(base64Image);
 
                     using (MemoryStream ms = new MemoryStream(imageBytes))
-                    {
-                        System.Drawing.Image imageSrc = System.Drawing.Image.FromStream(ms);
-                        imageSrc.Save(imgFile);
+                    {                       
+                        ImgUtils.SaveBitmapImageToDisk(ImgUtils.MemoryStreamToBitmapImage(ms), imgFile);
                     }
                 }
             });

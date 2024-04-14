@@ -17,9 +17,7 @@ using System.Windows.Shapes;
 using scripthea.viewer;
 using UtilsNS;
 using Path = System.IO.Path;
-using System.Drawing;
 using Brushes = System.Windows.Media.Brushes;
-using System.Drawing.Imaging;
 
 namespace scripthea.master
 {
@@ -60,7 +58,7 @@ namespace scripthea.master
             get
             {
                 if (Directory.Exists(tbImageDepot.Text)) _imageFolder = tbImageDepot.Text;
-                else _imageFolder = ImgUtils.defaultImageDepot;
+                else _imageFolder = SctUtils.defaultImageDepot;
                 return _imageFolder.EndsWith("\\") ? _imageFolder : _imageFolder + "\\";
             }
             set
@@ -109,7 +107,7 @@ namespace scripthea.master
             List<string> orgFiles = new List<string>();            
             if (Utils.isNull(depotFolder))
             {
-                if (ImgUtils.checkImageDepot(path, true) > -1)
+                if (SctUtils.checkImageDepot(path, true) > -1)
                 {
                     depotFolder = new ImageDepot(path, ImageInfo.ImageGenerator.FromDescFile); lbAdd2Depot.Content = "Add to depot";
                 }
@@ -213,13 +211,15 @@ namespace scripthea.master
         public bool converting = false; ImageDepot depotFolder =null;
         private void btnConvertFolder_Click(object sender, RoutedEventArgs e)
         {
+            ImageInfo.ImageGenerator imageGenType = (ImageInfo.ImageGenerator)cbSource.SelectedIndex;          
+
             int rc = dTable.Rows.Count;
             if (rc == 0) return; int k = 0; int nok = 0; converting = true;
             image.Source = null; lastLoadedPic = "";// ImgUtils.file_not_found; 
             image.UpdateLayout();
             
             if (Utils.isNull(depotFolder))
-                depotFolder = new ImageDepot(imageFolder, ImageInfo.ImageGenerator.StableDiffusion);
+                depotFolder = new ImageDepot(imageFolder, imageGenType);
             try
             {
                 GetChecked();
@@ -231,7 +231,8 @@ namespace scripthea.master
                     {
                         unchk.Add(efn); continue;
                     }
-                    ImageInfo ii = new ImageInfo(Path.Combine(imageFolder, efn), ImageInfo.ImageGenerator.StableDiffusion, chkKeepNames.IsChecked.Value);
+                    ImageInfo ii = new ImageInfo();
+                    ii.ImageImport(Path.Combine(imageFolder, efn), imageGenType, chkKeepNames.IsChecked.Value);
                     if (!ii.IsEnabled()) { nok++; continue; }
                     depotFolder.items.Add(ii);                   
                     k++;
@@ -288,7 +289,7 @@ namespace scripthea.master
                 dGrid.ScrollIntoView(dGrid.SelectedItem, null);
             });
             string fn = System.IO.Path.Combine(imageFolder,System.IO.Path.ChangeExtension(Convert.ToString(dataRow.Row.ItemArray[1]), ".png"));
-            if (File.Exists(fn)) { image.Source = ImgUtils.UnhookedImageLoad(fn, ImageFormat.Png); lastLoadedPic = fn; }
+            if (File.Exists(fn)) { image.Source = ImgUtils.UnhookedImageLoad(fn, ImgUtils.ImageType.Png); lastLoadedPic = fn; }
             else { Log("Error[158]: file not found-> " + fn); lastLoadedPic = ""; }
             if (!Utils.isNull(e)) e.Handled = true;
             // int sr = dGrid.SelectedIndex; 
@@ -311,7 +312,7 @@ namespace scripthea.master
 
         private void tbImageDepot_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (ImgUtils.checkImageDepot(tbImageDepot.Text,false) > 0) tbImageDepot.Foreground = Brushes.Black;
+            if (SctUtils.checkImageDepot(tbImageDepot.Text,false) > 0) tbImageDepot.Foreground = Brushes.Black;
             else tbImageDepot.Foreground = Brushes.Red;
             LoadImages(tbImageDepot.Text);
         }

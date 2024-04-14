@@ -25,7 +25,7 @@ namespace scripthea.external
     {
         public static string imageSimulFolder
         {
-            get { return Path.Combine(ImgUtils.defaultImageDepot,"Simulator"); }
+            get { return Path.Combine(SctUtils.defaultImageDepot,"Simulator"); }
         }           
         public static string RandomImageFile
         {
@@ -68,13 +68,13 @@ namespace scripthea.external
         public bool GenerateImage(string prompt, string imageDepotFolder, ref ImageInfo ii)
         {
             if (Directory.Exists(imageDepotFolder)) opts["IDfolder"] = imageDepotFolder;
-            else opts["IDfolder"] = ImgUtils.defaultImageDepot;
+            else opts["IDfolder"] = SctUtils.defaultImageDepot;
 
             Utils.Sleep(10000);
 
             string filename = Path.ChangeExtension(Utils.timeName(), ".png");
             File.Copy(SimulFolder.RandomImageFile, Path.Combine(opts["IDfolder"], filename));
-            ii = new ImageInfo(Path.Combine(imageDepotFolder,filename), ImageInfo.ImageGenerator.StableDiffusion, true); 
+            ii = new ImageInfo() { filename = filename, imageGenerator = ImageInfo.ImageGenerator.StableDiffusion }; 
             return true;
         }        
         private void btnGenerate_Click(object sender, RoutedEventArgs e)

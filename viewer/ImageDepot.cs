@@ -24,31 +24,33 @@ namespace scripthea.viewer
 {
     public class ImageInfo
     {
-        public enum ImageGenerator { StableDiffusion, AddonGen, Crayion, FromDescFile }
+        public enum ImageGenerator { StableDiffusion, ExtGen, Craiyon, AddonGen, FromDescFile } 
+        // StableDiffusion coverts SD and Addon Gen if the latter is created from within Scrithea, in most cases identical
+        // 
+        // ExtGen is for unknown source, not meta data, later to be fill in from Image Depot Editor
         public ImageInfo()
         {
 
-        }
-        public ImageInfo(string fullfilename, ImageGenerator imageGenerator, bool keepName)
+        }        
+        public void ImageImport(string fullfilename, ImageGenerator _imageGenerator, bool keepName) // only for import from file
         {
-            filename = "";
+            filename = ""; imageGenerator = _imageGenerator;
             if (!File.Exists(fullfilename)) return;
             string suggestedName = ""; bool bb;
             switch (imageGenerator)
             {
-                case ImageGenerator.StableDiffusion:
-                case ImageGenerator.AddonGen:
+                case ImageGenerator.StableDiffusion:               
                     bb = FromSDFile(fullfilename, out suggestedName);
-                    if (!bb)
-                    {
-                        FromSDFile(fullfilename, out suggestedName); return; // when it is not SD file
-                    }
+                    if (!bb) return;                    
                     break;
-                case ImageGenerator.Crayion:
+                case ImageGenerator.Craiyon:
                     if (!FromCraiyonFile(fullfilename, out suggestedName)) return;
                     break;
+                case ImageGenerator.ExtGen:
+                    prompt = "[prompt for img. "+Path.GetFileNameWithoutExtension(fullfilename)+"]";
+                    break;
             }
-            if (keepName) { filename = Path.GetFileName(fullfilename); return; }
+            if (keepName|| imageGenerator.Equals(ImageGenerator.ExtGen)) { filename = Path.GetFileName(fullfilename); return; }
             try
             {
                 if (!fullfilename.Equals(suggestedName, StringComparison.InvariantCultureIgnoreCase))
@@ -98,9 +100,12 @@ namespace scripthea.viewer
         public string filename { get; set; } // without folder
         public string job_timestamp { get; set; }
         // its own
+        public int rank { get; set; }
         public object tags { get; set; } // open stucture for future use: set of labels to be selected and/or define position in a image structure within a Scripthea project
         public string history { get; set; } // stages of variations, '|' separated -> for future use
         public string MD5Checksum { get; set; }
+        [JsonIgnore]
+        public ImageGenerator imageGenerator { get; set; } // for future use; 
         // internal
         public bool IsEnabled() { return !filename.Equals(""); } // file hasn't been assinged
         public bool IsModified(string folder) // check if recorded MD5 is egual to MD5 of the image file
@@ -154,10 +159,16 @@ namespace scripthea.viewer
                 suggestedName = Utils.AvoidOverwrite(suggestedName);
             return sd;
         }
-        public bool FromCraiyonFile(string fullfilename, out string suggestedName) // true if it's there and it's sd image 
+        public bool FromCraiyonFile(string fullfilename, out string suggestedName) // true if it's there  
         {
             suggestedName = "";
-            if (File.Exists(fullfilename)) return false;
+            if (!File.Exists(fullfilename)) return false; string ext = Path.GetExtension(fullfilename);
+            string fn = Path.GetFileNameWithoutExtension(fullfilename); 
+            string[] fna = fn.Split('_'); if (fna.Length < 3) { Utils.TimedMessageBox("Error[924]: unsuitable image name"); return false; }
+            fna[0] = ""; suggestedName = Path.ChangeExtension("C-"+fna[1], ext); fna[1] = ""; 
+            prompt = String.Join(" ", fna).Trim();
+            suggestedName = System.IO.Path.Combine(Path.GetDirectoryName(fullfilename), suggestedName); // complete with folder
+            suggestedName = Utils.AvoidOverwrite(suggestedName);
             return true;
         }
         public void FromString(string json)
@@ -269,7 +280,7 @@ namespace scripthea.viewer
         public static bool? CheckFileVersion(string folder) // true - new one (desc.ver>69); false - old one
         {
             bool bb = false;
-            string desc = Path.Combine(folder, ImgUtils.descriptionFile);
+            string desc = Path.Combine(folder, SctUtils.descriptionFile);
             if (!File.Exists(desc)) return null; 
             List<string> body = Utils.readList(desc, false);
             if (body.Count == 0) return null;
@@ -291,7 +302,7 @@ namespace scripthea.viewer
     {
         public ImageDepot(string _folder, ImageInfo.ImageGenerator _imageGenerator = ImageInfo.ImageGenerator.FromDescFile, bool _IsReadOnly = false)
         {
-            if (!Directory.Exists(_folder)) return; isReadOnly = _IsReadOnly; string desc = Path.Combine(_folder, ImgUtils.descriptionFile);
+            if (!Directory.Exists(_folder)) return; isReadOnly = _IsReadOnly; string desc = Path.Combine(_folder, SctUtils.descriptionFile);
             header = new Dictionary<string, string>(); items = new List<ImageInfo>();
             path = _folder;
             if (_imageGenerator == ImageInfo.ImageGenerator.FromDescFile && File.Exists(desc)) // read type from file
@@ -401,7 +412,7 @@ namespace scripthea.viewer
         {
             bool bb = Directory.Exists(imageFolder) && Utils.comparePaths(imageFolder, path);
             if (!bb) return false;           
-            return descText == File.ReadAllText(Path.Combine(imageFolder, ImgUtils.descriptionFile));
+            return descText == File.ReadAllText(Path.Combine(imageFolder, SctUtils.descriptionFile));
         }
         public List<string> allImages() // in this folder 
         {
@@ -492,7 +503,7 @@ namespace scripthea.viewer
         public bool Append(ImageInfo ii)
         {
             if (!isEnabled || isReadOnly) return false;
-            using (StreamWriter w = File.AppendText(Path.Combine(path, ImgUtils.descriptionFile)))
+            using (StreamWriter w = File.AppendText(Path.Combine(path, SctUtils.descriptionFile)))
             {
                 w.WriteLine(ii.To_String());
             }
@@ -508,7 +519,7 @@ namespace scripthea.viewer
             foreach (ImageInfo ii in items)
                 ls.Add(ii.To_String());
             //Utils.DelayExec(20, new Action(() => {  }));       
-            Utils.writeList(Path.Combine(path, ImgUtils.descriptionFile), ls);
+            Utils.writeList(Path.Combine(path, SctUtils.descriptionFile), ls);
             Utils.Sleep(200);
         }
         public List<Tuple<int, string, string>> Export2Viewer()

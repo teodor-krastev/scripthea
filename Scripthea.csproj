@@ -160,6 +160,9 @@
     <Compile Include="composer\ScanPreviewUC.xaml.cs">
       <DependentUpon>ScanPreviewUC.xaml</DependentUpon>
     </Compile>
+    <Compile Include="external\CraiyonAPIUC.xaml.cs">
+      <DependentUpon>CraiyonAPIUC.xaml</DependentUpon>
+    </Compile>
     <Compile Include="external\NumericSliderUC.xaml.cs">
       <DependentUpon>NumericSliderUC.xaml</DependentUpon>
     </Compile>
@@ -277,6 +280,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="composer\ScanPreviewUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="external\CraiyonAPIUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

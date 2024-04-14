@@ -197,8 +197,8 @@ namespace scripthea.composer
             if (Directory.Exists(opts.composer.ImageDepotFolder)) tbImageDepot.Text = opts.composer.ImageDepotFolder;
             else
             {
-                Log("Directory <"+tbImageDepot.Text+"> does not exist. Setting to default directory :"+ ImgUtils.defaultImageDepot);
-                opts.composer.ImageDepotFolder = ImgUtils.defaultImageDepot; tbImageDepot.Text = ImgUtils.defaultImageDepot;
+                Log("Directory <"+tbImageDepot.Text+"> does not exist. Setting to default directory :"+ SctUtils.defaultImageDepot);
+                opts.composer.ImageDepotFolder = SctUtils.defaultImageDepot; tbImageDepot.Text = SctUtils.defaultImageDepot;
             }           
             UpdatingOptions = false;              
         }
@@ -226,7 +226,7 @@ namespace scripthea.composer
         private void btnNewFolder_Click(object sender, RoutedEventArgs e)
         {
             CommonOpenFileDialog dialog = new CommonOpenFileDialog();
-            dialog.InitialDirectory = ImgUtils.defaultImageDepot;
+            dialog.InitialDirectory = SctUtils.defaultImageDepot;
             dialog.IsFolderPicker = true;
             if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
             {
@@ -625,6 +625,7 @@ namespace scripthea.composer
             Log("time " + (t / ns).ToString("G3") + " [sec] per file");*/
             //CombiIndexes(3, 5);
             Log("=============================");
+            new MiniTimedMessage("===============").ShowDialog();
         }
 
     }
