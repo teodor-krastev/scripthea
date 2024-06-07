@@ -18,6 +18,7 @@ using System.Windows.Threading;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using scripthea.master;
 using scripthea.viewer;
+using scripthea.options;
 using UtilsNS;
 using Path = System.IO.Path;
 

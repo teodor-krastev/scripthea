@@ -15,13 +15,14 @@ using System.Windows.Shapes;
 using System.Windows.Threading;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Path = System.IO.Path;
+using scripthea.python;
 using scripthea.viewer;
 using scripthea.composer;
 using scripthea.external;
 using scripthea.master;
+using scripthea.options;
 using UtilsNS;
-using Path = System.IO.Path;
-using PyCodeLib;
 
 namespace scripthea
 {
@@ -44,13 +45,65 @@ namespace scripthea
         private BitmapImage penpic;
 
         public FocusControl focusControl;
+        private void SettingMainComponents()
+        {
+            dirTreeUC.Init(ref opts);
+            dirTreeUC.OnActive += new DirTreeUC.SelectHandler(Active);
+            dirTreeUC.OnLog += new Utils.LogHandler(Log);
+
+            queryUC.OnLog += new Utils.LogHandler(Log); queryUC.tbImageDepot.KeyDown += new KeyEventHandler(MainWindow1_KeyDown);
+            viewerUC.OnLog += new Utils.LogHandler(Log); viewerUC.tbImageDepot.KeyDown += new KeyEventHandler(MainWindow1_KeyDown);
+            importUtilUC.OnLog += new Utils.LogHandler(Log); importUtilUC.tbImageDepot.KeyDown += new KeyEventHandler(MainWindow1_KeyDown);
+
+            Title = "Scripthea - loading text files...";
+            viewerUC.Init(ref opts);
+            depotMaster.Init(ref opts);
+            importUtilUC.Init();
+            exportUtilUC.Init(ref opts);
+
+            oldTab = tiComposer;
+            Log("> Welcome to Scripthea" + "  " + (opts.general.debug ? "(in debug mode)" : "")); //Log("");
+            Utils.DelayExec(2500, new Action(() => { aboutWin.Hide(); }));
+            queryUC.Init(ref opts);
+            Left = Utils.EnsureRange(opts.layout.Left, 0, 4000); Top = Utils.EnsureRange(opts.layout.Top, 0, 2000);
+            Width = Utils.EnsureRange(Math.Abs(opts.layout.Width), 100, 10000); Height = Utils.EnsureRange(opts.layout.Height, 100, 5000);
+            if (opts.layout.Maximized) WindowState = WindowState.Maximized;
+            pnlLog.Width = new GridLength(opts.layout.LogColWidth);
+            rowLogImage.Height = new GridLength(1);
+            colMasterWidth.Width = new GridLength(opts.iDutilities.MasterWidth);
+            colImportWidth.Width = new GridLength(opts.iDutilities.ImportWidth);
+            colExportWidth.Width = new GridLength(opts.iDutilities.ExportWidth);
+            if (opts.composer.SingleAuto != Options.SingleAutoSet.none) queryUC.Compose(null, false);
+
+            // pyCode Init           
+            pyCode.Init(ref opts); 
+            if (pyCode.st != null) pyCode.st.OnLog += new Utils.LogHandler(Log);
+            // modules registration in pyCode
+            pyCode.Register("query", queryUC, queryUC.HelpList());
+            pyCode.Register("sdPrms", queryUC.sd_params_UC, queryUC.sd_params_UC.HelpList());
+            if (!opts.common.pythonOn) opts.sMacro.pythonEnabled = false;
+            if (opts.sMacro.pythonEnabled) tiSMacro.Visibility = Visibility.Visible;            
+            else tiSMacro.Visibility = Visibility.Collapsed;
+        }
+        private void FocusControl()
+        {
+            focusControl = new FocusControl();
+            focusControl.Register("import", importUtilUC);
+            focusControl.Register("export", exportUtilUC.iPicker);
+            focusControl.Register("query", queryUC);
+            focusControl.Register("viewer", viewerUC);
+            focusControl.Register("idmA", depotMaster.iPickerA);
+            focusControl.Register("idmB", depotMaster.iPickerB);
+            //focusControl.Register("idfX", queryUC.cuePoolUC.iPickerX);
+        }
+
         private void MainWindow1_Loaded(object sender, RoutedEventArgs e)
         {
             optionsFile = Path.Combine(Utils.configPath, "Scripthea.cfg");
             if (!Directory.Exists(Utils.configPath))
             {
                 string msg = "Fatal error: Directory <" + Utils.configPath + "> does not exist.";
-                Title = msg; Utils.Sleep(2000);
+                Title = msg; Utils.Sleep(3000);
                 throw new Exception(msg);
             }                   
             if (File.Exists(optionsFile))
@@ -62,7 +115,7 @@ namespace scripthea
                 if (opts.composer.ImageDepotFolder.Equals("<default.image.depot>")) opts.composer.ImageDepotFolder = SctUtils.defaultImageDepot;
             }
             else opts = new Options();
-            opts.general.debug = Utils.isInVisualStudio || Utils.localConfig; aboutWin.Init(ref opts); 
+            aboutWin.Init(ref opts); 
             if (opts.general.UpdateCheck) Check4Update(null,null);
             else
             {
@@ -72,15 +125,15 @@ namespace scripthea
                     aboutWin.lbMessage.Foreground = System.Windows.Media.Brushes.Green; aboutWin.lbMessage.Content = "New release (" + opts.general.NewVersion + ") is available at Scripthea.com !";
                 }
             }
-            preferencesWindow = new PreferencesWindow(); preferencesWindow.Init(ref opts); preferencesWindow.btnCheck4Update.Click += new RoutedEventHandler(Check4Update);           
+            preferencesWindow = new PreferencesWindow(); preferencesWindow.Init(ref opts); preferencesWindow.btnCheck4Update.Click += new RoutedEventHandler(Check4Update);    
+            preferencesWindow.OnLog += new Utils.LogHandler(Log);
 
             ImageDepotConvertor.ClearEntriesImageDepot = opts.iDutilities.MasterClearEntries; 
             // command-line agruments
-            clSwitches = new Dictionary<string, string>(); opts.sMacro.pythonPanel = false;
+            clSwitches = new Dictionary<string, string>(); //opts.sMacro.pythonEnabled = false;
             List<string> clArgs = new List<string>(Environment.GetCommandLineArgs());
             foreach (string arg in clArgs) 
             {
-                if (arg.StartsWith("--python")) { opts.sMacro.pythonPanel = true; clSwitches.Add("python","True"); continue; }
                 string arg1 = arg.StartsWith("--") ? arg.Substring(2) : arg;
                 string[] args = arg1.Split('=');
                 if (args.Length == 1) { clSwitches.Add(args[0], ""); continue; } 
@@ -89,54 +142,10 @@ namespace scripthea
             }       
 
             Title = "Scripthea - options loaded";
-            dirTreeUC.Init(ref opts);
-            dirTreeUC.OnActive += new DirTreeUC.SelectHandler(Active);
-            dirTreeUC.OnLog += new Utils.LogHandler(Log);
 
-            queryUC.OnLog += new Utils.LogHandler(Log); queryUC.tbImageDepot.KeyDown += new KeyEventHandler(MainWindow1_KeyDown);
-            viewerUC.OnLog += new Utils.LogHandler(Log); viewerUC.tbImageDepot.KeyDown += new KeyEventHandler(MainWindow1_KeyDown);
-            importUtilUC.OnLog += new Utils.LogHandler(Log); importUtilUC.tbImageDepot.KeyDown += new KeyEventHandler(MainWindow1_KeyDown);
-           
-            Title = "Scripthea - loading text files...";            
-            viewerUC.Init(ref opts);
-            depotMaster.Init(ref opts);
-            importUtilUC.Init();
-            exportUtilUC.Init(ref opts);
+            SettingMainComponents();
+            FocusControl();
 
-            oldTab = tiComposer;
-            Log("> Welcome to Scripthea" + "  " + (opts.general.debug ? "(in debug mode)" : "")); //Log("");
-            Utils.DelayExec(2500, new Action(() => { aboutWin.Hide(); })); 
-            queryUC.Init(ref opts);            
-            Left = Utils.EnsureRange(opts.layout.Left, 0, 4000); Top = Utils.EnsureRange(opts.layout.Top, 0, 2000);
-            Width = Utils.EnsureRange(Math.Abs(opts.layout.Width), 100, 10000); Height = Utils.EnsureRange(opts.layout.Height, 100, 5000);
-            if (opts.layout.Maximized) WindowState = WindowState.Maximized; 
-            pnlLog.Width = new GridLength(opts.layout.LogColWidth);            
-            rowLogImage.Height = new GridLength(1);
-            colMasterWidth.Width = new GridLength(opts.iDutilities.MasterWidth);
-            colImportWidth.Width = new GridLength(opts.iDutilities.ImportWidth);
-            colExportWidth.Width = new GridLength(opts.iDutilities.ExportWidth);
-            if (opts.composer.SingleAuto) queryUC.btnCompose_Click(null, null);
-
-            // pyCode Init
-            if (opts.sMacro.pythonPanel || (Utils.TheosComputer() && Utils.isInVisualStudio)) pyCode.Init( @"C:\Software\Python\Python310\python310.dll"); 
-            if (!pyCode.IsEnabled) tiSMacro.Visibility = Visibility.Collapsed;
-            else
-            {
-                colSMacroFull.Width = new GridLength(opts.sMacro.FullWidth);
-                pyCode.colCodeWidth = opts.sMacro.CodeWidth; pyCode.colLogWidth = opts.sMacro.LogWidth;
-                if (pyCode.st != null) pyCode.st.OnLog += new Utils.LogHandler(Log);
-                // modules registration in pyCode
-                pyCode.Register("query",queryUC, queryUC.HelpList());
-                pyCode.Register("sdPrms", queryUC.sd_params_UC, queryUC.sd_params_UC.HelpList());
-            }                      
-            focusControl = new FocusControl();
-            focusControl.Register("import",importUtilUC);
-            focusControl.Register("export",exportUtilUC.iPicker);
-            focusControl.Register("query",queryUC);
-            focusControl.Register("viewer",viewerUC);
-            focusControl.Register("idmA",depotMaster.iPickerA);
-            focusControl.Register("idmB",depotMaster.iPickerB);
-            //focusControl.Register("idfX", queryUC.cuePoolUC.iPickerX);
             string penpicFile = Path.Combine(Utils.configPath, "penpic1.png");
             if (File.Exists(penpicFile)) { penpic = ImgUtils.LoadBitmapImageFromFile(penpicFile); imgAbout.Source = penpic.Clone(); }
             else throw new Exception(penpicFile + " file is missing");
@@ -205,9 +214,9 @@ namespace scripthea
             opts.iDutilities.MasterWidth = Convert.ToInt32(colMasterWidth.Width.Value);
             opts.iDutilities.ImportWidth = Convert.ToInt32(colImportWidth.Width.Value);
             opts.iDutilities.ExportWidth = Convert.ToInt32(colExportWidth.Width.Value);
-            opts.sMacro.FullWidth = Convert.ToInt32(colSMacroFull.Width.Value);
             opts.sMacro.CodeWidth = Convert.ToInt32(pyCode.colCodeWidth);
             opts.sMacro.LogWidth = Convert.ToInt32(pyCode.colLogWidth);
+            opts.sMacro.HelpWidth = Convert.ToInt32(pyCode.colHelpWidth);
 
             pyCode.Finish();
             queryUC.Finish();
@@ -355,7 +364,8 @@ namespace scripthea
                     bb |= viewerUC.ShowImageDepot(nextDepotFolder(importUtilUC.imageFolder));
                 if (!bb) bb |= viewerUC.ShowImageDepot(nextDepotFolder(""));
                 ExplorerPart = 100; dirTreeUC.CatchAFolder(viewerUC.tbImageDepot.Text); 
-                focusControl.GotTheFocus(viewerUC, null); // unknown why it needs to be done from code 
+                focusControl.GotTheFocus(viewerUC, null); // unknown why it needs to be done from code
+                //viewerUC.activeView.selectedIndex = 0;             
             }
             if (tabControl.SelectedItem.Equals(tiDepotMaster))
             {
@@ -382,7 +392,7 @@ namespace scripthea
         private void imgAbout_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (Utils.isNull(aboutWin)) aboutWin = new AboutWin();
-            aboutWin.ShowDialog();
+            aboutWin.ShowDialog();            
         }
         private void gridSplitLeft_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
@@ -417,7 +427,6 @@ namespace scripthea
                     break;
             }
         }
-
         private void btnRefresh_Click(object sender, RoutedEventArgs e)
         {
             string sPath = dirTreeUC.selectedPath;
@@ -435,8 +444,9 @@ namespace scripthea
         private void btnPreferences_Click(object sender, RoutedEventArgs e)
         {
             preferencesWindow.ShowWindow(tabControl.SelectedIndex, dirTreeUC.history);
+            if (opts.sMacro.pythonEnabled) tiSMacro.Visibility = Visibility.Visible;
+            else { if (tabControl.SelectedItem == tiSMacro) tabControl.SelectedIndex = 0; tiSMacro.Visibility = Visibility.Collapsed; }
         }
-
         private void tbImageDepot_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ClickCount == 2)

@@ -20,6 +20,7 @@ using System.Net.Sockets;
 using Newtonsoft.Json;
 using Path = System.IO.Path;
 using System.IO.Pipes;
+using scripthea.options;
 using UtilsNS;
 
 namespace scripthea.external

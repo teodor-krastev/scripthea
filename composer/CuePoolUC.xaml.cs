@@ -15,6 +15,7 @@ using Microsoft.WindowsAPICodePack.Dialogs;
 using Newtonsoft.Json;
 using scripthea.master;
 using scripthea.viewer;
+using scripthea.options;
 using UtilsNS;
 
 namespace scripthea.composer
@@ -31,7 +32,7 @@ namespace scripthea.composer
         public string rootCuesFolder = Path.Combine(Utils.basePath, "cues");
         public string cuesFolder { get; private set; }
         public string mapFile { get { return Path.Combine(cuesFolder, "cue_pools.map"); } }
-        private int poolCount { get { return tabControl.Items.Count - 3; } }
+        public int poolCount { get { return tabControl.Items.Count - 3; } }
         private List<Dictionary<string, bool>> poolMap;
         public List<string> GetLists(int idx) // full path
         {
@@ -271,9 +272,11 @@ namespace scripthea.composer
             lBoxApool.Items.Add(newChk); lBoxApool.SelectedItem = newChk;
         }
         private TabItem lastTab = null; private int lastPoolIdx = -1;
+        public event SelectionChangedEventHandler ExternalSelectionChanged;
         private void tabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!(sender as TabControl).Name.Equals("tabControl")) return;
+            ExternalSelectionChanged?.Invoke(sender, e);
             int idx = tabControl.SelectedIndex;
             if (tiEditor.Equals(lastTab) && Utils.InRange(idx, 0, poolCount+1) && cueEditor.newCues) // out of editor tab
             {
@@ -405,9 +408,9 @@ namespace scripthea.composer
             else
             {
                 //if (iPicker.checkable) return lls;
-                foreach(Tuple<int, string, string> tpl in iPicker.ListOfTuples(true, false))
+                foreach(Tuple<int, string, int, string> tpl in iPicker.ListOfTuples(true, false))
                 {
-                    string[] pa = { tpl.Item3 }; lls.Add(new List<string>(pa));
+                    string[] pa = { tpl.Item2 }; lls.Add(new List<string>(pa));
                 }
             }
             return lls;

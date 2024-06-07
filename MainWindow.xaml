@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:scripthea" xmlns:viewer="clr-namespace:scripthea.viewer"
         xmlns:composer="clr-namespace:scripthea.composer" xmlns:master="clr-namespace:scripthea.master" 
-        xmlns:PyCodeLib="clr-namespace:PyCodeLib;assembly=PyCodeLib" 
-        x:Name="MainWindow1" x:Class="scripthea.MainWindow"
+        xmlns:python="clr-namespace:scripthea.python"
+    x:Name="MainWindow1" x:Class="scripthea.MainWindow"
         mc:Ignorable="d"
         Title="Scripthea - text-to-image prompt composer" Height="450" Width="1080.709" Loaded="MainWindow1_Loaded" Closing="MainWindow1_Closing" Icon="Properties/penzy4.png" FontSize="13" KeyDown="MainWindow1_KeyDown" PreviewKeyDown="MainWindow1_PreviewKeyDown">
     <Grid>
@@ -94,12 +94,7 @@
             </TabItem>
             <TabItem x:Name="tiSMacro" Header=" python sMacro " Width="136" Height="33" Background="#FFECECEC" HorizontalAlignment="Left"  Margin="25,0,-25,0" BorderBrush="#FF787878" Style="{StaticResource RoundedTopTabItemStyle}">
                 <Grid >
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition x:Name="colSMacroFull" Width="800" MaxWidth="2000" MinWidth="200"/>
-                        <ColumnDefinition Width="2*"/>
-                    </Grid.ColumnDefinitions>
-                    <PyCodeLib:PyCodeUC x:Name="pyCode"/>
-                    <GridSplitter x:Name="gridSplitterSMacro" HorizontalAlignment="Left" Grid.Column="1" Margin="0" Width="3" Background="#FFE0EFFB"/>
+                    <python:PythonUC x:Name="pyCode"/>
                 </Grid>
             </TabItem>
         </TabControl>

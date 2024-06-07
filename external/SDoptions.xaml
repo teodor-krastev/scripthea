@@ -50,6 +50,7 @@
                             </Grid>
                         </GroupBox>
                         <CheckBox x:Name="chkValidateScript" Content="Validate Scripthea client script (.py) in SD-webUI scripts dir." Margin="10,10,0,10"></CheckBox>
+                        <CheckBox x:Name="chkValidateAPI" Content="Validate API command line parameter in webui-user.bat" Margin="10,0,0,10"></CheckBox>
                     </StackPanel>
                 </StackPanel>
             </TabItem>

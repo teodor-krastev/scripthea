@@ -19,6 +19,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using scripthea.external;
 using scripthea.master;
+using scripthea.options;
 using UtilsNS;
 
 namespace scripthea.composer
@@ -48,9 +49,10 @@ namespace scripthea.composer
 
             Log("@_Header=loading cues files (*.cues)");              
             cuePoolUC.OnLog += new Utils.LogHandler(Log);
+            cuePoolUC.ExternalSelectionChanged += new SelectionChangedEventHandler(CuePoolSelectionChanged);
             Courier.CueSelectionHandler ChageCueRef = new Courier.CueSelectionHandler(ChangeCue);
-            cuePoolUC.Init(ref opts, ref ChageCueRef);                       
-            
+            cuePoolUC.Init(ref opts, ref ChageCueRef);
+
             Log("@_Header=loading modifiers files (*.mdfr)");
             modifiersUC.OnLog += new Utils.LogHandler(Log);
             modifiersUC.Init(ref opts);
@@ -75,7 +77,7 @@ namespace scripthea.composer
             sd_params_UC.Init(ref opts);
             cuePoolUC.OnSDparams += new Utils.LogHandler(sd_params_UC.ImportImageInfo);
             
-            if (Utils.isInVisualStudio) 
+            if (opts.general.debug) 
             { 
                 btnTest.Visibility = Visibility.Visible;
                 cbActiveAPI.Items.Add(new ComboBoxItem() { Name = "cbiSimulation", Content = "Simulation" }); 
@@ -165,32 +167,53 @@ namespace scripthea.composer
             //Log("conditions changed");
             if (opts.SingleAuto && cuePoolUC.radioMode) btnCompose_Click(sender,e);
         }*/
-
         protected void ChangeCue(List<string> selCues)
         {
             //Log("conditions changed");
-            if (opts.composer.SingleAuto && cuePoolUC.radioMode) Compose(null, selCues, modifiersUC.Composite());
+            if ((opts.composer.SingleAuto == Options.SingleAutoSet.cue || opts.composer.SingleAuto == Options.SingleAutoSet.both) && cuePoolUC.radioMode) 
+                Compose(null, selCues, modifiersUC.Composite(), false);
         }
         protected void ChangeModif(object sender, RoutedEventArgs e)
         {
             //Log("conditions changed");           
-            if (opts.composer.SingleAuto && tcQuery.SelectedItem.Equals(tiSingle)) btnCompose_Click(sender,e);
+            if ((opts.composer.SingleAuto == Options.SingleAutoSet.modif || opts.composer.SingleAuto == Options.SingleAutoSet.both) && tcQuery.SelectedItem.Equals(tiSingle)) 
+                Compose(sender,false);
         }
-        private void SetbtnComposeEnabled(bool IsEnabled)
+        private void SetbtnComposeEnabled(Options.SingleAutoSet af)
         {
-            btnCompose.IsEnabled = IsEnabled;
-            if (IsEnabled) btnCompose.Foreground = Brushes.Black;
+            btnCompose.IsEnabled = af != Options.SingleAutoSet.both;
+            switch (opts.composer.SingleAuto)
+            {                                   
+                case Options.SingleAutoSet.cue: 
+                case Options.SingleAutoSet.modif:btnCompose.Content = "Complete a prompt";
+                    break;
+                case Options.SingleAutoSet.both:
+                case Options.SingleAutoSet.none: btnCompose.Content = "Compose a prompt";
+                    break;
+            }
+
+            if (btnCompose.IsEnabled) btnCompose.Foreground = Brushes.Black;
             else btnCompose.Foreground = Brushes.DarkGray;
         }
-
         private bool UpdatingOptions = false;
-        private void UpdateFromOptions() // internal to visual options
+        private void UpdateFromOptions() // options to visual 
         {
             if (Utils.isNull(opts)) return;
             UpdatingOptions = true;
             pnlCue.Height = new GridLength(Utils.EnsureRange(opts.composer.QueryRowHeight, 150, 500));
             colQuery.Width = new GridLength(opts.composer.QueryColWidth);
-            chkAutoSingle.IsChecked = opts.composer.SingleAuto; SetbtnComposeEnabled(!opts.composer.SingleAuto);              
+            switch (opts.composer.SingleAuto)
+            {
+                case Options.SingleAutoSet.both: rbBoth.IsChecked = true;
+                    break;
+                case Options.SingleAutoSet.cue: rbCue.IsChecked = true;
+                    break;
+                case Options.SingleAutoSet.modif: rbModif.IsChecked = true;
+                    break;
+                case Options.SingleAutoSet.none: rbNone.IsChecked = true;
+                    break;
+            }
+            SetbtnComposeEnabled(opts.composer.SingleAuto);              
             chkOneLineCue.IsChecked = opts.composer.OneLineCue;           
 
             cbActiveAPI.Text = opts.composer.API; 
@@ -202,13 +225,17 @@ namespace scripthea.composer
             }           
             UpdatingOptions = false;              
         }
-        private void UpdateToOptions(object sender, RoutedEventArgs e) // visual to internal options
+        private void UpdateToOptions(object sender, RoutedEventArgs e) // visual to options
         {
             if (UpdatingOptions || Utils.isNull(opts)) return;
             int QueryRowHeight = Convert.ToInt32(pnlCue.Height.Value);
             if (QueryRowHeight > 1) opts.composer.QueryRowHeight = QueryRowHeight;
             opts.composer.QueryColWidth = Convert.ToInt32(colQuery.Width.Value);
-            opts.composer.SingleAuto = chkAutoSingle.IsChecked.Value; SetbtnComposeEnabled(!opts.composer.SingleAuto);           
+            if (rbBoth.IsChecked.Value) opts.composer.SingleAuto = Options.SingleAutoSet.both;
+            if (rbCue.IsChecked.Value) opts.composer.SingleAuto = Options.SingleAutoSet.cue;
+            if (rbModif.IsChecked.Value) opts.composer.SingleAuto = Options.SingleAutoSet.modif;
+            if (rbNone.IsChecked.Value) opts.composer.SingleAuto = Options.SingleAutoSet.none;
+            SetbtnComposeEnabled(opts.composer.SingleAuto);           
             opts.composer.OneLineCue = chkOneLineCue.IsChecked.Value;           
 
             opts.composer.API = cbActiveAPI.Text; 
@@ -236,14 +263,13 @@ namespace scripthea.composer
         public string prompt
         {
             get { return Utils.stringFlatTextBox(tbCue, true) + Utils.stringFlatTextBox(tbModifier,true); }
-        }
-        public string Compose(object sender, List<string> selectedCue, string modifiers) // , bool OneLineCue = true ->redundant 
-        {
-            if (Utils.isNull(selectedCue)) return prompt;
-            if (sender == null || sender == btnCompose || sender == tcQuery || sender == cuePoolUC || sender == chkAutoSingle)
+        }       
+        public string Compose(object sender, List<string> selectedCue, string modifiers, bool forced)  // !forced - soft compose by SingleAuto mode; forced - disregard opts.SingleAuto
+        { 
+            void ComposeCue(List<string> selCue)
             {
                 tbCue.Text = "";
-                foreach (string line in selectedCue)
+                foreach (string line in selCue)
                 {
                     if (line.Equals("")) continue;
                     if (line.Length > 1)
@@ -251,15 +277,42 @@ namespace scripthea.composer
                     tbCue.Text += line + (opts.composer.OneLineCue ? " " : Environment.NewLine);
                 }
             }
-            if (sender == null || sender == btnCompose || sender == tcQuery || sender == modifiersUC || sender == chkAutoSingle)
-                tbModifier.Text = modifiers;
+            bool common = sender == rbBoth || sender == rbCue || sender == rbModif || sender == rbNone;
+            common |= sender == null || sender == btnCompose || sender == tcQuery; 
+            if (Utils.isNull(selectedCue)) return prompt; // ?? manual
+            
+            if (sender == cuePoolUC || common)
+            {
+                if (forced) ComposeCue(selectedCue);
+                else
+                {
+                    if (opts.composer.SingleAuto == Options.SingleAutoSet.cue || opts.composer.SingleAuto == Options.SingleAutoSet.both)
+                        ComposeCue(selectedCue);
+                }
+            }
+            if (sender == modifiersUC || common)
+            {
+                if (forced) tbModifier.Text = modifiers;
+                else
+                {
+                    if (opts.composer.SingleAuto == Options.SingleAutoSet.modif || opts.composer.SingleAuto == Options.SingleAutoSet.both)
+                        tbModifier.Text = modifiers;
+                }
+            }
             return prompt;
         }
+        public string Compose(object sender, bool forced)
+        {
+            if (Utils.isNull(cuePoolUC) || Utils.isNull(modifiersUC)) return "";
+            if (Utils.isNull(cuePoolUC.activeCourier)) return "";
+            return Compose(sender, cuePoolUC.activeCourier.SelectedCue(), modifiersUC.Composite(), forced);
+        }
+
         public void btnCompose_Click(object sender, RoutedEventArgs e)
         {
             if (Utils.isNull(cuePoolUC) || Utils.isNull(modifiersUC)) return;
             if (Utils.isNull(cuePoolUC.activeCourier)) return; 
-            Compose(sender, cuePoolUC.activeCourier.SelectedCue(), modifiersUC.Composite()); 
+            Compose(sender, cuePoolUC.activeCourier.SelectedCue(), modifiersUC.Composite(), true); 
         }
         private void QueryAPI(string prompt)
         {   
@@ -277,7 +330,6 @@ namespace scripthea.composer
                 if (imageFilePath == "") { Log("Error[887]: Image generator/server is not connected!"); Log("@StopRun"); status = Status.Idle; }
                 else Log("Error with " + imageFilePath);
             }
-            bool scanEnd = false;
             switch (status)
             {
                 case Status.SingeQuery:
@@ -288,7 +340,7 @@ namespace scripthea.composer
                     Log("@EndGeneration: " + imageFilePath);                    
                     if (scanPromptIdx == (scanPrompts.Count-1)) // the end of it, back to init state
                     {
-                        status = Status.Idle; scanEnd = true;
+                        status = Status.Idle; 
                         Log("This Scan resulted in " + scanPrompts.Count.ToString()+" images.", Brushes.DarkMagenta);
                         API.activeAPI.Broadcast("end.scan");
                     }                        
@@ -319,13 +371,13 @@ namespace scripthea.composer
             {
                 if (ScanModifs.Count.Equals(0))
                 {
-                    scanPrompts.Add(Compose(null, ls, fis));                    
+                    scanPrompts.Add(Compose(null, ls, fis, true));                    
                 }
                 else
                 {                
                     foreach (string sc in ScanModifs)
                     {
-                        scanPrompts.Add(Compose(null, ls, fis + (sc.Equals("") ? "" : opts.composer.ModifPrefix) + sc));                        
+                        scanPrompts.Add(Compose(null, ls, fis + (sc.Equals("") ? "" : opts.composer.ModifPrefix) + sc, true));                        
                     }
                 }
             }            
@@ -446,7 +498,7 @@ namespace scripthea.composer
         private void chkAutoSingle_Checked(object sender, RoutedEventArgs e)
         {
             UpdateToOptions(sender, e);
-            btnCompose_Click(sender, e);
+            Compose(sender, false);
         }
         private void cbActiveAPI_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -483,8 +535,8 @@ namespace scripthea.composer
         private void btnQuery_Click(object sender, RoutedEventArgs e)
         {
             if (!CheckAPIready()) return;
-            if (opts.composer.SingleAuto) btnCompose_Click(null, null); status = Status.SingeQuery;
-            string pro = Compose(sender, cuePoolUC.ActiveCueList?.selectedCues()[0].cueTextAsList(true), modifiersUC.Composite()); // TO BE CLEARED !!! selection from image depot problem
+            if (opts.composer.SingleAuto != Options.SingleAutoSet.none) Compose(null, false); status = Status.SingeQuery;
+            string pro = Compose(sender, cuePoolUC.ActiveCueList?.selectedCues()[0].cueTextAsList(true), modifiersUC.Composite(), false); // TO BE CLEARED !!! selection from image depot problem
             QueryAPI(pro); 
         }
         private void tbCue_TextChanged(object sender, TextChangedEventArgs e)
@@ -528,7 +580,7 @@ namespace scripthea.composer
             {
                 MenuItem mi = new MenuItem(); mi.Header = miTitles[i];
                 if (i==0 || i==1) mi.IsEnabled = isSel; 
-                if (i == 2) mi.IsEnabled = Clipboard.ContainsText();
+                if (i == 2) mi.IsEnabled = Clipboard.ContainsText(); 
                 mi.Click += mi_Click;
                 cmCue.Items.Add(mi);
             }
@@ -592,7 +644,14 @@ namespace scripthea.composer
                 if (scanPreviewUC.selectedPrompt == "") { Log("Error[74]: no prompt selected"); return; }                
                 QueryAPI(scanPreviewUC.selectedPrompt);
             }
-        }        
+        }
+        public void CuePoolSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!(sender is TabControl)) return;
+            int tci = (sender as TabControl).SelectedIndex; int pc = cuePoolUC.poolCount;
+            gridSingle.IsEnabled = tci < pc; gridPrompt.IsEnabled = gridSingle.IsEnabled;
+            gridScan.IsEnabled = tci < pc || tci == pc + 1; 
+        }
         private void btnCopy_Click(object sender, RoutedEventArgs e)
         {
             Clipboard.SetText(prompt); 

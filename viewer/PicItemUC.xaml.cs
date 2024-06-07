@@ -13,9 +13,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using scripthea.master;
-using UtilsNS;
 using Path = System.IO.Path;
+using scripthea.master;
+using scripthea.options;
+using UtilsNS;
 
 namespace scripthea.viewer
 {
@@ -33,7 +34,7 @@ namespace scripthea.viewer
             status = new HashSet<statusStates>();
         }
         Options opts;      
-        public int idx { get; set; }
+        public int idx { get; set; } // 0 based 
 
         public bool selected
         {
@@ -62,7 +63,8 @@ namespace scripthea.viewer
                 if (!selected) return; 
                 if (focused) Background = Brushes.RoyalBlue;  
                 else Background = Brushes.Gray;
-                tbCue.Foreground = Brushes.White; tbFile.Foreground = Brushes.White;
+                tbCue.Foreground = Brushes.White; 
+                lbNumber.Foreground = Brushes.White; tbFile.Foreground = Brushes.White; lbRate.Foreground = Brushes.White;
             }
         }
         public bool marked
@@ -75,7 +77,8 @@ namespace scripthea.viewer
                 if (selected) return;      
                 if (value) Background = ImgUtils.ToSolidColorBrush("#FFE6FFF3"); //Brushes.MintCream;
                 else Background = Brushes.White;                        
-                tbCue.Foreground = Brushes.Black; tbFile.Foreground = Brushes.Black;
+                tbCue.Foreground = Brushes.Black; 
+                lbNumber.Foreground = Brushes.DarkBlue; tbFile.Foreground = Brushes.Black; lbRate.Foreground = Brushes.Maroon;
             }
         }
         private bool _checkable;
@@ -121,7 +124,7 @@ namespace scripthea.viewer
         public ImageInfo imgInfo { get; private set; }
         public BitmapImage bitmapImage { get; private set; }
         public bool file_not_found { get; private set; }
-        public bool ContentUpdate(int index, string imageDir, ImageInfo ii)
+        public bool ContentUpdate(int index, string imageDir, ImageInfo ii) // index 0 based 
         {
             if (ii == null || !Directory.Exists(imageDir)) return false;
             imageFolder = imageDir; imgInfo = ii.Clone();
@@ -140,8 +143,11 @@ namespace scripthea.viewer
             {
                 imgPic.Source = SctUtils.file_not_found; tbFile.Foreground = Brushes.Tomato;
             }
+            lbNumber.Content = "[ " + (index + 1).ToString() + " ] ";  
             tbFile.Text = ii.filename; tbFile.ToolTip = filePath;
-            idx = index; tbCue.Text = ii.prompt; tbCue.ToolTip = ii.prompt;
+            lbRate.Content = (ii.rate == 0) ? "" : " { " + ii.rate.ToString() + " }";
+            idx = index; 
+            tbCue.Text = ii.prompt; tbCue.ToolTip = ii.prompt;
             selected = false; return !file_not_found;
         }
         private void imgPic_MouseDown_1(object sender, MouseButtonEventArgs e)

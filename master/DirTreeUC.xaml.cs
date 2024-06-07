@@ -16,11 +16,12 @@ using System.Windows.Shapes;
 using Path = System.IO.Path;
 using Newtonsoft.Json;
 using Brushes = System.Windows.Media.Brushes;
-using UtilsNS;
+using ExifLib;
 using System.Windows.Media.Animation;
 using Image = System.Windows.Controls.Image;
 using scripthea.viewer;
-using ExifLib;
+using scripthea.options;
+using UtilsNS;
 
 namespace scripthea.master
 {
@@ -134,7 +135,7 @@ namespace scripthea.master
                 cbDrives.Items.Add(item);
                 cbDrives.SelectedIndex = 1;
             }
-            if (!Utils.isInVisualStudio)
+            if (!opts.general.debug)
             {
                 tbSelected.Visibility = Visibility.Collapsed; tvFolders.Margin = new Thickness(0);
             }

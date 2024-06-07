@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using UtilsNS;
 using scripthea.viewer;
+using scripthea.options;
 
 namespace scripthea.external
 {

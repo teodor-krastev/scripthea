@@ -14,10 +14,11 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using scripthea.viewer;
-using UtilsNS;
 using Path = System.IO.Path;
 using Brushes = System.Windows.Media.Brushes;
+using scripthea.viewer;
+using scripthea.options;
+using UtilsNS;
 
 namespace scripthea.master
 {
@@ -119,7 +120,7 @@ namespace scripthea.master
             {
                 if (activeView.selectedIndex == -1 || iDepot == null) return null;
                 if (!iDepot.isEnabled) return null;
-                return iDepot.items[activeView.selectedIndex - 1];
+                return iDepot.items[activeView.selectedIndex];
             }
         }
         public List<ImageInfo> imageInfos(bool check, bool uncheck)
@@ -127,7 +128,7 @@ namespace scripthea.master
             if (activeView == null || iDepot == null) return null;
             if (!iDepot.isEnabled || !checkable) return null;
             List<ImageInfo> lii = new List<ImageInfo>();
-            List<Tuple<int, string, string>> lt = activeView.GetItems(check, uncheck);
+            List<Tuple<int, string, int, string>> lt = activeView.GetItems(check, uncheck);
             foreach (var ii in lt)
             {
                 int i = ii.Item1 - 1;
@@ -136,9 +137,10 @@ namespace scripthea.master
             }
             return lii;
         }
-        public List<Tuple<int, string, string>> ListOfTuples(bool check, bool uncheck)
+        public List<Tuple<int, string, int, string>> ListOfTuples(bool check, bool uncheck)
         {
-            if (!iDepot.isEnabled || activeView.Equals(null) || !checkable) return null;
+            if (iDepot == null) return null;
+            if (!iDepot.isEnabled || activeView == null || !checkable) return null;
             return activeView?.GetItems(check, uncheck);
         }
         public void SelectItem(int idx)
@@ -215,7 +217,7 @@ namespace scripthea.master
         {
             //if (print) SetCheckLabel("---");
             if (!isEnabled || activeView == null) { /*Log("Error[]: No active image depot found.");*/ return -1; }
-            List<Tuple<int, string, string>> itms = activeView.GetItems(true, false);
+            List<Tuple<int, string, int, string>> itms = activeView.GetItems(true, false);
             if (print)
                 SetCheckLabel(itms.Count.ToString() + " out of " + activeView.Count.ToString());
             if (activeView.Count == 0) image.Source = null;
@@ -293,13 +295,22 @@ namespace scripthea.master
         //public delegate void PicViewerHandler(int idx, string imageDir, ImageInfo ii);
         public event TableViewUC.PicViewerHandler OnSelectEvent; // to the master
         string lastLoadedPic = "";
-        public void loadPic(int idx, string imageDir, ImageInfo ii)
+        protected ImageInfo SelectedItem(int idx, ImageDepot _iDepot)  // idx in iDepot
         {
-            string filePath = Path.Combine(imageDir, ii.filename);
+            ImageInfo ii = null;
+            if (_iDepot != null)
+                if (_iDepot.isEnabled && Utils.InRange(idx, 0, _iDepot.items.Count - 1))
+                    ii = _iDepot.items[idx];
+            return ii;
+        }
+        public void loadPic(int idx, ImageDepot iDepot)
+        {
+            ImageInfo ii = SelectedItem(idx, iDepot);
+            string filePath = Path.Combine(iDepot.path, ii.filename);
             if (File.Exists(filePath)) { image.Source = ImgUtils.UnhookedImageLoad(filePath, ImgUtils.ImageType.Png); lastLoadedPic = filePath; }
             else { image.Source = SctUtils.file_not_found; lastLoadedPic = ""; }
             if (OnPicSelect != null) OnPicSelect(ii.prompt, null);
-            if (OnSelectEvent != null) OnSelectEvent(idx, imageDir, ii);
+            if (OnSelectEvent != null) OnSelectEvent(idx, iDepot);
             GetChecked();
         }
         TabItem lastTab = null;

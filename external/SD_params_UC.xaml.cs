@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using Newtonsoft.Json;
 using Path = System.IO.Path;
 using scripthea.viewer;
+using scripthea.options;
 using UtilsNS;
 
 namespace scripthea.external

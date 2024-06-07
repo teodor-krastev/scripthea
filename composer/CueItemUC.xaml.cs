@@ -41,7 +41,7 @@ namespace scripthea.composer
         public int index 
         { 
             get { return _index; } 
-            set { _index = value; gridFullFrame.Background = (index % 2).Equals(0) ? Utils.ToSolidColorBrush("#FFFFFEF2") /*yellowish*/ : Utils.ToSolidColorBrush("#FFF5F7EA"); } // greenish
+            set { _index = value; gridFullFrame.Background = (index % 2).Equals(0) ? Utils.ToSolidColorBrush("#FFFFFEF5") /*yellowish*/ : Utils.ToSolidColorBrush("#FFF5F7EA"); } // greenish
         }
         public event Utils.LogHandler OnLog;
         protected void Log(string txt, SolidColorBrush clr = null)

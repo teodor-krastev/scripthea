@@ -18,6 +18,7 @@ using Path = System.IO.Path;
 using UtilsNS;
 using scripthea.viewer;
 using scripthea.master;
+using scripthea.options;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 
@@ -280,10 +281,7 @@ namespace scripthea.composer
         }
         private void cbCommand_DropDownOpened(object sender, EventArgs e)
         {
-            if (!Utils.isInVisualStudio) cbiSaveFlat.Visibility = Visibility.Collapsed;
+            if (!opts.general.debug) cbiSaveFlat.Visibility = Visibility.Collapsed;
         }
     }
 }
-
-/*
-*/

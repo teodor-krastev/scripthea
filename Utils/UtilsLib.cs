@@ -83,6 +83,8 @@ namespace UtilsNS
     }
     public static class Utils
     {
+        public delegate void SimpleEventHandler();
+
         static Random rand = new Random(RandomnSeed);
         /// <summary>
         /// ProcessMessages of the visual components 
@@ -115,7 +117,7 @@ namespace UtilsNS
         {
             DispatcherTimer timer = null;
             timer = new DispatcherTimer(new TimeSpan(0, 0, 0, 0, Delay),
-                DispatcherPriority.Normal, (snd, ea) => { timer.Stop(); action(); }, Dispatcher.CurrentDispatcher); 
+                DispatcherPriority.Normal, (snd, ea) => { timer.Stop(); action(); }, Dispatcher.CurrentDispatcher);
         }
         public static void CallTheWeb(string query)
         {
@@ -125,8 +127,8 @@ namespace UtilsNS
         public static SearchEngine searchEngine = SearchEngine.google;
         public static void AskTheWeb(string query, bool imagesTab = false)
         {
-            string imageSwitch = imagesTab ? "&tbm=isch" : ""; 
-            CallTheWeb("https://www." + Convert.ToString(searchEngine) + ".com/search?q=" + query.Trim().Replace(' ', '+')+imageSwitch);
+            string imageSwitch = imagesTab ? "&tbm=isch" : "";
+            CallTheWeb("https://www." + Convert.ToString(searchEngine) + ".com/search?q=" + query.Trim().Replace(' ', '+') + imageSwitch);
         }
         /// <summary>
         /// start batch file and when it's time to close it: 
@@ -176,24 +178,110 @@ namespace UtilsNS
             }
             return process;
         }
-
-        /*public static Process RunBatchFile(string pathToBatchFile, bool showShell = true)
+        public static string RunCommand(string workingDirectory, string cmd, bool exitAtEnd = true)
         {
-            if (!File.Exists(pathToBatchFile))
+            var cmds = new List<string>() { cmd };
+            return RunCommands(workingDirectory, cmds, exitAtEnd);
+        }
+
+        public static string RunCommands(string workingDirectory, List<string> cmds, bool exitAtEnd = true)
+        {
+            string output;
+            try
             {
-                string msg = "No batch file: " + pathToBatchFile;
-                TimedMessageBox(msg, "Problem", 3500); Console.WriteLine(msg);
-                return null;
+                using (Process process = new Process())
+                {
+                    process.StartInfo.FileName = "cmd.exe";
+                    if (Directory.Exists(workingDirectory)) process.StartInfo.WorkingDirectory = workingDirectory;
+                    process.StartInfo.UseShellExecute = false;
+                    process.StartInfo.RedirectStandardInput = true;
+                    process.StartInfo.RedirectStandardOutput = true;
+                    process.StartInfo.RedirectStandardError = true;
+                    process.StartInfo.CreateNoWindow = true;
+
+                    process.Start();
+
+                    // Send command to cmd.exe
+                    using (StreamWriter sw = process.StandardInput)
+                    {
+                        if (sw.BaseStream.CanWrite)
+                        {
+                            foreach (string command in cmds)
+                            {
+                                sw.WriteLine(command);
+                            }
+                            if (exitAtEnd) sw.WriteLine("exit"); // Ensure the cmd closes after executing the command
+                        }
+                    }
+
+                    // Read output from cmd.exe
+                    output = process.StandardOutput.ReadToEnd();
+                    string error = process.StandardError.ReadToEnd();
+
+                    process.WaitForExit(); // Wait for the process to finish
+                                           // Additional processing based on output can be added here
+                                           //vLog("> " + $"Finished executing command: {command}");
+                }
             }
-            ProcessStartInfo processStartInfo = new ProcessStartInfo()
+            catch (Exception ex)
             {
-                FileName = pathToBatchFile,
-                WorkingDirectory = Path.GetDirectoryName(pathToBatchFile),
-                UseShellExecute = showShell,
-                CreateNoWindow = !showShell
-            };
-            return Process.Start(processStartInfo);
-        }*/
+                return "Error: " + ex.Message;
+            }
+            return output;
+        }
+
+        public static (string, string) ExecCommandLine(string cl)
+        {
+            try
+            {
+                // Create a new process start info
+                ProcessStartInfo processStartInfo = new ProcessStartInfo
+                {
+                    FileName = "cmd.exe",
+                    RedirectStandardInput = true,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                };
+                // Start the process
+                using (Process process = Process.Start(processStartInfo))
+                {
+                    // Execute the Python version command
+                    process.StandardInput.WriteLine(cl);
+                    process.StandardInput.Flush();
+                    process.StandardInput.Close();
+                    process.WaitForExit();
+
+                    // Read the output to get the Python version
+                    string output = process.StandardOutput.ReadToEnd();
+                    string error = process.StandardError.ReadToEnd();
+                    return (output, error);
+                }
+            }
+            catch (Exception ex)
+            {
+                return ("", "Error:" + ex.Message);
+            }
+        }
+        public static string GetPythonVersion()
+        {
+            string output, error;
+            (output, error) = ExecCommandLine("python --version");
+            if (!string.IsNullOrEmpty(output))
+            {
+                int i = output.IndexOf("Python ");
+                if (i < 0) return "<none>";
+                string ss = output.Substring(i); i = ss.IndexOf('\r');
+                if (i < 0) return "<none>";
+                return ss.Substring(7, i - 7);
+            }
+            if (!string.IsNullOrEmpty(error))
+            {
+                return "Error: " + error;
+            }
+            return "";
+        }
 
         /// <summary>
         /// Get Python version if there
@@ -1183,6 +1271,12 @@ namespace UtilsNS
         public static string appFullPath = System.Reflection.Assembly.GetEntryAssembly().Location;
         public static string appName = System.Reflection.Assembly.GetEntryAssembly().GetName().Name;
         public static bool localConfig = File.Exists(Path.ChangeExtension(System.Reflection.Assembly.GetEntryAssembly().Location, ".PDB"));
+
+        public static string GetParrentDirectory(string path)
+        {
+            DirectoryInfo parentDir = Directory.GetParent(path);
+            return parentDir.FullName;
+        }
         public enum BaseLocation { oneUp, twoUp, appData, auto }
         public static BaseLocation baseLocation = BaseLocation.auto;
         public static string GetBaseLocation(BaseLocation bl)
@@ -1238,6 +1332,20 @@ namespace UtilsNS
             if (path1.Equals("") || path2.Equals("")) return false;
             return Path.GetFullPath(path1).TrimEnd('\\').Equals(Path.GetFullPath(path2).TrimEnd('\\'), StringComparison.InvariantCultureIgnoreCase);
         }
+        public static bool newerVersion(string ver1, string ver2) // check if ver2 is later than ver1
+        {
+            string[] sa = ver1.Split('.'); string[] sb = ver2.Split('.');
+            if (sa.Length == 4 && sb.Length == 4) return Convert.ToInt32(sa[3]) < Convert.ToInt32(sb[3]);
+            if (sa.Length < 3 || sb.Length < 3) return false;
+            if (Convert.ToInt32(sa[0]) < Convert.ToInt32(sb[0])) return true;
+            if (Convert.ToInt32(sa[0]) > Convert.ToInt32(sb[0])) return false;
+            if (Convert.ToInt32(sa[1]) < Convert.ToInt32(sb[1])) return true;
+            if (Convert.ToInt32(sa[1]) > Convert.ToInt32(sb[1])) return false;
+            if (Convert.ToInt32(sa[2]) < Convert.ToInt32(sb[2])) return true;
+            if (Convert.ToInt32(sa[2]) > Convert.ToInt32(sb[2])) return false;
+            return false;
+        }
+
         public static int RandomnSeed
         {
             get 
@@ -1361,12 +1469,10 @@ namespace UtilsNS
             string lastItem = buffer[buffer.Count - 1];
             buffer[buffer.Count - 1] = lastItem.Substring(0, lastItem.Length - 1);
         }
-
         private void ConsoleLine(string txt)
         {
             Console.WriteLine(txt);
         }
-
         public Task Flush() // do not forget to flush when exit (OR switch Enabled Off)
         {
             if (buffer.Count == 0) return null;

@@ -15,15 +15,16 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using scripthea.master;
-using UtilsNS;
 using Path = System.IO.Path;
 using Newtonsoft.Json;
+using scripthea.master;
+using scripthea.options;
+using UtilsNS;
 
 namespace scripthea.viewer 
 {
-
-    interface iPicList
+    public delegate void UpdateVisRecEventHandler(int idx, ImageInfo ii);
+    public interface iPicList
     {
         void Init(ref Options _opts, bool _checkable);
         void Finish();
@@ -34,7 +35,8 @@ namespace scripthea.viewer
         bool FeedList(string imageFolder); // the way to load the list
         bool FeedList(ref ImageDepot _iDepot); // external iDepot; regular use
         void UpdateVis(); // update visual from iDepot
-        void SynchroChecked(List<Tuple<int, string, string>> chks);
+        void UpdateVisRecord(int idx, ImageInfo ii); // update visual record from ii
+        void SynchroChecked(List<Tuple<int, string, int, string>> chks);
         void SetChecked(bool? check); // if null invert; returns checked
         string markMask { get; }
         void CheckRange(int first, int last);
@@ -42,7 +44,7 @@ namespace scripthea.viewer
         void Clear(bool inclDepotItems = false);
         int selectedIndex { get; set; } // one based index in no-checkable mode
         int Count { get; }
-        List<Tuple<int, string, string>> GetItems(bool check, bool uncheck); // idx, filename, prompt
+        List<Tuple<int, string, int, string>> GetItems(bool check, bool uncheck); // idx, filename, prompt
     }
     /// <summary>
     /// Interaction logic for ViewerUC.xaml
@@ -56,11 +58,17 @@ namespace scripthea.viewer
             views.Add(tableViewUC); tableViewUC.SelectEvent += new TableViewUC.PicViewerHandler(picViewerUC.loadPic); 
             views.Add(gridViewUC);  gridViewUC.SelectEvent += new GridViewUC.PicViewerHandler(picViewerUC.loadPic);
             gridViewUC.OnLog += new Utils.LogHandler(Log); picViewerUC.OnLog += new Utils.LogHandler(Log);
+            picViewerUC.OnUpdateVisRecord += new UpdateVisRecEventHandler(UpdateVisRecord);
+
         }
-        private ImageDepot iDepot;
-        iPicList activeView { get { return views[tabCtrlViews.SelectedIndex]; } }
+        private ImageDepot iDepot; // { get; private set; }
+        public iPicList activeView { get { return views[tabCtrlViews.SelectedIndex]; } }
         private DispatcherTimer timer;
         private Options opts;
+        public void UpdateVisRecord(int idx, ImageInfo ii) // update visual record from ii
+        {
+            activeView.UpdateVisRecord(idx, ii);
+        }
         public void Init(ref Options _opts) // ■▬►
         {
             opts = _opts;
@@ -73,12 +81,14 @@ namespace scripthea.viewer
         }
         public void Finish()
         {
+            iDepot?.Close();
             opts.composer.ViewColWidth = Convert.ToInt32(colListWidth.Width.Value);
             opts.viewer.Autorefresh = chkAutoRefresh.IsChecked.Value;
             foreach (iPicList ipl in views)
                 ipl.Finish();
             picViewerUC.Finish();
         }
+
         public UserControl parrent { get { return this; } }
         public GroupBox groupFolder { get { return gbFolder; } }
         public TextBox textFolder { get { return tbImageDepot; } }
@@ -155,15 +165,14 @@ namespace scripthea.viewer
             }
         }
         private Undo undo = null;
-
         public int RemoveSelected(bool inclFile = false)
         {
             if (!activeView.HasTheFocus) return -1;
             string ss = inclFile ? "and image file" : ""; bool anim = animation; animation = false;
-            Log("Deleting image #" + activeView.selectedIndex.ToString()+ " entry "+ ss, Brushes.Tomato);
+            Log("Deleting image #" + (activeView.selectedIndex + 1).ToString()+ " entry "+ ss, Brushes.Tomato);
             if (iDepot == null) { Log("Error: no active image depot found"); return -1; }
             if (!iDepot.isEnabled) { Log("Error: current image depot - not active"); return -1; }
-            int idx0 = activeView.selectedIndex - 1;
+            int idx0 = activeView.selectedIndex;
             if (!Utils.InRange(idx0, 0, iDepot.items.Count - 1)) { Log("index out of limits"); return -1; }
 
             string markMask = activeView.markMask;
@@ -183,7 +192,7 @@ namespace scripthea.viewer
             }
             if (!iDepot.isEnabled) { Log("Error[238]: current image depot - not active"); return -1; }
             // restore selection, masked and animation  
-            activeView.selectedIndex = Utils.EnsureRange(idx0, 0, iDepot.items.Count - 1) + 1;
+            activeView.selectedIndex = Utils.EnsureRange(idx0, 0, iDepot.items.Count - 1);
             activeView.MarkWithMask(markMask);
             if (anim) animation = true;
             if (iDepot.isEnabled) lbDepotInfo.Content = iDepot.items.Count.ToString() + " images";
@@ -209,15 +218,15 @@ namespace scripthea.viewer
         {
             if (tabCtrlViews.SelectedIndex.Equals(0)) tableViewUC.SortTableByIndex();
             int k = sender.Equals(btnFindUp) ? -1 : 1;
-            if (activeView.selectedIndex.Equals(-1)) activeView.selectedIndex = 1;
-            int idx = activeView.selectedIndex + k - 1;
-            List<Tuple<int, string, string>> items = activeView.GetItems(true,true);
+            if (activeView.selectedIndex.Equals(-1)) activeView.selectedIndex = 0;
+            int idx = activeView.selectedIndex + k;
+            List<Tuple<int, string, int, string>> items = activeView.GetItems(true,true);
             while (idx > -1 && idx < items.Count)
             {
-                string prompt = Convert.ToString(items[idx].Item3);                
+                string prompt = Convert.ToString(items[idx].Item2);                
                 if (Utils.IsWildCardMatch(prompt,tbFind.Text) || tbFind.Text.Equals("")) //prompt.IndexOf(tbFind.Text) > -1)
                 {
-                    activeView.selectedIndex = idx+1; break;
+                    activeView.selectedIndex = idx; break;
                 }
                 idx += k;
             }
@@ -231,6 +240,7 @@ namespace scripthea.viewer
         }
         public void Refresh(string iFolder = "", object sender = null) 
         {
+            iDepot?.Close();
             string folder = iFolder;
             if (iDepot != null && iFolder == "")
             {
@@ -244,14 +254,15 @@ namespace scripthea.viewer
             iDepot = new ImageDepot(imageFolder);
             if (!iDepot.isEnabled) { Log("Error[96]: This is not an image depot."); return; }
             else lbDepotInfo.Content = iDepot.items.Count.ToString() + " images"; 
-            List<Tuple<int, string, string>> decompImageDepot = iDepot.Export2Viewer(); 
+            List<Tuple<int, string, int, string>> decompImageDepot = iDepot.Export2Viewer(); 
             if (!Utils.isNull(decompImageDepot))
             {
                 showing = false;
-                activeView.FeedList(ref iDepot); picViewerUC.iDepot = iDepot;
+                activeView.FeedList(ref iDepot); picViewerUC.SetiDepot(iDepot);
+                if (activeView == tableViewUC) tableViewUC.focusFirstRow();
                 showing = true;
             }
-            animation = false; btnPlay.IsEnabled = decompImageDepot.Count > 0; 
+            animation = false; btnPlay.IsEnabled = decompImageDepot.Count > 0;            
         }
         private void btnRefresh_Click(object sender, RoutedEventArgs e) 
         {
@@ -324,7 +335,7 @@ namespace scripthea.viewer
             if (activeView.iDepot == null) return;
             int cnt = activeView.iDepot.items.Count;
             if (activeView.selectedIndex.Equals(cnt)) animation = false;
-            if (Utils.InRange(activeView.selectedIndex, 1,cnt-1)) activeView.selectedIndex += 1;
+            if (Utils.InRange(activeView.selectedIndex, 0,cnt-2)) activeView.selectedIndex += 1;
         }
         private void numDly_ValueChanged(object sender, RoutedEventArgs e)
         {
@@ -343,7 +354,7 @@ namespace scripthea.viewer
                 {
                     case Key.Add: picViewerUC.zoomControl(1);
                         break;
-                        case Key.NumPad0: picViewerUC.zoomControl(0);
+                    case Key.Multiply: picViewerUC.zoomControl(0);
                         break;
                     case Key.Subtract: picViewerUC.zoomControl(-1);
                         break;
@@ -351,9 +362,9 @@ namespace scripthea.viewer
                 e.Handled = true; return;
             }
             if (!activeView.HasTheFocus) return;
-            if ((e.Key.Equals(Key.Delete) || e.Key.Equals(Key.NumPad0))) //Utils.DelayExec(100, () => {  } );
+            if (e.Key.Equals(Key.Delete) || e.Key.Equals(Key.Subtract)) // it goes here first and then to inside comp.
             {
-                Log("@Explore=70");
+                Log("@Explore=70"); 
                 RemoveSelected(opts.viewer.RemoveImagesInIDF);
             }           
             if (e.Key.Equals(Key.Add)) // recover from undo
@@ -371,10 +382,17 @@ namespace scripthea.viewer
                     bb = gridViewUC.Recover();
                 }
                 if (bb) Log("Recover a deleted image", Brushes.Crimson);
-                activeView.selectedIndex = Utils.EnsureRange(si, 1, iDepot.items.Count);
+                activeView.selectedIndex = Utils.EnsureRange(si, 0, iDepot.items.Count-1);
                 activeView.MarkWithMask(tbFind.Text);
                 checkImageDepot();
-            }                
+            }
+            int intKey = (int)e.Key-74;
+            if (Utils.InRange(intKey, 0, 74))
+            {
+                if (iDepot == null || picViewerUC == null) return;
+                if (!iDepot.isEnabled) return;
+                picViewerUC.sldRate.Value = intKey;
+            }
         }
         private void btnMark_Click(object sender, RoutedEventArgs e)
         {

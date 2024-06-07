@@ -15,6 +15,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Collections.Specialized;
 using Newtonsoft.Json;
+using scripthea.options;
 using UtilsNS;
 
 namespace scripthea.composer

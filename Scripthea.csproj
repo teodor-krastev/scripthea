@@ -41,6 +41,9 @@
     <ApplicationIcon>Properties\penpic2.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AvalEditLib">
+      <HintPath>python\AvalEditLib\bin\Debug\AvalEditLib.dll</HintPath>
+    </Reference>
     <Reference Include="ExifLib, Version=1.7.0.0, Culture=neutral, PublicKeyToken=30284005913968db, processorArchitecture=MSIL">
       <HintPath>packages\ExifLib.1.7.0.0\lib\net45\ExifLib.dll</HintPath>
     </Reference>
@@ -61,6 +64,9 @@
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Python.Runtime, Version=3.0.3.0, Culture=neutral, PublicKeyToken=5000fea6cba702dd, processorArchitecture=MSIL">
+      <HintPath>packages\pythonnet.3.0.3\lib\netstandard2.0\Python.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -219,6 +225,13 @@
       <DependentUpon>SimulatorUC.xaml</DependentUpon>
     </Compile>
     <Compile Include="external\tempNVAPI.cs" />
+    <Compile Include="python\HelpTreeUC.xaml.cs">
+      <DependentUpon>HelpTreeUC.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="python\PyCodeUC.xaml.cs">
+      <DependentUpon>PyCodeUC.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="sOptions.cs" />
     <Compile Include="viewer\GridViewUC.xaml.cs">
       <DependentUpon>GridViewUC.xaml</DependentUpon>
     </Compile>
@@ -371,6 +384,14 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="python\HelpTreeUC.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="python\PyCodeUC.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="viewer\GridViewUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -514,14 +535,6 @@
     <Resource Include="Properties\TripleBarTeal.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="sMacro\AvalEditLib\AvalEditLib.csproj">
-      <Project>{25a33493-04b0-43ca-aef8-43ffe47b0418}</Project>
-      <Name>AvalEditLib</Name>
-    </ProjectReference>
-    <ProjectReference Include="sMacro\PyCodeLib\PyCodeLib.csproj">
-      <Project>{94589c5f-f241-45b0-a685-bcafd624661a}</Project>
-      <Name>PyCodeLib</Name>
-    </ProjectReference>
     <ProjectReference Include="Utils\UtilsLib.csproj">
       <Project>{a377a708-96b9-4569-bc22-0187d647611e}</Project>
       <Name>UtilsLib</Name>
@@ -540,5 +553,6 @@
     <Resource Include="Properties\left_teal_arrow.png" />
     <Resource Include="Properties\right_teal_arrow.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

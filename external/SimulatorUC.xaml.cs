@@ -14,10 +14,11 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using UtilsNS;
 using Path = System.IO.Path;
 using scripthea.master;
 using scripthea.viewer;
+using scripthea.options;
+using UtilsNS;
 
 namespace scripthea.external
 {

@@ -29,8 +29,6 @@ namespace UtilsNS
         {
             return (SolidColorBrush)new BrushConverter().ConvertFromString(hex_code);
         }
- 
-
         public static ImageType GetImageType(string filePath)
         {
             string extension = Path.GetExtension(filePath).ToLower();
@@ -349,7 +347,7 @@ namespace UtilsNS
 
             return stream;
         }
-        public static BitmapSource MemoryStreamToBitmapSource(MemoryStream memoryStream)
+        public static BitmapSource MemoryStream2BitmapSource(MemoryStream memoryStream)
         {
             BitmapImage bitmapImage = new BitmapImage();
             bitmapImage.BeginInit();
@@ -361,7 +359,7 @@ namespace UtilsNS
             return bitmapImage;
         }
 
-        public static BitmapImage MemoryStreamToBitmapImage(MemoryStream memoryStream)
+        public static BitmapImage MemoryStream2BitmapImage(MemoryStream memoryStream)
         {
             BitmapImage bitmapImage = new BitmapImage();
             bitmapImage.BeginInit();

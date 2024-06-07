@@ -17,6 +17,15 @@
             <TextBlock x:Name="tbCue" TextWrapping="Wrap" Background="{x:Null}" Margin="0,0,0,0.253" />
         </Grid>
         <Image x:Name="imgPic"  Margin="0" Grid.Row="1" MouseDown="imgPic_MouseDown_1"/>
-        <TextBlock x:Name="tbFile" Grid.Row="2" Margin="0" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
+        <Grid Grid.Row="2" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="38"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="35"/>
+            </Grid.ColumnDefinitions>
+            <Label x:Name="lbNumber" Foreground="DarkBlue"  Margin="0,-3,0,0" Content="" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Segoe UI Semibold"></Label>
+            <TextBlock x:Name="tbFile" Margin="0,1,0,0" VerticalAlignment="Top" Grid.Column="1"/>
+            <Label x:Name="lbRate" Grid.Column="2" Foreground="Maroon" HorizontalAlignment="Right" Margin="0,-3,-2,0" Content="" VerticalAlignment="Top" FontFamily="Segoe UI Semibold"></Label>
+        </Grid>
     </Grid>
 </UserControl>

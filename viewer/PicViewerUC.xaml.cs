@@ -12,10 +12,11 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using scripthea.master;
-using UtilsNS;
 using Path = System.IO.Path;
 using Brushes = System.Windows.Media.Brushes;
+using scripthea.master;
+using scripthea.options;
+using UtilsNS;
 
 namespace scripthea.viewer
 {
@@ -26,7 +27,7 @@ namespace scripthea.viewer
     {
         public PicViewerUC()
         {
-            InitializeComponent(); iDepot = null;
+            InitializeComponent(); 
         }
         private Options opts;
         public void Init(ref Options _opts)
@@ -34,7 +35,8 @@ namespace scripthea.viewer
             opts = _opts;
             rowBottom.Height = new GridLength(Utils.EnsureRange(opts.viewer.PicViewPromptH, 30, 500));
             colMeta.Width = new GridLength(Utils.EnsureRange(opts.viewer.PicViewMetaW, 3,500));
-            sldRank_MouseDoubleClick(null, null);
+            miNeutral_Click(null, null); 
+            actIdx = -1;
         }
         public void Finish()
         {
@@ -46,19 +48,33 @@ namespace scripthea.viewer
         {
             if (OnLog != null) OnLog(txt, clr);
         }
-        public ImageDepot iDepot { get; set; }
+        public int actIdx { get; private set; } // when refresh
+        public ImageDepot iDepot { get; private set; } 
+        public void SetiDepot(ImageDepot _iDepot)
+        {
+            iDepot = _iDepot;
+        }
+        protected ImageInfo SelectedItem(int idx, ImageDepot _iDepot)  // idx 0 based
+        {
+            ImageInfo ii = null; 
+            if (_iDepot != null)
+                if (_iDepot.isEnabled && Utils.InRange(idx, 0, _iDepot.items.Count - 1))
+                    ii = _iDepot.items[idx];
+            return ii;
+        }
         public void Clear()
         {
             lbIndex.Content = ""; tbPath.Text = ""; tbName.Text = "";
             image.Source = null; image.UpdateLayout(); 
             tbCue.Text = ""; lboxMetadata.Items.Clear();
         }
-        public void loadPic(int idx, string imageDir, ImageInfo ii)
+        public void loadPic(int idx, ImageDepot _iDepot) // 0 based
         {
-            string filePath = Path.Combine(imageDir, ii.filename);             
-            UpdateMeta(imageDir, ii, null); // clear
-            
-            lbIndex.Content = "[ " + idx.ToString() + " ]";
+            ImageInfo ii = SelectedItem(idx, _iDepot); actIdx = -1; if (ii == null) return;
+            string filePath = Path.Combine(_iDepot.path, ii.filename);             
+            UpdateMeta(_iDepot.path, ii, null); // clear
+            actIdx = idx;
+            lbIndex.Content = "[ " + (idx+1).ToString() + " ]";
             tbPath.Text = System.IO.Path.GetDirectoryName(filePath)+"\\";
             tbName.Text = System.IO.Path.GetFileName(filePath);
             if (!File.Exists(filePath))
@@ -78,14 +94,19 @@ namespace scripthea.viewer
             tbCue.Text = ii.prompt; 
             // iDepot compare
             //if (chkExtra.IsChecked.Value) return; ?
-            if (iDepot == null) return;
-            if (!iDepot.isEnabled) return;
-            if (!Utils.InRange(idx, 1, iDepot.items.Count, true)) return;
+            if (_iDepot == null) return;
+            if (!_iDepot.isEnabled) return;
+            if (!Utils.InRange(idx, 0, _iDepot.items.Count-1, true)) return;
             if (!ii.prompt.Equals(ii.prompt, StringComparison.InvariantCultureIgnoreCase)) return;
             if (!ii.filename.Equals(tbName.Text, StringComparison.InvariantCultureIgnoreCase)) return;
+
+            UpdateMeta(_iDepot.path, ii, IsModified(_iDepot.path, ii));
+        }
+        protected bool IsModified(string imageDir, ImageInfo ii)
+        {
             bool modified = !String.IsNullOrEmpty(ii.MD5Checksum);
-            if (modified) modified = !Utils.GetMD5Checksum(filePath).Equals(ii.MD5Checksum);           
-            UpdateMeta(imageDir, ii, modified);
+            if (modified) modified = !Utils.GetMD5Checksum(Path.Combine(imageDir,ii.filename)).Equals(ii.MD5Checksum);
+            return modified;
         }
         private int ZoomFactor // [%]
         {
@@ -100,31 +121,48 @@ namespace scripthea.viewer
                 return scale; 
             }
         }
-        private int attemptCount = 0;
-        private void UpdateMeta(string imageDir, ImageInfo ii, bool? modified) // null -> clear
+        
+        private void UpdateMeta(int idx, ImageDepot _iDepot, bool? modified, bool tryFileMeta = false)
+        {
+            ImageInfo ii = SelectedItem(idx, iDepot); 
+            if (ii == null) return;
+            UpdateMeta(_iDepot.path, ii, modified);
+        }
+        
+        private bool UpdateMeta(string imageDir, ImageInfo ii, bool? modified, bool tryFileMeta = false) // update to visuals, null -> clear
         {
             if (modified == null) // get it here (later)
             {
-                lboxMetadata.Items.Clear(); return;
+                lboxMetadata.Items.Clear(); return true;
             }            
-            if (ii == null) return;
+            if (ii == null) return false;
             string filePath = Path.Combine(imageDir, ii.filename);
-            if (!File.Exists(filePath)) return;
+            if (!File.Exists(filePath)) return false;
             Dictionary<string, string> meta;
-            if (ImgUtils.GetMetaDataItems(filePath, out meta)) {  attemptCount = 0; }
+            if (tryFileMeta) // from image file, if from SD-A1111
+            {
+                if (!ImgUtils.GetMetaDataItems(filePath, out meta)) return false;
+                /* private int attemptCount = 0;
+                 * {  attemptCount = 0; } getting repeat try out later
+                else
+                {
+                    if (attemptCount < 2) // retry in case it's still opening
+                        Utils.DelayExec(1000, new Action(() => { attemptCount++; UpdateMeta(imageDir, ii, IsModified(imageDir, ii), true); }));
+                }*/
+            }              
             else
             {
-                if (attemptCount < 2) // retry in case it's still opening
-                    Utils.DelayExec(1000, new Action(() => { attemptCount++; UpdateMeta(imageDir, ii, modified); }));
                 //meta.Add("No access to Meta data: ", ""); meta.Add(" the info is missing or ", ""); meta.Add("file is opened by a process.", "");
-                meta = Utils.dictObject2String(ii.ToDictionary(true));
+                meta = Utils.dictObject2String(ii.ToDictionary());
             } 
             // clean up meta
             meta.Remove("prompt");   
-            void removeMetaItem(string key, string val) // remove some defaults
+            void removeMetaItem(string key, string val) // remove some defaults, "*" mask
             {
                 if (meta.ContainsKey(key))
-                    if (meta[key] == val) meta.Remove(key);
+                { 
+                    if (val == "*" ||  meta[key] == val) meta.Remove(key);
+                }
             }
             removeMetaItem("history", "");
             removeMetaItem("tags", "");
@@ -133,16 +171,24 @@ namespace scripthea.viewer
             removeMetaItem("denoising_strength", "0");
             removeMetaItem("restore_faces", "False");
             if (meta.ContainsKey("MD5Checksum")) meta.Remove("MD5Checksum");
+            int r = meta.ContainsKey("rate") ? Convert.ToInt32(meta["rate"]) : 0;            
+            removeMetaItem("rate", "*");
 
             Utils.dict2ListBox(meta, lboxMetadata);
-           
+            
+            ListBoxItem lbi = new ListBoxItem() 
+                { Foreground = System.Windows.Media.Brushes.Blue, Background = System.Windows.Media.Brushes.AliceBlue, Content = "rate: " + ((r == 0)? "0 <unrated>" : r.ToString()) }; 
+            lbi.FontFamily = new FontFamily("Segoe UI Semibold");
+            lboxMetadata.Items.Insert(0,lbi);
+            SetSliderRate(r);
+            
             if ((bool)modified)
             {
-                ListBoxItem lbi = new ListBoxItem();
+                lbi = new ListBoxItem();
                 lbi.Content = "--MODIFIED--"; lbi.Foreground = System.Windows.Media.Brushes.Red;
                 lboxMetadata.Items.Add(lbi);
-            }                               
-            Utils.Sleep(200);
+            }
+            return true;
         }
         private void imageMove(double h, double v) // ?
         {
@@ -201,15 +247,34 @@ namespace scripthea.viewer
             Clipboard.SetImage((BitmapSource)image.Source);
             Utils.TimedMessageBox("The image has been copied to the clipboard");
         }
+        public event UpdateVisRecEventHandler OnUpdateVisRecord;
+        
+        protected void SetSliderRate(int value)
+        {
+            if (!Utils.InRange(value, 0, 10)) return;
+            lockRate = true; sldRate.Value = value;
+            lockRate = false;
+        }
+        private bool lockRate = false;
+        private void sldRate_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (lockRate || iDepot == null) return;
+            ImageInfo ii = SelectedItem(actIdx, iDepot);
+            ii.rate = Convert.ToInt16(sldRate.Value);
+            UpdateMeta(iDepot.path, ii, IsModified(iDepot.path, ii), false); // local
 
-        private void sldRank_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+            iDepot.items[actIdx] = ii; OnUpdateVisRecord?.Invoke(actIdx, ii);
+
+            if (!iDepot.isReadOnly) iDepot.IsChanged = true;
+        }
+
+        private void miNeutral_Click(object sender, RoutedEventArgs e)
         {
             if (opts == null) return;
-            bool bb = Convert.ToBoolean(opts.viewer.BnWrank);
-            if (!Utils.isNull(sender)) bb = !bb;
-            if (bb) {topGradient.Color = Brushes.White.Color; bottomGradient.Color = Utils.ToSolidColorBrush("#FF636363").Color; }
-            else { topGradient.Color = Utils.ToSolidColorBrush("#FFFE9177").Color; bottomGradient.Color = Utils.ToSolidColorBrush("#FF7FB4FF").Color; }
-            opts.viewer.BnWrank = bb;
+            if (sender != null) opts.viewer.BnWrate = sender.Equals(miNeutral);
+            miNeutral.IsChecked = opts.viewer.BnWrate; miBlueRed.IsChecked = !miNeutral.IsChecked;
+            if (opts.viewer.BnWrate) { topGradient.Color = Brushes.White.Color; bottomGradient.Color = Brushes.DarkSlateGray.Color;  } 
+            else { topGradient.Color = Utils.ToSolidColorBrush("#FFFA6262").Color; bottomGradient.Color = Utils.ToSolidColorBrush("#FF7FB4FF").Color; } //#FFFE9177;#FF7FB4FF
         }
     }
 }

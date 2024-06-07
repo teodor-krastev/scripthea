@@ -15,10 +15,11 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using scripthea.master;
-using UtilsNS;
 using Path = System.IO.Path;
 using Newtonsoft.Json;
+using scripthea.master;
+using scripthea.options;
+using UtilsNS;
 
 namespace scripthea.viewer
 {
@@ -100,7 +101,7 @@ namespace scripthea.viewer
         public string filename { get; set; } // without folder
         public string job_timestamp { get; set; }
         // its own
-        public int rank { get; set; }
+        public int rate { get; set; }
         public object tags { get; set; } // open stucture for future use: set of labels to be selected and/or define position in a image structure within a Scripthea project
         public string history { get; set; } // stages of variations, '|' separated -> for future use
         public string MD5Checksum { get; set; }
@@ -194,6 +195,7 @@ namespace scripthea.viewer
             if (dict == null) return;
             if (dict.ContainsKey("prompt")) prompt = Convert.ToString(dict["prompt"]);
             negative_prompt = dict.ContainsKey("negative_prompt") ? Convert.ToString(dict["negative_prompt"]) : "";
+            rate = dict.ContainsKey("rate") ? Convert.ToInt32(dict["rate"]) : 0;
             if (dict.ContainsKey("steps")) steps = Convert.ToInt64(dict["steps"]);
             if (dict.ContainsKey("sampler_name")) sampler_name = Convert.ToString(dict["sampler_name"]);
             if (dict.ContainsKey("cfg_scale")) cfg_scale = Convert.ToDouble(dict["cfg_scale"]);
@@ -214,6 +216,7 @@ namespace scripthea.viewer
         {
             if (dict == null) return;
             if (dict.ContainsKey("prompt")) prompt = dict["prompt"]; negative_prompt = ""; denoising_strength = 0; batch_size = 1; restore_faces = false;
+            rate = dict.ContainsKey("rate") ? Convert.ToInt32(dict["rate"]) : 0;
             if (dict.ContainsKey("steps")) steps = Convert.ToInt32(dict["steps"]);
             if (dict.ContainsKey("sampler")) sampler_name = dict["sampler"];
             if (dict.ContainsKey("scale")) cfg_scale = Convert.ToInt32(dict["scale"]);
@@ -245,11 +248,12 @@ namespace scripthea.viewer
             dict.Add("denoising_strength", denoising_strength);
             dict.Add("batch_size", batch_size);
             dict.Add("restore_faces", restore_faces);
-            if (SDonly)
+            if (!SDonly)
             {
                 dict.Add("MD5Checksum", MD5Checksum);
                 dict.Add("history", history);
                 dict.Add("tags", tags);
+                dict.Add("rate", rate);
             }
             return dict;
         }
@@ -358,9 +362,11 @@ namespace scripthea.viewer
         }
         public int appBuilt { get; private set; }
         public bool isReadOnly { get; private set; }
+        public bool IsChanged { get; set; } = false;
+        public void Close() { if (IsChanged) Save(true); }
         public string descText { get; private set; }
         public Dictionary<string, string> header;
-        public List<ImageInfo> items;
+        public List<ImageInfo> items { get; set; }
         public int idxFromFilename(string fn) // only filename
         {
             for (int i = 0; i < items.Count; i++)
@@ -381,7 +387,7 @@ namespace scripthea.viewer
             items.RemoveAt(idx);
             return true;
         }
-        public ImageDepot VirtualClone(string targetPath, List<Tuple<int, string, string>> filter = null) // int -> index; string -> filename (may differ); string -> prompt (for consistency)
+        public ImageDepot VirtualClone(string targetPath, List<Tuple<int, string, int, string>> filter = null) // int -> index; string -> filename (may differ); string -> prompt (for consistency)
         {
             if (!Directory.Exists(targetPath)) return null;
             ImageDepot dp = new ImageDepot(targetPath, imageGenerator, isReadOnly);
@@ -390,9 +396,10 @@ namespace scripthea.viewer
             {
                 foreach (var itm in filter)
                 {
-                    ImageInfo ii = items[itm.Item1 - 1];
-                    if (ii.prompt != itm.Item3) { Utils.TimedMessageBox("Error[664]: broken filter"); break; }
-                    ii.filename = itm.Item2;
+                    ImageInfo ii = items[itm.Item1];
+                    if (ii.prompt != itm.Item2) { Utils.TimedMessageBox("Error[664]: broken filter"); break; }
+                    ii.rate = itm.Item3;
+                    ii.filename = itm.Item4;
                     dp.items.Add(ii);
                 }
             }
@@ -522,11 +529,11 @@ namespace scripthea.viewer
             Utils.writeList(Path.Combine(path, SctUtils.descriptionFile), ls);
             Utils.Sleep(200);
         }
-        public List<Tuple<int, string, string>> Export2Viewer()
+        public List<Tuple<int, string, int, string>> Export2Viewer() // idx 0 based; prompt, rate, filename
         {
-            List<Tuple<int, string, string>> lst = new List<Tuple<int, string, string>>();
+            List<Tuple<int, string, int, string>> lst = new List<Tuple<int, string, int, string>>();
             for (int i = 0; i < items.Count; i++)
-                lst.Add(new Tuple<int, string, string>(i + 1, items[i].filename, items[i].prompt));
+                lst.Add(new Tuple<int, string, int, string>(i, items[i].prompt, items[i].rate, items[i].filename ));
             return lst;
         }
     }

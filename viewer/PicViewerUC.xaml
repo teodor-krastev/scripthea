@@ -41,12 +41,19 @@
                 <ColumnDefinition x:Name="colMeta" Width="100" MinWidth="8"/>
             </Grid.ColumnDefinitions>
 
-            <TextBox x:Name="tbCue" Margin="3" TextWrapping="Wrap" Text="" Background="White" IsReadOnly="True" FontSize="13" BorderThickness="0,0,0,0" HorizontalAlignment="Center" VerticalScrollBarVisibility="Auto" />
-            <Slider x:Name="sldRank" HorizontalAlignment="Right" Margin="0" Width="20" Value="3" Orientation="Vertical"  MouseDoubleClick="sldRank_MouseDoubleClick" Visibility="Collapsed">
+            <TextBox x:Name="tbCue" Margin="3,3,23,3" TextWrapping="Wrap" Text="" Background="White" IsReadOnly="True" FontSize="13" BorderThickness="0,0,0,0" HorizontalAlignment="Center" VerticalScrollBarVisibility="Auto" />
+            <Slider x:Name="sldRate" HorizontalAlignment="Right" Margin="0" Width="20" Value="3" Orientation="Vertical" ValueChanged="sldRate_ValueChanged">
+                <Slider.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem x:Name="miNeutral" Header="Neutral" IsCheckable="True" IsChecked="True" Click="miNeutral_Click"/>
+                        <MenuItem x:Name="miBlueRed" Header="Blue-Red" IsCheckable="True" Click="miNeutral_Click"/>
+                    </ContextMenu>
+                </Slider.ContextMenu>
                 <Slider.Background>
                     <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
-                        <GradientStop x:Name="topGradient" Color="#FFFE9177"/>
+                        <GradientStop x:Name="topGradient" Color="#FFFA6262"/>
                         <GradientStop x:Name="bottomGradient" Color="#FF7FB4FF" Offset="1"/>
+                        <GradientStop Color="#FFAF93C1" Offset="0.568"/>
                     </LinearGradientBrush>
                 </Slider.Background>
             </Slider>

@@ -16,9 +16,9 @@ using Newtonsoft.Json;
 using OpenHWMonitor;
 using Path = System.IO.Path;
 using System.IO.Pipes;
-using UtilsNS;
 using System.Threading;
 using System.Windows.Threading;
+using UtilsNS;
 
 namespace scripthea.external
 {

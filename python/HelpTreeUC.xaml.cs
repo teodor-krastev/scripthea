@@ -12,7 +12,7 @@ using System.Xml.Serialization;
 using System.Windows.Media;
 using UtilsNS;
 
-namespace PyCodeLib
+namespace scripthea.python
 {
     /// <summary>
     /// Interaction logic for TreeViewUC.xaml  // TreeView with TextBox content wpf c# example 

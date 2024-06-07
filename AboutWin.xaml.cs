@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Xml;
 using System.Net;
 using System.Xml.Linq;
+using scripthea.options;
 using UtilsNS;
 
 namespace scripthea
@@ -25,7 +26,7 @@ namespace scripthea
         public AboutWin()
         {
             InitializeComponent();
-            Title = "About Scripthea  version " + UtilsNS.Utils.getAppFileVersion;
+            Title = "About Scripthea version " + UtilsNS.Utils.getAppFileVersion;
         }
         Options opts;
         public bool closing = false;
@@ -35,14 +36,14 @@ namespace scripthea
         }
         public void Check4Updates(int lastChecked) // the date of last check / -1 forced; returns the new check date; 
         {            
-            if (!Utils.IsInternetConnectionAvailable())
+            if (!Utils.IsInternetConnectionAvailable()) // no i-net
             {
                 if (lastChecked.Equals(-1)) Utils.TimedMessageBox("No internet connection");
                 else
                 {
                     lbMessage.Foreground = Brushes.Red; lbMessage.Content = "Problem with the internet connection"; 
                 }                
-                return; // no i-net
+                return; 
             }
             lbMessage.Foreground = Brushes.Green;            
             DateTime refDate = new DateTime(2023, 1, 1); // reference date
@@ -52,19 +53,21 @@ namespace scripthea
                 string msg; 
                 bool bb = IsUpdateAvalaible(out msg);
                 lbMessage.Content = msg;
-                if (bb) opts.general.LastUpdateCheck = timeSpan.Days;
+                if (bb) { opts.general.LastUpdateCheck = timeSpan.Days; lbMessage.Foreground = Brushes.OrangeRed; }
+                else lbMessage.Foreground = Brushes.Green;
             }
             else
             {
                 if (!opts.general.NewVersion.Equals(""))
                 {
+                    lbMessage.Foreground = Brushes.Tomato;
                     lbMessage.Content = "New release (" + opts.general.NewVersion + ") is available at Scripthea.com !"; 
                 }
             }                        
         }
         public bool IsUpdateAvalaible(out string msg) // return a message to show
         {
-            string remVer = ""; string[] sl = UtilsNS.Utils.getAppFileVersion.Split('.'); 
+            string remVer = ""; string[] sl = Utils.getAppFileVersion.Split('.'); 
             Dictionary<string, string> pad = readPAD(readXml(@"https://scripthea.com/scripthea.xml"));
             bool ok = true;
             if (pad.ContainsKey("Program_Info.Program_Version")) remVer = pad["Program_Info.Program_Version"];
@@ -73,14 +76,11 @@ namespace scripthea
             if (ok) ok = pad["Company_Info.Company_Name"].Equals("Teodor Krastev") && pad["Program_Info.Program_Name"].Equals("Scripthea");
             string[] sr = remVer.Split('.');
             if ((sr.Length != 3) || !ok) { msg = "Problem with accessing update info from Scripthea.com"; opts.general.NewVersion = ""; return false; }
-            for (int i = 0; i < 3; i++)
+            if (Utils.newerVersion(Utils.getAppFileVersion, remVer)) 
             {
-                if (Convert.ToInt32(sr[i]) > Convert.ToInt32(sl[i]))
-                {
-                    msg = "New release (" + remVer + ") is available at Scripthea.com !"; opts.general.NewVersion = remVer; return true;
-                }
+                msg = "New release (" + remVer + ") is available at Scripthea.com !"; opts.general.NewVersion = remVer; return true;
             }
-            msg = "Your version is up to date."; opts.general.NewVersion = ""; return true;
+            msg = "Your version is up to date."; opts.general.NewVersion = ""; return false;
         }
 
         private void aboutWin_MouseDown(object sender, MouseButtonEventArgs e)

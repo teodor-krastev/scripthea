@@ -15,10 +15,11 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Microsoft.WindowsAPICodePack.Dialogs;
-using scripthea.viewer;
-using UtilsNS;
 using Brushes = System.Windows.Media.Brushes;
 using Path = System.IO.Path;
+using scripthea.viewer;
+using scripthea.options;
+using UtilsNS;
 
 namespace scripthea.master
 {
@@ -85,7 +86,7 @@ namespace scripthea.master
             {
                 Mouse.OverrideCursor = Cursors.Wait; iPicker.btnCustom.Background = Brushes.Coral; Utils.DoEvents();
 
-                List<Tuple<int, string, string>> lot = iPicker.ListOfTuples(true, false); // idx (1 based), filename, prompt
+                List<Tuple<int, string, int, string>> lot = iPicker.ListOfTuples(true, false); // idx (0 based), filename, prompt
                 if (lot.Count.Equals(0)) { Log("Error[887]: not checked images."); return; }
 
                 string sourceFolder = iPicker.iDepot.path; string targetFolder = "";
@@ -99,13 +100,13 @@ namespace scripthea.master
                 {
                     Log("Error[761]: source and target folders must be different."); return;
                 }
-                string tfn = ""; List<Tuple<int, string, string>> filter = new List<Tuple<int, string, string>>();
+                string tfn = ""; List<Tuple<int, string, int, string>> filter = new List<Tuple<int, string, int, string>>();
                 foreach (var itm in lot)
                 {
-                    tfn = iPicker.chkCustom1.IsChecked.Value ? itm.Item3.Substring(0, Math.Min(150, itm.Item3.Length)) : itm.Item2;
+                    tfn = iPicker.chkCustom1.IsChecked.Value ? itm.Item2.Substring(0, Math.Min(150, itm.Item2.Length)) : itm.Item2;
                     tfn = Utils.correctFileName(tfn);
-                    if (!Utils.validFileName(tfn)) tfn = itm.Item2; // prompt text not suitable for filename
-                    string sffn = Path.Combine(iPicker.imageDepot, itm.Item2); // src full path
+                    if (!Utils.validFileName(tfn)) tfn = itm.Item4; // prompt text not suitable for filename
+                    string sffn = Path.Combine(iPicker.imageDepot, itm.Item4); // src full path
                     string tffn = Path.Combine(targetFolder, tfn);
                     ImgUtils.ImageType iFormat = ImgUtils.ImageType.Unknown;
                     switch (iPicker.comboCustom.SelectedIndex)
@@ -121,7 +122,7 @@ namespace scripthea.master
                             break;
                     }
                     tffn = ImgUtils.CopyToImageToFormat(sffn, tffn, iFormat);
-                    if (tffn != "") filter.Add(new Tuple<int, string, string>(itm.Item1, Path.GetFileName(tffn), itm.Item3));
+                    if (tffn != "") filter.Add(new Tuple<int, string, int, string>(itm.Item1, itm.Item2, itm.Item3, Path.GetFileName(tffn)));
                 }
                 if (iPicker.chkCustom2.IsChecked.Value)
                 {

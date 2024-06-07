@@ -21,8 +21,9 @@ using System.Net.Sockets;
 using Newtonsoft.Json;
 using Path = System.IO.Path;
 using System.IO.Pipes;
-using UtilsNS;
 using scripthea.viewer;
+using scripthea.options;
+using UtilsNS;
 
 namespace scripthea.external
 {
@@ -33,10 +34,10 @@ namespace scripthea.external
     {
         public SDiffusionUC()
         {
-            InitializeComponent(); localDebug = Utils.isInVisualStudio;
+            InitializeComponent(); 
             opts = new Dictionary<string, string>();
         }
-        SDoptionsWindow SDopts; private bool localDebug = true;
+        SDoptionsWindow SDopts; 
         public Dictionary<string, string> opts { get; set; } // interfaceAPI: main (non API specific) options 
         private Process process4batch = null;
         private Options genOpts;

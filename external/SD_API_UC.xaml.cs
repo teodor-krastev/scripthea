@@ -18,6 +18,7 @@ using Path = System.IO.Path;
 using UtilsNS;
 using System.Text;
 using scripthea.viewer;
+using scripthea.options;
 
 namespace scripthea.external
 {
@@ -36,8 +37,9 @@ namespace scripthea.external
         }
         public void Init(ref SDoptionsWindow _SDopts) // init and update visuals from opts
         {            
-            if (_SDopts == null) _SDopts = new SDoptionsWindow();
+            if (_SDopts == null) _SDopts = new SDoptionsWindow(); 
             SDopts = _SDopts;
+
             if (serverMonitor == null)
             {
                 serverMonitor = new ServerMonitor(url); 
@@ -110,7 +112,7 @@ namespace scripthea.external
 
                     using (MemoryStream ms = new MemoryStream(imageBytes))
                     {                       
-                        ImgUtils.SaveBitmapImageToDisk(ImgUtils.MemoryStreamToBitmapImage(ms), imgFile);
+                        ImgUtils.SaveBitmapImageToDisk((BitmapImage)ImgUtils.MemoryStream2BitmapSource(ms), imgFile);
                     }
                 }
             });

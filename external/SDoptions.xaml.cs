@@ -14,9 +14,10 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using UtilsNS;
 using Path = System.IO.Path;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using scripthea.options;
+using UtilsNS;
 
 namespace scripthea.external
 {
@@ -38,7 +39,8 @@ namespace scripthea.external
         public int GPUThreshold;
         public int GPUstackDepth;        
         public bool ValidateScript;
-        
+        public bool ValidateAPI;
+
         public void save(string configFilename)
         {
             File.WriteAllText(configFilename, JsonConvert.SerializeObject(this));
@@ -50,7 +52,8 @@ namespace scripthea.external
     public partial class SDoptionsWindow : Window
     {
         public bool keepOpen = true;
-        public bool ValidScript { get; private set; }
+        public bool? ValidScript { get; private set; } = null; // unvalidated
+        public bool? ValidAPI { get; private set; } = null; // unvalidated
         /// <summary>
         /// dialog box constructor; reads from file or creates new options object
         /// </summary>
@@ -62,8 +65,9 @@ namespace scripthea.external
                 string fileJson = File.ReadAllText(configFilename);
                 opts = JsonConvert.DeserializeObject<SDoptions>(fileJson);
             }
-            else { opts = new SDoptions(); opts.ValidateScript = true; }
-            if (opts.ValidateScript) ValidatePyScript();
+            else { opts = new SDoptions(); opts.ValidateScript = true; opts.ValidateAPI = true; }
+            if (opts.ValidateScript) ValidatePyScript();           
+            if (opts.ValidateAPI) ValidateAPI();
         }
         public event Utils.LogHandler OnLog;
         protected void Log(string txt, SolidColorBrush clr = null)
@@ -92,6 +96,7 @@ namespace scripthea.external
         
             opts.SDlocation = tbSDlocation.Text;
             opts.ValidateScript = chkValidateScript.IsChecked.Value;
+            opts.ValidateAPI = chkValidateAPI.IsChecked.Value;
         }
         public void opts2Visual()
         {
@@ -107,6 +112,7 @@ namespace scripthea.external
             chkMeasureGPUtemp_Checked(null, null);
             if (IsSDlocation(opts.SDlocation)) tbSDlocation.Text = opts.SDlocation;
             chkValidateScript.IsChecked = opts.ValidateScript || !ValidatePyScript();
+            chkValidateAPI.IsChecked = opts.ValidateAPI || !ValidateAPI();
         }
         /// <summary>
         /// Accepting and saving the changes
@@ -132,6 +138,15 @@ namespace scripthea.external
         {
             e.Cancel = keepOpen; Hide();
         }
+        public bool IsSDlocation(string folder, bool warning = true) 
+        {
+            bool bb = Directory.Exists(folder);
+            if (bb) bb &=  Directory.Exists(Path.Combine(folder, "scripts")) && Directory.Exists(Path.Combine(folder, "modules")) && File.Exists(Path.Combine(folder, "webui-user.bat"));
+            if (!bb && warning && !folder.Equals("")) Utils.TimedMessageBox("The folder <" + folder + "> does not look like a Stable Diffusion webUI installation.", "Problem", 5000);
+            if (bb) gbSDlocation.BorderBrush = Brushes.Silver;
+            else gbSDlocation.BorderBrush = Brushes.OrangeRed;
+            return bb;
+        }
         public bool ValidatePyScript()
         {
             ValidScript = false;
@@ -145,17 +160,32 @@ namespace scripthea.external
                 MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No) return false;
             File.Copy(orgLoc, sdLoc, true); Utils.Sleep(200);
             ValidScript = Utils.GetMD5Checksum(orgLoc) == Utils.GetMD5Checksum(sdLoc);
-            return ValidScript;
+            return Convert.ToBoolean(ValidScript);
         }
-
-        public bool IsSDlocation(string folder, bool warning = true) 
+        public bool ValidateAPI()
         {
-            bool bb = Directory.Exists(folder);
-            if (bb) bb &=  Directory.Exists(Path.Combine(folder, "scripts")) && Directory.Exists(Path.Combine(folder, "modules")) && File.Exists(Path.Combine(folder, "webui-user.bat"));
-            if (!bb && warning && !folder.Equals("")) Utils.TimedMessageBox("The folder <" + folder + "> does not look like a Stable Diffusion webUI installation.", "Problem", 5000);
-            if (bb) gbSDlocation.BorderBrush = Brushes.Silver;
-            else gbSDlocation.BorderBrush = Brushes.OrangeRed;
-            return bb;
+            ValidAPI = false;
+            if (!IsSDlocation(opts.SDlocation)) return false;
+            string batLoc = Path.Combine(opts.SDlocation, "webui-user.bat");
+            List<string> ls = Utils.readList(batLoc, false); 
+            bool found = false; int j = -1;
+            for (int i = 0; i < ls.Count; i++)
+            {
+                if (!ls[i].StartsWith("set COMMANDLINE_ARGS")) continue;
+                string ss = ls[i].Remove(0,20); j = i;
+                string[] sa = ss.Split(' ');                
+                foreach (string sb in sa)
+                {
+                    found = sb.Equals("--api",StringComparison.InvariantCultureIgnoreCase);
+                    if (found) { ValidAPI = true; return true; }
+                }                    
+            }
+            if (MessageBox.Show("Command line parameter(--api) in webui-user.bat is missing.\r Correct webui-user.bat for API access to Stable Diffusion?\r\r Yes - recommended", "",
+                MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No) return false;
+            if (j == -1) return false;
+            ls[j] = ls[j] + " --api";
+            Utils.writeList(batLoc, ls);
+            ValidAPI = true; return true; 
         }
         private void btnBrowse_Click(object sender, RoutedEventArgs e)
         {

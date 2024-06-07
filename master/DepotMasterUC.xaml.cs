@@ -13,8 +13,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using UtilsNS;
 using Path = System.IO.Path;
+using scripthea.options;
+using UtilsNS;
 
 namespace scripthea.master
 {
@@ -185,7 +186,7 @@ namespace scripthea.master
         public int DeleteIn1(ImagePickerUC iPicker1)
         {
             iPicker1.isChanging = true;
-            List<Tuple<int, string, string>> lot = iPicker1.ListOfTuples(true, false);
+            List<Tuple<int, string, int, string>> lot = iPicker1.ListOfTuples(true, false);
             int k = lot.Count - 1; int j = 0;
             while (k > -1)
             {
@@ -254,8 +255,9 @@ namespace scripthea.master
                 else Log("Error[364]: Problem with the image depot synchronization.");
             }
         }
-        protected void PicSelectA(int idx, string imageDir, ImageInfo ii)
+        protected void PicSelectA(int idx, ImageDepot iDepot)
         {
+            //ImageInfo ii = SelectedItem(idx, iDepot);
             if (!chkSynch.IsChecked.Value) return;
             List<ImageInfo> lii = iPickerB.imageInfos(true, true);
             if (lii == null) return;
