@@ -15,5 +15,6 @@
                        Cursor="Hand" HorizontalAlignment="Center" VerticalAlignment="Center"></Image>
             </ContentControl>
         </Button>
+        <Label x:Name="lbServer" Content="server" HorizontalAlignment="Center" Margin="20,0,0,0" VerticalAlignment="Bottom"/>
     </Grid>
 </UserControl>

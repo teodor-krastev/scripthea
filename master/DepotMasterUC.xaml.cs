@@ -190,7 +190,7 @@ namespace scripthea.master
             int k = lot.Count - 1; int j = 0;
             while (k > -1)
             {
-                int idx = lot[k].Item1 - 1;
+                int idx = lot[k].Item1;
                 if (idx < 0) Log("Error[557]: invalid <" + idx + "> index.");
                 else
                 {
@@ -262,7 +262,7 @@ namespace scripthea.master
             List<ImageInfo> lii = iPickerB.imageInfos(true, true);
             if (lii == null) return;
             if (lii.Count == 0) return;
-            iPickerB.SelectItem(Utils.EnsureRange(idx, 1,lii.Count)); //iPickerA.Focus();
+            iPickerB.SelectItem(Utils.EnsureRange(idx, 0,lii.Count-1)); //iPickerA.Focus();
         }
     }
 }

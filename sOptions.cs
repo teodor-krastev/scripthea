@@ -28,12 +28,15 @@ namespace scripthea.options
         public General general;
         public class General
         {
-            public bool debug { get { return Utils.isInVisualStudio && Utils.localConfig; } }
             public bool UpdateCheck;  
             public int LastUpdateCheck;
             public string NewVersion;
             public string LastSDsetting;
             public bool AutoRefreshSDsetting;
+            [JsonIgnore]
+            public bool debug { get { return Utils.isInVisualStudio && Utils.localConfig; } }
+            [JsonIgnore]
+            public bool AppTerminating = false;
         }
         public Layout layout;
         public class Layout
@@ -60,7 +63,9 @@ namespace scripthea.options
             public string WorkCuesFolder;
             public string ImageDepotFolder;
             public string StartupImageDepotFolder;
-            public string API;
+            public string API; // from combo-box items
+            [JsonIgnore]
+            public bool A1111 { get { return !API.Equals("SD-ComfyUI"); } }
             // modifiers
             public string ModifPrefix;
             public bool AddEmptyModif;

@@ -39,16 +39,18 @@ namespace scripthea.external
         }
         SDoptionsWindow SDopts; 
         public Dictionary<string, string> opts { get; set; } // interfaceAPI: main (non API specific) options 
-        private Process process4batch = null;
+        private Process process4batch1111 = null; private Process process4batchComfy = null;
         private Options genOpts;
         public void Init(ref Options _opts) // init and update visuals from opts
         {
-            genOpts = _opts;
+            genOpts = _opts; 
+            btnRunServer.ToolTip = genOpts.composer.A1111 ? "Open local SD A1111/Forge server" : "Open local SD ComfyUI server";
+
             sd_api_uc.btnSDoptions.Click -= btnSDoptions_Click; sd_api_uc.btnSDoptions.Click += btnSDoptions_Click;
             sd_api_uc.ActiveEvent -= OnActiveEvent; sd_api_uc.ActiveEvent += OnActiveEvent;
             sdScriptUC.btnSDoptions.Click -= btnSDoptions_Click; sdScriptUC.btnSDoptions.Click += btnSDoptions_Click;
 
-            if (SDopts == null) SDopts = new SDoptionsWindow();
+            if (SDopts == null) SDopts = new SDoptionsWindow(genOpts.composer.A1111);
             tempRegulator.Init(ref SDopts.opts); SDopts.nVidiaHwAvailable = tempRegulator.nVidiaHWAvailable;
             opts2Visual(true);
         }
@@ -56,39 +58,45 @@ namespace scripthea.external
         {
             PossibleRunServer();
         }
-        private bool lastAPIcomm = false;
-        private void opts2Visual(bool first)
+        private bool lastAPIcom1111 = false; //A1111 -> api or py
+        private void opts2Visual(bool first)  // to add comfyUI
         {
-            bool changeAPIcomm = lastAPIcomm != SDopts.opts.APIcomm;
-            if (first || changeAPIcomm)
+            bool changeAPIcom1111 = lastAPIcom1111 != SDopts.opts.APIcomm1111;
+            if (first || changeAPIcom1111)
             {
-                if (SDopts.opts.APIcomm)
+                if (SDopts.opts.APIcomm1111) // 
                 {
-                    if (changeAPIcomm)
+                    if (changeAPIcom1111)
                         if (sdScriptUC.IsConnected) sdScriptUC.reStartServers(true);
                     sd_api_uc.Visibility = Visibility.Visible; sdScriptUC.Visibility = Visibility.Collapsed;
-                    sd_api_uc.Init(ref SDopts);
+                    sd_api_uc.Init(ref SDopts, ref genOpts); sd_api_uc.OnLog += new Utils.LogHandler(Log);
                 }
                 else
                 {
-                    if (changeAPIcomm) sd_api_uc.Finish();
+                    if (changeAPIcom1111) sd_api_uc.Finish();
                     sdScriptUC.Visibility = Visibility.Visible; sd_api_uc.Visibility = Visibility.Collapsed;                    
                     sdScriptUC.Init(ref SDopts); 
                 }
-                lastAPIcomm = SDopts.opts.APIcomm;
-                var ap = OnAPIparams(SDopts.opts.APIcomm);
+                lastAPIcom1111 = SDopts.opts.APIcomm1111;
+                var ap = OnAPIparams(SDopts.opts.APIcomm1111);
             }
             tempRegulator.opts2Visual();
             PossibleRunServer();
         }
         private bool PossibleRunServer()
         {
-            btnRunServer.IsEnabled = SDopts.IsSDlocation(SDopts.opts.SDlocation, false);
-            if (SDopts.opts.APIcomm)
+            if (!sd_api_uc.active)
             {
-                btnRunServer.IsEnabled &= !sd_api_uc.active;
+                if (genOpts.composer.A1111)
+                {
+                    btnRunServer.IsEnabled = SDopts.IsSDloc1111(SDopts.opts.SDloc1111, false);
+                }
+                else 
+                {
+                    btnRunServer.IsEnabled = SDopts.IsSDlocComfy(SDopts.opts.SDlocComfy, false); 
+                }
             }
-            else { }
+            else btnRunServer.IsEnabled = false; // the server is running
             if (btnRunServer.IsEnabled) { btnRunServer.Foreground = Brushes.DarkRed; btnRunServer.BorderBrush = Brushes.DarkRed; }
             else { btnRunServer.Foreground = Brushes.DarkGray; btnRunServer.BorderBrush = Brushes.DarkGray; }
             return btnRunServer.IsEnabled;
@@ -97,12 +105,12 @@ namespace scripthea.external
         {
             tempRegulator.Finish();
             sd_api_uc.Finish(); sdScriptUC.Finish();
-            if (SDopts.opts.autoCloseCmd) closeProcess();
+            if (SDopts.opts.autoCloseCmd && genOpts.general.AppTerminating) closeProcess();
             SDopts.keepOpen = false; SDopts.Close(); SDopts = null;
         }
         public void Broadcast(string msg)
         {
-            if (SDopts.opts.APIcomm) return;
+            if (SDopts.opts.APIcomm1111) return;
             if (msg.Equals("end.scan", StringComparison.OrdinalIgnoreCase) && SDopts.opts.closeAtEndOfScan)
             {
                 sdScriptUC.reStartServers(true); Log("SD comm. has been reset.", Brushes.Tomato);
@@ -124,7 +132,7 @@ namespace scripthea.external
         {
             get
             {
-                if (SDopts.opts.APIcomm) return sd_api_uc.active;
+                if (SDopts.opts.APIcomm1111) return sd_api_uc.active;
                 else return sdScriptUC.IsConnected;
             }  
         }
@@ -136,7 +144,7 @@ namespace scripthea.external
         {
             if (!isEnabled) { ii = null; return false; } 
             tempRegulator.tempRegulate(); bool rslt = false; 
-            if (SDopts.opts.APIcomm) // API
+            if (SDopts.opts.APIcomm1111) // API
             {
                 string filename = Utils.timeName(); // target image 
                 string folder = imageDepotFolder.EndsWith("\\") ? imageDepotFolder : imageDepotFolder + "\\"; opts["IDfolder"] = folder;
@@ -168,37 +176,68 @@ namespace scripthea.external
         }        
         private void btnSDoptions_Click(object sender, RoutedEventArgs e)
         {
-            bool bb = SDopts.opts.APIcomm;
+            bool bb = SDopts.opts.APIcomm1111;
             SDopts.opts2Visual(); SDopts.ShowDialog();
-            opts2Visual(bb != SDopts.opts.APIcomm);
+            opts2Visual(bb != SDopts.opts.APIcomm1111);
         }
         private void closeProcess()
         {
             try
             {
-                if (process4batch == null) return;
-                if (process4batch.HasExited)
+                if (process4batch1111 != null)
                 {
-                    Console.WriteLine($"Process exited with code: {process4batch.ExitCode}");
-                    Console.WriteLine($"Process exit time: {process4batch.ExitTime}");
-                    return;
-                }                   
-                if (!process4batch.CloseMainWindow())
+                    if (process4batch1111.HasExited)
+                    {
+                        Console.WriteLine($"Process 1111 exited with code: {process4batch1111.ExitCode}");
+                        Console.WriteLine($"Process 1111 exit time: {process4batch1111.ExitTime}");
+                        return;
+                    }                   
+                    if (!process4batch1111.CloseMainWindow())
+                    {
+                        //If the main window cannot be closed, kill the process
+                        process4batch1111.Kill();
+                    }
+                }
+                if (process4batchComfy != null)
                 {
-                    //If the main window cannot be closed, kill the process
-                    process4batch.Kill();
+                    if (process4batchComfy.HasExited)
+                    {
+                        Console.WriteLine($"Process Comfy exited with code: {process4batchComfy.ExitCode}");
+                        Console.WriteLine($"Process Comfy exit time: {process4batchComfy.ExitTime}");
+                        return;
+                    }
+                    if (!process4batchComfy.CloseMainWindow())
+                    {
+                        //If the main window cannot be closed, kill the process
+                        process4batchComfy.Kill();
+                    }
                 }
             }
             catch (Exception ex) { Log("Error: SD server -> " + ex.Message); } 
         }
         private void btnRunServer_Click(object sender, RoutedEventArgs e)
         {
-            if (!SDopts.IsSDlocation(SDopts.opts.SDlocation, true)) return;
-            process4batch = Utils.RunBatchFile(Path.Combine(SDopts.opts.SDlocation, "webui-user.bat"));
-            if (process4batch.HasExited)
-            {
-                Console.WriteLine($"Process exited with code: {process4batch.ExitCode}");
-                Console.WriteLine($"Process exit time: {process4batch.ExitTime}");                
+            if (genOpts.composer.A1111) 
+            { 
+                if (!SDopts.IsSDloc1111(SDopts.opts.SDloc1111, true)) return; 
+                process4batch1111 = Utils.RunBatchFile(SDopts.opts.SDloc1111);
+                if (process4batch1111.HasExited)
+                {
+                    Console.WriteLine($"Process exited with code: {process4batch1111.ExitCode}");
+                    Console.WriteLine($"Process exit time: {process4batch1111.ExitTime}");                
+                }
+            }
+            else 
+            { 
+                if (!SDopts.IsSDlocComfy(SDopts.opts.SDlocComfy, true)) return;
+                process4batchComfy = Utils.RunBatchFile(SDopts.opts.SDlocComfy);
+                        
+                if (process4batchComfy.HasExited)
+                {
+                    Console.WriteLine($"Process Comfy exited with code: {process4batchComfy.ExitCode}");
+                    Console.WriteLine($"Process Comfy exit time: {process4batchComfy.ExitTime}");
+                    return;
+                }
             }
         }
     }

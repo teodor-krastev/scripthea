@@ -35,7 +35,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Text.RegularExpressions;
 
-namespace UtilsNS
+namespace scripthea.external
 {
     /// <summary>
     /// Interaction logic for NumericBox.xaml
@@ -78,9 +78,6 @@ namespace UtilsNS
             Value = Convert.ToInt32(tb.Text);
             if (Value < Minimum) Value = Minimum;
             if (Value > Maximum) Value = Maximum;
-
-
-
             RaiseEvent(new RoutedEventArgs(ValueChangedEvent));
         }
 

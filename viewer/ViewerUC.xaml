@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:scripthea.viewer" xmlns:UtilsNS="clr-namespace:UtilsNS"
+             xmlns:local="clr-namespace:scripthea.viewer" xmlns:external="clr-namespace:scripthea.external" xmlns:UtilsNS="clr-namespace:UtilsNS"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800" PreviewKeyDown="ucViewer_PreviewKeyDown" Focusable="True">
     <Grid>
@@ -49,17 +49,17 @@
                 </StackPanel>
             </Grid>
             <StackPanel Grid.Row="1" Orientation="Horizontal" Height="27" HorizontalAlignment="Right" VerticalAlignment="Top" Panel.ZIndex="20">
-                <Button x:Name="btnPlay" Width="40" Margin="0,0,4,0" Background="White" HorizontalAlignment="Left" VerticalAlignment="Center" Click="btnPlay_Click" IsEnabled="False" ToolTip="Start animation" Cursor="Hand">
+                <Button x:Name="btnPlay" Width="40" Margin="0,0,4,0" Background="White" HorizontalAlignment="Left" VerticalAlignment="Center" Click="btnPlay_Click" IsEnabled="False" ToolTip="Start slide show" Cursor="Hand">
                     <ContentControl>
                         <Image Source="/Scripthea;component/Properties/play.png"  Cursor="Hand"></Image>
                     </ContentControl>
                 </Button>
-                <Button x:Name="btnStop" Width="40" Margin="0,0,4,0" Background="White" HorizontalAlignment="Left" VerticalAlignment="Center" Click="btnPlay_Click" Visibility="Collapsed" ToolTip="Stop animation" Cursor="Hand">
+                <Button x:Name="btnStop" Width="40" Margin="0,0,4,0" Background="White" HorizontalAlignment="Left" VerticalAlignment="Center" Click="btnPlay_Click" Visibility="Collapsed" ToolTip="Stop slide show" Cursor="Hand">
                     <ContentControl>
                         <Image Source="/Scripthea;component/Properties/stop.png"  Cursor="Hand"></Image>
                     </ContentControl>
                 </Button>
-                <UtilsNS:NumericBox x:Name="numDly" HorizontalAlignment="Left" Height="25" Margin="0,0,8,0" VerticalAlignment="Center" Width="47" Value="5" Minimum="1" Maximum="99" ValueChanged="numDly_ValueChanged" ToolTip="Delay to next image in animation [s]"/>
+                <external:NumericBox x:Name="numDly" HorizontalAlignment="Left" Height="25" Margin="0,0,8,0" VerticalAlignment="Center" Width="47" Value="5" Minimum="1" Maximum="99" ValueChanged="numDly_ValueChanged" ToolTip="Delay to next image in slide show [s]"/>
                 <Label x:Name="lbDepotInfo" Content="" VerticalAlignment="Top" Margin="0,0,5,0" HorizontalAlignment="Left" ></Label>
             </StackPanel>
             <TabControl x:Name="tabCtrlViews" Grid.Row="1" SelectedIndex="0" BorderBrush="{x:Null}" Panel.ZIndex="10" SelectionChanged="tabCtrlViews_SelectionChanged">

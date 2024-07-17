@@ -131,7 +131,7 @@ namespace scripthea.master
             List<Tuple<int, string, int, string>> lt = activeView.GetItems(check, uncheck);
             foreach (var ii in lt)
             {
-                int i = ii.Item1 - 1;
+                int i = ii.Item1;
                 if (Utils.InRange(i, 0, iDepot.items.Count-1, true))
                     lii.Add(iDepot.items[i]);
             }

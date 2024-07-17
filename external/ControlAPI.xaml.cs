@@ -92,7 +92,7 @@ namespace scripthea.external
             get { return _activeAPIname; }
             set
             {
-                if (!interfaceAPIs.ContainsKey(value)) { Utils.TimedMessageBox("No API: " + value); return; }
+                if (!interfaceAPIs.ContainsKey(value)) { Utils.TimedMessageBox("No API: " + value); return; }                
                 interfaceAPIs[_activeAPIname]?.Finish(); 
                 _activeAPIname = value; interfaceAPIs[_activeAPIname]?.Init(ref opts);
             }
@@ -185,7 +185,11 @@ namespace scripthea.external
         public bool eCancel = true;
         private void controlAPIwin_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (!Utils.isNull(activeAPI)) activeAPI.Finish();
+            opts.general.AppTerminating = true;
+            foreach(var api in interfaceAPIs)
+            {
+                api.Value?.Finish();
+            }           
             e.Cancel = eCancel; Hide();
         }
     }

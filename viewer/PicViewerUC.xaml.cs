@@ -168,7 +168,6 @@ namespace scripthea.viewer
             removeMetaItem("tags", "");
             removeMetaItem("negative_prompt", "");
             removeMetaItem("batch_size", "1");
-            removeMetaItem("denoising_strength", "0");
             removeMetaItem("restore_faces", "False");
             if (meta.ContainsKey("MD5Checksum")) meta.Remove("MD5Checksum");
             int r = meta.ContainsKey("rate") ? Convert.ToInt32(meta["rate"]) : 0;            

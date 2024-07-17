@@ -22,24 +22,111 @@ namespace scripthea.external
 {
     public static class SDside
     {
-        // possible parameters
+        public static bool A1111 = true;
+        // possible parameters for A1111 and internally
         public static readonly Dictionary<string, string> possParams = new Dictionary<string, string> // Value is obj.GetType().Name
         {   {"prompt", "String" }, {"negative_prompt", "String" }, {"seed", "Int64" }, {"width", "Int64" }, {"height", "Int64" },
             {"sampler_name", "String" }, {"cfg_scale", "Double" }, {"steps", "Int64" }, {"batch_size", "Int64" }, {"restore_faces", "Boolean" },
-            {"sd_model_hash", "String" }, {"denoising_strength", "Int64" }, {"job_timestamp", "String" }
+            {"sd_model_hash", "String" }, {"denoising_strength", "Double" }, {"job_timestamp", "String" }
         };
 
-        public static readonly List<string> Samplers = new List<string>
+        public static readonly List<string> a1111Samplers = new List<string>
         {
             "Euler a", "Euler", "LMS", "Heun", "DPM2", "DPM2 a","DPM++ 2Sa","DPM++ 2M", "DPM++ SDE", "DPM fast", "DPM adaptive",
             "LMS Karras", "DPM2 Karas", "DPM2 a Karas", "DPM++ 2Sa Karas","DPM++ 2M Karas", "DPM++ SDE Karas",
             "DDIM", "PLMS", "UniPC"
         };
-
-        public static readonly List<string> curParams = new List<string>
+        // in ComfyUI py code: "euler", "euler_cfg_pp", "euler_ancestral", "euler_ancestral_cfg_pp", "heun", "heunpp2","dpm_2", "dpm_2_ancestral",
+        //    "lms", "dpm_fast", "dpm_adaptive", "dpmpp_2s_ancestral", "dpmpp_sde", "dpmpp_sde_gpu",
+        //    "dpmpp_2m", "dpmpp_2m_sde", "dpmpp_2m_sde_gpu", "dpmpp_3m_sde", "dpmpp_3m_sde_gpu", "ddpm", "lcm",
+        //    "ipndm", "ipndm_v", "deis" 
+        public static readonly List<string> comfySamplers = new List<string>
         {
-            "negative_prompt", "width", "height", "sampler_name", "restore_faces", "seed", "cfg_scale", "steps"
+            "euler", "euler_ancestral", "heun", "heunpp2","dpm_2", "dpm_2_ancestral",
+            "lms", "dpm_fast", "dpm_adaptive", "dpmpp_2s_ancestral", "dpmpp_sde", "dpmpp_sde_gpu",
+            "dpmpp_2m", "dpmpp_2m_sde", "dpmpp_2m_sde_gpu", "dpmpp_3m_sde", "dpmpp_3m_sde_gpu", "ddpm", "lcm",
+            "ddim", "uni_pc", "uni_pc_bh2"
         };
+        public static List<string> Samplers { get { return A1111 ? a1111Samplers : comfySamplers; } }
+        public static readonly List<(int, string, string)> SamplersMatch = new List<(int, string, string)>
+        {            
+            (1, "Euler a", "euler_ancestral"),
+            (2, "Euler", "euler"),
+            (3, "LMS", "lms"),
+            (4, "Heun", "heun"),
+            (5, "DPM2", "dpm_2"),
+            (6, "DPM2 a", "dpm_2_ancestral"),
+            (7, "DPM fast", "dpm_fast"),
+            (8, "DPM adaptive","dpm_adaptive"),
+            (9, "DPM++ 2Sa","dpmpp_2s_ancestral"),
+            (10, "DPM++ SDE","dpmpp_sde"),
+            (11, "DPM++ 2M", "dpmpp_2m"),
+            (12, "DDIM", "ddim"),
+            (13, "LMS Karras", "lcm"),
+            (14, "UniPC", "uni_pc")            
+        };
+        public static string FindMatch(string smp, bool of1111)
+        {
+            string found = "";
+            foreach(var t in SamplersMatch)
+            {
+                if (of1111)
+                {
+                    if (smp.Equals(t.Item3)) { found = t.Item2; break; }
+                }
+                else
+                {
+                    if (smp.Equals(t.Item2)) { found = t.Item3; break; }
+                }
+            }
+            return found;
+        }
+
+        // working parameters -> names from possParams
+        private static readonly List<string> A1111Params = new List<string>
+        {
+            "prompt", "negative_prompt", "width", "height", "sampler_name", "restore_faces", "seed", "cfg_scale", "steps", "denoising_strength"
+        };
+
+        private static readonly List<string> ComfyParams = new List<string> // in internal names
+        {
+            "prompt", "negative_prompt", "width", "height", "sampler_name", "seed", "cfg_scale", "steps", "denoising_strength"
+        };
+        public static List<string> curParams { get { return A1111 ? A1111Params : ComfyParams; } }
+        public static bool CheckParam(string nm)
+        {
+            return curParams.IndexOf(nm) > -1;
+        }
+        // translate from internal (A1111) to Comfy syntax
+        public static Dictionary<string, object> Translate2Comfy(Dictionary<string, object> prms)
+        {
+            Dictionary<string, object> t = new Dictionary<string, object>();
+            foreach (var p in prms)
+            {
+                //if (ComfyParams.IndexOf(p.Key) == -1) Utils.TimedMessageBox("Error: in translation, unknown parameter: " + p.Key);
+                switch (p.Key)
+                {
+                    case "prompt": t.Add("positive", p.Value);
+                        break;
+                    case "negative_prompt": t.Add("negative", p.Value);
+                        break;
+                    case "cfg_scale": t.Add("cfg", p.Value);
+                        break;
+                    case "denoising_strength": t.Add("denoise", p.Value);
+                        break;
+                    case "sampler_name":
+                        string sn = FindMatch((string)p.Value, true);
+                        if (sn != "") t.Add("sampler_name", sn);
+                        break;
+                    case "width":
+                    case "height":
+                    case "seed":
+                    case "steps": t.Add(p.Key, p.Value);
+                        break;
+                }
+            }
+            return t;
+        }       
     }
     public class SDsetting: Dictionary<string, object>
     {
@@ -57,7 +144,7 @@ namespace scripthea.external
             this["negative_prompt"] = ii.negative_prompt;
             this["width"] = ii.width; this["height"] = ii.height;
             this["sampler_name"] = ii.sampler_name; this["restore_faces"] = ii.restore_faces; this["seed"] = ii.seed;
-            this["cfg_scale"] = ii.cfg_scale; this["steps"] = ii.steps; 
+            this["steps"] = ii.steps; this["cfg_scale"] = ii.cfg_scale; this["denoising_strength"] = ii.denoising_strength;
         }
         public SDsetting Clone()
         {
@@ -104,7 +191,7 @@ namespace scripthea.external
         public void Save()
         {
             List<string> ls = new List<string>();
-            if (Header == null) ls.Add("#{\"ImageGenerator\":\"StableDiffusion\",\"webui\":\"parameters\",\"application\":\"Scripthea 1.5.1.71\"}");
+            if (Header == null) ls.Add("#{\"ImageGenerator\":\"StableDiffusion\",\"webui\":\"parameters\",\"application\":\"Scripthea 1.9.5\"}");
             else ls.Add("#" + JsonConvert.SerializeObject(Header));
             foreach (var pair in this)
                 ls.Add(pair.Key + "=" + JsonConvert.SerializeObject(pair.Value));
@@ -121,25 +208,48 @@ namespace scripthea.external
         {
             InitializeComponent();
         }
-        private bool locked = true;
+        private bool locked = false; // lock params from visuals
         protected Options opts;
+        private bool A1111 = true;
         public void Init(ref Options _opts)
         {
-            opts = _opts;
-            if (!locked) return; 
-            nsWidth.Init("Width", 512, 64, 2048, 10); nsWidth.lbTitle.Foreground = chkKeepRatio.Foreground;
-            nsHeight.Init("Height", 512, 64, 2048, 10); nsHeight.lbTitle.Foreground = chkKeepRatio.Foreground;
+            opts = _opts; A1111 = opts.composer.A1111; SDside.A1111 = A1111;
+            if (A1111)
+            {
+                chkRestoreFaces.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                chkRestoreFaces.Visibility = Visibility.Collapsed;
+                
+            }
+            cbSampler.Items.Clear();
+            if (!A1111) cbSampler.Items.Add(new ComboBoxItem() { Content = "<default>"});
             foreach (string ss in SDside.Samplers)
-                cbSampler.Items.Add(new ComboBoxItem(){ Content = ss });
-            nsSamplingSteps.Init("Sampl.Steps", 20, 1, 150, 1);  nsCFGscale.Init("CFG Scale", 7, 1, 30, 1);
-            
-            sdList = new SDlist(); 
-            sdList.UpdateCombo(opts.general.LastSDsetting, cbSettings); btnSetParams_Click(null, null);
-            chkAutoSynch.IsChecked = opts.general.AutoRefreshSDsetting;
+            {
+                FontFamily fm;
+                if (SDside.FindMatch(ss, !A1111) != "") fm = new System.Windows.Media.FontFamily("Segoe UI Semibold");
+                else fm = new System.Windows.Media.FontFamily("Segoe UI");
 
-            nsWidth.OnValueChanged += new NumericSliderUC.ValueChangedHandler(SizeAdjust); nsHeight.OnValueChanged += new NumericSliderUC.ValueChangedHandler(SizeAdjust);
-            nsSamplingSteps.numBox.ValueChanged += new RoutedEventHandler(visual2prms); nsCFGscale.numBox.ValueChanged += new RoutedEventHandler(visual2prms);
-            locked = false; visual2prms(null, null);
+                ComboBoxItem cbi = new ComboBoxItem() { Content = ss, FontFamily = fm };
+                cbSampler.Items.Add(cbi);
+            }
+            //if (locked) { locked = false; return; }              
+            if (sdList == null) // first time
+            {
+                nsWidth.Init("Width", 512, 64, 2048, 10); nsWidth.lbTitle.Foreground = chkKeepRatio.Foreground;
+                nsHeight.Init("Height", 512, 64, 2048, 10); nsHeight.lbTitle.Foreground = chkKeepRatio.Foreground;
+                nsSamplingSteps.Init("Sampl.Steps", 20, 1, 150, 1);  nsCFGscale.Init("CFG Scale", 7, 1, 30, 0.1); nsDenoise.Init("Denoise", 1, 0, 1, 0.01);
+
+                sdList = new SDlist(); 
+                sdList.UpdateCombo(opts.general.LastSDsetting, cbSettings); 
+                chkAutoSynch.IsChecked = opts.general.AutoRefreshSDsetting;               
+
+                nsWidth.OnValueChanged += new NumericSliderUC.ValueChangedHandler(SizeAdjust); nsHeight.OnValueChanged += new NumericSliderUC.ValueChangedHandler(SizeAdjust);
+                nsSamplingSteps.dblBox.ValueChanged += new RoutedEventHandler(visual2prms); 
+                nsCFGscale.OnValueChanged += new DoubleSliderUC.ValueChangedHandler(CfgAdjust);  nsDenoise.OnValueChanged += new DoubleSliderUC.ValueChangedHandler(CfgAdjust);
+            }            
+            btnSetParams_Click(null, null); // update visual from setting/prms
         }
         public void Finish()
         {
@@ -160,14 +270,21 @@ namespace scripthea.external
                 if (value.ContainsKey("negative_prompt")) tbNegativePrompt.Text = Convert.ToString(value["negative_prompt"]);
                 if (value.ContainsKey("width")) nsWidth.Value = Convert.ToInt32(value["width"]);
                 if (value.ContainsKey("height")) nsHeight.Value = Convert.ToInt32(value["height"]);
-                if (value.ContainsKey("sampler_name")) cbSampler.Text = Convert.ToString(value["sampler_name"]);
+                if (value.ContainsKey("sampler_name"))
+                {
+                    string sn = Convert.ToString(value["sampler_name"]);
+                    if (!A1111) { sn = SDside.FindMatch(sn, A1111); if (sn == "") sn = "<default>"; }
+                    cbSampler.Text = sn;
+                }
+                else cbSampler.Text = A1111 ? "" : "<default>";
                 if (value.ContainsKey("restore_faces")) chkRestoreFaces.IsChecked = Convert.ToBoolean(value["restore_faces"]);
                 if (value.ContainsKey("seed")) tbSeed.Text = Convert.ToString(Convert.ToInt64(value["seed"]));
-                if (value.ContainsKey("cfg_scale")) nsCFGscale.Value = Convert.ToInt32(value["cfg_scale"]);
                 if (value.ContainsKey("steps")) nsSamplingSteps.Value = Convert.ToInt32(value["steps"]);
+                if (value.ContainsKey("cfg_scale")) nsCFGscale.Value = Convert.ToDouble(value["cfg_scale"]);
+                if (value.ContainsKey("denoising_strength")) nsDenoise.Value = Convert.ToDouble(value["denoising_strength"]);
             }
         }
-        public bool stSet(string prmName, dynamic prmValue)
+        public bool stSet(string prmName, dynamic prmValue) // ?
         {
             if (!SDside.curParams.Contains(prmName)) return false; 
             vPrms = new SDsetting(new Dictionary<string, object>() { { prmName, (object)prmValue } });
@@ -193,7 +310,6 @@ namespace scripthea.external
             if (Utils.isNull(refSDs) || Utils.isNull(ActiveSetting)) return;
             grpSDsettings.Header = "SD parameters settings" + ((ActiveSetting.Compare2SDsetting(vPrms) || chkAutoSynch.IsChecked.Value) ? "" : " *").ToString();
         }
-
         protected void SizeAdjust(object sender, double value)
         {
             if (locked) return;
@@ -207,14 +323,39 @@ namespace scripthea.external
             }
             visual2prms(sender, null);
         }
-        protected void visual2prms(object sender, RoutedEventArgs e) // live update
+        protected void CfgAdjust(object sender, double value)
         {
             if (locked) return;
+            _vPrms["cfg_scale"] = nsCFGscale.Value;
+            _vPrms["denoising_strength"] = nsDenoise.Value;
+            CheckDifference(vPrms);
+        }
+        protected void visual2prms(object sender, RoutedEventArgs e) // live update
+        {
+            if (locked || cbSampler == null) return;
             _vPrms = new SDsetting();
             _vPrms["negative_prompt"] = tbNegativePrompt.Text; _vPrms["width"] = (long)nsWidth.Value; _vPrms["height"] = (long)nsHeight.Value;
-            _vPrms["sampler_name"] = cbSampler.Text; _vPrms["restore_faces"] = chkRestoreFaces.IsChecked.Value;
+            if (cbSampler.Items.Count > 0)
+            {
+                if (cbSampler.SelectedIndex == -1) cbSampler.SelectedIndex = 0;
+                string sampler = (cbSampler.SelectedItem as ComboBoxItem).Content as string;
+                if (A1111) _vPrms["sampler_name"] = sampler; 
+                else
+                {
+                    if (sampler != "<default>")
+                    {                
+                        string sn = SDside.FindMatch(sampler, true);
+                        if (sn == "") sn = SDside.a1111Samplers[0]; // if nothing set to default
+                        _vPrms["sampler_name"] = sn;
+                    }
+                }
+            }
+             _vPrms["restore_faces"] = chkRestoreFaces.IsChecked.Value;
             if (long.TryParse(tbSeed.Text, out long result)) _vPrms["seed"] = result;
-            _vPrms["cfg_scale"] = (double)nsCFGscale.Value; _vPrms["steps"] = (long)nsSamplingSteps.Value;
+            _vPrms["steps"] = (long)nsSamplingSteps.Value;
+            _vPrms["cfg_scale"] = nsCFGscale.Value;
+            _vPrms["denoising_strength"] = nsDenoise.Value;
+
             CheckDifference(vPrms);            
         }
         private void tbNegativePrompt_TextChanged(object sender, TextChangedEventArgs e) // & seed
@@ -241,8 +382,8 @@ namespace scripthea.external
         private void cbSettings_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!chkAutoSynch.IsChecked.Value) return;
-            string oldSel = cbSettings.Text;
-            if (sdList.ContainsKey(oldSel)) sdList[oldSel].GetFromDict(vPrms); // old one
+            string oldSel = cbSettings.Text; // before the change
+            if (sdList.ContainsKey(oldSel)) { visual2prms(null, null); sdList[oldSel].GetFromDict(vPrms); } // old one
             else Utils.TimedMessageBox("Unknown setting: " + cbSettings.Text);
 
             string newStr = "";

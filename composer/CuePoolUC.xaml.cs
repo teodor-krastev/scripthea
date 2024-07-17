@@ -68,7 +68,10 @@ namespace scripthea.composer
         {
             opts = _opts; ChangeCue = _ChangeCue;
             if (Directory.Exists(opts.composer.WorkCuesFolder)) cuesFolder = opts.composer.WorkCuesFolder;
-            else { cuesFolder = rootCuesFolder; Utils.TimedMessageBox("Error: cues folder <" + cuesFolder + "> does not exist.\n\n Set to default."); }
+            else 
+            {   cuesFolder = rootCuesFolder; 
+                if (opts.composer.WorkCuesFolder != "") Log("Error: cues folder <" + opts.composer.WorkCuesFolder + "> does not exist.\n\n Set to default."); 
+            }
             List<string> cfs = cuesFolders(); cfs.Insert(0, "<root>"); 
             foreach (string cf in cfs)
             {
@@ -408,7 +411,9 @@ namespace scripthea.composer
             else
             {
                 //if (iPicker.checkable) return lls;
-                foreach(Tuple<int, string, int, string> tpl in iPicker.ListOfTuples(true, false))
+                List<Tuple<int, string, int, string>> lt = iPicker.ListOfTuples(true, false);
+                if (lt == null) return lls; 
+                foreach (Tuple<int, string, int, string> tpl in lt)
                 {
                     string[] pa = { tpl.Item2 }; lls.Add(new List<string>(pa));
                 }

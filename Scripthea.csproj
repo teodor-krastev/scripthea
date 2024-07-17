@@ -166,8 +166,15 @@
     <Compile Include="composer\ScanPreviewUC.xaml.cs">
       <DependentUpon>ScanPreviewUC.xaml</DependentUpon>
     </Compile>
+    <Compile Include="external\ComfyUI.cs" />
     <Compile Include="external\CraiyonAPIUC.xaml.cs">
       <DependentUpon>CraiyonAPIUC.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="external\DoubleSliderUC.xaml.cs">
+      <DependentUpon>DoubleSliderUC.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="external\DoubleUpDownControl.xaml.cs">
+      <DependentUpon>DoubleUpDownControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="external\NumericSliderUC.xaml.cs">
       <DependentUpon>NumericSliderUC.xaml</DependentUpon>
@@ -232,6 +239,9 @@
       <DependentUpon>PyCodeUC.xaml</DependentUpon>
     </Compile>
     <Compile Include="sOptions.cs" />
+    <Compile Include="viewer\DepotStastsUC.xaml.cs">
+      <DependentUpon>DepotStastsUC.xaml</DependentUpon>
+    </Compile>
     <Compile Include="viewer\GridViewUC.xaml.cs">
       <DependentUpon>GridViewUC.xaml</DependentUpon>
     </Compile>
@@ -299,6 +309,14 @@
     <Page Include="external\CraiyonAPIUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="external\DoubleSliderUC.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="external\DoubleUpDownControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="external\NumericSliderUC.xaml">
       <SubType>Designer</SubType>
@@ -391,6 +409,10 @@
     <Page Include="python\PyCodeUC.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="viewer\DepotStastsUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="viewer\GridViewUC.xaml">
       <SubType>Designer</SubType>

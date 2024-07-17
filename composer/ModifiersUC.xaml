@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:scripthea" xmlns:UtilsNS="clr-namespace:UtilsNS"
+             xmlns:local="clr-namespace:scripthea" xmlns:external="clr-namespace:scripthea.external"
              xmlns:local1="clr-namespace:scripthea.composer" x:Class="scripthea.composer.ModifiersUC"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -44,7 +44,7 @@
                     <Label Content="Scan. modif. sample #" ToolTip="Number of scanable modifiers in a prompt" FontWeight="Bold" Margin="0" Background="MintCream" FontFamily="Segoe UI Semibold" FontSize="13"/>
                     <StackPanel Orientation="Horizontal" Margin="0,-3,0,5" Background="MintCream">
                         <Label x:Name="lbSample" Content="in a prompt  " FontWeight="Bold" FontFamily="Segoe UI Semibold"/>
-                        <UtilsNS:NumericBox x:Name="numSample" Width="40" Maximum="9" Minimum="1" ValueChanged="numSample_ValueChanged" FontWeight="Bold"/>
+                        <external:NumericBox x:Name="numSample" Width="40" Maximum="9" Minimum="1" ValueChanged="numSample_ValueChanged" FontWeight="Bold"/>
                     </StackPanel>
                     <CheckBox x:Name="chkAddEmpty" Content="Add an empty modifier" Margin="0,5,0,3" ToolTip="Add an empty modfifier to the scan list" Checked="chkAddEmpty_Checked" Unchecked="chkAddEmpty_Checked"/>
                     <StackPanel Orientation="Horizontal" Margin="-2,5,0,7" Background="MintCream">

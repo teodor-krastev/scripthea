@@ -18,13 +18,14 @@ namespace scripthea.external
     /// <summary>
     /// Interaction logic for NumericSliderUC.xaml
     /// </summary>
-    public partial class NumericSliderUC : UserControl
+    public partial class DoubleSliderUC : UserControl
     {
-        public NumericSliderUC()
+        public DoubleSliderUC()
         {
             InitializeComponent();
+            dblBox.OnValueChanged += new RoutedEventHandler(numBox_ValueChanged);
         }
-        public void Init(string title, int initValue, int minValue = 0, int maxValue = 100, int incValue = 1)
+        public void Init(string title, double initValue, double minValue = 0, double maxValue = 100, double incValue = 1)
         {
             lbTitle.Content = title;
             dblBox.Minimum = minValue; slider.Minimum = minValue;
@@ -37,7 +38,7 @@ namespace scripthea.external
         {
             if (changing) return;
             changing = true;
-            dblBox.Value = (int)slider.Value; ValueChanged(this, (double)dblBox.Value);
+            dblBox.Value = slider.Value; ValueChanged(this, dblBox.Value);
             changing = false;
         }
         private void numBox_ValueChanged(object sender, RoutedEventArgs e)
@@ -47,7 +48,7 @@ namespace scripthea.external
             slider.Value = dblBox.Value; ValueChanged(this, (double)dblBox.Value);
             changing = false;
         }
-        public int Value 
+        public double Value 
         {
             get { return dblBox.Value; }
             set

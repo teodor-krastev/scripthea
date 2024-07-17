@@ -220,7 +220,8 @@ namespace scripthea.composer
             if (Directory.Exists(opts.composer.ImageDepotFolder)) tbImageDepot.Text = opts.composer.ImageDepotFolder;
             else
             {
-                Log("Directory <"+tbImageDepot.Text+"> does not exist. Setting to default directory :"+ SctUtils.defaultImageDepot);
+                if (opts.composer.ImageDepotFolder != "") 
+                    Log("Directory <"+ opts.composer.ImageDepotFolder + "> does not exist. Setting to default directory :"+ SctUtils.defaultImageDepot);
                 opts.composer.ImageDepotFolder = SctUtils.defaultImageDepot; tbImageDepot.Text = SctUtils.defaultImageDepot;
             }           
             UpdatingOptions = false;              
@@ -505,12 +506,17 @@ namespace scripthea.composer
             if (Utils.isNull(API)) return;
             ComboBoxItem cbi = (ComboBoxItem)cbActiveAPI.SelectedItem;
             if (Utils.isNull(cbi)) API.activeAPIname = "Simulation";
-            else API.activeAPIname = (string)cbi.Content; 
-            opts.composer.API = API.activeAPIname; showAPI = API.activeAPI.isDocked;
+            else
+            {  
+                var visName = (string)cbi.Content; opts.composer.API = visName;
+                if (visName == "SD-A1111/Forge"|| visName == "SD-ComfyUI") visName = "SDiffusion";
+                API.activeAPIname = visName;
+            }
+            showAPI = API.activeAPI.isDocked;
             if (showAPI) 
             { 
                 gridAPI.Children.Clear(); gridAPI.Children.Add(API.activeAPI.userControl);
-                API.activeAPI.Init(ref opts);
+                API.activeAPI.Init(ref opts); sd_params_UC.Init(ref opts);
             }
             if (!Utils.isNull(e)) e.Handled = true;
             OnAPIparams(API.activeAPIname.Equals("SDiffusion") || API.activeAPIname.Equals("AddonGen"));
@@ -572,7 +578,7 @@ namespace scripthea.composer
             ChangeModif(sender, e);
             if (!Utils.isNull(e)) e.Handled = true;
         }
-        private readonly string[] miTitles = { "Copy", "Cut", "Paste", "\"...\" synonyms", "\"...\" meaning" };
+        private readonly string[] miTitles = { "Copy", "Cut", "Paste", "\"...\" synonyms", "\"...\" meaning", "\"...\" antonyms" };
         private void tbCue_ContextMenuOpening(object sender, ContextMenuEventArgs e)
         {
             cmCue.Items.Clear(); bool isSel = !tbCue.SelectedText.Trim().Equals("");
@@ -586,7 +592,7 @@ namespace scripthea.composer
             }
             if (!isSel) return;
             cmCue.Items.Add(new Separator());
-            for (int i = 3; i < 5; i++)
+            for (int i = 3; i < 6; i++)
             {
                 MenuItem mi = new MenuItem(); 
                 mi.Header = miTitles[i].Replace("...", tbCue.SelectedText.Trim()); 
@@ -607,7 +613,7 @@ namespace scripthea.composer
                 case "Paste": tbCue.SelectedText = Clipboard.GetText();
                     return;
             }
-            if (header.EndsWith("synonyms") || header.EndsWith("meaning")) Utils.AskTheWeb(header.Replace("\"", string.Empty));
+            if (header.EndsWith("synonyms") || header.EndsWith("meaning") || header.EndsWith("antonyms")) Utils.AskTheWeb(header.Replace("\"", string.Empty));
         }
         private void btnScanPreview_Click(object sender, RoutedEventArgs e)
         {

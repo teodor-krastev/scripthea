@@ -27,19 +27,22 @@ namespace scripthea.external
         {
 
         }
-        // General
-        public bool APIcomm;
+        // common
         public int TimeOutImgGen;
+        public bool autoCloseCmd;
+        // A1111/ComfyUI
+        public string SDloc1111;
+        public bool APIcomm1111; // if A1111 then API vs pyScript switch 
         public bool closeAtEndOfScan;
         public bool measureGPUtemp;
-        public bool autoCloseCmd;
-        // Initial settings
-        public string SDlocation;
+        public bool ValidateScript;
+        public bool ValidateAPI;
+
+        public string SDlocComfy;
+        // GRU temperature
         public bool GPUtemperature;
         public int GPUThreshold;
         public int GPUstackDepth;        
-        public bool ValidateScript;
-        public bool ValidateAPI;
 
         public void save(string configFilename)
         {
@@ -57,7 +60,7 @@ namespace scripthea.external
         /// <summary>
         /// dialog box constructor; reads from file or creates new options object
         /// </summary>
-        public SDoptionsWindow()
+        public SDoptionsWindow(bool _A1111)
         {
             InitializeComponent();
             if (File.Exists(configFilename))
@@ -66,8 +69,20 @@ namespace scripthea.external
                 opts = JsonConvert.DeserializeObject<SDoptions>(fileJson);
             }
             else { opts = new SDoptions(); opts.ValidateScript = true; opts.ValidateAPI = true; }
-            if (opts.ValidateScript) ValidatePyScript();           
-            if (opts.ValidateAPI) ValidateAPI();
+            A1111 = _A1111;
+            if (A1111)
+            {
+                if (opts.ValidateAPI && opts.APIcomm1111) ValidateAPI1111();
+                if (opts.ValidateScript && !opts.APIcomm1111) ValidatePyScript();
+                Title += "  (A1111/Forge mode)";
+                tiForge.IsEnabled = true; tabCtrl.SelectedItem = tiForge;
+            }
+            else 
+            { 
+                Title += "  (ComfyUI mode)";
+                tiForge.IsEnabled = false; tabCtrl.SelectedItem = tiComfyUI;
+            }
+            tiComfyUI.IsEnabled = !tiForge.IsEnabled;
         }
         public event Utils.LogHandler OnLog;
         protected void Log(string txt, SolidColorBrush clr = null)
@@ -84,35 +99,41 @@ namespace scripthea.external
         public SDoptions opts;
         private void Visual2opts()
         {
-            opts.APIcomm = rbAPIcomm.IsChecked.Value;
+            opts.SDloc1111 = tbSDloc1111.Text;
+            opts.ValidateScript = chkValidateScript.IsChecked.Value;
+            opts.ValidateAPI = chkValidateAPI.IsChecked.Value;
+            opts.APIcomm1111 = rbAPIcomm.IsChecked.Value;
             opts.closeAtEndOfScan = chkAutoCloseSession.IsChecked.Value;
-            opts.TimeOutImgGen = numTimeOutImgGen.Value;
-            opts.measureGPUtemp = chkMeasureGPUtemp.IsChecked.Value;
-            opts.autoCloseCmd = chkAutoCloseCmd.IsChecked.Value;
 
+            opts.SDlocComfy = tbSDlocComfy.Text;
+
+            opts.measureGPUtemp = chkMeasureGPUtemp.IsChecked.Value;
             opts.GPUtemperature = chkGPUtemperature.IsChecked.Value;
             opts.GPUThreshold = numGPUThreshold.Value;
             opts.GPUstackDepth = numGPUstackDepth.Value;
         
-            opts.SDlocation = tbSDlocation.Text;
-            opts.ValidateScript = chkValidateScript.IsChecked.Value;
-            opts.ValidateAPI = chkValidateAPI.IsChecked.Value;
+            opts.TimeOutImgGen = numTimeOutImgGen.Value;
+            opts.autoCloseCmd = chkAutoCloseCmd.IsChecked.Value;
         }
+        private bool A1111;
         public void opts2Visual()
         {
-            rbAPIcomm.IsChecked = opts.APIcomm;
+            if (IsSDloc1111(opts.SDloc1111)) tbSDloc1111.Text = opts.SDloc1111;
+            chkValidateScript.IsChecked = opts.ValidateScript || !ValidatePyScript();
+            chkValidateAPI.IsChecked = opts.ValidateAPI || !ValidateAPI1111();
             chkAutoCloseSession.IsChecked = opts.closeAtEndOfScan;
+            rbAPIcomm.IsChecked = opts.APIcomm1111;
+
+            if (IsSDlocComfy(opts.SDlocComfy)) tbSDlocComfy.Text = opts.SDlocComfy;
+
             numTimeOutImgGen.Value = opts.TimeOutImgGen;
-            chkMeasureGPUtemp.IsChecked = opts.measureGPUtemp;
             chkAutoCloseCmd.IsChecked = opts.autoCloseCmd;
 
+            chkMeasureGPUtemp.IsChecked = opts.measureGPUtemp;
             chkGPUtemperature.IsChecked = opts.GPUtemperature;
             numGPUThreshold.Value = opts.GPUThreshold; 
             numGPUstackDepth.Value = opts.GPUstackDepth;
             chkMeasureGPUtemp_Checked(null, null);
-            if (IsSDlocation(opts.SDlocation)) tbSDlocation.Text = opts.SDlocation;
-            chkValidateScript.IsChecked = opts.ValidateScript || !ValidatePyScript();
-            chkValidateAPI.IsChecked = opts.ValidateAPI || !ValidateAPI();
         }
         /// <summary>
         /// Accepting and saving the changes
@@ -138,23 +159,35 @@ namespace scripthea.external
         {
             e.Cancel = keepOpen; Hide();
         }
-        public bool IsSDlocation(string folder, bool warning = true) 
+        public bool IsSDloc1111(string bat, bool warning = true) 
         {
-            bool bb = Directory.Exists(folder);
-            if (bb) bb &=  Directory.Exists(Path.Combine(folder, "scripts")) && Directory.Exists(Path.Combine(folder, "modules")) && File.Exists(Path.Combine(folder, "webui-user.bat"));
-            if (!bb && warning && !folder.Equals("")) Utils.TimedMessageBox("The folder <" + folder + "> does not look like a Stable Diffusion webUI installation.", "Problem", 5000);
-            if (bb) gbSDlocation.BorderBrush = Brushes.Silver;
-            else gbSDlocation.BorderBrush = Brushes.OrangeRed;
+            bool bb = File.Exists(bat); if (!bb) return false;
+            string folder = bb ? Path.GetDirectoryName(bat) : "";
+            if (bb) bb &=  Directory.Exists(Path.Combine(folder, "scripts")) && Directory.Exists(Path.Combine(folder, "modules"));
+            if (!bb && warning && !folder.Equals("")) Utils.TimedMessageBox("The folder <" + folder + "> does not look like a Stable Diffusion A1111/Forge installation.", "Problem", 5000);
+            if (bb) gbSDloc1111.BorderBrush = Brushes.Silver;
+            else gbSDloc1111.BorderBrush = Brushes.OrangeRed;
+            return bb;
+        }
+        public bool IsSDlocComfy(string bat, bool warning = true)
+        {
+            bool bb = File.Exists(bat); if (!bb) return false;
+            string folder = bb ? Path.GetDirectoryName(bat) : "";
+            if (bb) bb &= Directory.Exists(Path.Combine(folder, "ComfyUI")) && Directory.Exists(Path.Combine(folder, "python_embeded"));
+            if (!bb && warning && !folder.Equals("")) Utils.TimedMessageBox("The folder <" + folder + "> does not look like a Stable Diffusion ComfyUI installation.", "Problem", 5000);
+            if (bb) gbSDloc1111.BorderBrush = Brushes.Silver;
+            else gbSDloc1111.BorderBrush = Brushes.OrangeRed;
             return bb;
         }
         public bool ValidatePyScript()
-        {
+        {            
+            if (!A1111 || opts.APIcomm1111) return true;
             ValidScript = false;
             string pyScript = "prompts_from_scripthea_1_5.py";
             string orgLoc = Path.Combine(Utils.configPath, pyScript);
             if (!File.Exists(orgLoc)) { Log("Error[784]: file " + orgLoc + " is missing."); return false; }
-            if (!IsSDlocation(opts.SDlocation)) return false; 
-            string sdLoc = Path.Combine(opts.SDlocation, "scripts", pyScript);
+            if (!IsSDloc1111(opts.SDloc1111)) return false; string folder = Path.GetDirectoryName(opts.SDloc1111);
+            string sdLoc = Path.Combine(folder, "scripts", pyScript);
             if (Utils.GetMD5Checksum(orgLoc) == Utils.GetMD5Checksum(sdLoc)) { ValidScript = true; return true; }
             if (MessageBox.Show("Scripthea python script is missing (or old) from scripts folder of SD\r\r Copy <prompts_from_scripthea_1_5.py> to SD script folder?\r Yes - recommended", "",
                 MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No) return false;
@@ -162,11 +195,12 @@ namespace scripthea.external
             ValidScript = Utils.GetMD5Checksum(orgLoc) == Utils.GetMD5Checksum(sdLoc);
             return Convert.ToBoolean(ValidScript);
         }
-        public bool ValidateAPI()
+        public bool ValidateAPI1111()
         {
+            if (!A1111 || !opts.APIcomm1111) return true;
             ValidAPI = false;
-            if (!IsSDlocation(opts.SDlocation)) return false;
-            string batLoc = Path.Combine(opts.SDlocation, "webui-user.bat");
+            if (!IsSDloc1111(opts.SDloc1111)) return false;
+            string batLoc = opts.SDloc1111;
             List<string> ls = Utils.readList(batLoc, false); 
             bool found = false; int j = -1;
             for (int i = 0; i < ls.Count; i++)
@@ -187,16 +221,34 @@ namespace scripthea.external
             Utils.writeList(batLoc, ls);
             ValidAPI = true; return true; 
         }
+        // C:\Software\stable-diffusion-webui-forge\webui-user.bat - OK
         private void btnBrowse_Click(object sender, RoutedEventArgs e)
         {
             CommonOpenFileDialog dialog = new CommonOpenFileDialog();
-            dialog.InitialDirectory = Directory.Exists(tbSDlocation.Text) ? tbSDlocation.Text : Utils.basePath;
-            dialog.IsFolderPicker = true;
+            dialog.InitialDirectory = File.Exists(tbSDloc1111.Text) ? Path.GetDirectoryName(tbSDloc1111.Text) : Utils.basePath;
+            dialog.DefaultExtension = ".bat"; dialog.Filters.Add(new CommonFileDialogFilter("batch file", "bat"));
             if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
             {
-                if (IsSDlocation(dialog.FileName)) 
+                if (IsSDloc1111(dialog.FileName)) 
                 {
-                    tbSDlocation.Text = dialog.FileName; opts.SDlocation = dialog.FileName; ValidatePyScript();
+                    tbSDloc1111.Text = dialog.FileName; opts.SDloc1111 = dialog.FileName; // ValidatePyScript();
+                }
+            }
+            Activate();
+            Topmost = true;  // important
+            Topmost = false; // important
+            Focus();         // important
+        }
+        private void btnBrowseComfy_Click(object sender, RoutedEventArgs e)
+        {
+            CommonOpenFileDialog dialog = new CommonOpenFileDialog();
+            dialog.InitialDirectory = File.Exists(tbSDlocComfy.Text) ? Path.GetDirectoryName(tbSDlocComfy.Text) : Utils.basePath;
+            dialog.DefaultExtension = ".bat"; dialog.Filters.Add(new CommonFileDialogFilter("batch file", "bat"));
+            if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+            {
+                if (IsSDlocComfy(dialog.FileName))
+                {
+                    tbSDlocComfy.Text = dialog.FileName; opts.SDloc1111 = dialog.FileName; 
                 }
             }
             Activate();
@@ -218,6 +270,7 @@ namespace scripthea.external
                 lbGPUvalueDepth.Visibility = Visibility.Collapsed; numGPUstackDepth.Visibility = Visibility.Collapsed;
             }
         }
+
     }
 
     public class SDformat

@@ -363,7 +363,7 @@ namespace scripthea.viewer
         public int appBuilt { get; private set; }
         public bool isReadOnly { get; private set; }
         public bool IsChanged { get; set; } = false;
-        public void Close() { if (IsChanged) Save(true); }
+        public void OnClose() { if (IsChanged) Save(true); }
         public string descText { get; private set; }
         public Dictionary<string, string> header;
         public List<ImageInfo> items { get; set; }
@@ -418,8 +418,9 @@ namespace scripthea.viewer
         public bool SameAs(string imageFolder) // compare DESCRIPTION.idf and location
         {
             bool bb = Directory.Exists(imageFolder) && Utils.comparePaths(imageFolder, path);
-            if (!bb) return false;           
-            return descText == File.ReadAllText(Path.Combine(imageFolder, SctUtils.descriptionFile));
+            if (!bb) return false;
+            bb = descText == File.ReadAllText(Path.Combine(imageFolder, SctUtils.descriptionFile));
+            return bb;
         }
         public List<string> allImages() // in this folder 
         {

@@ -72,9 +72,10 @@
                         </GroupBox>
                         <StackPanel Orientation="Horizontal" Margin="0,5,0,0" VerticalAlignment="Top">
                             <Label x:Name="lbAPI" Content="Text-to-image generator" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                            <ComboBox x:Name="cbActiveAPI" HorizontalAlignment="Left" SelectedIndex="0" Width="112" FontSize="13" Background="White" Margin="3,2,0,0" SelectionChanged="cbActiveAPI_SelectionChanged" FontWeight="Bold" FontFamily="Segoe UI Semibold">
+                            <ComboBox x:Name="cbActiveAPI" HorizontalAlignment="Left" SelectedIndex="0" Width="135" FontSize="13" Background="White" Margin="3,2,0,0" SelectionChanged="cbActiveAPI_SelectionChanged" FontWeight="Bold" FontFamily="Segoe UI Semibold">
                                 <ComboBoxItem x:Name = "cbiAddonGen" Content = "AddonGen"/>
-                                <ComboBoxItem x:Name="cbiDiffusion" Content="SDiffusion"/>
+                                <ComboBoxItem x:Name="cbiSD_Forrge" Content="SD-A1111/Forge"/>
+                                <ComboBoxItem x:Name="cbiSD_ComfyUI" Content="SD-ComfyUI"/>
                                 <ComboBoxItem x:Name="cbiCraiyon" Content="Craiyon"/>
                             </ComboBox>
                             <Image x:Name="imgAPIdialog"  Width="25" Height="25" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="6,3,0,0" Cursor="Hand" MouseDown="imgAPIdialog_MouseDown" Source="/Scripthea;component/Properties/gears1.png"/>

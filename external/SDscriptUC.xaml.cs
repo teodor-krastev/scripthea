@@ -40,9 +40,9 @@ namespace scripthea.external
         public Dictionary<string, string> opts { get; set; } // interfaceAPI: main (non API specific) options 
         public void Init(ref SDoptionsWindow _SDopts) // init and update visuals from opts
         {
-            if (_SDopts == null) _SDopts = new SDoptionsWindow();
+            if (_SDopts == null) _SDopts = new SDoptionsWindow(true);
             SDopts = _SDopts;
-            if (!SDopts.IsSDlocation(SDopts.opts.SDlocation, false)) { Utils.DelayExec(3000, () => { Utils.TimedMessageBox("Go to SD Options and select your webUI SD instalation folder.", "Solution", 6000); }); return; }
+            if (!SDopts.IsSDloc1111(SDopts.opts.SDloc1111, false)) { Utils.DelayExec(3000, () => { Utils.TimedMessageBox("Go to SD Options and select your webUI SD instalation folder.", "Solution", 6000); }); return; }
             reStartServers();
         }
         public void reStartServers(bool forced = false)

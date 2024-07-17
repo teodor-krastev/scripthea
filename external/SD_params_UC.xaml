@@ -21,17 +21,20 @@
             <local:NumericSliderUC x:Name="nsWidth" Height="28" Margin="0,5"/>
             <local:NumericSliderUC x:Name="nsHeight" Height="28" Margin="0,5"/>
             <StackPanel Height="30" Orientation="Horizontal" Margin="0,5">
-                <Label Content="Sampling Method"></Label>
-                <ComboBox x:Name="cbSampler" VerticalAlignment="Center" HorizontalAlignment="Left" Width="120" Background="White" SelectionChanged="cbSampler_SelectionChanged"/>
-                <CheckBox x:Name="chkRestoreFaces" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="7,0,0,0" Content="Restore Faces" Checked="chkRestoreFaces_Checked" Unchecked="chkRestoreFaces_Checked"></CheckBox>
-                <CheckBox x:Name="chkKeepRatio" VerticalAlignment="Center" Content="Keep WxH ratio" Margin="7,0,0,0" Foreground="Navy" Checked="chkKeepRatio_Checked" Unchecked="chkKeepRatio_Checked"></CheckBox>
-                <StackPanel Height="30" Orientation="Horizontal" HorizontalAlignment="Left" Margin="7,0,0,0" Width="128" VerticalAlignment="Center">
+                <CheckBox x:Name="chkKeepRatio" VerticalAlignment="Center" Content="Keep WxH ratio" Margin="15,0,0,0" Foreground="Navy" Checked="chkKeepRatio_Checked" Unchecked="chkKeepRatio_Checked"></CheckBox>
+                <StackPanel Height="30" Orientation="Horizontal" HorizontalAlignment="Left" Margin="7,0,0,0" Width="200" VerticalAlignment="Center">
                     <Label HorizontalAlignment="Right" VerticalAlignment="Center" Content="Seed"></Label>
-                    <TextBox x:Name="tbSeed" Text="-1" Width="87" VerticalAlignment="Center" FontWeight="Bold" Margin="0,5,0,2" BorderBrush="{x:Null}" Height="23" TextChanged="tbNegativePrompt_TextChanged"></TextBox>
+                    <TextBox x:Name="tbSeed" Text="-1" VerticalAlignment="Center" Margin="0,5,0,2" BorderBrush="{x:Null}" Height="23" TextChanged="tbNegativePrompt_TextChanged" FontFamily="Segoe UI Semibold"/>
                 </StackPanel>
             </StackPanel>
+            <StackPanel Height="30" Orientation="Horizontal" Margin="0,5">
+                <Label Content="Sampling Method" Margin="10,0,0,0"></Label>
+                <ComboBox x:Name="cbSampler" VerticalAlignment="Center" HorizontalAlignment="Left" Width="139" Background="White" SelectionChanged="cbSampler_SelectionChanged" FontFamily="Segoe UI Semibold" Margin="0,4"/>
+                <CheckBox x:Name="chkRestoreFaces" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="17,0,0,0" Content="Restore Faces" Checked="chkRestoreFaces_Checked" Unchecked="chkRestoreFaces_Checked"></CheckBox>
+            </StackPanel>
             <local:NumericSliderUC x:Name="nsSamplingSteps" Height="28" Margin="0,5"/>
-            <local:NumericSliderUC x:Name="nsCFGscale" Height="28" Margin="0,5"/>
+            <local:DoubleSliderUC x:Name="nsCFGscale" Height="28" Margin="0,5"/>
+            <local:DoubleSliderUC x:Name="nsDenoise" Height="28" Margin="0,5"/>
 
         </StackPanel>
         <GroupBox x:Name="grpSDsettings" Header="SD parameters settings" HorizontalAlignment="Left" Margin="2.667,0,-8,0" VerticalAlignment="Top" Width="300" Height="78" Grid.Column="1">

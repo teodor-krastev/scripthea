@@ -14,14 +14,14 @@
                     <Label x:Name="lbTmpInfo" Height="25" Margin="0,-8,0.076,0" Content="aver:   max:"/>
                 </StackPanel>
                 <Label VerticalAlignment="Bottom" HorizontalAlignment="Left" Content="next when T &lt;" Height="24"></Label>
-                <UtilsNS:NumericBox x:Name="numGPUThreshold" HorizontalAlignment="Right" Height="25" Margin="0,0,3,0" VerticalAlignment="Bottom" Width="55" FontSize="13" Maximum="100" Minimum="2" Value="60" ValueChanged="numGPUThreshold_ValueChanged"/>
+                <local:NumericBox x:Name="numGPUThreshold" HorizontalAlignment="Right" Height="25" Margin="0,0,3,0" VerticalAlignment="Bottom" Width="55" FontSize="13" Maximum="100" Minimum="2" Value="60" ValueChanged="numGPUThreshold_ValueChanged"/>
             </Grid>
             <Grid x:Name="gridTmprDly" Width="160" Height="60" >
                 <StackPanel Height="40" VerticalAlignment="Top">
                     <CheckBox x:Name="chkTmprDly" Content="GPU temper. control" VerticalAlignment="Top" Height="20" Margin="5,0,0,0" Background="#FFF0FBFA" Checked="chkTemp_Checked" Unchecked="chkTemp_Checked" HorizontalAlignment="Left"/>
                     <Label x:Name="lbTmpInfoDly" Height="27" Margin="0,-8,0.076,0" Content="Delay[s] between queries"/>
                 </StackPanel>
-                <UtilsNS:NumericBox x:Name="numDly" VerticalAlignment="Bottom" HorizontalAlignment="Left" Height="25" Margin="4,0,0,0"  Width="51" FontSize="13" Maximum="100" Minimum="2" Value="60" ValueChanged="numGPUThreshold_ValueChanged"/>
+                <local:NumericBox x:Name="numDly" VerticalAlignment="Bottom" HorizontalAlignment="Left" Height="25" Margin="4,0,0,0"  Width="51" FontSize="13" Maximum="100" Minimum="2" Value="60" ValueChanged="numGPUThreshold_ValueChanged"/>
                 <Label x:Name="lbTimeLeft"  Content=""  VerticalAlignment="Bottom" Height="26" Margin="60,0,0,2"></Label>
             </Grid>
         </StackPanel>    

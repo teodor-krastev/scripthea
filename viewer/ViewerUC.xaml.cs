@@ -81,7 +81,7 @@ namespace scripthea.viewer
         }
         public void Finish()
         {
-            iDepot?.Close();
+            iDepot?.OnClose();
             opts.composer.ViewColWidth = Convert.ToInt32(colListWidth.Width.Value);
             opts.viewer.Autorefresh = chkAutoRefresh.IsChecked.Value;
             foreach (iPicList ipl in views)
@@ -240,7 +240,7 @@ namespace scripthea.viewer
         }
         public void Refresh(string iFolder = "", object sender = null) 
         {
-            iDepot?.Close();
+            iDepot?.OnClose();
             string folder = iFolder;
             if (iDepot != null && iFolder == "")
             {
@@ -248,9 +248,13 @@ namespace scripthea.viewer
                 else folder = imageFolder;
             }
             if (!Directory.Exists(folder)) { Log("Error[874]: Missing directory > " + folder); return; }
-            if (iDepot != null)
-                if (iDepot.SameAs(iFolder) && sender != tabCtrlViews) return;
-
+            if (iDepot != null && sender != btnRefresh)
+            {
+                bool bb = sender == tabCtrlViews;
+                bool bc = activeView == gridViewUC;
+                if (bc) bc = iDepot.SameAs(activeView.loadedDepot);                
+                if (iDepot.SameAs(folder) && bb && bc) return;                                        
+            }                
             iDepot = new ImageDepot(imageFolder);
             if (!iDepot.isEnabled) { Log("Error[96]: This is not an image depot."); return; }
             else lbDepotInfo.Content = iDepot.items.Count.ToString() + " images"; 
@@ -334,7 +338,7 @@ namespace scripthea.viewer
         {
             if (activeView.iDepot == null) return;
             int cnt = activeView.iDepot.items.Count;
-            if (activeView.selectedIndex.Equals(cnt)) animation = false;
+            if (activeView.selectedIndex.Equals(cnt-1)) animation = false;
             if (Utils.InRange(activeView.selectedIndex, 0,cnt-2)) activeView.selectedIndex += 1;
         }
         private void numDly_ValueChanged(object sender, RoutedEventArgs e)
