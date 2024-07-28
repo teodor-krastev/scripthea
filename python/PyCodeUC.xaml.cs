@@ -17,21 +17,34 @@ using Python.Runtime;
 using Path = System.IO.Path;
 using scripthea.options;
 using UtilsNS;
+using System.Threading;
 
 namespace scripthea.python
 {    
     public class St // default output
     {
-        protected RichTextBox rtb;
-        public St(ref RichTextBox _rtb)
+        protected RichTextBox rtb; protected CheckBox details;
+        public CancellationTokenSource cts;
+        public St(ref RichTextBox _rtb, ref CheckBox _details)
         {
-            rtb = _rtb; 
+            rtb = _rtb; details = _details;
+            cts = new CancellationTokenSource();
         }
-        public void print(dynamic txt)
+        public void resetCancellation()
         {
-            if (!(rtb is RichTextBox)) return;
+            if (IsCancellationRequested()) { cts?.Dispose(); cts = new CancellationTokenSource(); }               
+        }
+        public void print(dynamic txt, string color)
+        {
+            if (!(rtb is RichTextBox) || !(details is CheckBox)) return;
+            if (!details.IsChecked.Value) return;
             if (txt == null) Utils.log(rtb, "> NULL", Brushes.Red);
-            else Utils.log(rtb,txt.ToString(),Brushes.Black);
+            else
+            {
+                SolidColorBrush clr = (SolidColorBrush)new BrushConverter().ConvertFromString((string)color);
+                if (clr == null) { Utils.log(rtb, "Error: wrong color", Brushes.Red); clr = Brushes.Black; }
+                Utils.log(rtb,txt.ToString(),clr); 
+            }                                 
         }
         public event Utils.LogHandler OnLog;
         public void log(dynamic txt)
@@ -43,14 +56,21 @@ namespace scripthea.python
         { 
             return new InputBox(info, defaultText, "").ShowDialog();
         } 
+        public bool IsCancellationRequested()
+        {
+            if (cts == null) return false;
+            return cts.IsCancellationRequested;
+        }
+
         public List<Tuple<string, string>> help 
         { 
             get 
             {
                 List<Tuple<string, string>> ls = new List<Tuple<string, string>>();
-                ls.Add(new Tuple<string, string>( "print(dynamic text)", "replacement of python print to output into sMacro log panel. Mostly aimed for intermedia info and debuging." ));
+                ls.Add(new Tuple<string, string>( "print(dynamic text, string color)", "replacement of python print to output into sMacro log panel. Mostly aimed for intermedia info and debuging. color is string of the name or hexadecimal of the color" ));
                 ls.Add(new Tuple<string, string>("log(dynamic text)", "output into the main log panel (left). Mostly aimed for the user "));
                 ls.Add(new Tuple<string, string>("Input(string info, string defaultText)", "similar to standart input function in python. It will open dialog box for the user to enter text."));
+                ls.Add(new Tuple<string, string>("IsCancellationRequested()", "Check the value regularly in your macro and if true call sys.exit(<code>) to interupt the execution. the number <code> is printed out."));
                 return ls;
             } 
         }
@@ -72,113 +92,48 @@ namespace scripthea.python
         public double colLogWidth { get { return colLog.Width.Value; } set { colLog.Width = new GridLength(value); } }
         public double colHelpWidth { get { return colHelp.Width.Value; } set { colHelp.Width = new GridLength(value); } }
 
-        private void setup_py_venv_002(string PythonDLL, string pathToVirtualEnv)
-        {
-            Runtime.PythonDLL = PythonDLL;
-            // be sure not to overwrite your existing "PATH" environmental variable.
-            var path = Environment.GetEnvironmentVariable("PATH").TrimEnd(';');
-            path = string.IsNullOrEmpty(path) ? pathToVirtualEnv : path + ";" + pathToVirtualEnv;
-            Environment.SetEnvironmentVariable("PATH", path, EnvironmentVariableTarget.Process);
-            Environment.SetEnvironmentVariable("PATH", pathToVirtualEnv, EnvironmentVariableTarget.Process);
-            Environment.SetEnvironmentVariable("PYTHONHOME", pathToVirtualEnv, EnvironmentVariableTarget.Process);
-            Environment.SetEnvironmentVariable("PYTHONPATH", $"{pathToVirtualEnv}\\Lib\\site-packages;{pathToVirtualEnv}\\Lib", EnvironmentVariableTarget.Process);
-        }
-
-        private void setup_py_venv_003(string PythonDLL, string pathToVirtualEnv)
-        {
-            Runtime.PythonDLL = ""; //PythonDLL @"C:\Python38\python38.dll";
-            //var pathToVirtualEnv = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\venv"));
-            Console.WriteLine(pathToVirtualEnv);
-
-            Console.WriteLine(Runtime.PythonDLL);
-            Console.WriteLine(PythonEngine.Platform);
-            Console.WriteLine(PythonEngine.MinSupportedVersion);
-            Console.WriteLine(PythonEngine.MaxSupportedVersion);
-            Console.WriteLine(PythonEngine.BuildInfo);
-            Console.WriteLine(PythonEngine.PythonPath);
-
-            string additional = $"{pathToVirtualEnv};{pathToVirtualEnv}\\Lib\\site-packages;{pathToVirtualEnv}\\Lib";
-            //PythonEngine.PythonPath = /*PythonEngine.PythonPath + ";" + */additional;
-            Console.WriteLine(PythonEngine.PythonPath);
-
-            //PythonEngine.Initialize();
-            //PythonEngine.BeginAllowThreads();
-        }
-
         public void OnChangePythonLocation() // (re)locate and validate python
         {
-
             opts.sMacro.pythonValid = false;
             if (!opts.common.pythonOn) return;
             
             if (PythonEngine.IsInitialized) PythonEngine.Shutdown();
-            switch (opts.sMacro.locationType)
+            if (!File.Exists(opts.sMacro.pyEmbedLocation))
+                { inLog("Error: file <" + opts.sMacro.pyEmbedLocation + "> does not exist!", Brushes.Red); return; }
+            try
             {
-                case 0: // ENV
-                case 1:
-                    string envPath = opts.sMacro.pyEnvLocation; //@"D:\Scripthea\stenv";
-                    if (!Directory.Exists(envPath))
-                        { Log("Error: directory <" + envPath + "> does not exist!"); return; }
-                    //setup_py_venv_002(opts.sMacro.pyBaseLocation, envPath);
-                    //Log("> "+Utils.RunCommand(Path.Combine(envPath, "Scripts"), "activate", false)); 
-                    //Environment.SetEnvironmentVariable("PYTHONHOME", pyLoc);
-                    //Environment.SetEnvironmentVariable("PYTHONPATH", Path.Combine(pyLoc, "Lib","site-packages") + ";" + Path.Combine(pyLoc, "Lib"));
-                    //Environment.SetEnvironmentVariable("PYTHONHOME", envPath);
-                    //Environment.SetEnvironmentVariable("PYTHONPATH", $@"{envPath}\Lib\site-packages;{envPath}\Lib");
-                    //Environment.SetEnvironmentVariable("PATH", $@"{envPath}\Scripts;{envPath}\bin;{pathVar}");
-
-
-                    //Environment.SetEnvironmentVariable("PYTHONPATH", "D:\\Scripthea\\stenv\\Lib;D:\\Scripthea\\stenv\\Lib\\site-packages");
-
-                    //Environment.SetEnvironmentVariable("PYTHONHOME", "");//
-                    string pathVar = Environment.GetEnvironmentVariable("PATH");
-                    Environment.SetEnvironmentVariable("PYTHONHOME", "", EnvironmentVariableTarget.Process); // Unset
-                    Environment.SetEnvironmentVariable("PYTHONPATH", $@"{envPath}\Scripts;{envPath}\Lib\site-packages;{envPath}\Lib", EnvironmentVariableTarget.Process);
-                    Environment.SetEnvironmentVariable("PATH", $@"{envPath}\Scripts;{envPath}\bin;{pathVar}", EnvironmentVariableTarget.Process);
-
-
-                    //Environment.SetEnvironmentVariable("PATH", $@"{virtualEnvPath}\Scripts;{Environment.GetEnvironmentVariable("PATH")}");
-
-
-                    PythonEngine.Initialize();
-                    //PythonEngine.PythonHome = pyLoc;
-                    Log("HOME="+PythonEngine.PythonHome); // = opts.sMacro.pyEnvLocation;
-                    Log("PATH="+PythonEngine.PythonPath); // Path.Combine(opts.sMacro.pyEnvLocation,"Lib")+ ";" + PythonEngine.PythonPath;
-                    break;
-                case 2: // base
-                    if (!File.Exists(opts.sMacro.pyBaseLocation))
-                        { Log("Error: file <" + opts.sMacro.pyBaseLocation + "> does not exist!"); return; }
-                    try
-                    {
-                        Runtime.PythonDLL = opts.sMacro.pyBaseLocation;
-                        PythonEngine.Initialize();
-                    }
-                    catch (PythonException e) { Log("Error[111]: " + e.Message); return; }
-                    break;
-                default:
-                    Log("Error: internal #409a"); return;
+                Runtime.PythonDLL = opts.sMacro.pyEmbedLocation;
+                PythonEngine.Initialize();
             }
-            opts.sMacro.pythonValid = Test1() && Test2(); 
+            catch (PythonException e) { inLog("Error[111]: " + e.Message, Brushes.Red); return; }
+            opts.sMacro.pythonValid = Test1(); // && Test2(); 
             IsEnabled = opts.sMacro.pythonValid;
         }
-        public void Init(ref Options _opts) // string pyPath = @"C:\Software\Python\Python310\python310.dll";
+        public void Init(ref Options _opts) 
         {
             opts = _opts;
             if (!opts.common.pythonOn) return;
             colCodeWidth = opts.sMacro.CodeWidth; colLogWidth = opts.sMacro.LogWidth; colHelpWidth = opts.sMacro.HelpWidth;
-
+            avalEdit.DefaultDirectory = Path.Combine(Utils.basePath, "sMacro");
+            if (!avalEdit.Open(opts.sMacro.pyLastFilename))
+            {
+                string last = Path.Combine(avalEdit.DefaultDirectory, "backupMacro.py"); // retrieve backup macro
+                if (!avalEdit.Open(last)) Code = "";
+            }
             OnChangePythonLocation();
             opts.sMacro.OnChangePythonLocation -= OnChangePythonLocation; opts.sMacro.OnChangePythonLocation += OnChangePythonLocation;
 
             scripted = new Dictionary<string,object>();
-            st = new St(ref tbLog);
+            st = new St(ref tbLog, ref chkDetails);
             Register("st", st, st.help);
-            if (File.Exists(Path.Combine(avalEdit.sMacroFolder, "_last.py")))
-                Code = File.ReadAllText(Path.Combine(avalEdit.sMacroFolder, "_last.py"));
         }
         public void Finish()
         {
-            if (Code.Trim() != "") File.WriteAllText(Path.Combine(avalEdit.sMacroFolder, "_last.py"), Code);
+            PythonEngine.Shutdown();
+            if (Code.Trim() == "") return;
+            if (avalEdit.Save(avalEdit.currentFileName)) opts.sMacro.pyLastFilename = avalEdit.currentFileName;
+            else opts.sMacro.pyLastFilename = "";
+            File.WriteAllText(Path.Combine(avalEdit.DefaultDirectory, "backupMacro.py"), Code); // backup macro
         }
         public bool Register(string moduleName, object moduleObject, List<Tuple<string,string>> help) // method help -> <syntax,description> 
         {
@@ -189,10 +144,19 @@ namespace scripthea.python
         }
         public void Log(string txt, bool details = true)
         {
-            if (!chkLog.IsChecked.Value) return;
+            if (!chkPrint.IsChecked.Value) return;
             if (details && !chkDetails.IsChecked.Value) return;
-            Utils.log(tbLog,txt+'\n', Brushes.Navy);
+            Utils.log(tbLog,txt, Brushes.Black);
         }
+        protected void inLog(string txt, SolidColorBrush clr)
+        {           
+            Utils.log(tbLog, txt, clr); 
+        }
+        protected void printOut(string txt, SolidColorBrush clr)
+        {
+            if (chkPrint.IsChecked.Value) Utils.log(tbLog, txt, clr); 
+        }
+
         private void btnClear_Click(object sender, RoutedEventArgs e)
         {
             tbLog.Document.Blocks.Clear();
@@ -200,32 +164,57 @@ namespace scripthea.python
         public string Code { get { return avalEdit.Text;  }  set { avalEdit.Text = value; } }
         public PyObject Execute(string code)
         {
-            if (!IsEnabled) return null;
+            if (!IsEnabled) { inLog("Error[0]: python is disabled (see preferences)", Brushes.Red); return null; }
+            // prepare
+            st?.resetCancellation();
             // create a Python scope
-            using (dynamic scope = Py.CreateScope()) //
+            using (dynamic scope = Py.CreateScope()) 
             {
                 try
-                {
-                    foreach (var pair in scripted)
-                    {
+                {                    
+                    foreach (var pair in scripted) // scripthea objects
                         scope.Set(pair.Key, pair.Value.ToPython());
-                    }                   
-                    scope.Set("result", "Done.");
+                    // redirect output
+                    dynamic sys = Py.Import("sys");                 
+                    var stdoutWriter = new StringWriter();
+                    var stderrWriter = new StringWriter();
+                    
+                    var pyStdOut = new PyStdOut(); pyStdOut.OnLog += printOut;
+                    sys.stdout = pyStdOut;
+                    var pyStdErr = new PyStdOut() { colorBrush = Brushes.Red }; pyStdErr.OnLog += printOut;
+                    sys.stdout = pyStdOut;
+                    sys.stderr = pyStdErr;
+
+                    scope.Set("result", "OK"); // the conditioning is fine
                 }
-                catch (PythonException e) { Log("Error[2]: " + e.Message); return null; }
+                catch (PythonException e) { inLog("Error[2]: " + e.Message, Brushes.Red); return null; }
                 try
                 {
                     scope.Exec(code);
                 }
-                catch (PythonException e) { Log("Error[3]: " + e.Message); return null; }
+                catch (PythonException e)
+                {
+                    if (Utils.isNumeric(e.Message)) inLog("Exit code: " + e.Message, Brushes.Blue);
+                    else { inLog("Error[3]: " + e.Message, Brushes.Red); return null; }
+                }
                 return scope.result;
+            }
+        }
+        private bool btnPressed 
+        { 
+            get { return btnRun.Content.Equals("Cancel");}
+            set
+            {
+                if (value) { btnRun.Content = "Cancel"; btnRun.Background = Utils.ToSolidColorBrush("#FFFED17F"); }
+                else { btnRun.Content = "R U N"; btnRun.Background = Utils.ToSolidColorBrush("#FFEBFCE5"); }
             }
         }
         private void btnRun_Click(object sender, RoutedEventArgs e)
         {
-            //tbLog.Tag = 0;
-            //chkCancelRequest.IsChecked = false;
-            PyObject po = Execute(Code); if (po != null) Log(po.ToString());
+            if (btnPressed) { st?.cts?.Cancel(); btnRun.IsEnabled = false; inLog("Cancellation requested", Brushes.Blue); return; }
+            btnPressed = true;
+            PyObject po = Execute(Code); 
+            btnRun.IsEnabled = true; btnPressed = false; inLog("-=-=-=- end of macro -=-=-=-", Brushes.Green);
         }
         public bool Test1()
         {
@@ -250,5 +239,61 @@ namespace scripthea.python
                 return result.Equals(15); // should print 15               
             }
         }
+        public void Test3(string code)
+        {
+            
+        }
+        
+        public class PyStdOut : IDisposable
+        {
+            private readonly System.IO.StringWriter buffer = new System.IO.StringWriter();
+
+            public event Utils.LogHandler OnLog;
+            protected void Log(string txt, SolidColorBrush clr = null)
+            {
+                if (OnLog != null) OnLog(txt, clr);
+            }
+            public SolidColorBrush colorBrush = Brushes.Navy;
+            public void write(string message)
+            {
+                buffer.Write(message);
+                if (message.Trim() != string.Empty) Log(message, colorBrush);
+            }
+
+            public void flush()
+            {
+                // Optionally implement if needed to mimic Python's flush functionality
+                buffer.Flush();
+            }
+
+            public string Read()
+            {
+                return buffer.ToString();
+            }
+
+            /*public PyObject ToPython()
+            {
+                var pyStdOutClass = PythonEngine.ModuleFromString("pyStdOutModule", @"
+                    class PyStdOut:
+                        def __init__(self, net_object):
+                            self.net_object = net_object
+
+                        def write(self, message):
+                            self.net_object.write(message)
+
+                        def flush(self):
+                            self.net_object.flush()
+                    ").GetAttr("PyStdOut");
+
+                return pyStdOutClass.Invoke(new PyObject[] { this.ToPython() });
+            }*/
+
+            public void Dispose()
+            {
+                buffer.Dispose();
+            }
+        }
+
+        
     }
 }

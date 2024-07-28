@@ -99,11 +99,14 @@ namespace scripthea.options
         public SMacro sMacro;
         public class SMacro
         {
-            public bool pythonEnabled; // only the checkbox status
+            public bool pythonEnabled; // a wish for python to be on
             public bool pythonValid; // actual validation
-            public int locationType; // 0 - integrated env, 1 custom env, 2 - base location
-            public string pyEnvLocation;
-            public string pyBaseLocation;
+            public bool pythonIntegrated;
+            public string pyCustomLocation;
+            public string pyLastFilename;
+
+            [JsonIgnore] // !!! change the python version if NEW INTEGRATED VERSION IS INSTALLED
+            public string pyEmbedLocation { get { return pythonIntegrated ? Path.Combine(Utils.basePath, "python-embed", "python312.dll") : pyCustomLocation; } } 
             public event Utils.SimpleEventHandler OnChangePythonLocation; // the result is back in pythonValid
             public void ChangePythonLocation()
             {
@@ -128,7 +131,7 @@ namespace scripthea.options
             private int _wInt;
             public int wInt { get { return _wInt; } set { _wInt = wInt; Change(); } }
             // python
-            public bool pythonOn { get { return false; } }
+            public bool pythonOn { get { return true; } } // main switch
             public delegate void Register2sMacroHandler(string moduleName, object moduleObject, List<Tuple<string, string>> help);
             public event Register2sMacroHandler OnRegister2sMacro;
             public void Register2sMacro(string moduleName, object moduleObject, List<Tuple<string, string>> help)
@@ -136,6 +139,37 @@ namespace scripthea.options
                 if (OnRegister2sMacro != null) OnRegister2sMacro(moduleName, moduleObject, help);
             }
         }
+        public class Mediator // design pattern for communication between different corners of an application
+        {
+            private static readonly Dictionary<string, Action<object>> _actions = new Dictionary<string, Action<object>>();
+            public static void Register(string token, Action<object> callback)
+            {
+                if (!_actions.ContainsKey(token))
+                {
+                    _actions[token] = callback;
+                }
+                else
+                {
+                    _actions[token] += callback;
+                }
+            }
+            public static void Unregister(string token, Action<object> callback)
+            {
+                if (_actions.ContainsKey(token))
+                {
+                    _actions[token] -= callback;
+                }
+            }
+            public static void Send(string token, object args = null)
+            {
+                if (_actions.ContainsKey(token))
+                {
+                    _actions[token](args);
+                }
+            }
+        }
+        // Usage case
+        // Mediator.Register("MyMessage", obj => MessageBox.Show("Message received: " + obj));
+        // Mediator.Send("MyMessage", "Hello World!");
     }
-
 }

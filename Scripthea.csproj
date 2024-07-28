@@ -41,7 +41,8 @@
     <ApplicationIcon>Properties\penpic2.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AvalEditLib">
+    <Reference Include="AvalEditLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>python\AvalEditLib\bin\Debug\AvalEditLib.dll</HintPath>
     </Reference>
     <Reference Include="ExifLib, Version=1.7.0.0, Culture=neutral, PublicKeyToken=30284005913968db, processorArchitecture=MSIL">
@@ -575,6 +576,5 @@
     <Resource Include="Properties\left_teal_arrow.png" />
     <Resource Include="Properties\right_teal_arrow.png" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

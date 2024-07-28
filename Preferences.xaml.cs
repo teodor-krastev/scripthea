@@ -72,34 +72,25 @@ namespace scripthea
             chkValidationAsk.IsChecked = opts.iDutilities.MasterValidationAsk;
             //python
             if (!opts.common.pythonOn) tiPython.Visibility = Visibility.Collapsed;
-
-            ValidatePythonInstall();
+            if (opts.sMacro.pythonIntegrated) rbIntegrated.IsChecked = true;
+            else rbCustom.IsChecked = true;
+            ValidatePythonLocation(false);
             chkPythonEnabled.IsEnabled = opts.sMacro.pythonValid;
             if (chkPythonEnabled.IsEnabled) chkPythonEnabled.IsChecked = opts.sMacro.pythonEnabled;
-            else chkPythonEnabled.IsChecked = false;
-            string pyVer = Utils.GetPythonVersion(); lbPyVer.Content = "Your base version of python is "+pyVer; lbPyVer.Foreground = Brushes.Navy;
-            tcPythonLocation.IsEnabled = !pyVer.Equals("<none>"); tbValidLog.Text = "";
-            if (!tcPythonLocation.IsEnabled)
+            else chkPythonEnabled.IsChecked = false;           
+            tbValidLog.Text = ""; tbPyCustomLocation.Text = opts.sMacro.pyCustomLocation;   
+            if (opts.sMacro.pythonValid) { vLog(""); vLog("Your Python location has been validated."); gbPyLoc.BorderBrush = Brushes.SeaGreen; }
+            else
             {
-                vLog("No installation of Python is found!");
-                vLog("You may go to https://www.python.org/downloads/ then download and run the last stable installation of Python.");
-                vLog("After that reopen this dialog window.");
-                lbPyVer.Foreground = Brushes.Red; return;
-            } 
-            switch (opts.sMacro.locationType)
-            {
-                case 0: tcPythonLocation.SelectedIndex = 0; rbIntegrated.IsChecked = true;
-                    opts.sMacro.pyEnvLocation = Path.Combine(Utils.basePath, "stenv");
-                    tbPyEnvLocation.Text = opts.sMacro.pyEnvLocation;                   
-                    break;
-                case 1: tcPythonLocation.SelectedIndex = 0; rbUserDef.IsChecked = true;
-                    tbPyEnvLocation.Text = opts.sMacro.pyEnvLocation;
-                    break;
-                case 2: tcPythonLocation.SelectedIndex = 1;
-                    tbPyBaseLocation.Text = opts.sMacro.pyBaseLocation;
-                    break;
-            }
-            btnCreateLocEnv.IsEnabled = !validatePyEnv(Path.Combine(Utils.basePath, "stenv"), false);
+                if (opts.sMacro.pythonIntegrated) { vLog("Broken Scripthea installation: <python-embed> folder is missing or damaged."); vLog(""); }
+                else
+                {
+                    vLog("No installation of Python is found!"); vLog("");
+                    vLog("If you don't have Python (embedded or standard) installed, you may go to https://www.python.org/downloads/windows/ then download and run Windows embeddable package of Python of your choosing."); vLog("");
+                    vLog("After that browse to your python installation and validate the location.");
+                }
+                gbPyLoc.BorderBrush = Brushes.Red; return;
+            }                     
         }
         private void vLog(string text)
         {
@@ -114,9 +105,8 @@ namespace scripthea
             opts.iDutilities.MasterValidationAsk = chkValidationAsk.IsChecked.Value;
             //python
             opts.sMacro.pythonEnabled = chkPythonEnabled.IsChecked.Value && chkPythonEnabled.IsEnabled;
-            if (tcPythonLocation.SelectedIndex == 0 && rbIntegrated.IsChecked.Value) opts.sMacro.locationType = 0;
-            if (tcPythonLocation.SelectedIndex == 0 && rbUserDef.IsChecked.Value) opts.sMacro.locationType = 1;
-            if (tcPythonLocation.SelectedIndex == 1 ) opts.sMacro.locationType = 2;
+            opts.sMacro.pythonIntegrated = rbIntegrated.IsChecked.Value;
+            opts.sMacro.pyCustomLocation = tbPyCustomLocation.Text;
         }
         public void ShowWindow(int tabIdx, List<string> _history)
         {            
@@ -147,60 +137,38 @@ namespace scripthea
             e.Cancel = keepOpen; Hide();
         }
         
-        public void ValidatePythonInstall()
+        public bool ValidatePythonLocation(bool local)
         {
-            visuals2opts();
-            opts.sMacro.ChangePythonLocation(); // try to setup python from python.NET               
+            if (local) visuals2opts();
+            opts.sMacro.ChangePythonLocation(); // try to setup python from python.NET
+            return opts.sMacro.pythonValid;
         }
         private void btnValidatePython_Click(object sender, RoutedEventArgs e)
         {
-            ValidatePythonInstall();
-            if (opts.sMacro.pythonValid) vLog("Success: Python location has been validated");
-            else vLog("Problem with Python location");
-        }
-        private void btnPyEnvLocation_Click(object sender, RoutedEventArgs e)
-        {
-            CommonOpenFileDialog dialog = new CommonOpenFileDialog();
-            
-            dialog.Title = "Select a Python virtual environment location";
-            dialog.IsFolderPicker = true;
-            if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
-            {
-                string fn = dialog.FileName;
-                opts.sMacro.pyEnvLocation = fn; tbPyEnvLocation.Text = fn;
-            }
+            if (ValidatePythonLocation(true)) { vLog("Success: Python location has been validated."); gbPyLoc.BorderBrush = Brushes.SeaGreen; }
+            else { vLog("Problem: your Python location <" + opts.sMacro.pyEmbedLocation + "> is not valid."); gbPyLoc.BorderBrush = Brushes.Red; }
         }
         private void btnPyBaseLocation_Click(object sender, RoutedEventArgs e)
         {
             CommonOpenFileDialog dialog = new CommonOpenFileDialog();
-            string pyHome =  Environment.GetEnvironmentVariable("PYTHONHOME");
-            if (Directory.Exists(pyHome)) dialog.InitialDirectory = pyHome;
-            else
-            {
-                string output, error;
-                (output, error) =  Utils.ExecCommandLine("python - c \"import sys; print(sys.executable)\"");
-                if (File.Exists(output)) dialog.InitialDirectory = Path.GetDirectoryName(output);
-            }
-            dialog.Title = "Select a Python dll file (e.g. python310.dll) at base location";
-            dialog.IsFolderPicker = false;
+            string folder = Path.GetDirectoryName(opts.sMacro.pyEmbedLocation);
+            if (Directory.Exists(folder)) dialog.InitialDirectory = folder;            
+            dialog.Title = "Select a Python dll file (e.g. python310.dll)";
+            dialog.IsFolderPicker = false; dialog.Multiselect = false;
+            dialog.DefaultExtension = ".dll";
+            dialog.Filters.Add(new CommonFileDialogFilter("Dll file", "dll"));
             if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
             {
                 string fn = dialog.FileName;
                 if (!Path.GetExtension(fn).Equals(".dll", StringComparison.InvariantCultureIgnoreCase)) return;
-                opts.sMacro.pyBaseLocation = fn; tbPyBaseLocation.Text = fn;
+                opts.sMacro.pyCustomLocation = fn; tbPyCustomLocation.Text = fn;
             }
+            Activate();
+            Topmost = true;  // important
+            Topmost = false; // important
+            Focus();         // important
         }
-        public bool validatePyEnv(string pyEnvPath, bool showError = true)
-        {
-            void inLog(string txt) { if (showError) vLog(txt); }
-            if (!Directory.Exists(pyEnvPath)) { inLog("Error: directory <" + pyEnvPath + "> does not exist!"); return false; }
-            string fn = Path.Combine(pyEnvPath, "Scripts", "python.exe");
-            if (!File.Exists(fn)) { inLog("Error: file <" + fn + "> does not exist!"); return false; }
-            fn = Path.Combine(pyEnvPath, "Scripts", "activate.bat");
-            if (!File.Exists(fn)) { inLog("Error: file <" + fn + "> does not exist!"); return false; }
 
-            return true;
-        }
         private string runCommand(string workingDirectory, List<string> cmds, bool exitAtEnd = true)
         {
             string output;
@@ -247,28 +215,8 @@ namespace scripthea
                 return "Error:" + ex.Message;
             }
             return output;
-        }
-
-        public string installPyEnv2(string pyEnvParent) // python and pip must be installed already 
-        {
-            List<string> cmds = new List<string>() { "python -m venv stenv" };
-            runCommand(pyEnvParent, cmds);
-            cmds = new List<string>() { @"stenv\Scripts\activate", "pip install pythonnet", @"stenv\Scripts\desactivate" };
-            runCommand(pyEnvParent, cmds);
-
-            string ePath = Path.Combine(pyEnvParent, "stenv");
-            if (validatePyEnv(ePath)) return ePath;
-            else return "Error: creation of python virt.env. has failed!";
-        }
-        private void btnCreateLocEnv_Click(object sender, RoutedEventArgs e)
-        {
-            string ePath = installPyEnv2(Utils.basePath);
-            btnCreateLocEnv.IsEnabled = !validatePyEnv(ePath, true);
-            if (btnCreateLocEnv.IsEnabled) vLog("Problem creating python virt.env.");
-            else vLog("Python virt.env. created in " + ePath);
-            if (opts.sMacro.locationType == 0)
-            { opts.sMacro.pythonValid = btnCreateLocEnv.IsEnabled; opts.sMacro.pyEnvLocation = ePath; }
-        }
+        }       
+       
 
         /*public string CheckCuesFolder(string cuesFolder)
         {

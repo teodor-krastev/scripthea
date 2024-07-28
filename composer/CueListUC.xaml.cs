@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 using System.Windows;
@@ -169,7 +169,52 @@ namespace scripthea.composer
             }
             return ssd;            
         }
+        public int ListsCount { get { return tcLists.Items.Count; } }
+        public int selListIdx { get { return tcLists.SelectedIndex; } set { tcLists.SelectedIndex = Utils.EnsureRange(value, 0, ListsCount - 1); } }
+        public List<CueItemUC> selList { get { return localCues[selListIdx]; } }
+        public List<string> SelRandomSelect(int perc)
+        {
+            List<string> ls = new List<string>();
+            if (radioMode) return ls;
+            if (perc == 0) // clear
+            {
+                foreach (CueItemUC ci in selList) ci.boxChecked = false;
+                return ls;
+            } 
+            List<int> items = new List<int>(); 
+            for (int i = 0; i < selList.Count; i++) items.Add(i);
+            int k = (int)(selList.Count*perc/100); // How many random items you want
+            k = Utils.EnsureRange(k, 0, selList.Count);
 
+            Random random = new Random(); // Create the Random object (important to reuse!)
+
+            var shuffledItems = items.OrderBy(item => random.Next()).ToList();
+            var uniqueRandomItems = shuffledItems.Take(k);
+            SelRandomSelect(0);
+            foreach (int ci in uniqueRandomItems)
+            {
+                selList[ci].boxChecked = true; ls.Add(selList[ci].cueText);
+            }                
+            return ls;
+        }
+        public List<string> RandomSelect(int perc, int idx)
+        {
+            List<string> ls = new List<string>();
+            if (radioMode) return ls;
+            if (idx == 0) return SelRandomSelect(perc); // selected one
+            if (idx < 0) // all of them
+            {
+                bool bb = true; int hi = selListIdx;
+                for (int i = 0; i < localCues.Count; i++)
+                {
+                    selListIdx = i; ls.AddRange(SelRandomSelect(perc));
+                }
+                selListIdx = hi;
+                return ls;
+            }
+            selListIdx = idx - 1;
+            return SelRandomSelect(perc);
+        }
         public int allCueIdx
         {
             get

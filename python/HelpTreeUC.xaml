@@ -7,7 +7,9 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
+        
         <TreeView Name="HelpTree" TreeViewItem.Selected="TreeViewItem_Selected" SizeChanged="HelpTree_SizeChanged">
         </TreeView>
+        <Label FontSize="14" VerticalAlignment="Top" HorizontalAlignment="Right" Content="Help" Margin="0,0,5,0" FontFamily="Segoe UI Semibold" Foreground="#FF016B0A"></Label>
     </Grid>
 </UserControl>

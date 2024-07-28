@@ -79,9 +79,10 @@ namespace scripthea
             pyCode.Init(ref opts); 
             if (pyCode.st != null) pyCode.st.OnLog += new Utils.LogHandler(Log);
             // modules registration in pyCode
-            pyCode.Register("query", queryUC, queryUC.HelpList());
-            pyCode.Register("sdPrms", queryUC.sd_params_UC, queryUC.sd_params_UC.HelpList());
-            if (!opts.common.pythonOn) opts.sMacro.pythonEnabled = false;
+            pyCode.Register("qry", queryUC, queryUC.HelpList());
+            pyCode.Register("prm", queryUC.sd_params_UC, queryUC.sd_params_UC.HelpList());
+            // on/off
+            //if (!opts.common.pythonOn) opts.sMacro.pythonEnabled = false; ???
             if (opts.sMacro.pythonEnabled) tiSMacro.Visibility = Visibility.Visible;            
             else tiSMacro.Visibility = Visibility.Collapsed;
         }
@@ -272,6 +273,7 @@ namespace scripthea
                         case "@WorkDir":
                             if (Directory.Exists(opts.composer.ImageDepotFolder))
                             {
+                                dirTreeUC.refreshTree();
                                 dirTreeUC.CatchAFolder(opts.composer.ImageDepotFolder);
                                 tbImageDepot.Text = "working image depot -> " + opts.composer.ImageDepotFolder;
                             }
@@ -347,6 +349,7 @@ namespace scripthea
                 return SctUtils.defaultImageDepot;
             }
             if (sender != tabControl) return;
+
             if (tabControl.SelectedItem.Equals(tiComposer))
             {
                 if (queryUC.tcQuery.SelectedItem.Equals(queryUC.tiOptions))
@@ -381,6 +384,10 @@ namespace scripthea
                     if (focusControl.ifcName.Equals("export")) 
                         dirTreeUC.CatchAFolder(exportUtilUC?.iPicker?.tbImageDepot.Text);
                 }
+            }
+            if(tabControl.SelectedItem.Equals(tiSMacro))
+            {
+                ExplorerPart = 0;
             }
             oldTab = (TabItem)tabControl.SelectedItem;
             e.Handled = true;

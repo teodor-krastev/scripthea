@@ -97,6 +97,14 @@ namespace scripthea.composer
             if (mSetItem.isReset()) { foreach (ModifListUC sm in modifLists) sm.Reset(); }
             else { if (!SetModifs(mSetItem.mSet, chkAdd.IsChecked.Value)) Utils.TimedMessageBox("Error[713]: Not able to set all modifiers"); }
         }
+        public bool mSetApply(string mSetName, bool append)
+        {
+            mSetUC ms = mSetByName(mSetName); if (ms == null) return false;
+            if (ms.isReset()) { foreach (ModifListUC sm in modifLists) sm.Reset(); }
+            else { if (!SetModifs(ms.mSet, append)) return false; }
+            return true;
+        }
+
         public bool SetModifs(List<Tuple<string, string, ModifStatus>> mdfs, bool add) // write to modifiers
         {
             bool bb = true;      

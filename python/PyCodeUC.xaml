@@ -7,7 +7,7 @@
              xmlns:AvalEditLib="clr-namespace:AvalEditLib;assembly=AvalEditLib"
              
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800" Margin="5,0,0,0" BorderThickness="1,0,0,0" BorderBrush="#FF4574C8">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="35"/>
@@ -19,18 +19,18 @@
             <ColumnDefinition x:Name="colHelp" Width="3*" MaxWidth="1000" MinWidth="100"/>
             <ColumnDefinition Width="3*" MaxWidth="1000" MinWidth="100"/>
         </Grid.ColumnDefinitions>
-        <AvalEditLib:AvalEditUC x:Name="avalEdit" Grid.RowSpan="2"/>
+        <AvalEditLib:AvalEditUC x:Name="avalEdit" Grid.RowSpan="2" Margin="5,0,0,0"/>
         <Button x:Name="btnRun" Content="R U N" HorizontalAlignment="Right" Margin="0,2,6,0" Width="110" Height="27" Background="#FFEBFCE5" BorderBrush="#FF008B03" Grid.Row="0" Click="btnRun_Click" Foreground="#FF1B5301" FontFamily="Segoe UI Semibold" FontSize="14" VerticalAlignment="Top"  Style="{StaticResource RoundedButtonStyle}"/>
         <GridSplitter HorizontalAlignment="Left" Grid.Column="1" Width="3" Background="#FFF5FFFE" Grid.RowSpan="2"></GridSplitter>
         <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Margin="5,0,0,0">
-            <CheckBox x:Name="chkLog" VerticalAlignment="Center" Content="Log" Margin="10,0,0,0" IsChecked="True" FontFamily="Segoe UI Semibold" FontSize="13"/>
-            <CheckBox x:Name="chkDetails" VerticalAlignment="Center" Content="Details" Margin="10,0,0,0" IsChecked="True"/>
+            <CheckBox x:Name="chkPrint" VerticalAlignment="Center" Content="print" Margin="10,0,0,0" IsChecked="True" FontFamily="Segoe UI Semibold" FontSize="13"/>
+            <CheckBox x:Name="chkDetails" VerticalAlignment="Center" Content="st.print" Margin="10,0,0,0" IsChecked="True" FontFamily="Segoe UI Semibold" FontSize="13" Foreground="Navy"/>
             <Button x:Name="btnClear" Content=" X " Foreground="#FF9C0202" Background="{x:Null}" VerticalAlignment="Center" FontSize="16" FontWeight="Bold" Margin="20,0,0,0" Click="btnClear_Click" HorizontalAlignment="Left" BorderBrush="#FFB9B8B8"/>
         </StackPanel>
         <RichTextBox x:Name="tbLog" Margin="5,0,0,0" Grid.Row="1" Grid.Column="1"/>
         <GridSplitter HorizontalAlignment="Left" Grid.Column="2" Width="3" Background="#FFDEF5EC" Grid.RowSpan="2"></GridSplitter>
-        <local:HelpTreeUC x:Name="helpTree" Grid.Column="2"  Margin="5,0,0,0" Grid.RowSpan="2" />
+        <local:HelpTreeUC x:Name="helpTree" Grid.Column="2"  Margin="5,0,0,0" Grid.Row="1" />
         <GridSplitter HorizontalAlignment="Left" Grid.Column="3" Width="3" Background="#FFDEF5EC" Grid.RowSpan="2"></GridSplitter>
-        <Label x:Name="lbHelp" Content="Help" Grid.Column="2" HorizontalAlignment="Right" Margin="0,0,5,0" VerticalAlignment="Center" FontFamily="Segoe UI Semibold" FontSize="13"/>
+        <Label x:Name="lbHelp" Content="...still experimental" Grid.Column="2" HorizontalAlignment="Right" Margin="0,0,5,0" VerticalAlignment="Center" FontFamily="Segoe UI Semibold" FontSize="13"/>
     </Grid>
 </UserControl>

@@ -21,6 +21,7 @@ using scripthea.external;
 using scripthea.master;
 using scripthea.options;
 using UtilsNS;
+using Path = System.IO.Path;
 
 namespace scripthea.composer
 {
@@ -131,8 +132,7 @@ namespace scripthea.composer
         protected void Log(string txt, SolidColorBrush clr = null)
         {
             if (OnLog != null) OnLog(txt, clr);
-        }
-       
+        }      
         protected Dictionary<string, object> OnAPIparams(bool? showIt)
         {
             if (showIt != null)
@@ -308,22 +308,22 @@ namespace scripthea.composer
             if (Utils.isNull(cuePoolUC.activeCourier)) return "";
             return Compose(sender, cuePoolUC.activeCourier.SelectedCue(), modifiersUC.Composite(), forced);
         }
-
         public void btnCompose_Click(object sender, RoutedEventArgs e)
         {
             if (Utils.isNull(cuePoolUC) || Utils.isNull(modifiersUC)) return;
             if (Utils.isNull(cuePoolUC.activeCourier)) return; 
             Compose(sender, cuePoolUC.activeCourier.SelectedCue(), modifiersUC.Composite(), true); 
         }
-        private void QueryAPI(string prompt)
+        private void QueryAPI(string prompt) // generated image path
         {   
             Log("query -> "+ prompt, Brushes.DarkGreen);
             if (status.Equals(Status.Scanning)) Log("@StartGeneration (" + (scanPromptIdx+1).ToString() + " / " + scanPrompts.Count.ToString() + ")");
             else Log("@StartGeneration (single)");
             if (status.Equals(Status.Scanning) && scanPreviewUC.scanning) // move selection
                 scanPreviewUC.selectByPropmt(prompt);
-            API.Query(prompt, opts.composer.ImageDepotFolder); Log("-=-=-", Brushes.DarkOrange); 
+            API.Query(prompt, opts.composer.ImageDepotFolder); Log("-=-=-", Brushes.DarkOrange);
         }
+        private string lastSingleImage = "";
         protected void QueryComplete(string imageFilePath, bool success)
         {
             if (!success)
@@ -335,7 +335,8 @@ namespace scripthea.composer
             {
                 case Status.SingeQuery:
                 case Status.Request2Cancel:
-                    status = Status.Idle; Log("@EndGeneration: " + imageFilePath);
+                    lastSingleImage = imageFilePath;
+                    status = Status.Idle; Log("@EndGeneration: " + imageFilePath); 
                     break;
                 case Status.Scanning:                   
                     Log("@EndGeneration: " + imageFilePath);                    
@@ -428,46 +429,6 @@ namespace scripthea.composer
             if (Convert.ToString(btnScan.Content).Equals("Cancel") && status == Status.Scanning) // only if scanning
                 btnScan_Click(btnScan, null);
         }
-        public string stGenerateImage(string prmt = "") // result = query.stGenerateImage()
-        {
-            if (!CheckAPIready()) return "Error[5]: API error (see log).";
-            if (prmt == "")
-            {
-                if (!tcQuery.SelectedItem.Equals(tiSingle)) return "Error[4]: In Composer tab turn to Single and select a prompt.";
-                btnQuery_Click(btnQuery, null); Utils.DoEvents();
-            }
-            else
-            {
-                status = Status.SingeQuery;
-                QueryAPI(prmt);
-            }
-            asyncGenerateImage();
-            return "Done.";
-        }
-        private async void asyncGenerateImage()
-        {
-            while (await GetBusyStatusAsync(Status.SingeQuery)) Utils.Sleep(200);
-        }
-        private Task<bool> GetBusyStatusAsync(Status _status)
-        {
-            return Task.Run(() =>
-            {
-                return status == _status;
-            });
-        }
-        public string stScanImages()
-        {
-            if (!CheckAPIready()) return "Error[5]: API error (see log).";
-            if (!tcQuery.SelectedItem.Equals(tiScan)) return "Error[4]: In Composer tab turn to Scan mode and check some cues and modifiers";
-            asyncScanImages();
-            return "Done.";
-        }
-        public async void asyncScanImages()
-        {
-            btnScan_Click(btnScan, null);
-            while (await GetBusyStatusAsync(Status.Scanning)) { Utils.Sleep(300);  } //Utils.DoEvents();
-        }
-        public string stStatus { get { return status.ToString(); } }
         private void btnScan_Click(object sender, RoutedEventArgs e)
         {
             if (cuePoolUC.activeCourier.GetCues().Count == 0) { Log("Error[97]: no cue is selected"); return; } 
@@ -662,20 +623,148 @@ namespace scripthea.composer
         {
             Clipboard.SetText(prompt); 
         }
+
+        //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        #region sMacro
+        public List<string> SelectCues(int percentage, int idx)
+        {
+            tcQuery.SelectedItem = tiScan;
+            return cuePoolUC.ActiveCueList.RandomSelect(percentage, idx);
+        }
+        public string Text2Image(string prmt = "")
+        {
+            if (!CheckAPIready()) return "Error[5]: API error (see log).";
+            if (prmt == "")
+            {
+                if (!tcQuery.SelectedItem.Equals(tiSingle)) return "Error[4]: In Composer tab turn to Single and select a cue.";
+                btnQuery_Click(btnQuery, null); Utils.DoEvents();
+            }
+            else
+            {
+                status = Status.SingeQuery;
+                QueryAPI(prmt);
+            }
+            //asyncGenerateImage();
+            while (status.Equals(Status.SingeQuery)) { Utils.Sleep(200); Utils.DoEvents(); }
+            return lastSingleImage;
+        }
+        /*private async void asyncGenerateImage()
+        {
+            while (await GetBusyStatusAsync(Status.SingeQuery)) Utils.Sleep(200);
+            Utils.Sleep(200);
+        }*/
+        private Task<bool> GetBusyStatusAsync(Status _status)
+        {
+            return Task.Run(() =>
+            {
+                return status == _status;
+            });
+            //return status == _status;
+        }
+        public bool mSetApply(string mSet, bool append)
+        {
+            if (mSet == string.Empty) return true;
+            return modifiersUC.mSetStack.mSetApply(mSet, append);
+        }
+        public List<string> GetPreview(bool append)
+        {            
+            if (append) btnScanPreview_Click(btnAppend2Preview, null);
+            else btnScanPreview_Click(btnScanPreview, null);
+            return scanPreviewUC.GetPrompts(false);
+        }
+        public int SetPreview(List<string> prompts, bool append)
+        {
+            return scanPreviewUC.LoadPrompts(prompts);
+        }
+        public List<Tuple<string,string>> ScanImages(bool fromPreview)
+        {
+            if (!CheckAPIready()) { Log("Error[5]: API error (see log)."); return null; }
+            API.iiList = new List<Tuple<string, string>>();
+            
+            if (!tcQuery.SelectedItem.Equals(tiScan)) tcQuery.SelectedItem = tiScan;
+            asyncScanImages(fromPreview);
+            List<Tuple<string, string>> deepCopiedList = API.iiList.Select(tuple => new Tuple<string, string>(tuple.Item1, tuple.Item2)).ToList();
+            return deepCopiedList;
+        }
+        public async void asyncScanImages(bool fromPreview)
+        {
+            if (fromPreview) btnScanPreviewProcs_Click(scanPreviewUC.btnScanChecked, null);
+            else btnScan_Click(btnScan, null);
+            while (await GetBusyStatusAsync(Status.Scanning)) { Utils.Sleep(300); } //Utils.DoEvents();           
+        }        
+        public List<Tuple<string, string>> PromptList2Image(List<string> prompts)
+        {
+            if (!CheckAPIready()) { Log("Error[5]: API error (see log)."); return null; }
+            var lt = new List<Tuple<string, string>>();
+            foreach (string prompt in prompts)
+            {
+                string fp = Text2Image(prompt);
+                lt.Add(new Tuple<string, string>(prompt, fp));
+            }
+            return lt;
+        }
+        public string ImageDepot(string command, string folder)
+        {
+            string newFolder = "";
+            switch (command.ToLower())
+            {
+                default:
+                case "get": return opts.composer.ImageDepotFolder;
+                case "create": Directory.CreateDirectory(folder); Utils.Sleep(500);
+                    if (Directory.Exists(folder)) newFolder = folder;
+                    else { Log("Error[64]: image depot create failed."); return ""; }
+                    break;
+                case "switch":
+                    if (Directory.Exists(folder)) { newFolder = folder; opts.composer.ImageDepotFolder = newFolder; }
+                    else { Log("Error[65]: image depot switch failed."); return ""; }
+                    break;
+                case "setnext":
+                    if (!Directory.Exists(opts.composer.ImageDepotFolder)) { Log("Error[66]: work image depot folder - not found."); return ""; }
+                    string mFolder = folder == string.Empty ? Utils.timeName() : folder;
+                    newFolder = Path.Combine(Utils.GetParrentDirectory(opts.composer.ImageDepotFolder), mFolder);
+                    if (!Directory.Exists(newFolder)) { Directory.CreateDirectory(newFolder); Utils.Sleep(500); } 
+                    else { Log("Error[67]: folder <"+newFolder+"> already exists"); return ""; }
+                    break;
+            }
+            tbImageDepot.Text = newFolder;  
+            return newFolder;
+
+        }
+        public string getStatus { get { return status.ToString(); } }
+
         public List<Tuple<string, string>> HelpList()
         {
             List<Tuple<string, string>> ls = new List<Tuple<string, string>>();
             ls.Add(new Tuple<string, string>(
-                "stGenerateImage(string prompt = \"\" )", "Generate image with given prompt. If prompt is missing, it takes selected prompt from the composer which must be in Single mode."
+                "Text2Image(string prompt)", "Generate image with given prompt. If prompt is missing, it takes selected prompt from the composer which must be in Single mode. Returns the image filename"
                 ));
             ls.Add(new Tuple<string, string>(
-                "stScanImages()", "Generate series of images with prompts from the composer. The composer must be in Scan mode and some cues and modifiers (optionally) must be checked."
+                "SelectCues(int percentage, int idx)", "Select precentage of cues in selected pool; if idx = 0 on selected tab; if idx = -1 on all the tabs in the pool; if idx > 0 on the idx tab in the pool. Returns a list of selected cues."
+                )); 
+            ls.Add(new Tuple<string, string>(
+                "mSetApply(string mSet, bool append)", "Apply mSet to modifiers, in addition (append) or not to the checked already modifiers. Return True if successful."
                 ));
             ls.Add(new Tuple<string, string>(
-                "stStatus", " Property for the current status of the composer. [Idle, SingeQuery, Scanning, Request2Cancel]"
+                "GetPreview(bool append)", "Generate prompts combining selected cues with checked modifiers. The composer must be in Scan mode and some cues must be selected. append is to add to or replace current selection of modifiers. If mSet = Reset all modifiers are deselected. Return a list of the generated prompts."
+                ));
+            ls.Add(new Tuple<string, string>(
+                "SetPreview(List<string> prompts, bool append)", "Generate prompts combining selected cues with mSet. The composer must be in Scan mode and some cues must be selected. If mSet is empty the current set of modifiers is used. append is to add to or replace current selection of modifiers. If mSet = 'Reset' all modifiers are deselected. Returns the total nunber of preview prompts."
+                ));
+            ls.Add(new Tuple<string, string>(
+                "ScanImages(bool fromPreview)", "Generate series of images from prompts from the composer. fromPreview - if false a preview list is used, if true - the same as pressing the Scan button on the composer. The composer must be in Scan mode and some cues must be checked. Return list of tuples (prompt,filepath)"         
+                ));
+            ls.Add(new Tuple<string, string>(
+                "PromptList2Image(List<string> prompts)", "Generate image with given prompts in a file. file format is the same as in save file in preview panel. Return list of tuples (prompt,filepath)"
+                ));
+            ls.Add(new Tuple<string, string>(
+                "ImageDepot(string command, string folder)", "Command ->\nget: get working image depot folder \ncreate: create <folder> directory\nswitch: switch working image depot to <folder>\nsetNext: create and set working image-depot-folder next to current working IDF. If folder is empty it creates a time-stamp folder.\nReturn the absolute path to the new ImageDepot.\ne.g. ImageDepot('setnext','')   ImageDepot('get','')"
+                ));
+            ls.Add(new Tuple<string, string>(
+                "getStatus", "Get the current status of the composer. [Idle, SingeQuery, Scanning, Request2Cancel]"                
                 ));
             return ls;
         }
+        #endregion
         private void btnTest_Click(object sender, RoutedEventArgs e)
         {
             /*List<string> files = new List<string>(Directory.GetFiles(tbImageDepot.Text, "*.png"));

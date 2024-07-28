@@ -20,7 +20,8 @@ using ICSharpCode.AvalonEdit.Highlighting;
 using Microsoft.Win32;
 using Path = System.IO.Path;
 using System.Reflection;
-using UtilsNS;
+using System.Windows.Threading;
+using ICSharpCode.AvalonEdit.Folding;
 
 namespace AvalEditLib
 {
@@ -32,10 +33,10 @@ namespace AvalEditLib
 		public AvalEditUC()
 		{
 			// Load our custom highlighting definition
-			/*IHighlightingDefinition customHighlighting;
+			IHighlightingDefinition customHighlighting;
 			Assembly assembly = Assembly.GetExecutingAssembly();
 
-			using (Stream s = assembly.GetManifestResourceStream("AvalEditLib.CustomHighlighting.xshd")) //
+			/*using (Stream s = assembly.GetManifestResourceStream("AvalEditLib.CustomHighlighting.xshd")) //
 			{
 				if (s == null) throw new InvalidOperationException("Could not find embedded resource");
 				using (XmlReader reader = new XmlTextReader(s))
@@ -50,7 +51,7 @@ namespace AvalEditLib
 			InitializeComponent();
 			propertyGridComboBox.SelectedIndex = 2;
 
-			//textEditor.SyntaxHighlighting = HighlightingManager.Instance.GetDefinition("C#");
+			textEditor.SyntaxHighlighting = HighlightingManager.Instance.GetDefinition("Python");
 			//textEditor.SyntaxHighlighting = customHighlighting;
 			// initial highlighting now set by XAML
 
@@ -61,41 +62,91 @@ namespace AvalEditLib
 			foldingUpdateTimer.Interval = TimeSpan.FromSeconds(2);
 			foldingUpdateTimer.Tick += foldingUpdateTimer_Tick;
 			foldingUpdateTimer.Start();*/
-			
+
+			history = new List<string>();
 		}
-		public string sMacroFolder { get { return Path.Combine(Utils.basePath, "sMacroPy"); } }
 		public string Text { get { return textEditor.Text; } set { textEditor.Text = value; } }
-
-		string currentFileName;
-
+		public string DefaultDirectory { get; set; } // sMacro folder
+		public string InitialDirectory
+		{
+			get
+			{
+				if (File.Exists(currentFileName)) return Path.GetDirectoryName(currentFileName);
+				else return DefaultDirectory;
+			} 
+		}
+		/*public event RoutedEventHandler OnSaveModule;
+		public void SaveModule(object sender, RoutedEventArgs e)
+        {
+			if (OnSaveModule != null) OnSaveModule(sender, e);
+        }*/
+		private string _currentFileName;
+		public string currentFileName
+		{
+			get { return _currentFileName; }
+			set 
+			{
+				int lenWish = 15;
+				_currentFileName = value;
+				if (_currentFileName.Length > lenWish) tbFilename.Text = "..." + _currentFileName.Substring(_currentFileName.Length - lenWish);
+				else tbFilename.Text = _currentFileName;
+			}
+		}
+		// !!!
+		// for now on start loading the file workMacro.py and on close save in the same
+		// meanwhile user can load and save *.py
+		// later add buttons for "new macro", "save", "save as..." and history
+		public bool Open(string filename)
+        {
+			if (File.Exists(filename))
+			{
+				currentFileName = filename;
+				textEditor.Load(currentFileName);
+				textEditor.SyntaxHighlighting = HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(currentFileName));
+				return true;
+			}
+			else return false;
+        }
 		void openFileClick(object sender, RoutedEventArgs e)
 		{
 			OpenFileDialog dlg = new OpenFileDialog();
-			dlg.CheckFileExists = true; dlg.DefaultExt = ".py"; dlg.InitialDirectory = sMacroFolder;
+			dlg.InitialDirectory = InitialDirectory;
+			dlg.CheckFileExists = false;
+			dlg.Filter = "Python module (.py)|*.py";
+			if (dlg.ShowDialog() ?? false)
+			{
+				Text = "";
+				Open(dlg.FileName); 
+			}
+		}
+		public List<string> history; 
+		public bool Save(string filename = "")
+        {
+			string fn = filename.Equals(string.Empty) ? currentFileName : filename;
+			if (string.IsNullOrEmpty(fn)) return false; 
+			textEditor.Save(fn);
+			if (history.Count == 0) history.Add(fn);
+			else
+            {
+				if (!fn.Equals(history[0],StringComparison.InvariantCultureIgnoreCase)) history.Add(fn);
+			}
+			return true;
+		}
+
+		void saveFileClick(object sender, EventArgs e)
+		{
+			SaveFileDialog dlg = new SaveFileDialog();
+			dlg.DefaultExt = ".py";
+			dlg.InitialDirectory = InitialDirectory;
+			dlg.Filter = "Python module (.py)|*.py";
+			if (File.Exists(currentFileName)) dlg.FileName = currentFileName;
 			if (dlg.ShowDialog() ?? false)
 			{
 				currentFileName = dlg.FileName;
-				textEditor.Load(currentFileName);
-				textEditor.SyntaxHighlighting = HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(currentFileName));
-			}
+				Save(currentFileName);
+			}			
 		}
-		void saveFileClick(object sender, EventArgs e)
-		{
-			if (currentFileName == null)
-			{
-				SaveFileDialog dlg = new SaveFileDialog();
-				dlg.DefaultExt = ".py"; dlg.InitialDirectory = sMacroFolder;
-				if (dlg.ShowDialog() ?? false)
-				{
-					currentFileName = dlg.FileName;
-				}
-				else
-				{
-					return;
-				}
-			}
-			textEditor.Save(currentFileName);
-		}
+
 		void propertyGridComboBoxSelectionChanged(object sender, RoutedEventArgs e)
 		{
 			if (propertyGrid == null)
@@ -150,12 +201,12 @@ namespace AvalEditLib
 		}
 
 		#region Folding
-		//FoldingManager foldingManager;
-		//AbstractFoldingStrategy foldingStrategy;
+		/*FoldingManager foldingManager;
+		AbstractFoldingStrategy foldingStrategy;
 
 		void HighlightingComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			/*if (textEditor.SyntaxHighlighting == null) {
+			if (textEditor.SyntaxHighlighting == null) {
 				foldingStrategy = null;
 			} else {
 				switch (textEditor.SyntaxHighlighting.Name) {
@@ -185,15 +236,15 @@ namespace AvalEditLib
 					FoldingManager.Uninstall(foldingManager);
 					foldingManager = null;
 				}
-			}*/
+			}
 		}
 
 		void foldingUpdateTimer_Tick(object sender, EventArgs e)
 		{
-			/*if (foldingStrategy != null) {
+			if (foldingStrategy != null) {
 				foldingStrategy.UpdateFoldings(foldingManager, textEditor.Document);
-			}*/
-		}
+			}
+		}*/
 		#endregion
 
         private void chkOptions_Checked(object sender, RoutedEventArgs e)

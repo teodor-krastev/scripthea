@@ -10,7 +10,7 @@
             <RowDefinition Height="50"/>
         </Grid.RowDefinitions>
         <TabControl x:Name="tabCtrl" Margin="0,0,0.206,8" Grid.Row="0" Background="{x:Null}" >
-            <TabItem x:Name="tiForge" Header="SD A1111/Forge" Width="130" Background="#FFF0F0F0">
+            <TabItem x:Name="tiForge" Header="SD A1111/Forge" Width="130" Background="#FFF0F0F0" Height="30">
                 <Grid Margin="0,10,0,0">
                     <StackPanel VerticalAlignment="Top" Margin="5,0,0,0">
                         <GroupBox x:Name="gbSDloc1111" Header=" Stable Diffusion: A1111/Forge location" Height="80" Margin="0,5,-0.456,0" BorderBrush="Silver">
@@ -21,10 +21,10 @@
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="1*"/>
-                                    <ColumnDefinition Width="70"/>
+                                    <ColumnDefinition Width="80"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBox x:Name="tbSDloc1111" Background="#FFFBFBF4"  Margin="4,4,3.333,0"/>
-                                <Button x:Name="btnBrowse" Content=" Browse " Grid.Column="1" Foreground="#FF0F8001" FontWeight="Bold" Background="#FFF4F4F4" Margin="6.667,4,6.333,0" HorizontalAlignment="Center" VerticalAlignment="Center" Height="25" Click="btnBrowse_Click" />
+                                <Button x:Name="btnBrowse" Content=" Browse " Grid.Column="1" Foreground="#FF0F8001" Background="#FFF4F4F4" Margin="0,4,0,0" Style="{StaticResource RoundedButtonStyle}" HorizontalAlignment="Center" VerticalAlignment="Center" Height="25" Click="btnBrowse_Click" Width="70" FontFamily="Segoe UI Semibold" />
                                 <Label Content="Batch file that will run SD server with web UI as webui-user.bat or run.bat" Margin="0" Grid.Row="1" Grid.ColumnSpan="2" FontSize="12"/>
 
                             </Grid>
@@ -44,7 +44,7 @@
                     </StackPanel>
                 </Grid>
             </TabItem>
-            <TabItem x:Name="tiComfyUI" Header="SD ComfyUI">
+            <TabItem x:Name="tiComfyUI" Header="SD ComfyUI" Height="30">
                 <GroupBox x:Name="gbSDlocComfy" Header="Stable Diffusion: ComfyUI location" Height="100" Margin="0,5,-0.456,0" BorderBrush="Silver" VerticalAlignment="Top">
                     <Grid>
                         <Grid.RowDefinitions>
@@ -53,17 +53,17 @@
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="1*"/>
-                            <ColumnDefinition Width="70"/>
+                            <ColumnDefinition Width="80"/>
                         </Grid.ColumnDefinitions>
                         <TextBox x:Name="tbSDlocComfy" Background="#FFFBFBF4"  Margin="4,4,3.333,0"/>
-                        <Button x:Name="btnBrowseComfy" Content=" Browse " Grid.Column="1" Foreground="#FF0F8001" FontWeight="Bold" Background="#FFF4F4F4" Margin="6.667,4,6.333,0" HorizontalAlignment="Center" VerticalAlignment="Center" Height="25" Click="btnBrowseComfy_Click" />
+                        <Button x:Name="btnBrowseComfy" Content=" Browse " Grid.Column="1" Foreground="#FF0F8001" Background="#FFF4F4F4" Margin="0,4,0,0" Style="{StaticResource RoundedButtonStyle}" HorizontalAlignment="Center" VerticalAlignment="Center" Height="25" Click="btnBrowseComfy_Click" Width="70" FontFamily="Segoe UI Semibold" />
                         <Label Content="Batch file that will run SD server with web UI " Margin="0" Grid.Row="1" Grid.ColumnSpan="2" FontSize="12"/>
                         <Label Content="for portable install typically: run__cpu.bat or run__nvidia__gpu.bat" Margin="0,18,0,0" Grid.Row="1" Grid.ColumnSpan="2" FontSize="12"/>
                     </Grid>
                 </GroupBox>
 
             </TabItem>
-            <TabItem x:Name="tiGRU" Header="nVidia GPU temperature" Height="24" Margin="-0.286,-1,0,1" HorizontalAlignment="Left" Width="160" Background="#FFF0F0F0">
+            <TabItem x:Name="tiGRU" Header="nVidia GPU temperature" Height="30" Margin="-0.286,-1,0,1" HorizontalAlignment="Left" Width="160" Background="#FFF0F0F0">
                 <StackPanel >
                     <CheckBox x:Name="chkMeasureGPUtemp" Content="Measure nVidia GPU temperature (if any)" Height="20" Margin="10,10,0,0" Checked="chkMeasureGPUtemp_Checked" Unchecked="chkMeasureGPUtemp_Checked"/>
                     <GroupBox x:Name="groupGPUtmpr" Header="      nVidia GPU temperature feedack (if allowed)" Margin="0,8,0,0" VerticalAlignment="Bottom">
@@ -92,8 +92,8 @@
 
         </StackPanel>
         <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,2,10,0" HorizontalAlignment="Right" >
-            <Button x:Name="btnOK" Content="OK" HorizontalAlignment="Left" Margin="10,5,0,0" VerticalAlignment="Center" Width="85" Click="OKButton_Click" Height="25" FontWeight="Bold" IsDefault="True" Background="#FFF0F0F0" BorderBrush="#FF0468B2"/>
-            <Button x:Name="btnCancel" Content="Cancel" HorizontalAlignment="Left" Margin="10,5,0,0" VerticalAlignment="Center" Width="90" Height="25" RenderTransformOrigin="0.502,0.5" Click="btnCancel_Click" IsCancel="True" Background="#FFF0F0F0"/>
+            <Button x:Name="btnOK" Content="OK" HorizontalAlignment="Left" Margin="10,5,0,0" VerticalAlignment="Center" Width="85" Click="OKButton_Click" Height="25" FontWeight="Bold" IsDefault="True" Background="#FFF0F0F0" BorderBrush="#FF0468B2" Style="{StaticResource RoundedButtonStyle}"/>
+            <Button x:Name="btnCancel" Content="Cancel" HorizontalAlignment="Left" Margin="10,5,0,0" VerticalAlignment="Center" Width="90" Height="25" RenderTransformOrigin="0.502,0.5" Click="btnCancel_Click" IsCancel="True" Background="#FFF0F0F0" Style="{StaticResource RoundedButtonStyle}"/>
         </StackPanel>
     </Grid>
 </Window>

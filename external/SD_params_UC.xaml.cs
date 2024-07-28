@@ -284,11 +284,16 @@ namespace scripthea.external
                 if (value.ContainsKey("denoising_strength")) nsDenoise.Value = Convert.ToDouble(value["denoising_strength"]);
             }
         }
-        public bool stSet(string prmName, dynamic prmValue) // ?
+        public bool set(string prmName, dynamic prmValue) 
         {
             if (!SDside.curParams.Contains(prmName)) return false; 
             vPrms = new SDsetting(new Dictionary<string, object>() { { prmName, (object)prmValue } });
             return true;
+        }
+        public dynamic get(string prmName) 
+        {
+            if (!SDside.curParams.Contains(prmName)) return null;
+            return vPrms[prmName];
         }
         public void ImportImageInfo(string json, SolidColorBrush clr = null)
         {
@@ -443,7 +448,10 @@ namespace scripthea.external
         {
             List<Tuple<string, string>> ls = new List<Tuple<string, string>>();
             ls.Add(new Tuple<string, string>(
-                "stSet(string prmName, dynamic prmValue)", "Set SD parameter, returns True/False.\rPossible parameter names are:\r negative_prompt: string,\r width: integer,\r height: integer,\r sampler_name: string (Euler a, Euler, LMS, Heun, DPM2, DPM2 a,DPM++ 2Sa,DPM++ 2M, DPM++ SDE, DPM fast, DPM adaptive, LMS Karras, DPM2 Karas, DPM2 a Karas, DPM++ 2Sa Karas, DPM++ 2M Karas, DPM++ SDE Karas, DDIM, PLMS, UniPC),\r restore_faces: boolean,\r seed: integer,\r cfg_scale: integer,\r steps: integer."
+                "get(string prmName)", "Get SD parameter.\rPossible parameter names are:\r negative_prompt: string,\r width: integer,\r height: integer,\r sampler_name: string (Euler a, Euler, LMS, Heun, DPM2, DPM2 a,DPM++ 2Sa,DPM++ 2M, DPM++ SDE, DPM fast, DPM adaptive, LMS Karras, DPM2 Karas, DPM2 a Karas, DPM++ 2Sa Karas, DPM++ 2M Karas, DPM++ SDE Karas, DDIM, PLMS, UniPC),\r restore_faces: boolean,\r seed: integer,\r cfg_scale: integer,\r steps: integer.\nReturns parameter value"
+                ));
+            ls.Add(new Tuple<string, string>(
+                "set(string prmName, dynamic prmValue)", "Set SD parameter, returns True/False.\rPossible parameter names are:\r negative_prompt: string,\r width: integer,\r height: integer,\r sampler_name: string (Euler a, Euler, LMS, Heun, DPM2, DPM2 a,DPM++ 2Sa,DPM++ 2M, DPM++ SDE, DPM fast, DPM adaptive, LMS Karras, DPM2 Karas, DPM2 a Karas, DPM++ 2Sa Karas, DPM++ 2M Karas, DPM++ SDE Karas, DDIM, PLMS, UniPC),\r restore_faces: boolean,\r seed: integer,\r cfg_scale: integer,\r steps: integer."
                 ));
             return ls;
         }

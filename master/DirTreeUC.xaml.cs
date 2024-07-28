@@ -246,6 +246,7 @@ namespace scripthea.master
             bool bb = false;
             if (pth == null) return bb;
             if (!Directory.Exists(pth)) return bb;
+
             List<string> fld = new List<string>(pth.Split('\\'));
             ComboBoxItem cbf = null;
             foreach (ComboBoxItem cbi in cbDrives.Items)

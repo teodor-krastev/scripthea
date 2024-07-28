@@ -99,7 +99,8 @@ namespace scripthea.external
         }
         public interfaceAPI activeAPI { get { return interfaceAPIs[activeAPIname]; } }
 
-        private string prompt2api, imageFolder; bool success = false; ImageInfo iInfo;     
+        private string prompt2api, imageFolder; bool success = false;
+        public ImageInfo iInfo; public List<Tuple<string,string>> iiList;    
 
         private void backgroundWorker1_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
@@ -139,6 +140,8 @@ namespace scripthea.external
                                 else Log("Error[342]: wrong image file");                                
                             }
                             QueryComplete(Path.Combine(imageFolder, iInfo.filename), true); // hooray ;)
+                            iiList?.Add(new Tuple<string, string>(iInfo.prompt,iInfo.filename));
+                            
                         }
                         else { Log("Error[195]: image file lost"); return; } 
                     }
@@ -149,7 +152,7 @@ namespace scripthea.external
                         QueryComplete(Path.Combine(imageFolder, iInfo.filename), false);
                     }
                     break;
-            }        
+            }            
         }
         public void Query(string prompt, string _imageDepoFolder) // fire event at the end
         {

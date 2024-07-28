@@ -56,13 +56,14 @@
                 <CheckBox IsChecked="{Binding ElementName=textEditor,Path=Options.ShowEndOfLine}" Visibility="Collapsed">
                     <TextBlock Width="16" TextAlignment="Center">¶</TextBlock>
                 </CheckBox>
-                <ComboBox Name="highlightingComboBox"
-				SelectedItem="{Binding SyntaxHighlighting, ElementName=textEditor}"
+                <ComboBox Name="highlightingComboBox" SelectedItem="{Binding SyntaxHighlighting, ElementName=textEditor}"
 				ItemsSource="{Binding Source={x:Static avalonEdit:HighlightingManager.Instance}, Path=HighlightingDefinitions}"
 				SelectionChanged="HighlightingComboBox_SelectionChanged" Margin="0" Width="60" Visibility="Collapsed"/>
-                <CheckBox x:Name="chkOptions" Margin="20,0,0,0" BorderBrush="#FFC8C8C8" Checked="chkOptions_Checked" Unchecked="chkOptions_Checked" HorizontalAlignment="Right">
-                    <Image Source="Properties/TripleBarGrey.png" Height="19"/>
+
+                <CheckBox x:Name="chkOptions" Margin="0,0,0,0" BorderBrush="#FFC8C8C8" Checked="chkOptions_Checked" Unchecked="chkOptions_Checked" HorizontalAlignment="Right">
+                    <Image Source="Properties/TripleBarGrey.png" Height="19" Margin="0,0,0,0"/>
                 </CheckBox>
+                <TextBlock x:Name="tbFilename" VerticalAlignment="Center" Margin="5,0,0,0"></TextBlock>
             </ToolBar>
             <Grid>
                 <Grid.ColumnDefinitions>

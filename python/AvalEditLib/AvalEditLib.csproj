@@ -103,11 +103,5 @@
   <ItemGroup>
     <Resource Include="Properties\TripleBarGrey.png" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Utils\UtilsLib.csproj">
-      <Project>{a377a708-96b9-4569-bc22-0187d647611e}</Project>
-      <Name>UtilsLib</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

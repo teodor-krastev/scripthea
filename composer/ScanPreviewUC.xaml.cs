@@ -36,11 +36,11 @@ namespace scripthea.composer
             if (OnLog != null) OnLog(txt, clr);          
         }
         DataTable dTable; List<CheckBox> checks;
-        public void LoadPrompts(List<string> prompts)
+        public int LoadPrompts(List<string> prompts)
         {
             if (prompts.Count == 0)
             {
-                Log("Error[742]: no prompts in the list"); return;
+                Log("Error[742]: no prompts in the list"); return -1;
             }
             allPrompts = new List<string>(prompts);
             dTable = new DataTable(); checks = new List<CheckBox>(); 
@@ -50,7 +50,7 @@ namespace scripthea.composer
             for (int i = 0; i < prompts.Count; i++)
                 dTable.Rows.Add(i + 1, true, prompts[i]);
             dGrid.ItemsSource = dTable.DefaultView; 
-            if (!this.IsVisible) return;
+            if (!this.IsVisible) return -1;
             Utils.DoEvents();
 
             //chkTable_Checked(null, null); return;
@@ -65,7 +65,18 @@ namespace scripthea.composer
                 checks.Add(chk);
             }                            
             if (dTable.Rows.Count > 0) dGrid.SelectedIndex = 0;
-            Utils.DelayExec(1000, () => { chkTable_Checked(null, null); }); 
+            Utils.DelayExec(1000, () => { chkTable_Checked(null, null); });
+            return dTable.Rows.Count;
+        }
+        public List<string> GetPrompts(bool onlyChecked)
+        {
+            if (onlyChecked) return checkedPrompts();
+            List<string> ls = new List<string>();
+            if (dTable == null) return ls;
+            if (dTable.Rows == null) return ls;
+            foreach (DataRow row in dTable.Rows)
+                ls.Add(Convert.ToString(row["Prompt"]));
+            return ls;
         }
         public void BindData()
         {
