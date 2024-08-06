@@ -367,12 +367,6 @@ FodyWeavers.xsd
 /images/craiyon_3
 /website
 /_setup
-/images/22-09-23_12-10-29.png
-/images/22-09-23_12-10-33.png
-/images/22-09-23_12-10-37.png
-/images/22-09-23_12-10-41.png
-/images/22-09-24_20-23-17.png
-/images/craiyon
 /PyClient/prompts_from_scripthea_1_5_0.py
 /PyClient/prompts_from_scripthea_1_5_1.py
 /PyClient/prompts_from_scripthea_1_5_A.py
@@ -380,21 +374,8 @@ FodyWeavers.xsd
 /Properties/penmanship-pen-writing-gif-1548431.gif
 /Properties/penmanship-pen-writing-gif-1548431.webm
 /cues/work1city.cues
-/docs/Extensible Prompts.pdf
-/docs/optim prompts.pdf
-/docs/prompt_requestCG.txt
-/images/23-06-16_21-08-09.png
-/images/DESCRIPTION.idf
-/docs
-/cues.0/short-cues
-/cues.0/short-cues-2
-/cues.0/long-cues
-/cues.0
 /external/Craiyon.API
-/images/Export-1
-/images/Export-2
 /config/Scripthea0.cfg
-/stenv
 /cues/alex.cues
 /cues/hannah.cues
 /external/ComfySamplers.png
@@ -404,4 +385,3 @@ FodyWeavers.xsd
 /images/Reflection/24-06-09_11-36-40.png
 /images/Reflection/24-06-09_11-35-23.png
 /python-embed
-/config/SD_params.cfg.1
