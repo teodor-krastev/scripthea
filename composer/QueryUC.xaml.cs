@@ -529,7 +529,7 @@ namespace scripthea.composer
                 {
                     opts.composer.QueryRowHeight = Convert.ToInt32(pnlCue.Height.Value);
                     gridPrompt.Visibility = Visibility.Collapsed; gridSplitCue.Visibility = Visibility.Collapsed;
-                    pnlCue.Height = new GridLength(1);
+                    pnlCue.Height = new GridLength(0);
                 }
             }
             tbModifier.Text = "";
