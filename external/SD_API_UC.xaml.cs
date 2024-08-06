@@ -97,7 +97,7 @@ namespace scripthea.external
         public readonly Dictionary<string, string> possParams = new Dictionary<string, string> // Value is obj.GetType().Name
         {   {"prompt", "String" }, {"negative_prompt", "String" }, {"seed", "Int64" }, {"width", "Int64" }, {"height", "Int64" },
             {"sampler_name", "String" }, {"cfg_scale", "Double" }, {"steps", "Int64" }, {"batch_size", "Int64" }, {"restore_faces", "Boolean" },
-            {"sd_model_hash", "String" }, {"denoising_strength", "Double" }, {"job_timestamp", "String" }
+            {"model", "String" }, {"sd_model_hash", "String" }, {"denoising_strength", "Double" }, {"job_timestamp", "String" }
         };
         public bool GenerateImage(string imgFile, Dictionary<string, object> inParams, out Dictionary<string, object> outParams) // prompt is in inParams
         {
@@ -143,8 +143,7 @@ namespace scripthea.external
                     },
                     /*takeOutput,*/
                     System.Threading.CancellationToken.None);
-                    //clue = null;
-                    
+
                     (string promptId, string filename, string subfolder, bool success) = cUtils.DeconOut(historyOut);
 
                     if (success)
@@ -159,7 +158,11 @@ namespace scripthea.external
                     rslt = success;
                 }
             });
-            task.Wait();
+            try
+            {
+                task.Wait();
+            }
+            catch (Exception e) { Log("Error[9378]: processing problem! " + e.Message); return false; }
             if (rslt)
             {            
                 if (opts.composer.A1111)
@@ -275,9 +278,9 @@ namespace scripthea.external
     }
     public static class cUtils
     {
-        public enum prmKind { positive, negative, width, height, seed, steps, cfg, sampler_name, scheduler, denoise }
+        public enum prmKind { positive, negative, width, height, seed, steps, cfg, sampler_name, scheduler, model, denoise }
         public static Dictionary<prmKind, Type> prms = new Dictionary<prmKind, Type>()
-            { { prmKind.positive, typeof(string) }, { prmKind.negative, typeof(string) }, { prmKind.width, typeof(int) }, { prmKind.height, typeof(int) }, {prmKind.seed, typeof(long) }, {prmKind.steps, typeof(int) }, {prmKind.cfg, typeof(double) }, {prmKind.sampler_name, typeof(string) }, {prmKind.scheduler, typeof(string) }, {prmKind.denoise, typeof(double) }  };
+            { { prmKind.positive, typeof(string) }, { prmKind.negative, typeof(string) }, { prmKind.width, typeof(int) }, { prmKind.height, typeof(int) }, {prmKind.seed, typeof(long) }, {prmKind.steps, typeof(int) }, {prmKind.cfg, typeof(double) }, {prmKind.sampler_name, typeof(string) }, {prmKind.scheduler, typeof(string) },  {prmKind.model, typeof(string) }, {prmKind.denoise, typeof(double) }  };
         public static bool SetPrm(JObject workflow, prmKind kind, object val) // returns the new workflow
         {
             try
@@ -312,16 +315,19 @@ namespace scripthea.external
                             if (workflow["7"]["class_type"].ToString() != "CLIPTextEncode") throw new System.NullReferenceException();
                             workflow["7"]["inputs"]["text"] = Convert.ToString(pr.Value);
                             break;
+                        case "model":
                         case "ckpt_name":
                             if (workflow["4"]["class_type"].ToString() != "CheckpointLoaderSimple") throw new System.NullReferenceException();
-                            workflow["4"]["inputs"]["ckpt_name"] = Convert.ToString(pr.Value);
+                            string mdl = (string)pr.Value;
+                            if (!string.IsNullOrEmpty(mdl) && mdl != "<default>")
+                                workflow["4"]["inputs"]["ckpt_name"] = Convert.ToString(pr.Value);
                             break;
                         case "width":
                         case "height":
                         case "batch_size":
                             if (workflow["5"]["class_type"].ToString() != "EmptyLatentImage") throw new System.NullReferenceException();
                             workflow["5"]["inputs"][pr.Key] = Convert.ToInt32(pr.Value);
-                            break;
+                            break;                                                   
                         default:
                             bool success = Enum.TryParse(pr.Key, false, out prmKind resultType);
                             if (!success) return "Error: wrong parameter -> " + pr.Key;
@@ -338,13 +344,16 @@ namespace scripthea.external
         {
             try
             {
-                if (historyOut.Count == 0) return ("", "", "", false);
+                if (historyOut == null) throw new Exception();
+                if (historyOut.Count == 0) throw new Exception();
                 string promptId = historyOut.Properties().First().Name;
 
                 JToken pis = historyOut[promptId]["status"];
                 bool success = (string)pis["status_str"] == "success" && (bool)pis["completed"];
-
+                if (!historyOut.ContainsKey(promptId)) throw new Exception();
+                if (historyOut[promptId]["outputs"] == null) throw new Exception();
                 JToken pid = historyOut[promptId]["outputs"].First.First;
+                if (pid["images"] == null) throw new Exception();
                 JToken pif = pid["images"][0];
                 string filename = (string)pif["filename"];
                 string subfolder = (string)pif["subfolder"];

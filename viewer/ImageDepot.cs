@@ -85,7 +85,7 @@ namespace scripthea.viewer
         }
         /*{"prompt", "String" }, {"negative_prompt", "String" }, { "seed", "Int64" }, { "width", "Int64" }, { "height", "Int64" },
             { "sampler_name", "String" }, { "cfg_scale", "Double" }, { "steps", "Int64" }, { "batch_size", "Int64" }, { "restore_faces", "Boolean" },
-            { "sd_model_hash", "String" }, { "denoising_strength", "Int64" }, { "job_timestamp", "String" }*/
+            { "model", "String" }, { "sd_model_hash", "String" }, { "denoising_strength", "Int64" }, { "job_timestamp", "String" }*/
         public string prompt { get; set; }
         public string negative_prompt { get; set; }
         public long steps { get; set; }
@@ -97,6 +97,7 @@ namespace scripthea.viewer
         public long height { get; set; }
         public long batch_size { get; set; }
         public bool restore_faces { get; set; }
+        public string model { get; set; }
         public string sd_model_hash { get; set; }
         public string filename { get; set; } // without folder
         public string job_timestamp { get; set; }
@@ -205,6 +206,7 @@ namespace scripthea.viewer
             denoising_strength = dict.ContainsKey("denoising_strength") ? Convert.ToDouble(dict["denoising_strength"]) : 0;
             batch_size = dict.ContainsKey("batch_size") ? Convert.ToInt64(dict["batch_size"]) : 1;
             restore_faces = dict.ContainsKey("restore_faces") ? Convert.ToBoolean(dict["restore_faces"]) : false;
+            if (dict.ContainsKey("model")) model = Convert.ToString(dict["model"]);
             if (dict.ContainsKey("sd_model_hash")) sd_model_hash = Convert.ToString(dict["sd_model_hash"]);
             if (dict.ContainsKey("filename")) filename = Convert.ToString(dict["filename"]);
             if (dict.ContainsKey("job_timestamp")) job_timestamp = Convert.ToString(dict["job_timestamp"]);
@@ -226,7 +228,8 @@ namespace scripthea.viewer
                 string size = dict["size"]; string[] sa = size.Split('x');
                 width = Convert.ToInt64(sa[0]); height = Convert.ToInt64(sa[1]);
             }
-            if (dict.ContainsKey("ModelHash")) sd_model_hash = dict["ModelHash"];
+            if (dict.ContainsKey("model")) model = dict["model"];
+            if (dict.ContainsKey("sd_model_hash")) sd_model_hash = dict["sd_model_hash"];
             if (dict.ContainsKey("filename")) filename = dict["filename"];
             if (dict.ContainsKey("MD5Checksum")) MD5Checksum = dict["MD5Checksum"];
             history = dict.ContainsKey("history") ? Convert.ToString(dict["history"]) : "";
@@ -242,6 +245,7 @@ namespace scripthea.viewer
             dict.Add("steps", steps);
             dict.Add("cfg_scale", cfg_scale.ToString());
             dict.Add("seed", seed);
+            dict.Add("model", model);
             dict.Add("sd_model_hash", sd_model_hash);
             dict.Add("filename", filename);
             dict.Add("job_timestamp", job_timestamp);

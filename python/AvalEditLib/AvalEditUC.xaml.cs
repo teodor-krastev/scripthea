@@ -88,7 +88,8 @@ namespace AvalEditLib
 			{
 				int lenWish = 15;
 				_currentFileName = value;
-				if (_currentFileName.Length > lenWish) tbFilename.Text = "..." + _currentFileName.Substring(_currentFileName.Length - lenWish);
+				if (_currentFileName.Length > lenWish)
+				{ tbFilename.Text = "..." + _currentFileName.Substring(_currentFileName.Length - lenWish); tbFilename.ToolTip = _currentFileName; }
 				else tbFilename.Text = _currentFileName;
 			}
 		}
@@ -246,13 +247,10 @@ namespace AvalEditLib
 			}
 		}*/
 		#endregion
-
         private void chkOptions_Checked(object sender, RoutedEventArgs e)
         {
 			if (chkOptions.IsChecked.Value) columnProperty.Width = new GridLength(200); 
 			else columnProperty.Width = new GridLength(0); 
 		}
-	}
-
-
+    }
 }

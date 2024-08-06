@@ -58,7 +58,7 @@
                 </CheckBox>
                 <ComboBox Name="highlightingComboBox" SelectedItem="{Binding SyntaxHighlighting, ElementName=textEditor}"
 				ItemsSource="{Binding Source={x:Static avalonEdit:HighlightingManager.Instance}, Path=HighlightingDefinitions}"
-				SelectionChanged="HighlightingComboBox_SelectionChanged" Margin="0" Width="60" Visibility="Collapsed"/>
+				Margin="0" Width="60" Visibility="Collapsed"/>
 
                 <CheckBox x:Name="chkOptions" Margin="0,0,0,0" BorderBrush="#FFC8C8C8" Checked="chkOptions_Checked" Unchecked="chkOptions_Checked" HorizontalAlignment="Right">
                     <Image Source="Properties/TripleBarGrey.png" Height="19" Margin="0,0,0,0"/>

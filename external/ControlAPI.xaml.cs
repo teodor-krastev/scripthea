@@ -124,6 +124,8 @@ namespace scripthea.external
                     if (success)
                     {
                         if (!Directory.Exists(imageFolder)) { Log("Error[348]: folder not found"); return; }
+                        if (iInfo == null) { Log("Error[349]: no object/filename"); return; }
+                        if (iInfo.filename == null) { Log("Error[349]: no filename"); return; }
                         if (File.Exists(Path.Combine(imageFolder, iInfo.filename)))
                         {
                             string desc = Path.Combine(imageFolder, SctUtils.descriptionFile);

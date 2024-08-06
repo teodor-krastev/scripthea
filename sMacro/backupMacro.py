@@ -1,19 +1,24 @@
-data = [1, 2, 3, 'hello', (4, 5)]
-# write left - user msg
-st.log(data)
-# write right - debug msg
-st.print(data,'Blue') 
-print(data)
+import sys
+# Image generation sMacro
 
-# input
-s = st.Input('Write something', 'anything')
-st.print(s,'Green') 
+# single image generation
+st.log("out: "+qry.Text2Image('Desert sunrise by Turner'))
 
-# set & get image width
-prm.set('width', 750)
+# select some cues, 10% of the whole pool
+lr = qry.SelectCues(3, -1)
+st.log(str(lr.Count)+' cues selected')
 
-print(prm.get('width'))
+# select some modifiers
+qry.mSetApply('mSet.1', False)
 
-# generate error
-print(1/0)
+# generate prompt from selected cues and modifiers
+ls = qry.GetPreview(False)
+st.log(str(ls.Count)+' promts generated in preview')
+
+if (st.IsCancellationRequested):
+	sys.exit(1)
+
+# generate images from list of prompts
+lt = qry.PromptList2Image(ls)
+st.log(str(lt.Count)+' images generated')
 

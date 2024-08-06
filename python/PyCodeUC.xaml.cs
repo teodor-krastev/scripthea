@@ -32,7 +32,7 @@ namespace scripthea.python
         }
         public void resetCancellation()
         {
-            if (IsCancellationRequested()) { cts?.Dispose(); cts = new CancellationTokenSource(); }               
+            if (IsCancellationRequested) { cts?.Dispose(); cts = new CancellationTokenSource(); }               
         }
         public void print(dynamic txt, string color)
         {
@@ -56,10 +56,13 @@ namespace scripthea.python
         { 
             return new InputBox(info, defaultText, "").ShowDialog();
         } 
-        public bool IsCancellationRequested()
-        {
-            if (cts == null) return false;
-            return cts.IsCancellationRequested;
+        public bool IsCancellationRequested 
+        { 
+            get
+            {
+                if (cts == null) return false;
+                return cts.IsCancellationRequested;
+            } 
         }
 
         public List<Tuple<string, string>> help 
@@ -70,7 +73,7 @@ namespace scripthea.python
                 ls.Add(new Tuple<string, string>( "print(dynamic text, string color)", "replacement of python print to output into sMacro log panel. Mostly aimed for intermedia info and debuging. color is string of the name or hexadecimal of the color" ));
                 ls.Add(new Tuple<string, string>("log(dynamic text)", "output into the main log panel (left). Mostly aimed for the user "));
                 ls.Add(new Tuple<string, string>("Input(string info, string defaultText)", "similar to standart input function in python. It will open dialog box for the user to enter text."));
-                ls.Add(new Tuple<string, string>("IsCancellationRequested()", "Check the value regularly in your macro and if true call sys.exit(<code>) to interupt the execution. the number <code> is printed out."));
+                ls.Add(new Tuple<string, string>("IsCancellationRequested", "Check the value regularly in your macro and if true call sys.exit(<code>) to interupt the execution. the number <code> is printed out."));
                 return ls;
             } 
         }
@@ -91,7 +94,7 @@ namespace scripthea.python
         public double colCodeWidth { get { return colCode.Width.Value; } set { colCode.Width = new GridLength(value); } }
         public double colLogWidth { get { return colLog.Width.Value; } set { colLog.Width = new GridLength(value); } }
         public double colHelpWidth { get { return colHelp.Width.Value; } set { colHelp.Width = new GridLength(value); } }
-
+        private const string backupMacro = "backupMacro.py";
         public void OnChangePythonLocation() // (re)locate and validate python
         {
             opts.sMacro.pythonValid = false;
@@ -117,7 +120,7 @@ namespace scripthea.python
             avalEdit.DefaultDirectory = Path.Combine(Utils.basePath, "sMacro");
             if (!avalEdit.Open(opts.sMacro.pyLastFilename))
             {
-                string last = Path.Combine(avalEdit.DefaultDirectory, "backupMacro.py"); // retrieve backup macro
+                string last = Path.Combine(avalEdit.DefaultDirectory, backupMacro); // retrieve backup macro
                 if (!avalEdit.Open(last)) Code = "";
             }
             OnChangePythonLocation();
@@ -133,7 +136,9 @@ namespace scripthea.python
             if (Code.Trim() == "") return;
             if (avalEdit.Save(avalEdit.currentFileName)) opts.sMacro.pyLastFilename = avalEdit.currentFileName;
             else opts.sMacro.pyLastFilename = "";
-            File.WriteAllText(Path.Combine(avalEdit.DefaultDirectory, "backupMacro.py"), Code); // backup macro
+            string fn = Path.Combine(avalEdit.DefaultDirectory, backupMacro);
+            if (!fn.Equals(opts.sMacro.pyLastFilename,StringComparison.InvariantCultureIgnoreCase))
+                File.WriteAllText(fn, Code); // backup macro in sMacrop folder
         }
         public bool Register(string moduleName, object moduleObject, List<Tuple<string,string>> help) // method help -> <syntax,description> 
         {
@@ -242,8 +247,7 @@ namespace scripthea.python
         public void Test3(string code)
         {
             
-        }
-        
+        }       
         public class PyStdOut : IDisposable
         {
             private readonly System.IO.StringWriter buffer = new System.IO.StringWriter();

@@ -18,7 +18,7 @@
             <Button.ContextMenu>
                 <ContextMenu x:Name="cmHistory"></ContextMenu>
             </Button.ContextMenu>
-            <Image Source="/Scripthea;component/Properties/history.png" Width="22" Height="22" ToolTip="History of active folders"></Image>
+            <Image x:Name="imgHistory" Source="/Scripthea;component/Properties/history.png" Width="22" Height="22" ToolTip="History of active folders"></Image>
         </Button>
     </Grid>
 </UserControl>

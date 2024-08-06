@@ -173,7 +173,7 @@ namespace scripthea.composer
                 {
                     btnScanChecked.Content = "Cancel Scan";
                     btnQuerySelected.IsEnabled = false; btnClose.IsEnabled = false;
-                    btnScanChecked.Background = Brushes.Coral;
+                    btnScanChecked.Background = Utils.ToSolidColorBrush("#FFFED17F"); 
                 }
                 else
                 {

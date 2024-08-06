@@ -27,7 +27,7 @@ namespace scripthea.external
         public static readonly Dictionary<string, string> possParams = new Dictionary<string, string> // Value is obj.GetType().Name
         {   {"prompt", "String" }, {"negative_prompt", "String" }, {"seed", "Int64" }, {"width", "Int64" }, {"height", "Int64" },
             {"sampler_name", "String" }, {"cfg_scale", "Double" }, {"steps", "Int64" }, {"batch_size", "Int64" }, {"restore_faces", "Boolean" },
-            {"sd_model_hash", "String" }, {"denoising_strength", "Double" }, {"job_timestamp", "String" }
+            {"model", "String" }, {"sd_model_hash", "String" }, {"denoising_strength", "Double" }, {"job_timestamp", "String" }
         };
 
         public static readonly List<string> a1111Samplers = new List<string>
@@ -85,12 +85,12 @@ namespace scripthea.external
         // working parameters -> names from possParams
         private static readonly List<string> A1111Params = new List<string>
         {
-            "prompt", "negative_prompt", "width", "height", "sampler_name", "restore_faces", "seed", "cfg_scale", "steps", "denoising_strength"
+            "prompt", "negative_prompt", "width", "height", "sampler_name", "restore_faces", "seed", "cfg_scale", "steps", "denoising_strength", "model"
         };
 
         private static readonly List<string> ComfyParams = new List<string> // in internal names
         {
-            "prompt", "negative_prompt", "width", "height", "sampler_name", "seed", "cfg_scale", "steps", "denoising_strength"
+            "prompt", "negative_prompt", "width", "height", "sampler_name", "seed", "cfg_scale", "steps", "denoising_strength", "model"
         };
         public static List<string> curParams { get { return A1111 ? A1111Params : ComfyParams; } }
         public static bool CheckParam(string nm)
@@ -121,7 +121,8 @@ namespace scripthea.external
                     case "width":
                     case "height":
                     case "seed":
-                    case "steps": t.Add(p.Key, p.Value);
+                    case "steps":
+                    case "model": t.Add(p.Key, p.Value);
                         break;
                 }
             }
@@ -144,7 +145,7 @@ namespace scripthea.external
             this["negative_prompt"] = ii.negative_prompt;
             this["width"] = ii.width; this["height"] = ii.height;
             this["sampler_name"] = ii.sampler_name; this["restore_faces"] = ii.restore_faces; this["seed"] = ii.seed;
-            this["steps"] = ii.steps; this["cfg_scale"] = ii.cfg_scale; this["denoising_strength"] = ii.denoising_strength;
+            this["steps"] = ii.steps; this["cfg_scale"] = ii.cfg_scale; this["model"] = ii.model; this["denoising_strength"] = ii.denoising_strength;
         }
         public SDsetting Clone()
         {
@@ -176,7 +177,7 @@ namespace scripthea.external
                 Add(sa[0], new SDsetting(JsonConvert.DeserializeObject<Dictionary<string, object>>(sa[1])));
             }
         }
-        public void UpdateCombo(string LastSetting, ComboBox cb)
+        public int UpdateCombo(string LastSetting, ComboBox cb)
         {
             cb.Items.Clear(); cb.SelectedIndex = -1;
             foreach (var pair in this)
@@ -187,6 +188,7 @@ namespace scripthea.external
                     if (LastSetting.Equals(pair.Key)) cb.SelectedItem = cbi; 
             }
             if (cb.SelectedIndex == -1) cb.SelectedIndex = 0;
+            return cb.SelectedIndex;
         }
         public void Save()
         {
@@ -216,12 +218,12 @@ namespace scripthea.external
             opts = _opts; A1111 = opts.composer.A1111; SDside.A1111 = A1111;
             if (A1111)
             {
-                chkRestoreFaces.Visibility = Visibility.Visible;
+                chkRestoreFaces.Visibility = Visibility.Visible; //stpModel.Visibility = Visibility.Collapsed;
             }
             else
             {
-                chkRestoreFaces.Visibility = Visibility.Collapsed;
-                
+                chkRestoreFaces.Visibility = Visibility.Collapsed; stpModel.Visibility = Visibility.Visible;
+
             }
             cbSampler.Items.Clear();
             if (!A1111) cbSampler.Items.Add(new ComboBoxItem() { Content = "<default>"});
@@ -242,7 +244,8 @@ namespace scripthea.external
                 nsSamplingSteps.Init("Sampl.Steps", 20, 1, 150, 1);  nsCFGscale.Init("CFG Scale", 7, 1, 30, 0.1); nsDenoise.Init("Denoise", 1, 0, 1, 0.01);
 
                 sdList = new SDlist(); 
-                sdList.UpdateCombo(opts.general.LastSDsetting, cbSettings); 
+                int k = sdList.UpdateCombo(opts.general.LastSDsetting, cbSettings); 
+                _vPrms = new SDsetting(sdList[opts.general.LastSDsetting]);
                 chkAutoSynch.IsChecked = opts.general.AutoRefreshSDsetting;               
 
                 nsWidth.OnValueChanged += new NumericSliderUC.ValueChangedHandler(SizeAdjust); nsHeight.OnValueChanged += new NumericSliderUC.ValueChangedHandler(SizeAdjust);
@@ -257,6 +260,7 @@ namespace scripthea.external
             sdList.Save(); 
             opts.general.LastSDsetting = (cbSettings.SelectedItem as ComboBoxItem).Content as string; ; opts.general.AutoRefreshSDsetting = chkAutoSynch.IsChecked.Value;
         }
+
         private SDsetting _vPrms;
         public SDsetting vPrms
         {
@@ -273,7 +277,8 @@ namespace scripthea.external
                 if (value.ContainsKey("sampler_name"))
                 {
                     string sn = Convert.ToString(value["sampler_name"]);
-                    if (!A1111) { sn = SDside.FindMatch(sn, A1111); if (sn == "") sn = "<default>"; }
+                    if (!A1111) // comfyUI
+                        { sn = SDside.FindMatch(sn, A1111); if (sn == "") sn = "<default>"; }
                     cbSampler.Text = sn;
                 }
                 else cbSampler.Text = A1111 ? "" : "<default>";
@@ -281,7 +286,16 @@ namespace scripthea.external
                 if (value.ContainsKey("seed")) tbSeed.Text = Convert.ToString(Convert.ToInt64(value["seed"]));
                 if (value.ContainsKey("steps")) nsSamplingSteps.Value = Convert.ToInt32(value["steps"]);
                 if (value.ContainsKey("cfg_scale")) nsCFGscale.Value = Convert.ToDouble(value["cfg_scale"]);
+                if (value.ContainsKey("model")) 
+                { 
+                    string mdl = Convert.ToString(value["model"]);
+                    if (!string.IsNullOrEmpty(mdl)) if (mdl.Equals("<default>")) mdl = ""; // if default when empty 
+                    if (!string.IsNullOrEmpty(mdl)) { chkDefaultModel.IsChecked = false; tbModel.Text = mdl; }
+                    else chkDefaultModel.IsChecked = true;                                                          
+                }
+                else chkDefaultModel.IsChecked = true;
                 if (value.ContainsKey("denoising_strength")) nsDenoise.Value = Convert.ToDouble(value["denoising_strength"]);
+                //visual2prms(null, null); // apply the limits from vis. comp.
             }
         }
         public bool set(string prmName, dynamic prmValue) 
@@ -305,6 +319,7 @@ namespace scripthea.external
         { 
             get 
             {
+                if (cbSettings == null) return null;
                 string selText = (cbSettings.SelectedItem as ComboBoxItem).Content as string;
                 if (sdList.ContainsKey(selText)) return sdList[selText];
                 else { Utils.TimedMessageBox("Unknown setting: " + selText); return null; }
@@ -337,17 +352,17 @@ namespace scripthea.external
         }
         protected void visual2prms(object sender, RoutedEventArgs e) // live update
         {
-            if (locked || cbSampler == null) return;
-            _vPrms = new SDsetting();
+            if (locked || cbSampler == null || _vPrms == null) return;            
             _vPrms["negative_prompt"] = tbNegativePrompt.Text; _vPrms["width"] = (long)nsWidth.Value; _vPrms["height"] = (long)nsHeight.Value;
             if (cbSampler.Items.Count > 0)
             {
                 if (cbSampler.SelectedIndex == -1) cbSampler.SelectedIndex = 0;
                 string sampler = (cbSampler.SelectedItem as ComboBoxItem).Content as string;
                 if (A1111) _vPrms["sampler_name"] = sampler; 
-                else
+                else // comfyUI
                 {
-                    if (sampler != "<default>")
+                    if (sampler == "<default>") _vPrms["sampler_name"] = "";
+                    else 
                     {                
                         string sn = SDside.FindMatch(sampler, true);
                         if (sn == "") sn = SDside.a1111Samplers[0]; // if nothing set to default
@@ -359,6 +374,8 @@ namespace scripthea.external
             if (long.TryParse(tbSeed.Text, out long result)) _vPrms["seed"] = result;
             _vPrms["steps"] = (long)nsSamplingSteps.Value;
             _vPrms["cfg_scale"] = nsCFGscale.Value;
+            if (chkDefaultModel.IsChecked.Value || tbModel.Text == "<default>") _vPrms["model"] = "";
+            else _vPrms["model"] = tbModel.Text;
             _vPrms["denoising_strength"] = nsDenoise.Value;
 
             CheckDifference(vPrms);            
@@ -448,12 +465,24 @@ namespace scripthea.external
         {
             List<Tuple<string, string>> ls = new List<Tuple<string, string>>();
             ls.Add(new Tuple<string, string>(
-                "get(string prmName)", "Get SD parameter.\rPossible parameter names are:\r negative_prompt: string,\r width: integer,\r height: integer,\r sampler_name: string (Euler a, Euler, LMS, Heun, DPM2, DPM2 a,DPM++ 2Sa,DPM++ 2M, DPM++ SDE, DPM fast, DPM adaptive, LMS Karras, DPM2 Karas, DPM2 a Karas, DPM++ 2Sa Karas, DPM++ 2M Karas, DPM++ SDE Karas, DDIM, PLMS, UniPC),\r restore_faces: boolean,\r seed: integer,\r cfg_scale: integer,\r steps: integer.\nReturns parameter value"
+                "get(string prmName)", "Get SD parameter.\rPossible parameter names are:\r negative_prompt: string,\r width: integer,\r height: integer,\r sampler_name: string (Euler a, Euler, LMS, Heun, DPM2, DPM2 a,DPM++ 2Sa,DPM++ 2M, DPM++ SDE, DPM fast, DPM adaptive, LMS Karras, DPM2 Karas, DPM2 a Karas, DPM++ 2Sa Karas, DPM++ 2M Karas, DPM++ SDE Karas, DDIM, PLMS, UniPC),\r restore_faces: boolean,\r seed: integer,\r cfg_scale: double,\r steps: integer.\nReturns parameter value"
                 ));
             ls.Add(new Tuple<string, string>(
-                "set(string prmName, dynamic prmValue)", "Set SD parameter, returns True/False.\rPossible parameter names are:\r negative_prompt: string,\r width: integer,\r height: integer,\r sampler_name: string (Euler a, Euler, LMS, Heun, DPM2, DPM2 a,DPM++ 2Sa,DPM++ 2M, DPM++ SDE, DPM fast, DPM adaptive, LMS Karras, DPM2 Karas, DPM2 a Karas, DPM++ 2Sa Karas, DPM++ 2M Karas, DPM++ SDE Karas, DDIM, PLMS, UniPC),\r restore_faces: boolean,\r seed: integer,\r cfg_scale: integer,\r steps: integer."
+                "set(string prmName, dynamic prmValue)", "Set SD parameter, returns True/False.\rPossible parameter names are:\r negative_prompt: string,\r width: integer,\r height: integer,\r sampler_name: string (Euler a, Euler, LMS, Heun, DPM2, DPM2 a,DPM++ 2Sa,DPM++ 2M, DPM++ SDE, DPM fast, DPM adaptive, LMS Karras, DPM2 Karas, DPM2 a Karas, DPM++ 2Sa Karas, DPM++ 2M Karas, DPM++ SDE Karas, DDIM, PLMS, UniPC),\r restore_faces: boolean,\r seed: integer,\r cfg_scale: double,\r steps: integer."
                 ));
             return ls;
+        }
+        private void chkDefaultModel_Checked(object sender, RoutedEventArgs e)
+        {
+            if (tbModel == null) return;
+            if (chkDefaultModel.IsChecked.Value) tbModel.Text = "<default>";
+            else tbModel.Text = "";
+            tbModel.IsReadOnly = chkDefaultModel.IsChecked.Value;
+        }
+
+        private void tbModel_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            visual2prms(sender, e);
         }
     }
 }

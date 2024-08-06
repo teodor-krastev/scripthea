@@ -54,8 +54,8 @@
                     <Grid x:Name="gridScan" Background="White">
                         <Button x:Name="btnScan" Content="S c a n" Height="30" Width="77" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0" FontWeight="Bold" Background="#FFFDFFED" Click="btnScan_Click" FontSize="13" BorderBrush="#FF0233A2" Style="{StaticResource RoundedButtonStyle}" ToolTip="Scan over checked cues and scanned modifiers "/>
                         <TextBox HorizontalAlignment="Right" Text="Combine all checked cues + fixed modifiers + some (by modif. sample number) of scanned modifiers." Width="200" Margin="0,0,-0.667,0" TextWrapping="Wrap" Background="{x:Null}" BorderBrush="{x:Null}" VerticalAlignment="Top" FontSize="12"/>
-                        <Button x:Name="btnScanPreview" Content="Scan preview" Height="30" Width="98" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10,0,0,7" Background="#FFF1F8FF" FontSize="13" Click="btnScanPreview_Click" BorderBrush="#FF993109" Style="{StaticResource RoundedButtonStyle}" ToolTip="Pour scan prompts in the preview table"/>
-                        <Button x:Name="btnAppend2Preview" Content="Append to the preview" Height="30" Width="150" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="117,0,0,7" Background="#FFF0FCFB" FontSize="13" Click="btnScanPreview_Click" BorderBrush="#FF993109" Style="{StaticResource RoundedButtonStyle}" ToolTip="Similar to the one on the left but adding to existent prompts"/>
+                        <Button x:Name="btnScanPreview" Content="Scan preview" Height="30" Width="98" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10,0,0,7" Background="#FFF0FCFB" FontSize="13" Click="btnScanPreview_Click" BorderBrush="#FF064989" Style="{StaticResource RoundedButtonStyle}" ToolTip="Pour scan prompts in the preview table"/>
+                        <Button x:Name="btnAppend2Preview" Content="Append to the preview" Height="30" Width="150" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="117,0,0,7" Background="#FFF0FCFB" FontSize="13" Click="btnScanPreview_Click" BorderBrush="#FF0A7601" Style="{StaticResource RoundedButtonStyle}" ToolTip="Similar to the one on the left but adding to existent prompts"/>
                     </Grid>
                 </TabItem>
                 <TabItem x:Name="tiOptions" Header="Options" Height="28" Background="#FFECECEC" Margin="10,0,-11,0.089" HorizontalAlignment="Left" Width="90" Style="{StaticResource RoundedTopTabItemStyle}">
@@ -96,7 +96,7 @@
         <GridSplitter x:Name="gridSplitRight" Grid.Column="1" HorizontalAlignment="Left" Margin="0" Width="5" />
         <Grid Grid.Column="1" >
             <Grid.RowDefinitions>
-                <RowDefinition x:Name="rowAPI" Height="77"/>
+                <RowDefinition x:Name="rowAPI" Height="80"/>
                 <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
             <Grid x:Name="gridAPI" Margin="7,0,0,0"/>

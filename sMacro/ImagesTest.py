@@ -15,7 +15,7 @@ qry.mSetApply('mSet.1', False)
 ls = qry.GetPreview(False)
 st.log(str(ls.Count)+' promts generated in preview')
 
-if (st.IsCancellationRequested()):
+if (st.IsCancellationRequested):
 	sys.exit(1)
 
 # generate images from list of prompts

@@ -153,25 +153,41 @@ namespace scripthea.viewer
             else
             {
                 //meta.Add("No access to Meta data: ", ""); meta.Add(" the info is missing or ", ""); meta.Add("file is opened by a process.", "");
-                meta = Utils.dictObject2String(ii.ToDictionary());
+                meta = Utils.dictObject2String(ii.ToDictionary(), "G4");
             } 
             // clean up meta
             meta.Remove("prompt");   
-            void removeMetaItem(string key, string val) // remove some defaults, "*" mask
+            void removeMetaItem(string key, string val) // remove some defaults/empty, "*" mask for remove it uncond.
             {
                 if (meta.ContainsKey(key))
                 { 
-                    if (val == "*" ||  meta[key] == val) meta.Remove(key);
+                    if (val == "*" ||  meta[key].Trim() == val) meta.Remove(key);
+                }
+            }
+            rowNegative.Height = new GridLength(0);
+            if (meta.ContainsKey("negative_prompt"))
+            {
+                string neg = meta["negative_prompt"];
+                if (neg.Trim() != "") 
+                {
+                    rowNegative.Height = new GridLength(28); tbNegative.Text = neg; stpNegative.ToolTip = neg;
                 }
             }
             removeMetaItem("history", "");
             removeMetaItem("tags", "");
-            removeMetaItem("negative_prompt", "");
+            removeMetaItem("negative_prompt", "*");
             removeMetaItem("batch_size", "1");
             removeMetaItem("restore_faces", "False");
-            if (meta.ContainsKey("MD5Checksum")) meta.Remove("MD5Checksum");
+            removeMetaItem("sd_model_hash", "*");
+            removeMetaItem("job_timestamp", "");
+            if (meta.ContainsKey("MD5Checksum")) meta.Remove("MD5Checksum");            
             int r = meta.ContainsKey("rate") ? Convert.ToInt32(meta["rate"]) : 0;            
             removeMetaItem("rate", "*");
+
+            if (meta.ContainsKey("sampler_name"))
+                if (meta["sampler_name"] == "") meta["sampler_name"] = "<default>";
+            if (meta.ContainsKey("model"))
+                if (meta["model"] == "") meta["model"] = "<default>";
 
             Utils.dict2ListBox(meta, lboxMetadata);
             

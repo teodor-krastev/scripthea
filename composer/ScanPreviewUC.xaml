@@ -30,7 +30,7 @@
                 </Button.ContextMenu>
             </Button>
 
-            <Button x:Name="btnScanChecked" Content="Scan All Checked" HorizontalAlignment="Left" Margin="10,0,0,0" Width="137" FontSize="13" Background="#FFFEFEEE" Height="25" BorderBrush="Maroon" Style="{StaticResource RoundedButtonStyle}" ToolTip="Scan over all checked prompts"/>
+            <Button x:Name="btnScanChecked" Content="Scan All Checked" HorizontalAlignment="Left" Margin="10,0,0,0" Width="137" FontSize="13" Background="#FFFEFEEE" Height="25" BorderBrush="#FF001E80" Style="{StaticResource RoundedButtonStyle}" ToolTip="Scan over all checked prompts"/>
             <Button x:Name="btnQuerySelected" Content="Query Selected One" HorizontalAlignment="Left" Margin="5,0,0,0" Width="140" FontSize="13" Background="#FFFEFEEE" IsEnabled="False" Height="25" BorderBrush="#FF098302" Style="{StaticResource RoundedButtonStyle}" ToolTip="Quesry the selected prompt"/>
             <Label x:Name="lbCheckCount" Content="Checked: " VerticalAlignment="Center" Margin="10,0,0,0" FontSize="14" MouseDoubleClick="lbCheckCount_MouseDoubleClick"></Label>
             <Button x:Name="btnCopy" Content="Copy" HorizontalAlignment="Left" Margin="10,0,0,0" Width="91" FontSize="13" Background="#FFEBF7FA" Click="btnCopy_Click" Height="25" Style="{StaticResource RoundedButtonStyle}" ToolTip="Copy the prompt list to the clipboard"/>

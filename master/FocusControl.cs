@@ -9,8 +9,7 @@ using System.Windows;
 namespace scripthea.master
 {
     public interface iFocusControl // attached to all UC with folder needs
-    {
-        
+    {        
         UserControl parrent { get; }
         GroupBox groupFolder { get; }
         TextBox textFolder { get; }        

@@ -639,14 +639,19 @@ namespace UtilsNS
 
         public static Dictionary<string, string> dictObject2String(Dictionary<string, object> dv, string prec = "G5")
         {
-            Dictionary<string, string> ds = new Dictionary<string, string>();
+            Dictionary<string, string> ds = new Dictionary<string, string>(); double rslt;
             foreach (var item in dv)
-                if (item.Value is double) ds.Add(item.Key, Convert.ToDouble(item.Value).ToString(prec));
+            {
+                if (item.Value is int) 
+                    { ds.Add(item.Key, item.Value.ToString()); continue; }
+
+                if (Double.TryParse(Convert.ToString(item.Value), out rslt)) ds.Add(item.Key, Convert.ToDouble(rslt).ToString(prec));
                 else
                 {
                     if (isNull(item.Value)) continue;
                     ds.Add(item.Key, item.Value.ToString());
-                }                    
+                }  
+            }                  
             return ds;
         }
 

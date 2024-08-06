@@ -144,7 +144,21 @@ namespace scripthea.master
         {
             if (history.Count > 0) Utils.writeList(historyFile, history);
         }
-
+        public bool locked 
+        { 
+            get 
+            {
+                if (opts == null) return false;
+                return opts.iDutilities.IDFlocked; 
+            } 
+            set 
+            {
+                if (opts == null) return;
+                opts.iDutilities.IDFlocked = value; 
+                if (value) imgHistory.Source = (ImageSource)FindResource("/Scripthea;component/Properties/history.png"); // TO BE FIXED !!!
+                else imgHistory.Source = (ImageSource)FindResource("/Scripthea;component/Properties/yellow-lock.png");
+            } 
+        }
         public delegate void SelectHandler(string path);
         public event SelectHandler OnSelect;
         protected void Select(string path)
@@ -359,6 +373,8 @@ namespace scripthea.master
             MenuItem hmi = sender as MenuItem; string header = Convert.ToString(hmi.Header);
             CatchAFolder(header); Active(header);
         }
+
+        
     }
 
 

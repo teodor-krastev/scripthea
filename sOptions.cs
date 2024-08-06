@@ -93,6 +93,8 @@ namespace scripthea.options
             public bool MasterClearEntries;
             public int ImportWidth;
             public int ExportWidth;
+            [JsonIgnore]
+            public bool IDFlocked;
             // AddonGen
             public string AddonGenFolder;
         }

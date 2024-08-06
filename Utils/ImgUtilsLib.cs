@@ -285,7 +285,7 @@ namespace UtilsNS
                         if (!original)
                         {
                             if (nm.Equals("CFG scale")) nm = "scale";
-                            if (nm.Equals("Model hash")) nm = "ModelHash";
+                            if (nm.Equals("Model hash")) nm = "sd_model_hash";
                             else nm = nm.ToLower();
                         }
                         itemMap.Add(nm, mdc[1].Trim());

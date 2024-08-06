@@ -121,8 +121,12 @@ namespace scripthea.external
             }
             set
             {
-                if (!lockText) TextBoxValue.Text = value.ToString(DoubleFormat);                
-                _Value = value;
+                if (lockText) return;
+                _Value = value; 
+                if (value < Minimum) _Value = Minimum;
+                if (value > Maximum) _Value = Maximum;                              
+                TextBoxValue.Text = _Value.ToString(DoubleFormat);
+                
                 ValueChanged(this, new RoutedEventArgs());
             }
         }       

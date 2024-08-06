@@ -576,5 +576,8 @@
     <Resource Include="Properties\left_teal_arrow.png" />
     <Resource Include="Properties\right_teal_arrow.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Properties\yellow-lock.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

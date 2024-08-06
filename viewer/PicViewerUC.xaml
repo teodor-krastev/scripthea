@@ -40,8 +40,17 @@
                 <ColumnDefinition Width="1*"/>
                 <ColumnDefinition x:Name="colMeta" Width="100" MinWidth="8"/>
             </Grid.ColumnDefinitions>
-
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition x:Name="rowNegative" Height="28"/>
+                </Grid.RowDefinitions>
             <TextBox x:Name="tbCue" Margin="3,3,23,3" TextWrapping="Wrap" Text="" Background="White" IsReadOnly="True" FontSize="13" BorderThickness="0,0,0,0" HorizontalAlignment="Center" VerticalScrollBarVisibility="Auto" />
+            <StackPanel x:Name="stpNegative" Grid.Row="1" Orientation="Horizontal" Background="#FFF7F7F7">
+                    <Label Content="Neg." FontFamily="Segoe UI Semibold" VerticalAlignment="Top" Margin="0"></Label>
+                    <TextBox x:Name="tbNegative" Margin="3,3,23,3" Text="" Background="{x:Null}" IsReadOnly="True" FontSize="13" BorderThickness="0,0,0,0" HorizontalAlignment="Left" VerticalScrollBarVisibility="Auto" VerticalAlignment="Center" />
+            </StackPanel>
+            </Grid>
             <Slider x:Name="sldRate" HorizontalAlignment="Right" Margin="0" Width="20" Value="3" Orientation="Vertical" ValueChanged="sldRate_ValueChanged">
                 <Slider.ContextMenu>
                     <ContextMenu>

@@ -35,6 +35,11 @@
             <local:NumericSliderUC x:Name="nsSamplingSteps" Height="28" Margin="0,5"/>
             <local:DoubleSliderUC x:Name="nsCFGscale" Height="28" Margin="0,5"/>
             <local:DoubleSliderUC x:Name="nsDenoise" Height="28" Margin="0,5"/>
+            <StackPanel x:Name="stpModel" Height="50" VerticalAlignment="Top" Orientation="Horizontal">
+                <Label Margin="10,0,0,0" Content="Model:" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="13"></Label>
+                <CheckBox x:Name="chkDefaultModel" VerticalAlignment="Center" Content="Default" Margin="10,0,0,0" FontSize="13" IsChecked="True" Checked="chkDefaultModel_Checked" Unchecked="chkDefaultModel_Checked"></CheckBox>
+                <TextBox x:Name="tbModel" HorizontalAlignment="Left" VerticalAlignment="Center" Text="&lt;default&gt;" Margin="10,14,0,14" FontSize="13" Width="360" Height="22" IsReadOnly="True" TextChanged="tbModel_TextChanged"></TextBox>
+            </StackPanel>
 
         </StackPanel>
         <GroupBox x:Name="grpSDsettings" Header="SD parameters settings" HorizontalAlignment="Left" Margin="2.667,0,-8,0" VerticalAlignment="Top" Width="300" Height="78" Grid.Column="1">

@@ -13,11 +13,11 @@
         </Grid.ColumnDefinitions>
         <Grid Margin="0" >
             <Grid.RowDefinitions>
-                <RowDefinition Height="50"/>
+                <RowDefinition Height="55"/>
                 <RowDefinition Height="329*"/>
                 <RowDefinition Height="30"/>
             </Grid.RowDefinitions>
-            <GroupBox x:Name="gbFolder" Header="Image depot folder" Margin="0" Background="#FFFBFBF4" Foreground="#FF0C17D3">
+            <GroupBox x:Name="gbFolder" Header="Image depot folder" Margin="0,0,5,7" Background="#FFFBFBF4" Foreground="#FF0C17D3">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>

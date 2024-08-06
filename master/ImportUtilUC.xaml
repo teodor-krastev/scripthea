@@ -8,12 +8,12 @@
              d:DesignHeight="450" d:DesignWidth="613.671">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="50"/>
+            <RowDefinition Height="55"/>
             <RowDefinition Height="30"/>
             <RowDefinition Height="300*"/>
             <RowDefinition Height="200*"/>
         </Grid.RowDefinitions>
-        <GroupBox x:Name="gbFolder" Header="Image folder to convert (import) to image depot" Margin="0" Background="#FFFBFBF4" Foreground="#FF0C17D3">
+        <GroupBox x:Name="gbFolder" Header="Image folder to convert (import) to image depot" Margin="0,0,5,7" Background="#FFFBFBF4" Foreground="#FF0C17D3">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>

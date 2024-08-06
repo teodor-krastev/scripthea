@@ -149,7 +149,7 @@ namespace scripthea.composer
             get { return _showAPI; }
             set 
             {
-                if (value) rowAPI.Height = new GridLength(77);
+                if (value) rowAPI.Height = new GridLength(83);
                 else rowAPI.Height = new GridLength(1);
                 if (value) imgAPIdialog.Visibility = Visibility.Hidden;
                 else imgAPIdialog.Visibility = Visibility.Visible;
@@ -328,7 +328,7 @@ namespace scripthea.composer
         {
             if (!success)
             {
-                if (imageFilePath == "") { Log("Error[887]: Image generator/server is not connected!"); Log("@StopRun"); status = Status.Idle; }
+                if (imageFilePath == "") { Log("Error[887]: Problem with image generator/server!"); Log("@StopRun"); status = Status.Idle; }
                 else Log("Error with " + imageFilePath);
             }
             switch (status)
@@ -591,7 +591,7 @@ namespace scripthea.composer
         }
         private void btnScanPreviewProcs_Click(object sender, RoutedEventArgs e)
         {
-            if (sender.Equals(scanPreviewUC.btnScanChecked))
+            if (scanPreviewUC.btnScanChecked.Equals(sender))
             {
                 if (scanPreviewUC.scanning)
                 {
@@ -606,9 +606,10 @@ namespace scripthea.composer
                     scanPromptIdx = 0; QueryAPI(scanPrompts[0]);
                 }
             }
-            if (sender.Equals(scanPreviewUC.btnQuerySelected))
+            if (scanPreviewUC.btnQuerySelected.Equals(sender))
             {               
-                if (scanPreviewUC.selectedPrompt == "") { Log("Error[74]: no prompt selected"); return; }                
+                if (scanPreviewUC.selectedPrompt == "") { Log("Error[74]: no prompt selected"); return; }
+                status = Status.SingeQuery;
                 QueryAPI(scanPreviewUC.selectedPrompt);
             }
         }
@@ -728,7 +729,6 @@ namespace scripthea.composer
             }
             tbImageDepot.Text = newFolder;  
             return newFolder;
-
         }
         public string getStatus { get { return status.ToString(); } }
 
@@ -748,10 +748,10 @@ namespace scripthea.composer
                 "GetPreview(bool append)", "Generate prompts combining selected cues with checked modifiers. The composer must be in Scan mode and some cues must be selected. append is to add to or replace current selection of modifiers. If mSet = Reset all modifiers are deselected. Return a list of the generated prompts."
                 ));
             ls.Add(new Tuple<string, string>(
-                "SetPreview(List<string> prompts, bool append)", "Generate prompts combining selected cues with mSet. The composer must be in Scan mode and some cues must be selected. If mSet is empty the current set of modifiers is used. append is to add to or replace current selection of modifiers. If mSet = 'Reset' all modifiers are deselected. Returns the total nunber of preview prompts."
+                "SetPreview(List<string> prompts, bool append)", "Generate prompts combining selected cues with selected modifiers. The composer must be in Scan mode and some cues must be selected. If mSet is empty the current set of modifiers is used. append is to add to or replace current selection of modifiers. If mSet = 'Reset' all modifiers are deselected. Returns the total nunber of preview prompts."
                 ));
             ls.Add(new Tuple<string, string>(
-                "ScanImages(bool fromPreview)", "Generate series of images from prompts from the composer. fromPreview - if false a preview list is used, if true - the same as pressing the Scan button on the composer. The composer must be in Scan mode and some cues must be checked. Return list of tuples (prompt,filepath)"         
+                "ScanImages(bool fromPreview)", "Generate series of images from prompts from the composer. fromPreview - if True a preview list is used, if False - the same as pressing the Scan button on the composer. The composer must be in Scan mode and some cues must be checked. Return list of tuples (prompt,filepath)"         
                 ));
             ls.Add(new Tuple<string, string>(
                 "PromptList2Image(List<string> prompts)", "Generate image with given prompts in a file. file format is the same as in save file in preview panel. Return list of tuples (prompt,filepath)"
@@ -780,6 +780,8 @@ namespace scripthea.composer
             //CombiIndexes(3, 5);
             Log("=============================");
             new MiniTimedMessage("===============").ShowDialog();
+
+
         }
 
     }
