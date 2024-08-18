@@ -19,6 +19,7 @@ using Path = System.IO.Path;
 using Newtonsoft.Json;
 using scripthea.master;
 using scripthea.options;
+using scripthea.composer;
 using UtilsNS;
 
 namespace scripthea.viewer 
@@ -168,6 +169,7 @@ namespace scripthea.viewer
         public int RemoveSelected(bool inclFile = false)
         {
             if (!activeView.HasTheFocus) return -1;
+            if (opts.composer.QueryStatus == Status.Scanning) { Utils.TimedMessageBox("Error[885]: the IDF is updating."); return -1; }
             string ss = inclFile ? "and image file" : ""; bool anim = animation; animation = false;
             Log("Deleting image #" + (activeView.selectedIndex + 1).ToString()+ " entry "+ ss, Brushes.Tomato);
             if (iDepot == null) { Log("Error: no active image depot found"); return -1; }
@@ -393,8 +395,9 @@ namespace scripthea.viewer
             int intKey = (int)e.Key-74;
             if (Utils.InRange(intKey, 0, 74))
             {
-                if (iDepot == null || picViewerUC == null) return;
+                if (iDepot == null || picViewerUC == null || opts == null) return;
                 if (!iDepot.isEnabled) return;
+                if (opts.composer.QueryStatus == Status.Scanning) { Utils.TimedMessageBox("Error[886]: the IDF is updating."); return; }
                 picViewerUC.sldRate.Value = intKey;
             }
         }

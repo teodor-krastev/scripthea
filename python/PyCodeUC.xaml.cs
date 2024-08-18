@@ -13,11 +13,12 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Diagnostics;
+using System.Threading;
 using Python.Runtime;
 using Path = System.IO.Path;
 using scripthea.options;
+using scripthea.composer;
 using UtilsNS;
-using System.Threading;
 
 namespace scripthea.python
 {    
@@ -64,7 +65,6 @@ namespace scripthea.python
                 return cts.IsCancellationRequested;
             } 
         }
-
         public List<Tuple<string, string>> help 
         { 
             get 
@@ -111,6 +111,7 @@ namespace scripthea.python
             catch (PythonException e) { inLog("Error[111]: " + e.Message, Brushes.Red); return; }
             opts.sMacro.pythonValid = Test1(); // && Test2(); 
             IsEnabled = opts.sMacro.pythonValid;
+            lbInfo.Content = (opts.sMacro.pythonIntegrated ? "Integrated" : "Custom") + " python version (" + (opts.sMacro.pythonValid ? "validated":"not validated") +")";
         }
         public void Init(ref Options _opts) 
         {
@@ -151,7 +152,7 @@ namespace scripthea.python
         {
             if (!chkPrint.IsChecked.Value) return;
             if (details && !chkDetails.IsChecked.Value) return;
-            Utils.log(tbLog,txt, Brushes.Black);
+            Utils.log(tbLog, txt, Brushes.Black);
         }
         protected void inLog(string txt, SolidColorBrush clr)
         {           
@@ -217,6 +218,11 @@ namespace scripthea.python
         private void btnRun_Click(object sender, RoutedEventArgs e)
         {
             if (btnPressed) { st?.cts?.Cancel(); btnRun.IsEnabled = false; inLog("Cancellation requested", Brushes.Blue); return; }
+            else
+            {
+                if (opts != null)
+                    if (!opts.composer.QueryStatus.Equals(Status.Idle)) { inLog("Error[5784]: the composer is busy.", Brushes.Red); return; }
+            }
             btnPressed = true;
             PyObject po = Execute(Code); 
             btnRun.IsEnabled = true; btnPressed = false; inLog("-=-=-=- end of macro -=-=-=-", Brushes.Green);

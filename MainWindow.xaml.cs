@@ -116,6 +116,7 @@ namespace scripthea
                 if (opts.composer.ImageDepotFolder.Equals("<default.image.depot>")) opts.composer.ImageDepotFolder = SctUtils.defaultImageDepot;
             }
             else opts = new Options();
+            opts.composer.QueryStatus = Status.Idle;
             aboutWin.Init(ref opts); 
             if (opts.general.UpdateCheck) Check4Update(null,null);
             else
@@ -366,17 +367,18 @@ namespace scripthea
                 if (oldTab.Equals(tiUtils)) 
                     bb |= viewerUC.ShowImageDepot(nextDepotFolder(importUtilUC.imageFolder));
                 if (!bb) bb |= viewerUC.ShowImageDepot(nextDepotFolder(""));
-                ExplorerPart = 100; dirTreeUC.CatchAFolder(viewerUC.tbImageDepot.Text); 
+                ExplorerPart = queryUC.status.Equals(Status.Scanning) ? 50 : 100; 
+                dirTreeUC.CatchAFolder(viewerUC.tbImageDepot.Text); 
                 focusControl.GotTheFocus(viewerUC, null); // unknown why it needs to be done from code
                 //viewerUC.activeView.selectedIndex = 0;             
             }
             if (tabControl.SelectedItem.Equals(tiDepotMaster))
             {
-                ExplorerPart = 100;
+                ExplorerPart = queryUC.status.Equals(Status.Scanning) ? 50 : 100;
             }
             if (tabControl.SelectedItem.Equals(tiUtils))
             {
-                ExplorerPart = 100;
+                ExplorerPart = queryUC.status.Equals(Status.Scanning) ? 50 : 100;
                 if (focusControl.ifc != null)
                 {
                     if (focusControl.ifcName.Equals("import")) 

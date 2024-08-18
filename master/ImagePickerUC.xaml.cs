@@ -18,6 +18,7 @@ using Path = System.IO.Path;
 using Brushes = System.Windows.Media.Brushes;
 using scripthea.viewer;
 using scripthea.options;
+using scripthea.composer;
 using UtilsNS;
 
 namespace scripthea.master
@@ -192,7 +193,13 @@ namespace scripthea.master
                 _isChanging = value;
             }
         }
-        
+        public void Clear()
+        {
+            activeView.Clear();
+            iDepot = null;
+            isValidFolder = false;
+            GetChecked();
+        }
         public event RoutedEventHandler OnChangeDepot;
         protected void ChangeDepot(object sender, RoutedEventArgs e)
         {
@@ -226,6 +233,10 @@ namespace scripthea.master
         public bool converting = false; public ImageDepot iDepot = null;
         private void tbImageDepot_TextChanged(object sender, TextChangedEventArgs e)
         {
+            if (tbImageDepot.Text.Trim().Equals("")) { Clear(); return; }
+            if (opts != null)
+                if (opts.composer.ImageDepotFolder.Equals(tbImageDepot.Text, StringComparison.InvariantCultureIgnoreCase) && opts.composer.QueryStatus == Status.Scanning)
+                { Log("Error[1279]: the working image folder is in process of updating.", Brushes.Red); tbImageDepot.Text = ""; return; }
             if (SctUtils.checkImageDepot(tbImageDepot.Text, false) > 0) tbImageDepot.Foreground = Brushes.Black;
             else tbImageDepot.Foreground = Brushes.Red;
             int iCount = SctUtils.checkImageDepot(tbImageDepot.Text, true); 

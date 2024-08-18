@@ -65,12 +65,12 @@ namespace scripthea.composer
                         Header = se,
                         Name = "ti" + se.Replace('-', '_'),
                         FontSize = 14, FontStyle = FontStyles.Italic, Height = 27,
-                        Background = Utils.ToSolidColorBrush("#FFFFFFF8") 
+                        Background = Utils.ToSolidColorBrush("#FFFFFFF8")
                     };
                     tcLists.Items.Add(newTabItem); List<CueItemUC> ocl = new List<CueItemUC>(); localCues.Add(ocl);
                     ScrollViewer sv = new ScrollViewer(); sv.CanContentScroll = true; newTabItem.Content = sv; localScrolls.Add(sv);
                     StackPanel sp = new StackPanel(); sv.Content = sp;                
-                    AddCues(sp, ref ocl, sf);
+                    AddCues(sp, ref ocl, sf); newTabItem.ToolTip = ocl.Count+" cues";
                 }          
                 if (tcLists.Items.Count > 0) tcLists.SelectedIndex = 0;                
                 tabControl_SelectionChanged(null, null);

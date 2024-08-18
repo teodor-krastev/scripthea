@@ -143,9 +143,9 @@ namespace scripthea.viewer
             {
                 imgPic.Source = SctUtils.file_not_found; tbFile.Foreground = Brushes.Tomato;
             }
-            lbNumber.Content = "[ " + (index + 1).ToString() + " ] ";  
+            lbNumber.Content = "[" + (index + 1).ToString() + "] ";  
             tbFile.Text = ii.filename; tbFile.ToolTip = filePath;
-            lbRate.Content = (ii.rate == 0) ? "" : " { " + ii.rate.ToString() + " }";
+            lbRate.Content = (ii.rate == 0) ? "" : " {" + ii.rate.ToString() + "}";
             idx = index; 
             tbCue.Text = ii.prompt; tbCue.ToolTip = ii.prompt;
             selected = false; return !file_not_found;

@@ -105,7 +105,7 @@ namespace scripthea.master
             if (sender.Equals(btnDeleteInA)) k = DeleteIn1(iPickerA);
             if (sender.Equals(btnDeleteInB)) k = DeleteIn1(iPickerB);
             if (k == -1) Utils.TimedMessageBox("Error[112]: Issue during deleting", "Error", 3000);
-            else Utils.TimedMessageBox(k +  " have been deleted", "Information", 3000);
+            else Utils.TimedMessageBox(k +  " images have been deleted", "Information", 3000);
         }
         public int Copy1to2(ImagePickerUC iPicker1, ImagePickerUC iPicker2, out List<string> copied)
         {

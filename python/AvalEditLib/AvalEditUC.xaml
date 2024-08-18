@@ -74,9 +74,7 @@
 				Name="textEditor"
 				FontFamily="Consolas"
 				FontSize="10pt"
-				SyntaxHighlighting="Python"
-                   
-			>
+				SyntaxHighlighting="Python">
                 </avalonEdit:TextEditor>
                 <GridSplitter Grid.Column="1" Width="4" HorizontalAlignment="Left" Background="#FFEEF5FD"/>
                 <DockPanel Grid.Column="1" Margin="4 0 0 0">

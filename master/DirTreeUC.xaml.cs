@@ -122,8 +122,12 @@ namespace scripthea.master
             if (File.Exists(historyFile))
             {
                 List<string> ls = Utils.readList(historyFile,true); history = new List<string>();
+                string last = "";
                 foreach (string ss in ls)
-                    if (Directory.Exists(ss)) history.Add(ss);
+                {
+                    if (ss.Equals(last, StringComparison.InvariantCultureIgnoreCase)) continue;
+                    if (Directory.Exists(ss)) { history.Add(ss); last = ss; }
+                }                   
             }
             else history = new List<string>();
             ld.Insert(0, AppDataStr);

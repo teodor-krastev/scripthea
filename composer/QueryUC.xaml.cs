@@ -125,7 +125,7 @@ namespace scripthea.composer
                         tiOptions.IsEnabled = false;
                         break;
                 }
-                _status = value; //Log("status: "+_status.ToString());
+                _status = value; if (opts != null) opts.composer.QueryStatus = value;
             }
         }
         public event Utils.LogHandler OnLog;
@@ -361,12 +361,12 @@ namespace scripthea.composer
         }
         private List<string> scanPrompts = new List<string>();
         private int scanPromptIdx;
-        private void GetScanPrompts()
+        private List<string> GetScanPrompts()
         {        
             scanPrompts = new List<string>(); 
-            if (cuePoolUC.activeCourier == null) { Log("Error[145]: no cue is selected"); return; }
+            if (cuePoolUC.activeCourier == null) { Log("Error[145]: no cue is selected"); return scanPrompts; }
             List<List<string>> lls = cuePoolUC.activeCourier.GetCues();
-            if (lls.Count.Equals(0)) { Log("Error[96]: no cue is selected"); return; }
+            if (lls.Count.Equals(0)) { Log("Error[96]: no cue is selected"); return scanPrompts; }
             List<string> ScanModifs = CombiModifs(modifiersUC.ModifItemsByType(ModifStatus.Scannable), opts.composer.ModifPrefix, Utils.EnsureRange(opts.composer.ModifSample, 1, 9));
             string fis = modifiersUC.FixItemsAsString();
             foreach (List<string> ls in lls)
@@ -382,7 +382,8 @@ namespace scripthea.composer
                         scanPrompts.Add(Compose(null, ls, fis + (sc.Equals("") ? "" : opts.composer.ModifPrefix) + sc, true));                        
                     }
                 }
-            }            
+            }
+            return scanPrompts;
         }
         public List<string> CombiModifs(List<string> ScanModifs, string separator, int sample = 1) 
         {

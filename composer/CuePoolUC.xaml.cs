@@ -164,7 +164,8 @@ namespace scripthea.composer
                 clu.OnLog += new Utils.LogHandler(Log);
                 clu.Init(GetLists(i));
                 couriers.Add(new Courier(ref clu));
-                (tabControl.Items[i] as TabItem).Content = clu;
+                TabItem ti = tabControl.Items[i] as TabItem;
+                ti.Content = clu;
             }
             // ImageDepot tab
             couriers.Add(new Courier(ref iPickerX));

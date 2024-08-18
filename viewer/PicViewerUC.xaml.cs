@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Path = System.IO.Path;
 using Brushes = System.Windows.Media.Brushes;
+using scripthea.composer;
 using scripthea.master;
 using scripthea.options;
 using UtilsNS;
@@ -273,7 +274,8 @@ namespace scripthea.viewer
         private bool lockRate = false;
         private void sldRate_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if (lockRate || iDepot == null) return;
+            if (lockRate || iDepot == null || opts == null) return;
+            if (opts.composer.QueryStatus == Status.Scanning) { Utils.TimedMessageBox("Error[886]: the IDF is updating."); return; }
             ImageInfo ii = SelectedItem(actIdx, iDepot);
             ii.rate = Convert.ToInt16(sldRate.Value);
             UpdateMeta(iDepot.path, ii, IsModified(iDepot.path, ii), false); // local

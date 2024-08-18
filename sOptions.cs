@@ -6,13 +6,14 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Diagnostics;
-//using scripthea.viewer;
+using scripthea.composer;
 using Path = System.IO.Path;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using UtilsNS;
 
 namespace scripthea.options
 {
+    public enum TripleReply { yes, ask, no }
     public class Options
     {
         public Options()
@@ -56,6 +57,8 @@ namespace scripthea.options
             public int QueryRowHeight;
             public int QueryColWidth;
             public int ViewColWidth;
+            [JsonIgnore]
+            public Status QueryStatus; 
             // query single
             public SingleAutoSet SingleAuto;
             public bool OneLineCue;

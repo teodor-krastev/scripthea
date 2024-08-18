@@ -86,7 +86,7 @@ namespace AvalEditLib
 			get { return _currentFileName; }
 			set 
 			{
-				int lenWish = 15;
+				int lenWish = 32;
 				_currentFileName = value;
 				if (_currentFileName.Length > lenWish)
 				{ tbFilename.Text = "..." + _currentFileName.Substring(_currentFileName.Length - lenWish); tbFilename.ToolTip = _currentFileName; }
