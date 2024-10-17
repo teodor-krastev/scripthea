@@ -25,7 +25,7 @@ namespace scripthea.viewer
     /// </summary>
     public partial class TableViewUC : UserControl, iPicList
     {
-        private DataTable dTable;
+        private DataTable dTable; private const string FilenameHeader = "_     Image  Filename     _";
         public TableViewUC()
         {
             InitializeComponent();
@@ -42,7 +42,7 @@ namespace scripthea.viewer
                 dTable.Columns.Add(new DataColumn("on", typeof(bool)));
             dTable.Columns.Add(new DataColumn("Prompt", typeof(string)));
             dTable.Columns.Add(new DataColumn("Rt", typeof(int)));
-            dTable.Columns.Add(new DataColumn("Image Filename", typeof(string)));
+            dTable.Columns.Add(new DataColumn(FilenameHeader, typeof(string)));
         }
         public void Finish()
         {
@@ -90,7 +90,6 @@ namespace scripthea.viewer
             if (!Utils.InRange(idx, 0, iDepot.items.Count - 1) || ii == null) return;
             iDepot.items[idx] = ii; dTable.Rows[idx]["Rt"] = ii.rate;
         }
-
         public void SynchroChecked(List<Tuple<int, string, int, string>> chks)
         {
             if (!checkable) return;
@@ -114,12 +113,7 @@ namespace scripthea.viewer
                 else row["on"] = Convert.ToBoolean(check);
             }            
         }
-        public delegate void LogHandler(string txt, SolidColorBrush clr = null);
-        public event LogHandler OnLog;
-        protected void Log(string txt, SolidColorBrush clr = null)
-        {
-            if (OnLog != null) OnLog(txt, clr);
-        }        
+                
         public string imageFolder { get { return iDepot?.path; } }
         public void SetRowColor(int idx0, bool bb)
         {
@@ -163,7 +157,7 @@ namespace scripthea.viewer
         {
             if (dTable == null) return false;
             Clear();
-            if (!Directory.Exists(imageDepot)) { Log("Error[651]: no such folder -> " + imageDepot); return false; }
+            if (!Directory.Exists(imageDepot)) { opts.Log("Error[651]: no such folder -> " + imageDepot); return false; }
             //if (ImgUtils.checkImageDepot(imageDepot) == 0) { Log("Error[]: not image depot folder -> " + imageDepot); return false; }
             ImageDepot _iDepot = new ImageDepot(imageDepot, ImageInfo.ImageGenerator.FromDescFile);
             return FeedList(ref _iDepot);        
@@ -171,7 +165,7 @@ namespace scripthea.viewer
         public bool FeedList(ref ImageDepot _iDepot) // update from existitng iDepot
         {
             if ((dTable == null) || (_iDepot == null)) return false;
-            if (!Directory.Exists(_iDepot.path)) { Log("Error[486]: no such folder -> " + _iDepot.path); return false; }
+            if (!Directory.Exists(_iDepot.path)) { opts.Log("Error[486]: no such folder -> " + _iDepot.path); return false; }
             iDepot = _iDepot; loadedDepot = iDepot.path; 
             UpdateVis();
             if (dTable.Rows.Count > 0) dGrid.SelectedIndex = 0;
@@ -249,11 +243,13 @@ namespace scripthea.viewer
             var col = e.Column as DataGridTextColumn; if (col == null) return;
             col.IsReadOnly = !e.Column.Header.ToString().Equals("on");
             switch (e.Column.Header.ToString())
-            {
-                case ("#"):
+            {                
+                case ("#"):                                            
+                    col.Width = new DataGridLength(1, DataGridLengthUnitType.SizeToCells); //SizeToCells, SizeToHeader
+                    break;
                 case ("on"):
                 case ("Rt"):
-                    col.Width = new DataGridLength(1, DataGridLengthUnitType.Auto);
+                    col.Width = new DataGridLength(1, DataGridLengthUnitType.SizeToHeader);
                     break;
                 case ("Prompt"):
                     var style = new Style(typeof(TextBlock));
@@ -261,9 +257,9 @@ namespace scripthea.viewer
                     style.Setters.Add(new Setter(TextBlock.VerticalAlignmentProperty, VerticalAlignment.Center));
                     col.ElementStyle = style;
                     col.Width = new DataGridLength(1, DataGridLengthUnitType.Star);
-                    break;                
-                case ("Image Filename"):                
-                    col.Width = new DataGridLength(1, DataGridLengthUnitType.SizeToCells); //SizeToHeader
+                    break;   
+                case (FilenameHeader):
+                    col.Width = new DataGridLength(1, DataGridLengthUnitType.SizeToHeader);
                     break;
             }
         }

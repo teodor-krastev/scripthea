@@ -161,8 +161,7 @@ namespace scripthea.composer
             for (int i = 0; i < poolCount; i++)
             {
                 CueListUC clu = new CueListUC(); cueLists.Add(clu); 
-                clu.OnLog += new Utils.LogHandler(Log);
-                clu.Init(GetLists(i));
+                clu.Init(ref opts, GetLists(i));
                 couriers.Add(new Courier(ref clu));
                 TabItem ti = tabControl.Items[i] as TabItem;
                 ti.Content = clu;
@@ -295,7 +294,7 @@ namespace scripthea.composer
                 {
                     if (!cueLists[i].isBusy)
                     {                        
-                        cueLists[i].Init(GetLists(i)); cueLists[i].radioMode = radioMode;
+                        cueLists[i].Init(ref opts, GetLists(i)); cueLists[i].radioMode = radioMode;
                     }
                 }
             }

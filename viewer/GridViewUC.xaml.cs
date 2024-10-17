@@ -157,13 +157,7 @@ namespace scripthea.viewer
                  if (check == null) piUC.IsChecked = !piUC.IsChecked;
                 else piUC.IsChecked = Convert.ToBoolean(check);
             }
-        }
-
-        public event Utils.LogHandler OnLog;
-        protected void Log(string txt, SolidColorBrush clr = null)
-        {
-            if (OnLog != null) OnLog(txt, clr);
-        }
+        }        
         public struct UndoRec // undo buffer
         { 
             public int idx0; public PicItemUC piUC; public ImageInfo ii; public bool inclFile; 
@@ -186,7 +180,7 @@ namespace scripthea.viewer
                 undoRec.inclFile = inclFile;
                 if (!undoRec.inclFile)
                 {
-                    if (!undoRec.RealRemove(iDepot.path)) Log("Wrn: Image file is missing");
+                    if (!undoRec.RealRemove(iDepot.path)) opts.Log("Wrn: Image file is missing");
                 }
                 undoRec.Clear();
             }
@@ -254,15 +248,15 @@ namespace scripthea.viewer
         public bool FeedList(string imageDepot) 
         {
             Clear();
-            if (!Directory.Exists(imageDepot)) { Log("Error[986]: no such folder -> " + imageDepot); return false; }
-            //if (ImgUtils.checkImageDepot(imageDepot) == 0) { Log("Error[]: not image depot folder -> " + imageDepot); return false; }
+            if (!Directory.Exists(imageDepot)) { opts.Log("Error[986]: no such folder -> " + imageDepot); return false; }
+            //if (ImgUtils.checkImageDepot(imageDepot) == 0) { opts.Log("Error[]: not image depot folder -> " + imageDepot); return false; }
             ImageDepot _iDepot = new ImageDepot(imageDepot, ImageInfo.ImageGenerator.FromDescFile);
             return FeedList(ref _iDepot);
         }
         public bool FeedList(ref ImageDepot _iDepot) // external iDepot; regular use
         {
             if (_iDepot == null) return false;
-            if (!Directory.Exists(_iDepot.path)) { Log("Error[785]: no such folder -> " + _iDepot.path); return false; }
+            if (!Directory.Exists(_iDepot.path)) { opts.Log("Error[785]: no such folder -> " + _iDepot.path); return false; }
             iDepot = _iDepot; loadedDepot = iDepot.path;
             UpdateVis();
             return true;
@@ -286,7 +280,7 @@ namespace scripthea.viewer
                     if (piUC.selected) { piUC.focused = true; piUC2 = piUC; }
                 } 
                 if (piUC2 == null) 
-                    { Log("Error[352]: internal selected index"); return; }
+                    { opts.Log("Error[352]: internal selected index"); return; }
                 scrollToIdx(value);
                 if (piUC2 != null)
                     OnSelect(piUC2.idx, iDepot);
@@ -375,7 +369,7 @@ namespace scripthea.viewer
         }
         private void scrollToIdx(int selectedIdx = -1) // -1 for selectedIndex
         {            
-            int si = selectedIdx == -1 ? selectedIndex : selectedIdx; si--;
+            int si = selectedIdx == -1 ? selectedIndex : selectedIdx; //si--;
             if (wrapPics.ActualHeight < rowTumbs.ActualHeight) return;                         
             int targetRow = thumbsPerRow > 0 ? (int)Math.Floor((double)si / thumbsPerRow) : 0; 
             if (targetRow.Equals(0)) { scroller.ScrollToHome(); return; }

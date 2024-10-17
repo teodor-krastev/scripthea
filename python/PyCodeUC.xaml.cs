@@ -47,12 +47,7 @@ namespace scripthea.python
                 Utils.log(rtb,txt.ToString(),clr); 
             }                                 
         }
-        public event Utils.LogHandler OnLog;
-        public void log(dynamic txt)
-        {
-            if (OnLog != null) OnLog(txt.ToString());
-            else Utils.TimedMessageBox(txt.ToString());
-        }
+        
         public string Input(string info, string defaultText = "") 
         { 
             return new InputBox(info, defaultText, "").ShowDialog();

@@ -51,11 +51,7 @@ namespace scripthea.composer
             }
             cues[0].radioChecked = true;
         }
-        public event Utils.LogHandler OnLog;
-        protected void Log(string txt, SolidColorBrush clr = null)
-        {
-            if (OnLog != null) OnLog(txt, clr);
-        }
+       
         private int _selected; 
         public int selected
         {
@@ -101,7 +97,6 @@ namespace scripthea.composer
         }
         private int AddCue(CueItemUC cue) // visual
         {
-            cue.OnLog += new Utils.LogHandler(Log);
             cue.rbChecked.Checked += new RoutedEventHandler(Change);
             cue.tbCue.TextChanged += new TextChangedEventHandler(TextChanged);
             cue.tbCue.IsReadOnly = false;
@@ -181,7 +176,7 @@ namespace scripthea.composer
             filename = dialog.FileName;  
             if (inputKind) // .cues
             {
-                if (!File.Exists(filename)) { Log("Error[96]: no <" + filename + "> file found"); return; }
+                if (!File.Exists(filename)) { opts.Log("Error[96]: no <" + filename + "> file found"); return; }
                 List<string> cueText = new List<string>(File.ReadAllLines(filename));
                 List<string> cueList = new List<string>();
                 foreach (string ss in cueText)
@@ -242,7 +237,7 @@ namespace scripthea.composer
             string folder = Directory.Exists(opts.composer.WorkCuesFolder) ? opts.composer.WorkCuesFolder : Path.Combine(Utils.basePath, "cues");
             filename = Path.Combine(folder, filename);
             Utils.writeList(Path.ChangeExtension(filename, ".cues"), ls);
-            Log("Saved in " + filename, Brushes.Tomato); newCues = true;
+            opts.Log("Saved in " + filename, Brushes.Tomato); newCues = true;
         }
         private void btnAddCue_Click(object sender, RoutedEventArgs e)
         {
@@ -258,7 +253,7 @@ namespace scripthea.composer
                     RemoveAt(selected);
                     selected = Utils.EnsureRange(selected, 0, cues.Count - 1);
                 }
-                else Log("Error[54]: index out of range");
+                else opts.Log("Error[54]: index out of range");
             }
         }
         private void btnDoIt_Click(object sender, RoutedEventArgs e)

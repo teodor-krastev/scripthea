@@ -48,18 +48,16 @@ namespace scripthea.composer
             UpdateFromOptions();
             status = Status.Idle;
 
-            Log("@_Header=loading cues files (*.cues)");              
-            cuePoolUC.OnLog += new Utils.LogHandler(Log);
+            opts.Log("@_Header=loading cues files (*.cues)");              
             cuePoolUC.ExternalSelectionChanged += new SelectionChangedEventHandler(CuePoolSelectionChanged);
             Courier.CueSelectionHandler ChageCueRef = new Courier.CueSelectionHandler(ChangeCue);
             cuePoolUC.Init(ref opts, ref ChageCueRef);
 
-            Log("@_Header=loading modifiers files (*.mdfr)");
-            modifiersUC.OnLog += new Utils.LogHandler(Log);
+            opts.Log("@_Header=loading modifiers files (*.mdfr)");
             modifiersUC.Init(ref opts);
             modifiersUC.OnChange += new RoutedEventHandler(ChangeModif);
 
-            scanPreviewUC.OnLog += new Utils.LogHandler(Log);
+            scanPreviewUC.Init(ref opts);
             scanPreviewUC.btnClose.Click += new RoutedEventHandler(btnScanPreviewProcs_Click);
             scanPreviewUC.btnScanChecked.Click += new RoutedEventHandler(btnScanPreviewProcs_Click);
             scanPreviewUC.btnQuerySelected.Click += new RoutedEventHandler(btnScanPreviewProcs_Click);
@@ -74,7 +72,6 @@ namespace scripthea.composer
 
             cbActiveAPI_SelectionChanged(null, null);
             API.OnQueryComplete += new ControlAPI.APIEventHandler(QueryComplete);
-            API.OnLog += new Utils.LogHandler(Log);
             sd_params_UC.Init(ref opts);
             cuePoolUC.OnSDparams += new Utils.LogHandler(sd_params_UC.ImportImageInfo);
             
@@ -108,6 +105,8 @@ namespace scripthea.composer
             {
                 switch (value)
                 {
+                    case Status.Undefined:
+                        break;
                     case Status.Idle:
                         tiSingle.IsEnabled = true;
                         tiScan.IsEnabled = true;
@@ -127,12 +126,7 @@ namespace scripthea.composer
                 }
                 _status = value; if (opts != null) opts.composer.QueryStatus = value;
             }
-        }
-        public event Utils.LogHandler OnLog;
-        protected void Log(string txt, SolidColorBrush clr = null)
-        {
-            if (OnLog != null) OnLog(txt, clr);
-        }      
+        }          
         protected Dictionary<string, object> OnAPIparams(bool? showIt)
         {
             if (showIt != null)
@@ -164,18 +158,18 @@ namespace scripthea.composer
         /// <returns></returns>
         /*protected void ChangeCue(object sender, RoutedEventArgs e)
         {
-            //Log("conditions changed");
+            //opts.Log("conditions changed");
             if (opts.SingleAuto && cuePoolUC.radioMode) btnCompose_Click(sender,e);
         }*/
         protected void ChangeCue(List<string> selCues)
         {
-            //Log("conditions changed");
+            //opts.Log("conditions changed");
             if ((opts.composer.SingleAuto == Options.SingleAutoSet.cue || opts.composer.SingleAuto == Options.SingleAutoSet.both) && cuePoolUC.radioMode) 
                 Compose(null, selCues, modifiersUC.Composite(), false);
         }
         protected void ChangeModif(object sender, RoutedEventArgs e)
         {
-            //Log("conditions changed");           
+            //opts.Log("conditions changed");           
             if ((opts.composer.SingleAuto == Options.SingleAutoSet.modif || opts.composer.SingleAuto == Options.SingleAutoSet.both) && tcQuery.SelectedItem.Equals(tiSingle)) 
                 Compose(sender,false);
         }
@@ -221,7 +215,7 @@ namespace scripthea.composer
             else
             {
                 if (opts.composer.ImageDepotFolder != "") 
-                    Log("Directory <"+ opts.composer.ImageDepotFolder + "> does not exist. Setting to default directory :"+ SctUtils.defaultImageDepot);
+                    opts.Log("Directory <"+ opts.composer.ImageDepotFolder + "> does not exist. Setting to default directory :"+ SctUtils.defaultImageDepot);
                 opts.composer.ImageDepotFolder = SctUtils.defaultImageDepot; tbImageDepot.Text = SctUtils.defaultImageDepot;
             }           
             UpdatingOptions = false;              
@@ -247,7 +241,7 @@ namespace scripthea.composer
             if (Directory.Exists(tbImageDepot.Text))
             {
                 tbImageDepot.Foreground = Brushes.Black; 
-                opts.composer.ImageDepotFolder = tbImageDepot.Text; Log("@WorkDir");
+                opts.composer.ImageDepotFolder = tbImageDepot.Text; opts.Log("@WorkDir");
             }                                
             else tbImageDepot.Foreground = Brushes.Red;            
         }
@@ -316,34 +310,34 @@ namespace scripthea.composer
         }
         private void QueryAPI(string prompt) // generated image path
         {   
-            Log("query -> "+ prompt, Brushes.DarkGreen);
-            if (status.Equals(Status.Scanning)) Log("@StartGeneration (" + (scanPromptIdx+1).ToString() + " / " + scanPrompts.Count.ToString() + ")");
-            else Log("@StartGeneration (single)");
+            opts.Log("query -> "+ prompt, Brushes.DarkGreen);
+            if (status.Equals(Status.Scanning)) opts.Log("@StartGeneration (" + (scanPromptIdx+1).ToString() + " / " + scanPrompts.Count.ToString() + ")");
+            else opts.Log("@StartGeneration (single)");
             if (status.Equals(Status.Scanning) && scanPreviewUC.scanning) // move selection
                 scanPreviewUC.selectByPropmt(prompt);
-            API.Query(prompt, opts.composer.ImageDepotFolder); Log("-=-=-", Brushes.DarkOrange);
+            API.Query(prompt, opts.composer.ImageDepotFolder); opts.Log("-=-=-", Brushes.DarkOrange);
         }
         private string lastSingleImage = "";
         protected void QueryComplete(string imageFilePath, bool success)
         {
             if (!success)
             {
-                if (imageFilePath == "") { Log("Error[887]: Problem with image generator/server!"); Log("@StopRun"); status = Status.Idle; }
-                else Log("Error with " + imageFilePath);
+                if (imageFilePath == "") { opts.Log("Error[887]: Problem with image generator/server!"); opts.Log("@StopRun"); status = Status.Idle; }
+                else opts.Log("Error with " + imageFilePath);
             }
             switch (status)
             {
                 case Status.SingeQuery:
                 case Status.Request2Cancel:
                     lastSingleImage = imageFilePath;
-                    status = Status.Idle; Log("@EndGeneration: " + imageFilePath); 
+                    status = Status.Idle; opts.Log("@EndGeneration: " + imageFilePath); 
                     break;
                 case Status.Scanning:                   
-                    Log("@EndGeneration: " + imageFilePath);                    
+                    opts.Log("@EndGeneration: " + imageFilePath);                    
                     if (scanPromptIdx == (scanPrompts.Count-1)) // the end of it, back to init state
                     {
                         status = Status.Idle; 
-                        Log("This Scan resulted in " + scanPrompts.Count.ToString()+" images.", Brushes.DarkMagenta);
+                        opts.Log("This Scan resulted in " + scanPrompts.Count.ToString()+" images.", Brushes.DarkMagenta);
                         API.activeAPI.Broadcast("end.scan");
                     }                        
                     else // next image gen
@@ -354,7 +348,7 @@ namespace scripthea.composer
             }
             if (status == Status.Idle) // back
             {
-                //if (!scanEnd) Log("@EndGeneration");
+                //if (!scanEnd) opts.Log("@EndGeneration");
                 btnScan.Content = strScan; btnScan.Background = Brushes.MintCream;                        
                 btnScanPreview.IsEnabled = true; scanPreviewUC.scanning = false; btnScanPreview.IsEnabled = true; btnAppend2Preview.IsEnabled = true;
             }
@@ -364,9 +358,9 @@ namespace scripthea.composer
         private List<string> GetScanPrompts()
         {        
             scanPrompts = new List<string>(); 
-            if (cuePoolUC.activeCourier == null) { Log("Error[145]: no cue is selected"); return scanPrompts; }
+            if (cuePoolUC.activeCourier == null) { opts.Log("Error[145]: no cue is selected"); return scanPrompts; }
             List<List<string>> lls = cuePoolUC.activeCourier.GetCues();
-            if (lls.Count.Equals(0)) { Log("Error[96]: no cue is selected"); return scanPrompts; }
+            if (lls.Count.Equals(0)) { opts.Log("Error[96]: no cue is selected"); return scanPrompts; }
             List<string> ScanModifs = CombiModifs(modifiersUC.ModifItemsByType(ModifStatus.Scannable), opts.composer.ModifPrefix, Utils.EnsureRange(opts.composer.ModifSample, 1, 9));
             string fis = modifiersUC.FixItemsAsString();
             foreach (List<string> ls in lls)
@@ -391,7 +385,7 @@ namespace scripthea.composer
             if (ScanModifs.Count == 0) return rslt;
             if ((ScanModifs.Count == 1) && ScanModifs[0].Equals("")) return rslt;
             if (sample >= ScanModifs.Count)
-                { Log("Error[364]: number of scannable modifiers: " + ScanModifs.Count.ToString() + " must be bigger than modifiers sample: " +sample.ToString()); return rslt; }
+                { opts.Log("Error[364]: number of scannable modifiers: " + ScanModifs.Count.ToString() + " must be bigger than modifiers sample: " +sample.ToString()); return rslt; }
             List<string> line = new List<string>(); 
             IEnumerable<IEnumerable<int>> combinations = CombiIndexes(sample, ScanModifs.Count);
             foreach (var combination in combinations)
@@ -432,30 +426,30 @@ namespace scripthea.composer
         }
         private void btnScan_Click(object sender, RoutedEventArgs e)
         {
-            if (cuePoolUC.activeCourier.GetCues().Count == 0) { Log("Error[97]: no cue is selected"); return; } 
+            if (cuePoolUC.activeCourier.GetCues().Count == 0) { opts.Log("Error[97]: no cue is selected"); return; } 
             if (Convert.ToString(btnScan.Content).Equals(strScan))
             {
-                if (API.IsBusy) { Log("Error[11]: busy with previous query"); return; }
+                if (API.IsBusy) { opts.Log("Error[11]: busy with previous query"); return; }
                 switch (status) // if out of place
                 {
                     case Status.SingeQuery:
-                        Log("Warning: API is busy, try again later..."); return;
+                        opts.Log("Warning: API is busy, try again later..."); return;
                     case Status.Request2Cancel:
-                        Log("Warning: Your request for cancelation has been already accepted.", Brushes.Tomato); return;
+                        opts.Log("Warning: Your request for cancelation has been already accepted.", Brushes.Tomato); return;
                     case Status.Scanning:
-                        Log("Error[45]: internal error"); return;
+                        opts.Log("Error[45]: internal error"); return;
                 }
                 status = Status.Scanning; btnScan.Content = "Cancel"; btnScan.Background = Brushes.Coral;
                 btnScanPreview.IsEnabled = false; btnAppend2Preview.IsEnabled = false;
             }
             else // if button title is Cancel
             {
-                if (status == Status.Scanning) Log("Warning: User cancelation!", Brushes.Tomato);
+                if (status == Status.Scanning) opts.Log("Warning: User cancelation!", Brushes.Tomato);
                 status = Status.Request2Cancel; btnScan.Content = strScan; btnScan.Background = Brushes.MintCream;
                 btnScanPreview.IsEnabled = true; btnAppend2Preview.IsEnabled = true; return;
             }
             GetScanPrompts();
-            if (scanPrompts.Count == 0) { Log("Error[141]: no prompt generated"); return; }
+            if (scanPrompts.Count == 0) { opts.Log("Error[141]: no prompt generated"); return; }
             scanPromptIdx = 0; QueryAPI(scanPrompts[0]);
         }
         private void chkAutoSingle_Checked(object sender, RoutedEventArgs e)
@@ -486,16 +480,16 @@ namespace scripthea.composer
 
         private void imgAPIdialog_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (Utils.isNull(API)) { Log("Error[55]: no API is selected."); return; }
-            if (Utils.isNull(API.activeAPI)) { Log("Error[22]: no API is selected."); return; }           
+            if (Utils.isNull(API)) { opts.Log("Error[55]: no API is selected."); return; }
+            if (Utils.isNull(API.activeAPI)) { opts.Log("Error[22]: no API is selected."); return; }           
             API.activeAPI.opts["IDfolder"] = opts.composer.ImageDepotFolder;
             API.about2Show(ref opts);
             API.ShowDialog();
         }
         private bool CheckAPIready()
         {
-            if (Utils.isNull(API)) { Log("Error[56]: no API is selected."); return false; }
-            if (Utils.isNull(API.activeAPI)) { Log("Error[21]: no API is selected."); return false; }
+            if (Utils.isNull(API)) { opts.Log("Error[56]: no API is selected."); return false; }
+            if (Utils.isNull(API.activeAPI)) { opts.Log("Error[21]: no API is selected."); return false; }
             if (API.IsBusy || status != Status.Idle)
                 { Utils.TimedMessageBox("API is busy, try again later...", "Warning"); return false; }
             return true;
@@ -516,9 +510,9 @@ namespace scripthea.composer
             if (Utils.isNull(tcQuery.SelectedItem)) return;
             if (tcQuery.SelectedItem.Equals(tiOptions))
             {
-                Log("@ExplorerPart=100"); return;
+                opts?.Log("@ExplorerPart=100"); return;
             }    
-            else Log("@ExplorerPart=0");
+            else opts?.Log("@ExplorerPart=0");
             if (!Utils.isNull(opts))
             {
                 if (tcQuery.SelectedItem.Equals(tiSingle))
@@ -583,12 +577,12 @@ namespace scripthea.composer
             tcModScanPre.SelectedIndex = 1; tcModScanPre.UpdateLayout(); Utils.DoEvents(); //DateTime t0 = DateTime.Now;
             List<string> ls = (sender == btnAppend2Preview) ? new List<string>(scanPreviewUC.allPrompts) : new List<string>();
             
-            GetScanPrompts(); //Log("time 1: " + ((DateTime.Now - t0).TotalSeconds).ToString("G3") + " [sec]");
-            if (scanPrompts.Count == 0) { Log("Warning: No prompts generated"); scanPreviewUC.lbCheckCount.Content = ""; return; }
-            ls.AddRange(scanPrompts); //Log("time 2: " + ((DateTime.Now - t0).TotalSeconds).ToString("G3") + " [sec]");
+            GetScanPrompts(); //opts.Log("time 1: " + ((DateTime.Now - t0).TotalSeconds).ToString("G3") + " [sec]");
+            if (scanPrompts.Count == 0) { opts.Log("Warning: No prompts generated"); scanPreviewUC.lbCheckCount.Content = ""; return; }
+            ls.AddRange(scanPrompts); //opts.Log("time 2: " + ((DateTime.Now - t0).TotalSeconds).ToString("G3") + " [sec]");
             tiModifiers.Visibility = Visibility.Visible; tiScanPreview.Visibility = Visibility.Visible;
             scanPreviewUC.lbCheckCount.Content = "loading...";
-            scanPreviewUC.LoadPrompts(ls); //Log("time 3: " + ((DateTime.Now - t0).TotalSeconds).ToString("G3") + " [sec]");
+            scanPreviewUC.LoadPrompts(ls); //opts.Log("time 3: " + ((DateTime.Now - t0).TotalSeconds).ToString("G3") + " [sec]");
         }
         private void btnScanPreviewProcs_Click(object sender, RoutedEventArgs e)
         {
@@ -597,19 +591,19 @@ namespace scripthea.composer
                 if (scanPreviewUC.scanning)
                 {
                     scanPreviewUC.scanning = false; status = Status.Request2Cancel;
-                    Log("Warning: User cancelation!", Brushes.Tomato); btnScanPreview.IsEnabled = true; btnAppend2Preview.IsEnabled = true;
+                    opts.Log("Warning: User cancelation!", Brushes.Tomato); btnScanPreview.IsEnabled = true; btnAppend2Preview.IsEnabled = true;
                 }
                 else
                 {
                     scanPrompts = scanPreviewUC.checkedPrompts();
-                    if (scanPrompts.Count == 0) { Log("Error[285]: no prompts checked"); return; }
+                    if (scanPrompts.Count == 0) { opts.Log("Error[285]: no prompts checked"); return; }
                     status = Status.Scanning; scanPreviewUC.scanning = true; btnScanPreview.IsEnabled = false; btnAppend2Preview.IsEnabled = false;
                     scanPromptIdx = 0; QueryAPI(scanPrompts[0]);
                 }
             }
             if (scanPreviewUC.btnQuerySelected.Equals(sender))
             {               
-                if (scanPreviewUC.selectedPrompt == "") { Log("Error[74]: no prompt selected"); return; }
+                if (scanPreviewUC.selectedPrompt == "") { opts.Log("Error[74]: no prompt selected"); return; }
                 status = Status.SingeQuery;
                 QueryAPI(scanPreviewUC.selectedPrompt);
             }
@@ -680,7 +674,7 @@ namespace scripthea.composer
         }
         public List<Tuple<string,string>> ScanImages(bool fromPreview)
         {
-            if (!CheckAPIready()) { Log("Error[5]: API error (see log)."); return null; }
+            if (!CheckAPIready()) { opts.Log("Error[5]: API error (see log)."); return null; }
             API.iiList = new List<Tuple<string, string>>();
             
             if (!tcQuery.SelectedItem.Equals(tiScan)) tcQuery.SelectedItem = tiScan;
@@ -696,7 +690,7 @@ namespace scripthea.composer
         }        
         public List<Tuple<string, string>> PromptList2Image(List<string> prompts)
         {
-            if (!CheckAPIready()) { Log("Error[5]: API error (see log)."); return null; }
+            if (!CheckAPIready()) { opts.Log("Error[5]: API error (see log)."); return null; }
             var lt = new List<Tuple<string, string>>();
             foreach (string prompt in prompts)
             {
@@ -714,18 +708,18 @@ namespace scripthea.composer
                 case "get": return opts.composer.ImageDepotFolder;
                 case "create": Directory.CreateDirectory(folder); Utils.Sleep(500);
                     if (Directory.Exists(folder)) newFolder = folder;
-                    else { Log("Error[64]: image depot create failed."); return ""; }
+                    else { opts.Log("Error[64]: image depot create failed."); return ""; }
                     break;
                 case "switch":
                     if (Directory.Exists(folder)) { newFolder = folder; opts.composer.ImageDepotFolder = newFolder; }
-                    else { Log("Error[65]: image depot switch failed."); return ""; }
+                    else { opts.Log("Error[65]: image depot switch failed."); return ""; }
                     break;
                 case "setnext":
-                    if (!Directory.Exists(opts.composer.ImageDepotFolder)) { Log("Error[66]: work image depot folder - not found."); return ""; }
+                    if (!Directory.Exists(opts.composer.ImageDepotFolder)) { opts.Log("Error[66]: work image depot folder - not found."); return ""; }
                     string mFolder = folder == string.Empty ? Utils.timeName() : folder;
                     newFolder = Path.Combine(Utils.GetParrentDirectory(opts.composer.ImageDepotFolder), mFolder);
                     if (!Directory.Exists(newFolder)) { Directory.CreateDirectory(newFolder); Utils.Sleep(500); } 
-                    else { Log("Error[67]: folder <"+newFolder+"> already exists"); return ""; }
+                    else { opts.Log("Error[67]: folder <"+newFolder+"> already exists"); return ""; }
                     break;
             }
             tbImageDepot.Text = newFolder;  
@@ -769,17 +763,17 @@ namespace scripthea.composer
         private void btnTest_Click(object sender, RoutedEventArgs e)
         {
             /*List<string> files = new List<string>(Directory.GetFiles(tbImageDepot.Text, "*.png"));
-            Log(files.Count.ToString()+" files"); DateTime t0 = DateTime.Now;
+            opts.Log(files.Count.ToString()+" files"); DateTime t0 = DateTime.Now;
             Dictionary<string, string> meta; int ns = 0;
             foreach (string fn in files)
             {
                 if (ImgUtils.GetMetaDataItems(fn, out meta)) ns++;
             }
             double t = (DateTime.Now - t0).TotalSeconds;
-            Log("time taken = "+t.ToString("G3")+" [sec]  "+ns.ToString()+" files OK");
-            Log("time " + (t / ns).ToString("G3") + " [sec] per file");*/
+            opts.Log("time taken = "+t.ToString("G3")+" [sec]  "+ns.ToString()+" files OK");
+            opts.Log("time " + (t / ns).ToString("G3") + " [sec] per file");*/
             //CombiIndexes(3, 5);
-            Log("=============================");
+            opts.Log("=============================");
             new MiniTimedMessage("===============").ShowDialog();
 
 

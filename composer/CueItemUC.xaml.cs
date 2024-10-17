@@ -42,12 +42,7 @@ namespace scripthea.composer
         { 
             get { return _index; } 
             set { _index = value; gridFullFrame.Background = (index % 2).Equals(0) ? Utils.ToSolidColorBrush("#FFFFFEF5") /*yellowish*/ : Utils.ToSolidColorBrush("#FFF5F7EA"); } // greenish
-        }
-        public event Utils.LogHandler OnLog;
-        protected void Log(string txt, SolidColorBrush clr = null)
-        {
-            if (OnLog != null) OnLog(txt, clr);
-        }
+        }        
         public bool radioMode
         {
             get { return rbChecked.Visibility.Equals(Visibility.Visible); }

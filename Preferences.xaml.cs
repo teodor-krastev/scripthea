@@ -45,15 +45,7 @@ namespace scripthea
         public string configFilename = Path.Combine(Utils.configPath, "Scripthea.cfg");
 
         private List<string> history;
-        /// <summary>
-        /// the point of the dialog, readable everywhere
-        /// </summary>
-        public event Utils.LogHandler OnLog;
-        protected void Log(string txt, SolidColorBrush clr = null)
-        {
-            if (OnLog != null) OnLog(txt, clr);
-            else Utils.TimedMessageBox(txt, "Info", 3500);
-        }
+        
         public void opts2visuals()
         {
             if (!opts.general.NewVersion.Equals("")) { lbNewVer.Content = "New available release: " + opts.general.NewVersion; lbNewVer.Foreground = Brushes.Firebrick; }

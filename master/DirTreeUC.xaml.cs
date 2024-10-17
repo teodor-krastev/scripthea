@@ -55,7 +55,7 @@ namespace scripthea.master
                 else mb = msk.Substring(ip + 2);
 
                 if (!(int.TryParse(ma, out i0) && int.TryParse(mb, out i1))) // activeView.CheckRange(i0, i1);
-                { Utils.TimedMessageBox("Error[575]: Wrong range syntax, it must be [num..num] ."); return (-1, -1); }
+                    { Utils.TimedMessageBox("Error[575]: Wrong range syntax, it must be [num..num] ."); return (-1, -1); }
                 if (i0 > i1) (i0, i1) = (i1, i0);
             }
             return (i0, i1);
@@ -214,13 +214,13 @@ namespace scripthea.master
                         {
                             bc = Directory.GetDirectories(s).Length > 0;
                         }
-                        catch (Exception ex) { Log("I: "+ex.Message); continue; }                        
+                        catch (Exception ex) { opts.Log("I: "+ex.Message); continue; }                        
                         if (bc) subitem.Items.Add(dummyNode);
                         subitem.Expanded += new RoutedEventHandler(folder_Expanded);
                         item.Items.Add(subitem);
                     }
                 }
-                catch (Exception ey) { Log("II: "+ey.Message); }
+                catch (Exception ey) { opts.Log("II: "+ey.Message); }
             }
         }
         public void refreshTree() { comboBox_SelectionChanged(null, null); }
@@ -254,11 +254,7 @@ namespace scripthea.master
             }
             Select(pth);
         }
-        public event Utils.LogHandler OnLog;
-        protected void Log(string txt, SolidColorBrush clr = null)
-        {
-            if (OnLog != null && opts.general.debug) OnLog(txt, clr);
-        }
+        
         public bool CatchAFolder(string pth)
         {
             bool bb = false;
@@ -269,7 +265,7 @@ namespace scripthea.master
             ComboBoxItem cbf = null;
             foreach (ComboBoxItem cbi in cbDrives.Items)
                 if (cbi.Content.ToString().Equals(fld[0] + "\\")) { cbf = cbi; break; }
-            if (cbf.Equals(null)) Log("Error[397]: no drive: " + fld[0] + "\\");
+            if (cbf.Equals(null)) opts.Log("Error[397]: no drive: " + fld[0] + "\\");
             if (pth.Length > AppData.Length)
                 if (pth.Substring(0, AppData.Length).Equals(AppData, StringComparison.InvariantCultureIgnoreCase))
                     cbf = cbDrives.Items[0] as ComboBoxItem;
@@ -288,7 +284,7 @@ namespace scripthea.master
                         item.IsExpanded = true; prn = item; bb = true; break;
                     }
                 }
-                if (!bb) Log("Error[395]: no folder found: " + fld[i]);
+                if (!bb) opts.Log("Error[395]: no folder found: " + fld[i]);
             }
             if (bb) prn.IsSelected = true;
             return bb;

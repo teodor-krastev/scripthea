@@ -43,13 +43,7 @@ namespace scripthea.master
             OnChangeDepot(null, null); iPicker.chkCustom2.IsChecked = true;
             iPicker.OnChangeDepot += new RoutedEventHandler(OnChangeDepot);
             iPicker.AddMenuItem("Convert .PNG to .JPG").Click += new RoutedEventHandler(ConvertPNG2JPG); 
-        }
-        public event Utils.LogHandler OnLog;
-        protected void Log(string txt, SolidColorBrush clr = null)
-        {
-            if (OnLog != null) OnLog(txt, clr);
-            else Utils.TimedMessageBox(txt,"Informaion",3000);
-        }
+        }       
         private void OnChangeDepot(object sender, RoutedEventArgs e)
         {
             iPicker.btnCustom.IsEnabled = iPicker.isEnabled; 
@@ -87,7 +81,7 @@ namespace scripthea.master
                 Mouse.OverrideCursor = Cursors.Wait; iPicker.btnCustom.Background = Brushes.Coral; Utils.DoEvents();
 
                 List<Tuple<int, string, int, string>> lot = iPicker.ListOfTuples(true, false); // idx (0 based), filename, prompt
-                if (lot.Count.Equals(0)) { Log("Error[887]: not checked images."); return; }
+                if (lot.Count.Equals(0)) { opts.Log("Error[887]: not checked images."); return; }
 
                 string sourceFolder = iPicker.iDepot.path; string targetFolder = "";
                 CommonOpenFileDialog dialog = new CommonOpenFileDialog();
@@ -98,12 +92,12 @@ namespace scripthea.master
                 else return;
                 if (targetFolder.Equals(sourceFolder, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    Log("Error[761]: source and target folders must be different."); return;
+                    opts.Log("Error[761]: source and target folders must be different."); return;
                 }
                 string tfn = ""; List<Tuple<int, string, int, string>> filter = new List<Tuple<int, string, int, string>>();
                 foreach (var itm in lot)
                 {
-                    tfn = iPicker.chkCustom1.IsChecked.Value ? itm.Item2.Substring(0, Math.Min(150, itm.Item2.Length)) : itm.Item2;
+                    tfn = iPicker.chkCustom1.IsChecked.Value ? itm.Item2.Substring(0, Math.Min(150, itm.Item2.Length)) : itm.Item4;
                     tfn = Utils.correctFileName(tfn);
                     if (!Utils.validFileName(tfn)) tfn = itm.Item4; // prompt text not suitable for filename
                     string sffn = Path.Combine(iPicker.imageDepot, itm.Item4); // src full path
@@ -142,7 +136,7 @@ namespace scripthea.master
                         if (Convert.ToInt32(opts["showWebpage"]) == 1)
                             Utils.CallTheWeb(Path.Combine(targetFolder, "Scripthea-images.html"));
                 }
-                Log(lot.Count.ToString() + " images have been exported to " + targetFolder);
+                opts.Log(lot.Count.ToString() + " images have been exported to " + targetFolder);
             }
             finally { Mouse.OverrideCursor = null; iPicker.btnCustom.Background = Brushes.White; }
         }    

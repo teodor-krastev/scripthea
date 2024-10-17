@@ -49,10 +49,10 @@ namespace scripthea.external
         {
             InitializeComponent(); opts = _opts;
             interfaceAPIs = new Dictionary<string, interfaceAPI>();
-            visualControl("Simulation", new SimulatorUC()).OnLog += new Utils.LogHandler(Log);
-            visualControl("AddonGen", new AddonGenUC()).OnLog += new Utils.LogHandler(Log);
-            visualControl("Craiyon", new CraiyonWebUC()).OnLog += new Utils.LogHandler(Log);
-            visualControl("SDiffusion", new SDiffusionUC()).OnLog += new Utils.LogHandler(Log); 
+            visualControl("Simulation", new SimulatorUC()).OnLog += new Utils.LogHandler(opts.Log);
+            visualControl("AddonGen", new AddonGenUC()).OnLog += new Utils.LogHandler(opts.Log);
+            visualControl("Craiyon", new CraiyonWebUC()).OnLog += new Utils.LogHandler(opts.Log);
+            visualControl("SDiffusion", new SDiffusionUC()).OnLog += new Utils.LogHandler(opts.Log); 
             _activeAPIname = "AddonGen"; tabControl.SelectedIndex = 0;
 
             backgroundWorker1 = new BackgroundWorker();
@@ -60,11 +60,7 @@ namespace scripthea.external
             backgroundWorker1.RunWorkerCompleted += backgroundWorker1_RunWorkerCompleted;
             backgroundWorker1.WorkerReportsProgress = true;
         }
-        public event Utils.LogHandler OnLog;
-        protected void Log(string txt, SolidColorBrush clr = null)
-        {
-            if (OnLog != null) OnLog(txt, clr);
-        }
+        
 
         protected BackgroundWorker backgroundWorker1;
         public bool IsBusy { get { return backgroundWorker1.IsBusy; } }
@@ -123,9 +119,9 @@ namespace scripthea.external
                 case "SDiffusion": // take imageFolder, imageName (filename) and success
                     if (success)
                     {
-                        if (!Directory.Exists(imageFolder)) { Log("Error[348]: folder not found"); return; }
-                        if (iInfo == null) { Log("Error[349]: no object/filename"); return; }
-                        if (iInfo.filename == null) { Log("Error[349]: no filename"); return; }
+                        if (!Directory.Exists(imageFolder)) { opts.Log("Error[348]: folder not found"); return; }
+                        if (iInfo == null) { opts.Log("Error[349]: no object/filename"); return; }
+                        if (iInfo.filename == null) { opts.Log("Error[349]: no filename"); return; }
                         if (File.Exists(Path.Combine(imageFolder, iInfo.filename)))
                         {
                             string desc = Path.Combine(imageFolder, SctUtils.descriptionFile);
@@ -139,13 +135,13 @@ namespace scripthea.external
                                 bool bb = iInfo != null;
                                 if (bb) bb &= iInfo.IsEnabled(); 
                                 if (bb) sw.WriteLine(iInfo.To_String());
-                                else Log("Error[342]: wrong image file");                                
+                                else opts.Log("Error[342]: wrong image file");                                
                             }
                             QueryComplete(Path.Combine(imageFolder, iInfo.filename), true); // hooray ;)
                             iiList?.Add(new Tuple<string, string>(iInfo.prompt,iInfo.filename));
                             
                         }
-                        else { Log("Error[195]: image file lost"); return; } 
+                        else { opts.Log("Error[195]: image file lost"); return; } 
                     }
                     else  // sadly :(   
                     {
@@ -158,7 +154,7 @@ namespace scripthea.external
         }
         public void Query(string prompt, string _imageDepoFolder) // fire event at the end
         {
-            if (IsBusy) { Log("...I'm busy"); return; }
+            if (IsBusy) { opts.Log("...I'm busy"); return; }
             if (Directory.Exists(_imageDepoFolder)) imageFolder = _imageDepoFolder.EndsWith("\\") ? _imageDepoFolder : _imageDepoFolder + "\\";
             else Utils.TimedMessageBox("No directory: " + _imageDepoFolder);
             prompt2api = prompt;

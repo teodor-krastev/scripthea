@@ -38,7 +38,7 @@ namespace scripthea.composer
             opts = _opts;
             mSets = new List<mSetUC>();
             mSets.Clear();
-            mSets.Add(new mSetUC(resetName, new List<Tuple<string, string, ModifStatus>>()) { Height = 20 , Width = mSetListBox.ActualWidth, ReadOnly = true}); VisualUpdate();
+            mSets.Add(new mSetUC(resetName, new List<Tuple<string, string, ModifStatus>>()) { Height = 23, Width = mSetListBox.ActualWidth, ReadOnly = true, BorderBrush = Brushes.Silver, BorderThickness = new Thickness(1) }); ; VisualUpdate();
 
             modifLists = _modifLists;
             if (!Directory.Exists(ModifiersFolder)) { Utils.TimedMessageBox("No modifiers directory: "+ ModifiersFolder); return; } 
@@ -104,7 +104,6 @@ namespace scripthea.composer
             else { if (!SetModifs(ms.mSet, append)) return false; }
             return true;
         }
-
         public bool SetModifs(List<Tuple<string, string, ModifStatus>> mdfs, bool add) // write to modifiers
         {
             bool bb = true;      

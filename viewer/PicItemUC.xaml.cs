@@ -112,11 +112,7 @@ namespace scripthea.viewer
             if (OnSelect != null) OnSelect(this, e);
         }
         public string imageFolder;
-        public event Utils.LogHandler OnLog;
-        protected void Log(string txt, SolidColorBrush clr = null)
-        {
-            if (OnLog != null) OnLog(txt, clr);
-        }
+        
         public void Clear()
         {
             imgPic.Source = null;   

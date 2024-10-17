@@ -42,8 +42,8 @@ namespace scripthea.external
         //    "ipndm", "ipndm_v", "deis" 
         public static readonly List<string> comfySamplers = new List<string>
         {
-            "euler", "euler_ancestral", "heun", "heunpp2","dpm_2", "dpm_2_ancestral",
-            "lms", "dpm_fast", "dpm_adaptive", "dpmpp_2s_ancestral", "dpmpp_sde", "dpmpp_sde_gpu",
+            "euler_ancestral", "euler", "lms", "heun", "heunpp2","dpm_2", "dpm_2_ancestral",
+            "dpm_fast", "dpm_adaptive", "dpmpp_2s_ancestral", "dpmpp_sde", "dpmpp_sde_gpu",
             "dpmpp_2m", "dpmpp_2m_sde", "dpmpp_2m_sde_gpu", "dpmpp_3m_sde", "dpmpp_3m_sde_gpu", "ddpm", "lcm",
             "ddim", "uni_pc", "uni_pc_bh2"
         };
@@ -65,23 +65,22 @@ namespace scripthea.external
             (13, "LMS Karras", "lcm"),
             (14, "UniPC", "uni_pc")            
         };
-        public static string FindMatch(string smp, bool of1111)
+        public static string FindMatch(string smp, bool toComfy, bool selfIncl = true) // true - return Comfy syntax; false - return A1111 syntax
         {
-            string found = "";
-            foreach(var t in SamplersMatch)
+            if (toComfy) 
             {
-                if (of1111)
-                {
-                    if (smp.Equals(t.Item3)) { found = t.Item2; break; }
-                }
-                else
-                {
-                    if (smp.Equals(t.Item2)) { found = t.Item3; break; }
-                }
+                if (comfySamplers.IndexOf(smp) > -1 && selfIncl) return smp; 
+                foreach(var t in SamplersMatch)
+                    if (smp.Equals(t.Item2)) return t.Item3; 
             }
-            return found;
+            else // to1111
+            {
+                if (a1111Samplers.IndexOf(smp) > -1 && selfIncl) return smp;
+                foreach (var t in SamplersMatch)
+                    if (smp.Equals(t.Item3)) return t.Item2;
+            }
+            return "";
         }
-
         // working parameters -> names from possParams
         private static readonly List<string> A1111Params = new List<string>
         {
@@ -116,18 +115,22 @@ namespace scripthea.external
                         break;
                     case "sampler_name":
                         string sn = FindMatch((string)p.Value, true);
-                        if (sn != "") t.Add("sampler_name", sn);
+                        if (sn != "") t.Add(p.Key, sn);
+                        else t.Add(p.Key, SamplersMatch[0].Item3); // not-found go for default
+                        break;
+                    case "seed":
+                        int sd = Convert.ToInt32(p.Value);
+                        t.Add(p.Key, sd == -1? 0 : sd);
                         break;
                     case "width":
                     case "height":
-                    case "seed":
                     case "steps":
                     case "model": t.Add(p.Key, p.Value);
                         break;
                 }
             }
             return t;
-        }       
+        }
     }
     public class SDsetting: Dictionary<string, object>
     {
@@ -193,8 +196,7 @@ namespace scripthea.external
         public void Save()
         {
             List<string> ls = new List<string>();
-            if (Header == null) ls.Add("#{\"ImageGenerator\":\"StableDiffusion\",\"webui\":\"parameters\",\"application\":\"Scripthea 1.9.5\"}");
-            else ls.Add("#" + JsonConvert.SerializeObject(Header));
+            ls.Add("#{\"ImageGenerator\":\"StableDiffusion\",\"webui\":\"parameters\",\"application\":\"Scripthea "+Utils.getAppFileVersion+"\"}");
             foreach (var pair in this)
                 ls.Add(pair.Key + "=" + JsonConvert.SerializeObject(pair.Value));
             Utils.writeList(filename, ls);
@@ -212,42 +214,63 @@ namespace scripthea.external
         }
         private bool locked = false; // lock params from visuals
         protected Options opts;
-        private bool A1111 = true;
+        private bool A1111
+        {
+            get { return opts.composer.A1111; }
+            set
+            {
+                SDside.A1111 = A1111;
+                if (A1111)
+                {
+                    chkRestoreFaces.Visibility = Visibility.Visible; //stpModel.Visibility = Visibility.Collapsed;
+                    gbComfyTemplates.Visibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    chkRestoreFaces.Visibility = Visibility.Collapsed; stpModel.Visibility = Visibility.Visible;
+                    gbComfyTemplates.Visibility = Visibility.Visible;
+                }
+            }
+        }
         public void Init(ref Options _opts)
         {
-            opts = _opts; A1111 = opts.composer.A1111; SDside.A1111 = A1111;
-            if (A1111)
-            {
-                chkRestoreFaces.Visibility = Visibility.Visible; //stpModel.Visibility = Visibility.Collapsed;
-            }
-            else
-            {
-                chkRestoreFaces.Visibility = Visibility.Collapsed; stpModel.Visibility = Visibility.Visible;
-
-            }
+            opts = _opts; A1111 = opts.composer.A1111; // update vis.
             cbSampler.Items.Clear();
-            if (!A1111) cbSampler.Items.Add(new ComboBoxItem() { Content = "<default>"});
             foreach (string ss in SDside.Samplers)
             {
                 FontFamily fm;
-                if (SDside.FindMatch(ss, !A1111) != "") fm = new System.Windows.Media.FontFamily("Segoe UI Semibold");
+                if (SDside.FindMatch(ss, A1111, false) != "") fm = new System.Windows.Media.FontFamily("Segoe UI Semibold");
                 else fm = new System.Windows.Media.FontFamily("Segoe UI");
 
                 ComboBoxItem cbi = new ComboBoxItem() { Content = ss, FontFamily = fm };
                 cbSampler.Items.Add(cbi);
             }
+
             //if (locked) { locked = false; return; }              
-            if (sdList == null) // first time
+            if (sdList == null) // only the first time
             {
+                // template
+                cbTemplates.Items.Clear(); int idx = -1;
+                foreach (string tmpl in GetTemplates())
+                { int i = cbTemplates.Items.Add(tmpl); if (tmpl.Equals(opts.general.ComfyTemplate, StringComparison.InvariantCultureIgnoreCase)) idx = i; }
+                if (idx > -1) cbTemplates.SelectedIndex = idx;
+                else cbTemplates.SelectedIndex = 0;
+                // visual arrangments
                 nsWidth.Init("Width", 512, 64, 2048, 10); nsWidth.lbTitle.Foreground = chkKeepRatio.Foreground;
                 nsHeight.Init("Height", 512, 64, 2048, 10); nsHeight.lbTitle.Foreground = chkKeepRatio.Foreground;
-                nsSamplingSteps.Init("Sampl.Steps", 20, 1, 150, 1);  nsCFGscale.Init("CFG Scale", 7, 1, 30, 0.1); nsDenoise.Init("Denoise", 1, 0, 1, 0.01);
-
+                nsSamplingSteps.Init("Sample.steps", 20, 1, 150, 1);  nsCFGscale.Init("CFG.scale", 7, 1, 30, 0.1); nsDenoise.Init("Denoise", 1, 0, 1, 0.01);
+                // sd settings
                 sdList = new SDlist(); 
                 int k = sdList.UpdateCombo(opts.general.LastSDsetting, cbSettings); 
-                _vPrms = new SDsetting(sdList[opts.general.LastSDsetting]);
+                if (sdList.ContainsKey(opts.general.LastSDsetting)) _vPrms = new SDsetting(sdList[opts.general.LastSDsetting]);
+                else
+                {
+                    string sd = (cbSettings.SelectedItem as ComboBoxItem).Content as string;
+                    if (sd != "") _vPrms = new SDsetting(sdList[sd]);
+                    else opts.Log("Error[4896]: unknown setting." + opts.general.LastSDsetting);
+                }
                 chkAutoSynch.IsChecked = opts.general.AutoRefreshSDsetting;               
-
+                // events
                 nsWidth.OnValueChanged += new NumericSliderUC.ValueChangedHandler(SizeAdjust); nsHeight.OnValueChanged += new NumericSliderUC.ValueChangedHandler(SizeAdjust);
                 nsSamplingSteps.dblBox.ValueChanged += new RoutedEventHandler(visual2prms); 
                 nsCFGscale.OnValueChanged += new DoubleSliderUC.ValueChangedHandler(CfgAdjust);  nsDenoise.OnValueChanged += new DoubleSliderUC.ValueChangedHandler(CfgAdjust);
@@ -262,7 +285,7 @@ namespace scripthea.external
         }
 
         private SDsetting _vPrms;
-        public SDsetting vPrms
+        public SDsetting vPrms 
         {
             get 
             {
@@ -277,25 +300,28 @@ namespace scripthea.external
                 if (value.ContainsKey("sampler_name"))
                 {
                     string sn = Convert.ToString(value["sampler_name"]);
-                    if (!A1111) // comfyUI
-                        { sn = SDside.FindMatch(sn, A1111); if (sn == "") sn = "<default>"; }
-                    cbSampler.Text = sn;
+                    string sn1 = SDside.FindMatch(sn, !A1111);
+                    if (sn1 == "")
+                    {
+                        opts.Log("Error[5556]: sampler <" + sn + "> not found. Assume default");
+                        sn = SDside.Samplers[0];
+                    }
+                    else sn = sn1;
+                    if (!VisualHelper.SelectItemInCombo(cbSampler, sn)) { opts.Log("Error[555]: internal issue!"); sn = ""; }  
+                    if (sn != "") value["sampler_name"] = sn;
                 }
-                else cbSampler.Text = A1111 ? "" : "<default>";
                 if (value.ContainsKey("restore_faces")) chkRestoreFaces.IsChecked = Convert.ToBoolean(value["restore_faces"]);
-                if (value.ContainsKey("seed")) tbSeed.Text = Convert.ToString(Convert.ToInt64(value["seed"]));
+                if (value.ContainsKey("seed"))
+                {
+                    long li = Convert.ToInt64(value["seed"]);
+                    if (A1111) { if (li == 0) li = -1;} // adjust randomizing code
+                    else { if (li < 0) li = 0; }
+                    tbSeed.Text = Convert.ToString(li);
+                }                        
                 if (value.ContainsKey("steps")) nsSamplingSteps.Value = Convert.ToInt32(value["steps"]);
                 if (value.ContainsKey("cfg_scale")) nsCFGscale.Value = Convert.ToDouble(value["cfg_scale"]);
-                if (value.ContainsKey("model")) 
-                { 
-                    string mdl = Convert.ToString(value["model"]);
-                    if (!string.IsNullOrEmpty(mdl)) if (mdl.Equals("<default>")) mdl = ""; // if default when empty 
-                    if (!string.IsNullOrEmpty(mdl)) { chkDefaultModel.IsChecked = false; tbModel.Text = mdl; }
-                    else chkDefaultModel.IsChecked = true;                                                          
-                }
-                else chkDefaultModel.IsChecked = true;
+                if (value.ContainsKey("model")) tbModel.Text = Convert.ToString(value["model"]).Trim();                
                 if (value.ContainsKey("denoising_strength")) nsDenoise.Value = Convert.ToDouble(value["denoising_strength"]);
-                //visual2prms(null, null); // apply the limits from vis. comp.
             }
         }
         public bool set(string prmName, dynamic prmValue) 
@@ -322,7 +348,7 @@ namespace scripthea.external
                 if (cbSettings == null) return null;
                 string selText = (cbSettings.SelectedItem as ComboBoxItem).Content as string;
                 if (sdList.ContainsKey(selText)) return sdList[selText];
-                else { Utils.TimedMessageBox("Unknown setting: " + selText); return null; }
+                else { opts.Log("Unknown setting: " + selText); return null; }
             } 
         }
         protected void CheckDifference(SDsetting refSDs) // refSDs against the active SDsetting
@@ -358,26 +384,19 @@ namespace scripthea.external
             {
                 if (cbSampler.SelectedIndex == -1) cbSampler.SelectedIndex = 0;
                 string sampler = (cbSampler.SelectedItem as ComboBoxItem).Content as string;
-                if (A1111) _vPrms["sampler_name"] = sampler; 
-                else // comfyUI
-                {
-                    if (sampler == "<default>") _vPrms["sampler_name"] = "";
-                    else 
-                    {                
-                        string sn = SDside.FindMatch(sampler, true);
-                        if (sn == "") sn = SDside.a1111Samplers[0]; // if nothing set to default
-                        _vPrms["sampler_name"] = sn;
-                    }
-                }
+                _vPrms["sampler_name"] = sampler; // vPrms.sampler is current syntax                
             }
              _vPrms["restore_faces"] = chkRestoreFaces.IsChecked.Value;
-            if (long.TryParse(tbSeed.Text, out long result)) _vPrms["seed"] = result;
+            if (long.TryParse(tbSeed.Text, out long li))
+            {              
+                if (A1111) { if (li == 0) li = -1; } // adjust randomizing code
+                else { if (li < 0) li = 0; }                
+                _vPrms["seed"] = li;
+            }
             _vPrms["steps"] = (long)nsSamplingSteps.Value;
             _vPrms["cfg_scale"] = nsCFGscale.Value;
-            if (chkDefaultModel.IsChecked.Value || tbModel.Text == "<default>") _vPrms["model"] = "";
-            else _vPrms["model"] = tbModel.Text;
+            _vPrms["model"] = tbModel.Text.Trim();
             _vPrms["denoising_strength"] = nsDenoise.Value;
-
             CheckDifference(vPrms);            
         }
         private void tbNegativePrompt_TextChanged(object sender, TextChangedEventArgs e) // & seed
@@ -390,7 +409,7 @@ namespace scripthea.external
         }
         private void chkRestoreFaces_Checked(object sender, RoutedEventArgs e)
         {
-            visual2prms(sender, e);
+            visual2prms(sender, e); 
         }
         private void btnSetParams_Click(object sender, RoutedEventArgs e) // set visuals from internal setting
         {
@@ -406,32 +425,32 @@ namespace scripthea.external
             if (!chkAutoSynch.IsChecked.Value) return;
             string oldSel = cbSettings.Text; // before the change
             if (sdList.ContainsKey(oldSel)) { visual2prms(null, null); sdList[oldSel].GetFromDict(vPrms); } // old one
-            else Utils.TimedMessageBox("Unknown setting: " + cbSettings.Text);
+            else opts.Log("Error: unknown setting: " + cbSettings.Text);
 
             string newStr = "";
             if ((sender as ComboBox).SelectedItem != null) 
                 newStr = ((sender as ComboBox).SelectedItem as ComboBoxItem).Content as string; // new one
             if (sdList.ContainsKey(newStr)) { vPrms = sdList[newStr]; chkKeepRatio_Checked(sender, null); }
-            else Utils.TimedMessageBox("Unknown setting: " + newStr);
+            else opts.Log("Error: unknown setting: " + newStr);
         }
         private void chkAutoRefresh_Checked(object sender, RoutedEventArgs e)
         {
             if (chkAutoSynch.IsChecked.Value)
             {
                 btnSetParams.Visibility = Visibility.Collapsed; btnGetParams.Visibility = Visibility.Collapsed;
-                cbSettings.Width = 140+62; btnGetParams_Click(null, null); 
+                cbSettings.Width = 150+62; btnGetParams_Click(null, null); 
             }
             else
             {
                 btnSetParams.Visibility = Visibility.Visible; btnGetParams.Visibility = Visibility.Visible;
-                cbSettings.Width = 140;
+                cbSettings.Width = 150;
             }
         }
         private void btnAddParams_Click(object sender, RoutedEventArgs e)
         {
             SDsetting sds = vPrms.Clone();
             string selText = (cbSettings.SelectedItem as ComboBoxItem).Content as string;
-            if (!sdList.ContainsKey(selText)) { Utils.TimedMessageBox("Unknown setting: " + selText); return; }
+            if (!sdList.ContainsKey(selText)) { opts.Log("Error: unknown setting: " + selText); return; }
 
             string newStg = new InputBox("Save current parameters in", selText, "").ShowDialog();
             if (newStg == "") return;
@@ -449,7 +468,7 @@ namespace scripthea.external
         {
             string selText = (cbSettings.SelectedItem as ComboBoxItem).Content as string;
             if (sdList.ContainsKey(selText)) sdList.Remove(selText);
-            else { Utils.TimedMessageBox("Unknown setting: " + selText); return; }
+            else { opts.Log("Error: unknown setting: " + selText); return; }
             Utils.TimedMessageBox(selText + " params setting removed");
 
             bool ar = chkAutoSynch.IsChecked.Value; chkAutoSynch.IsChecked = false; // prevent cbSettings_SelectionChanged
@@ -472,17 +491,28 @@ namespace scripthea.external
                 ));
             return ls;
         }
-        private void chkDefaultModel_Checked(object sender, RoutedEventArgs e)
+        private void chkDefaultModel_Checked(object sender, RoutedEventArgs e) // later maybe
         {
-            if (tbModel == null) return;
+            /*if (tbModel == null) return;
             if (chkDefaultModel.IsChecked.Value) tbModel.Text = "<default>";
             else tbModel.Text = "";
-            tbModel.IsReadOnly = chkDefaultModel.IsChecked.Value;
+            tbModel.IsReadOnly = chkDefaultModel.IsChecked.Value;*/
         }
-
         private void tbModel_TextChanged(object sender, TextChangedEventArgs e)
         {
             visual2prms(sender, e);
+        }
+        private List<string> GetTemplates()
+        {
+            List<string> tmpl = new List<string>(); string[] arr = Directory.GetFiles(Utils.configPath, "*.cftm");
+            foreach (string tm in arr)
+                tmpl.Add(Path.GetFileName(tm));
+            return tmpl;
+        }
+        private void cbTemplates_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (opts == null) return;
+            opts.general.ComfyTemplate = cbTemplates.SelectedItem as string; //as ComboBoxItem
         }
     }
 }

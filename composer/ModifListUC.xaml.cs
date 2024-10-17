@@ -107,10 +107,10 @@ namespace scripthea.composer
                         break;
                 }
                 ModifItemUC mi = new ModifItemUC(ref opts) { Height = 20, Text = s0, FontSize = 13 };
+                if (mi.Text.Length > 46) mi.ToolTip = s0;
                 mi.Margin = new Thickness(0, 0, 0, 0); mi.tbContent.MouseRightButtonDown += new System.Windows.Input.MouseButtonEventHandler(chkCategory_MouseRightButtonDown);
                 if (!s1.Equals("")) mi.tbContent.ToolTip = s1; 
                 mi.OnChange += new RoutedEventHandler(Change);
-                mi.OnLog += new Utils.LogHandler(Log);
                 modifListBox.Items.Add(mi); 
                 i++;
             }
@@ -145,11 +145,7 @@ namespace scripthea.composer
             }
             if (OnChange != null) OnChange(sender,e);             
         }
-        public event Utils.LogHandler OnLog;
-        protected void Log(string txt, SolidColorBrush clr = null)
-        {
-            if (OnLog != null) OnLog(txt, clr);
-        }
+        
         private void chkCategory_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
             string input = new InputBox("Ask Google about", (string)chkCategory.Content, "").ShowDialog();

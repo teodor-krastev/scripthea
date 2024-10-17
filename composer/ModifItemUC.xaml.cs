@@ -37,11 +37,7 @@ namespace scripthea.composer
         {
             if (OnChange != null) OnChange(sender, e);
         }
-        public event Utils.LogHandler OnLog;
-        protected void Log(string txt, SolidColorBrush clr = null)
-        {
-            if (OnLog != null) OnLog(txt, clr);
-        }
+        
         private ModifStatus _modifStatus;
         public ModifStatus modifStatus
         {

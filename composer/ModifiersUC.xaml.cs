@@ -72,7 +72,6 @@ namespace scripthea.composer
             {
                 ModifListUC cmu = new ModifListUC(fn, ref opts);
                 cmu.OnChange += new RoutedEventHandler(Change);
-                cmu.OnLog += new Utils.LogHandler(Log);
                 categories.Add(cmu);
                 stackModifiers.Children.Add(cmu);
                 if (!Utils.isNull(ModifMap))
@@ -94,11 +93,7 @@ namespace scripthea.composer
         {
             if (OnChange != null) OnChange(this, e); mSetStack.ModifCount();
         }
-        public event Utils.LogHandler OnLog;
-        protected void Log(string txt, SolidColorBrush clr = null)
-        {
-            if (OnLog != null) OnLog(txt, clr);
-        }        
+              
         protected void CatChange(object sender, RoutedEventArgs e)
         {
             foreach (CheckBox chk in listBox.Items)
@@ -186,7 +181,7 @@ namespace scripthea.composer
         }
         private void removeDuplicates()
         {
-            Log("Removing duplicate modifiers... ");
+            opts.Log("Removing duplicate modifiers... ");
             for (int i = 0; i < categories.Count; i++)
             {
                 ModifListUC ml = categories[i]; // source               

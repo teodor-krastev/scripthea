@@ -26,7 +26,6 @@ using Label = System.Windows.Controls.Label;
 using FontFamily = System.Windows.Media.FontFamily;
 using System.Linq;
 
-
 namespace UtilsNS
 {
     /// <summary>
@@ -642,7 +641,7 @@ namespace UtilsNS
             Dictionary<string, string> ds = new Dictionary<string, string>(); double rslt;
             foreach (var item in dv)
             {
-                if (item.Value is int) 
+                if (item.Value is int || item.Value is long) 
                     { ds.Add(item.Key, item.Value.ToString()); continue; }
 
                 if (Double.TryParse(Convert.ToString(item.Value), out rslt)) ds.Add(item.Key, Convert.ToDouble(rslt).ToString(prec));
@@ -662,9 +661,13 @@ namespace UtilsNS
                 ds.Add(item.Key, item.Value.ToString(prec));
             return ds;
         }
+
         public static void dict2ListBox(Dictionary<string, string> ds, ListBox lbox)
         {
-            lbox.Items.Clear();
+            //lbox.Items.Clear();
+            int cnt = lbox.Items.Count; 
+            for (int i = 0; i<cnt; i++)
+                if (lbox.Items[lbox.Items.Count - 1] is ListBoxItem) lbox.Items.RemoveAt(lbox.Items.Count - 1);
             foreach (var item in ds)
             {
                 ListBoxItem lbi = new ListBoxItem();

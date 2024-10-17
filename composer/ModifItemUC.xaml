@@ -14,6 +14,6 @@
             <TextBlock x:Name="tbCheck" Text="□" FontWeight="Bold" FontSize="16" Margin="0,0,0,0" Cursor="Hand" HorizontalAlignment="Center" VerticalAlignment="Center"/>
         </Grid>
         <TextBox x:Name="tbContent" Grid.Column="1" IsReadOnly="True" Text="something" BorderBrush="{x:Null}" SelectionBrush="{x:Null}" SelectionTextBrush="{x:Null}" Margin="0" 
-                 VerticalAlignment="Center" BorderThickness="0" Background="{x:Null}" ContextMenuOpening="tbContent_ContextMenuOpening" />
+                 VerticalAlignment="Center" BorderThickness="0" Background="{x:Null}" ContextMenuOpening="tbContent_ContextMenuOpening" TextWrapping="Wrap" MaxWidth="300" />
     </Grid>
 </UserControl>

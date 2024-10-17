@@ -48,14 +48,14 @@
                         </ContextMenu>
                     </Button.ContextMenu>
                 </Button>
-                <Label Content="Source" Margin="0,2,0,0"/>
-                <ComboBox x:Name="cbSource" SelectedIndex="0" Background="White" Margin="3">
+                <Label Content="Source" Margin="0" VerticalAlignment="Center"/>
+                <ComboBox x:Name="cbSource" SelectedIndex="0" Background="White" Margin="3,0" VerticalAlignment="Center">
                     <ComboBoxItem Content="Stable Diffusion"/>
                     <ComboBoxItem Content="External Generator"/>
                     <ComboBoxItem Content="Craiyon WebSrv"/>
                 </ComboBox>
-                <CheckBox x:Name="chkKeepNames" Content="Keep the names" Margin="10,6,0,0"></CheckBox>
-                <CheckBox x:Name="chkDeleteUnchecked" Content="Delete unchecked images" Margin="10,6,0,0" Checked="chkDeleteUnchecked_Checked" Unchecked="chkDeleteUnchecked_Unchecked" ></CheckBox>
+                <CheckBox x:Name="chkKeepNames" Content="Keep the names" Margin="10,0,0,0" VerticalAlignment="Center"></CheckBox>
+                <CheckBox x:Name="chkDeleteUnchecked" Content="Delete unchecked images" Margin="10,0,0,0" Checked="chkDeleteUnchecked_Checked" Unchecked="chkDeleteUnchecked_Unchecked" VerticalAlignment="Center" ></CheckBox>
                 <Label x:Name="lbAdd2Depot" Margin="5,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" FontWeight="Bold" Foreground="#FF017D35"></Label>
             </StackPanel>
             <Label x:Name="lbChecked" Grid.Column="1" Content="# images" MouseDoubleClick="MCheckUncheck" Foreground="Blue" VerticalAlignment="Center" HorizontalAlignment="Right"/>
@@ -71,7 +71,15 @@
         </TabControl>
         <GridSplitter Grid.Row="3" VerticalAlignment="Top" HorizontalAlignment="Stretch" Height="3"></GridSplitter>
         <Grid x:Name="gridImage" Grid.Row="3" Margin="0,5,0,0" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="467*"/>
+                <ColumnDefinition Width="200"/>
+            </Grid.ColumnDefinitions>
             <Image x:Name="image" PreviewMouseLeftButtonDown="image_PreviewMouseLeftButtonDown"/>
+            <GridSplitter Width="3"></GridSplitter>
+            <ListBox x:Name="lbMetadata" Grid.Column="1" Margin="0" SizeChanged="lbMetadata_SizeChanged" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <TextBlock x:Name="tbPrompt" TextWrapping="Wrap" ScrollViewer.VerticalScrollBarVisibility="Auto" Width="190" Margin="0" Foreground="Navy"/>
+            </ListBox>
         </Grid>
     </Grid>
 </UserControl>

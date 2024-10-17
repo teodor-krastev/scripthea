@@ -9,11 +9,11 @@
         <StackPanel Margin="1,3,1,1" Orientation="Horizontal">
             <local:SD_API_UC x:Name="sd_api_uc"></local:SD_API_UC>
             <local:SDscriptUC x:Name="sdScriptUC"></local:SDscriptUC>
-            <Grid Width="150" Height="60">
-                <StackPanel Margin="0">
+            <Grid Width="170" Height="60">
+                <StackPanel Margin="10,0">
                     <Label x:Name="lb1" Content="Stable Diffusion" HorizontalAlignment="Center" Margin="0,-7,0,-10" VerticalAlignment="Top" FontSize="15" Height="28" Foreground="RoyalBlue" Cursor="Hand" ToolTip="Google 'Stable Diffusion text-to-image generator'" MouseDown="lb1_MouseDown"/>
                     <TextBlock x:Name="lb2" Text="by Stability.AI" HorizontalAlignment="Center" Margin="33,5,33,-3" VerticalAlignment="Top" FontSize="14" Height="20" Cursor="Hand" Foreground="#FF0000DC" ToolTip="Visit Stability.AI webste" MouseDown="lb1_MouseDown"/>
-                    <Button x:Name="btnRunServer" Content="Run local server" HorizontalAlignment="Center" Margin="0,5,0,0" VerticalAlignment="Top" FontSize="14" Height="22" Cursor="Hand" Foreground="DarkRed" ToolTip="Open local Stable Diffusion server"  Width="115" Background="{x:Null}" BorderBrush="DarkRed"  Style="{StaticResource RoundedButtonStyle}" Click="btnRunServer_Click"/>
+                    <Button x:Name="btnRunServer" Content="Run  local  server" HorizontalAlignment="Center" Margin="0,5,0,0" VerticalAlignment="Top" FontSize="14" Height="22" Cursor="Hand" Foreground="DarkRed" ToolTip="Open local Stable Diffusion server"  Width="134" Background="{x:Null}" BorderBrush="DarkRed"  Style="{StaticResource RoundedButtonStyle}" Click="btnRunServer_Click"/>
                 </StackPanel>
             </Grid>
             <local:tempRegulatorUC x:Name="tempRegulator" />

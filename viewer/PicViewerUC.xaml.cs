@@ -44,11 +44,7 @@ namespace scripthea.viewer
             opts.viewer.PicViewPromptH = (int)rowBottom.Height.Value;
             opts.viewer.PicViewMetaW = (int)colMeta.Width.Value;
         }
-        public event Utils.LogHandler OnLog;
-        protected void Log(string txt, SolidColorBrush clr = null)
-        {
-            if (OnLog != null) OnLog(txt, clr);
-        }
+        
         public int actIdx { get; private set; } // when refresh
         public ImageDepot iDepot { get; private set; } 
         public void SetiDepot(ImageDepot _iDepot)
@@ -89,7 +85,7 @@ namespace scripthea.viewer
             {
                 image.Source = ImgUtils.UnhookedImageLoad(filePath, ImgUtils.ImageType.Png);
                 if (image.Source == null)
-                    { Log("Exhausted resources - use table view instead", Brushes.Red); return; }
+                    { opts.Log("Exhausted resources - use table view instead", Brushes.Red); return; }
             }
             //var uri = new Uri(filePath); var bitmap = new BitmapImage(uri);  image.Source = bitmap.Clone(); image.UpdateLayout(); bitmap = null;
             tbCue.Text = ii.prompt; 
@@ -142,7 +138,7 @@ namespace scripthea.viewer
             Dictionary<string, string> meta;
             if (tryFileMeta) // from image file, if from SD-A1111
             {
-                if (!ImgUtils.GetMetaDataItems(filePath, out meta)) return false;
+                if (!ImgUtils.GetMetadata1111(filePath, out meta)) return false;
                 /* private int attemptCount = 0;
                  * {  attemptCount = 0; } getting repeat try out later
                 else

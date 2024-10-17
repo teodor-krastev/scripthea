@@ -49,16 +49,15 @@ namespace scripthea
         {
             dirTreeUC.Init(ref opts);
             dirTreeUC.OnActive += new DirTreeUC.SelectHandler(Active);
-            dirTreeUC.OnLog += new Utils.LogHandler(Log);
 
-            queryUC.OnLog += new Utils.LogHandler(Log); queryUC.tbImageDepot.KeyDown += new KeyEventHandler(MainWindow1_KeyDown);
-            viewerUC.OnLog += new Utils.LogHandler(Log); viewerUC.tbImageDepot.KeyDown += new KeyEventHandler(MainWindow1_KeyDown);
-            importUtilUC.OnLog += new Utils.LogHandler(Log); importUtilUC.tbImageDepot.KeyDown += new KeyEventHandler(MainWindow1_KeyDown);
+            queryUC.tbImageDepot.KeyDown += new KeyEventHandler(MainWindow1_KeyDown);
+            viewerUC.tbImageDepot.KeyDown += new KeyEventHandler(MainWindow1_KeyDown);
+            importUtilUC.tbImageDepot.KeyDown += new KeyEventHandler(MainWindow1_KeyDown);
 
             Title = "Scripthea - loading text files...";
             viewerUC.Init(ref opts);
             depotMaster.Init(ref opts);
-            importUtilUC.Init();
+            importUtilUC.Init(ref opts);
             exportUtilUC.Init(ref opts);
 
             oldTab = tiComposer;
@@ -77,7 +76,6 @@ namespace scripthea
 
             // pyCode Init           
             pyCode.Init(ref opts); 
-            if (pyCode.st != null) pyCode.st.OnLog += new Utils.LogHandler(Log);
             // modules registration in pyCode
             pyCode.Register("qry", queryUC, queryUC.HelpList());
             pyCode.Register("prm", queryUC.sd_params_UC, queryUC.sd_params_UC.HelpList());
@@ -97,7 +95,6 @@ namespace scripthea
             focusControl.Register("idmB", depotMaster.iPickerB);
             //focusControl.Register("idfX", queryUC.cuePoolUC.iPickerX);
         }
-
         private void MainWindow1_Loaded(object sender, RoutedEventArgs e)
         {
             optionsFile = Path.Combine(Utils.configPath, "Scripthea.cfg");
@@ -110,7 +107,8 @@ namespace scripthea
             if (File.Exists(optionsFile))
             {
                 string json = System.IO.File.ReadAllText(optionsFile);
-                opts = JsonConvert.DeserializeObject<Options>(json);                
+                opts = JsonConvert.DeserializeObject<Options>(json);
+                opts.OnLog += new Utils.LogHandler(Log);
                 if (opts.composer.StartupImageDepotFolder != "") opts.composer.ImageDepotFolder = opts.composer.StartupImageDepotFolder;
                 if (opts.composer.ImageDepotFolder == null) opts.composer.ImageDepotFolder = "";
                 if (opts.composer.ImageDepotFolder.Equals("<default.image.depot>")) opts.composer.ImageDepotFolder = SctUtils.defaultImageDepot;
@@ -128,7 +126,6 @@ namespace scripthea
                 }
             }
             preferencesWindow = new PreferencesWindow(); preferencesWindow.Init(ref opts); preferencesWindow.btnCheck4Update.Click += new RoutedEventHandler(Check4Update);    
-            preferencesWindow.OnLog += new Utils.LogHandler(Log);
 
             ImageDepotConvertor.ClearEntriesImageDepot = opts.iDutilities.MasterClearEntries; 
             // command-line agruments
@@ -308,6 +305,57 @@ namespace scripthea
                 
             }
         }
+        /*public void Services(string oper, object prm)
+        { 
+            switch (oper)
+            {
+                case "StartGe": // StartGeneration
+                    if (Utils.isNull(dTimer))
+                    {
+                        dTimer = new DispatcherTimer();
+                        dTimer.Tick += new EventHandler(dTimer_Tick);
+                        dTimer.Interval = new TimeSpan(200 * 10000);
+                    }
+                    dti = 0; dTimer.Start(); 
+                    break;
+                case "EndGene": // EndGeneration
+                    Log("@StopRun");
+                    string fn = msg.Equals("@EndGeneration") ? "" : txt.Substring(15).Trim();
+                    if (rowLogImage.Height.Value < 2) rowLogImage.Height = new GridLength(pnlLog.ActualWidth);
+                    if (File.Exists(fn)) imgLast.Source = ImgUtils.UnhookedImageLoad(fn); // success
+                    else { imgLast.Source = SctUtils.file_not_found; Log("Error[486]: file not found " + fn); }
+                    txt = msg.Substring(1);
+                    break;
+                case "@StopRun":
+                    if (Utils.isNull(dTimer)) { Utils.TimedMessageBox("Error[777]: broken timer", "Warning", 3500); return; }
+                    dTimer.Stop(); lbProcessing.Content = "";
+                    imgAbout.Source = penpic.Clone();
+                    break;
+                case "@CancelR": // CancelRequest 
+                    queryUC.Request2Cancel();
+                    break;
+                case "@WorkDir":
+                    if (Directory.Exists(opts.composer.ImageDepotFolder))
+                    {
+                        dirTreeUC.refreshTree();
+                        dirTreeUC.CatchAFolder(opts.composer.ImageDepotFolder);
+                        tbImageDepot.Text = "working image depot -> " + opts.composer.ImageDepotFolder;
+                    }
+                    else tbImageDepot.Text = "working image depot -> <NOT THERE>";
+                    break;
+                case "@Explore":
+                    string[] sa = txt.Split('='); if (sa.Length != 2) Utils.TimedMessageBox("Error(#458)");
+                    ExplorerPart = Convert.ToInt32(sa[1]); skipLog = true;
+                    break;
+                case "query ->":
+                    if ((tabControl.SelectedIndex > 0) && (ExplorerPart > 95)) ExplorerPart = 50;
+                    break;
+                case "@_Header":
+                    string[] sb = txt.Split('='); if (sb.Length != 2) Utils.TimedMessageBox("Error(#459)");
+                    Title = "Scripthea - " + sb[1]; skipLog = true;
+                    break;
+            }
+        }*/    
         int dti;
         private void dTimer_Tick(object sender, EventArgs e)
         {

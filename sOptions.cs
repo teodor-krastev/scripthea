@@ -9,13 +9,20 @@ using System.Diagnostics;
 using scripthea.composer;
 using Path = System.IO.Path;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using System.Windows.Media;
 using UtilsNS;
 
 namespace scripthea.options
 {
     public enum TripleReply { yes, ask, no }
     public class Options
-    {
+    {        
+        public event Utils.LogHandler OnLog;
+        public void Log(string txt, SolidColorBrush clr = null)
+        {
+            if (OnLog != null) OnLog(txt, clr);
+            else Utils.TimedMessageBox(txt, "Informaion", 3000);
+        }
         public Options()
         {
             if (general == null) general = new General();
@@ -34,6 +41,7 @@ namespace scripthea.options
             public string NewVersion;
             public string LastSDsetting;
             public bool AutoRefreshSDsetting;
+            public string ComfyTemplate; // in config dir
             [JsonIgnore]
             public bool debug { get { return Utils.isInVisualStudio && Utils.localConfig; } }
             [JsonIgnore]
@@ -66,15 +74,16 @@ namespace scripthea.options
             public string WorkCuesFolder;
             public string ImageDepotFolder;
             public string StartupImageDepotFolder;
+            // API
             public string API; // from combo-box items
             [JsonIgnore]
-            public bool A1111 { get { return !API.Equals("SD-ComfyUI"); } }
+            public bool A1111 { get { return !API.Equals("SD-ComfyUI"); } }           
             // modifiers
             public string ModifPrefix;
             public bool AddEmptyModif;
             public bool ConfirmGoogling;
             public int ModifSample;
-            public bool mSetsEnabled;
+            public bool mSetsEnabled;            
         }
         public Viewer viewer;
         public class Viewer

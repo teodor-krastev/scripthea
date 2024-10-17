@@ -49,12 +49,7 @@ namespace scripthea.master
             mi3 = new MenuItem() { Header = "Synchronize image depot", Tag = letter };
             mi3.Click += new RoutedEventHandler(miSynchronize_Click); iPicker.cmImgMenu.Items.Add(mi3);
         }
-        public event Utils.LogHandler OnLog;
-        protected void Log(string txt, SolidColorBrush clr = null)
-        {
-            if (OnLog != null) OnLog(txt, clr);
-            else Utils.TimedMessageBox(txt);
-        }
+        
         protected void ChangeDepot(object sender, RoutedEventArgs e) // allow button access by iPicker states
         {
             void SetCursor(Button btn, bool normal)
@@ -119,7 +114,7 @@ namespace scripthea.master
             }
             if (!iPicker1.isEnabled || !iPicker2.isEnabled)
             {
-                Log("Error[85]: Depot <" + iPicker1.letter + "> has nothing to offer"); return -1;
+                opts.Log("Error[85]: Depot <" + iPicker1.letter + "> has nothing to offer"); return -1;
             }
             iPicker2.isChanging = true; int k = 0;
             List<ImageInfo> lii = iPicker1.imageInfos(true, false);
@@ -144,7 +139,7 @@ namespace scripthea.master
                     {
                         case MessageBoxResult.Yes: // remove duplicated target
                             int idx = iPicker2.iDepot.idxFromFilename(ii.filename);
-                            if (idx < 0) Log("Error[361]: image <" + ii.filename + "> not found.");
+                            if (idx < 0) opts.Log("Error[361]: image <" + ii.filename + "> not found.");
                             else iPicker2.iDepot.RemoveAt(idx, true); Utils.Sleep(200);
                             break;
                         case MessageBoxResult.No: // skip this copying
@@ -153,7 +148,7 @@ namespace scripthea.master
                 }
                 if (!File.Exists(source_path))
                 {
-                    Log("File <" + source_path + "> not found."); continue;
+                    opts.Log("File <" + source_path + "> not found."); continue;
                 }
                 File.Copy(source_path, target_path); k++; copied.Add(Path.GetFileName(source_path));
                 if (!iPicker2.iDepot.Append(ii)) { Utils.TimedMessageBox("Error[115]: image depot problem"); break; }
@@ -170,7 +165,7 @@ namespace scripthea.master
             foreach (string fn in copied)
             {
                 int idx = iPicker1.iDepot.idxFromFilename(fn);
-                if (idx < 0) Log("Error[998]: image <" + fn + "> not found.");
+                if (idx < 0) opts.Log("Error[998]: image <" + fn + "> not found.");
                 else
                 {
                     if (!iPicker1.iDepot.RemoveAt(idx, opts.viewer.RemoveImagesInIDF)) Utils.TimedMessageBox("Error[884]: index of image depot problem.");
@@ -191,7 +186,7 @@ namespace scripthea.master
             while (k > -1)
             {
                 int idx = lot[k].Item1;
-                if (idx < 0) Log("Error[557]: invalid <" + idx + "> index.");
+                if (idx < 0) opts.Log("Error[557]: invalid <" + idx + "> index.");
                 else
                 {
                     if (!iPicker1.iDepot.RemoveAt(idx, opts.viewer.RemoveImagesInIDF)) Utils.TimedMessageBox("Error[885]: index of image depot problem.");
@@ -223,8 +218,8 @@ namespace scripthea.master
                 string mis = Convert.ToString((sender as MenuItem).Header);
                 ImagePickerUC iPicker = iPickerByName(Convert.ToChar((sender as MenuItem).Tag));
                 ImageDepot df = iPicker?.iDepot;
-                if (df == null) { Log("Error[336]: Invalid image depot!", Brushes.Red); return; }
-                if (!df.isEnabled) { Log("Error[12]: Invalid image depot!", Brushes.Red); return; }
+                if (df == null) { opts.Log("Error[336]: Invalid image depot!", Brushes.Red); return; }
+                if (!df.isEnabled) { opts.Log("Error[12]: Invalid image depot!", Brushes.Red); return; }
                 iPicker.ReloadDepot();
                 iPicker.isChanging = true;
                 if (mis.Equals(Convert.ToString(mi1.Header)) || mis.Equals(Convert.ToString(mi3.Header)))
@@ -243,16 +238,16 @@ namespace scripthea.master
                     foreach (string fn in ls)
                     {
                         string ffn = Path.Combine(df.path, fn);
-                        if (!File.Exists(ffn)) { bb = false; Log("A file is missing: "+ffn);  continue; }
+                        if (!File.Exists(ffn)) { bb = false; opts.Log("A file is missing: "+ffn);  continue; }
                         File.Delete(ffn);
                     }
-                    Log(ls.Count.ToString() + " images without image depot entry have been deleted.");
+                    opts.Log(ls.Count.ToString() + " images without image depot entry have been deleted.");
                 }
             }    
             finally
             {
-                if (bb) Log("The image depot is synchronized");
-                else Log("Error[364]: Problem with the image depot synchronization.");
+                if (bb) opts.Log("The image depot is synchronized");
+                else opts.Log("Error[364]: Problem with the image depot synchronization.");
             }
         }
         protected void PicSelectA(int idx, ImageDepot iDepot)

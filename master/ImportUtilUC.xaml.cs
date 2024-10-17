@@ -18,22 +18,47 @@ using Path = System.IO.Path;
 using Brushes = System.Windows.Media.Brushes;
 using scripthea.viewer;
 using scripthea.options;
+using scripthea.external;
 using UtilsNS;
 
 namespace scripthea.master
 {
+    public static class ExtraImgUtils
+    {
+        public static bool GetMetadata(string imagePath, out Dictionary<string, string> meta, ImageInfo ii = null)
+        {
+            if (ImgUtils.GetMetadata1111(imagePath, out meta))
+            {
+                if (ii == null) return true;
+                ii.filename = Path.GetFileName(imagePath);
+                ii.FromMeta1111Dict(meta);
+                return true;
+            }
+            if (cUtils.GetMetadataComfy(imagePath, out meta))
+            {
+                if (ii == null) return true;
+                ii.filename = Path.GetFileName(imagePath);
+                ii.FromMetaComfyDict(meta);
+                return true;
+            }
+            return false;
+        }
+    }
     /// <summary>
     /// Interaction logic for CraiyonImportUC.xaml
     /// </summary>
     public partial class ImportUtilUC : UserControl, iFocusControl
     {
-        DataTable dTable; 
+        protected Options opts;
+        protected DataTable dTable; 
         public ImportUtilUC()
         {
             InitializeComponent();
         }
-        public void Init()
+        public void Init(ref Options _opts)
         {
+            opts = _opts;
+
             dTable = new DataTable();
             dTable.Columns.Add(new DataColumn("on", typeof(bool)));
             dTable.Columns.Add(new DataColumn("file", typeof(string)));
@@ -67,12 +92,7 @@ namespace scripthea.master
                 _imageFolder = value; //tbImageDepot.Text = value;
             }
         }
-        public event Utils.LogHandler OnLog;
-        protected void Log(string txt, SolidColorBrush clr = null)
-        {
-            if (OnLog != null) OnLog(txt, clr);
-            else Utils.TimedMessageBox(txt, "Information", 3000);
-        }
+        
         public void btnNewFolder_Click(object sender, RoutedEventArgs e)
         {
             if (!Utils.isNull(sender))
@@ -94,18 +114,18 @@ namespace scripthea.master
         private List<CheckBox> checkBoxes = new List<CheckBox>();
         public void LoadImages(string path, bool warning = true)
         {
-            Clear();
+            Clear(); lbAdd2Depot.Content = "";  
             if (!Directory.Exists(path))
             {
-                Log("Error[998]: Directory <" + path + "> does not exist. "); return;
+                opts.Log("Error[998]: Directory <" + path + "> does not exist. "); return;
             }            
-            if (!Utils.isNull(depotFolder))
+            if (!Utils.isNull(depotFolder)) // if image-depot is already there
             {
-                if (!Utils.comparePaths(depotFolder.path, path)) depotFolder = null; // new folder
+                if (!Utils.comparePaths(depotFolder.path, path)) depotFolder = null; // treat it as new depot
                 else lbAdd2Depot.Content = "Add to depot";
             }                               
             else imageFolder = path;
-            List<string> orgFiles = new List<string>();            
+            List<string> orgFiles = new List<string>();          
             if (Utils.isNull(depotFolder))
             {
                 if (SctUtils.checkImageDepot(path, true) > -1)
@@ -115,7 +135,7 @@ namespace scripthea.master
                 else orgFiles = new List<string>(Directory.GetFiles(imageFolder, "*.png"));
             }
             if (!Utils.isNull(depotFolder)) orgFiles = depotFolder.Extras();     
-            if (orgFiles.Count.Equals(0) && warning) { Log("No image files to consider in " + path); return; }
+            if (orgFiles.Count.Equals(0) && warning) { opts.Log("No image files to consider in " + path); return; }
             switch (tcMain.SelectedIndex)
             {
                 case 0: //tiList - redundant
@@ -137,13 +157,14 @@ namespace scripthea.master
                     btnConvertFolder.IsEnabled = dTable.Rows.Count > 0;
                     break;
                 default:
-                    Log("Error[23]: intrernal error");
+                    opts.Log("Error[23]: intrernal error");
                     break;
             }
             checkBoxes.Clear();
             for (int i = 0; i < dTable.Rows.Count; i++)
             {
                 CheckBox chk = DataGridHelper.GetCellByIndices(dGrid, i, 0).FindVisualChild<CheckBox>();
+                if (chk == null) continue;
                 chk.Name = "chkList" + i.ToString();
                 chk.Tag = i;
                 chk.Checked += new RoutedEventHandler(chkCheckedColumn); chk.Unchecked += new RoutedEventHandler(chkCheckedColumn);
@@ -155,7 +176,6 @@ namespace scripthea.master
         {
             GetChecked();
         }
-
         private List<string> GetChecked(bool print = true) // list of filenames
         {
             List<string> ls = new List<string>();
@@ -167,8 +187,11 @@ namespace scripthea.master
             if (Utils.InRange(sr, 0, dTable.Rows.Count - 1))
             {
                 CheckBox chk = DataGridHelper.GetCellByIndices(dGrid, sr, 0).FindVisualChild<CheckBox>();
-                cc = chk.IsChecked.Value; 
-                dTable.Rows[sr]["on"] = chk.IsChecked.Value;
+                if (chk != null)
+                {
+                    cc = chk.IsChecked.Value;
+                    dTable.Rows[sr]["on"] = chk.IsChecked.Value;
+                }
             }                       
             for (int i = 0; i < dTable.Rows.Count; i++)
             {
@@ -256,7 +279,8 @@ namespace scripthea.master
                     dTable.Rows.Clear(); image.Source = null; lastLoadedPic = ""; GetChecked();
                 }
                 string sk = (nok > 0) ? "\r\r" + nok.ToString() + " images have malformatted or missing metadata!" : "";
-                Log("Done! Image depot of " + k.ToString() + " images was created." + sk , Brushes.DarkGreen); 
+                ClearlbMetadata();
+                opts.Log("Done! Image depot of " + k.ToString() + " images was created." + sk , Brushes.DarkGreen);               
                 converting = false;
             }            
         }
@@ -278,6 +302,7 @@ namespace scripthea.master
                     break;
             }
         }
+
         int lastSelectedRow = -1; string lastLoadedPic = "";
         private void dGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -289,16 +314,44 @@ namespace scripthea.master
                 dGrid.UpdateLayout();
                 dGrid.ScrollIntoView(dGrid.SelectedItem, null);
             });
-            string fn = System.IO.Path.Combine(imageFolder,System.IO.Path.ChangeExtension(Convert.ToString(dataRow.Row.ItemArray[1]), ".png"));
-            if (File.Exists(fn)) { image.Source = ImgUtils.UnhookedImageLoad(fn, ImgUtils.ImageType.Png); lastLoadedPic = fn; }
-            else { Log("Error[158]: file not found-> " + fn); lastLoadedPic = ""; }
+
+            string fn = Convert.ToString(dataRow.Row.ItemArray[1]); //System.IO.Path.ChangeExtension(Convert.ToString(dataRow.Row.ItemArray[1]), ".png");
+            fn = System.IO.Path.Combine(imageFolder,fn);
+            if (File.Exists(fn)) 
+            { 
+                image.Source = ImgUtils.UnhookedImageLoad(fn); lastLoadedPic = fn;
+                tbPrompt.Text = "";
+                Dictionary<string, string> meta = new Dictionary<string, string>();
+                if (ExtraImgUtils.GetMetadata(fn, out meta))
+                {                    
+                    tbPrompt.Foreground = Brushes.Navy;                   
+                    if (meta.ContainsKey("prompt")) // 1111
+                    {
+                        tbPrompt.Text = "prompt: " + meta["prompt"]; meta.Remove("prompt");
+                    }
+                    if (meta.ContainsKey("positive")) // comfy
+                    {
+                        tbPrompt.Text = "positive: " + meta["positive"]; meta.Remove("positive");
+                    }
+                }
+                else
+                {
+                    tbPrompt.Foreground = Brushes.Tomato;
+                    tbPrompt.Text = "Error: unrecognizable or missing metadata of an image.";
+                }
+                Utils.dict2ListBox(meta, lbMetadata);
+            }
+            else { opts.Log("Error[158]: file not found-> " + fn); lastLoadedPic = ""; }
             if (!Utils.isNull(e)) e.Handled = true;
             // int sr = dGrid.SelectedIndex; 
             // TextBlock textBlock = DataGridHelper.GetCellByIndices(dGrid, sr, 1).FindVisualChild<TextBlock>();
             GetChecked();
             lastSelectedRow = dGrid.SelectedIndex;
         }
-
+        public void ClearlbMetadata()
+        {
+            tbPrompt.Text = ""; Utils.dict2ListBox(new Dictionary<string, string>(), lbMetadata);
+        }
         private void textBlock_KeyDown(object sender, KeyEventArgs e)
         {
             int sr = dGrid.SelectedIndex; 
@@ -332,7 +385,7 @@ namespace scripthea.master
         }       
         private void mi_Click(object sender, RoutedEventArgs e)
         {
-            if (dTable.Rows.Count == 0) { Log("Error[222]: No loaded images found."); return; }
+            if (dTable.Rows.Count == 0) { opts.Log("Error[222]: No loaded images found."); return; }
             MenuItem mi = sender as MenuItem; string header = Convert.ToString(mi.Header);
             foreach (DataRow dr in dTable.Rows)
             {
@@ -354,7 +407,7 @@ namespace scripthea.master
         bool inverting = false;
         private void imgMenu_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (dTable.Rows.Count == 0) { Log("Error[223]: No loaded images found."); return; }
+            if (dTable.Rows.Count == 0) { opts.Log("Error[223]: No loaded images found."); return; }
             inverting = false;
             if (e.ChangedButton == MouseButton.Left)
             {
@@ -378,6 +431,9 @@ namespace scripthea.master
             // Start the drag-and-drop operation
             DragDrop.DoDragDrop(image, data, DragDropEffects.Copy);
         }
-
+        private void lbMetadata_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            tbPrompt.Width = lbMetadata.ActualWidth-10;
+        }
     }
 }

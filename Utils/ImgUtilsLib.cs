@@ -167,7 +167,6 @@ namespace UtilsNS
             }
             catch { return null; }
         }
-
         public static BitmapImage LoadBitmapImageFromFile(string imagePath)
         {
             BitmapImage bitmap = new BitmapImage();
@@ -185,7 +184,6 @@ namespace UtilsNS
             }
             return bitmap;
         }
-
         public static async Task<BitmapImage> LoadBitmapImageFromFileAsync(string filePath)
         {
             return await Task.Run(() =>
@@ -217,7 +215,6 @@ namespace UtilsNS
                 return tImage;
             }           
         }
-
         public static void VisualCompToPng(UIElement element, string filename = "")
         {
             var rect = new Rect(element.RenderSize);
@@ -246,8 +243,8 @@ namespace UtilsNS
                     encoder.Save(file);
                 }
             }
-        }
-        public static bool GetMetaDataItems(string imageFilePath, out Dictionary<string, string> itemMap, bool original = false)
+        }       
+        public static bool GetMetadata1111(string imageFilePath, out Dictionary<string, string> itemMap, bool original = false)
         {
             itemMap = new Dictionary<string, string>();
             if (!Path.GetExtension(imageFilePath).ToLower().Equals(".png")) return false;
@@ -518,5 +515,52 @@ public  void Ma1in()
 
     // Save the image.
     image.Save("my_image_modified.jpg");
+=================================================================================================================
+
+using System;
+using System.IO;
+using System.Windows.Media.Imaging;
+
+class Program
+{
+    static void Main()
+    {
+        // Replace with your image path
+        string imagePath = @"C:\path\to\your\image.png";
+
+        // Open the image file
+        using (FileStream stream = new FileStream(imagePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+        {
+            // Load the bitmap image
+            BitmapDecoder decoder = BitmapDecoder.Create(stream, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad);
+            
+            // Get the first frame of the image (since some images can have multiple frames)
+            BitmapFrame frame = decoder.Frames[0];
+
+            // Access metadata (if available) If no metadata is found (frame.Metadata is null), then the image doesn't contain any metadata.
+            if (frame.Metadata is BitmapMetadata metadata)
+            {
+                // Example: Reading some common metadata properties
+                Console.WriteLine($"Title: {metadata.Title}");
+                Console.WriteLine($"Author: {metadata.Author}");
+                Console.WriteLine($"Comment: {metadata.Comment}");
+                Console.WriteLine($"Date Taken: {metadata.DateTaken}");
+                Console.WriteLine($"Camera Model: {metadata.CameraModel}");
+                Console.WriteLine($"Application Name: {metadata.ApplicationName}");
+
+                // You can also iterate through all available metadata properties
+                foreach (var key in metadata)
+                {
+                    Console.WriteLine($"{key}: {metadata.GetQuery(key)}");
+                }
+            }
+            else
+            {
+                Console.WriteLine("No metadata found in the image.");
+            }
+        }
+    }
+}
+
 }*/
 

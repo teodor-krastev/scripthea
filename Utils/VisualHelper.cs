@@ -115,6 +115,18 @@ namespace UtilsNS
             }
             return null;
         }
+        public static bool SelectItemInCombo(ComboBox cb, string txt)
+        {
+            int idx = -1; string ss = "";
+            for (int i = 0; i < cb.Items.Count; i++)
+            {
+                if (cb.Items[i] is ComboBoxItem) ss = (cb.Items[i] as ComboBoxItem).Content as string;
+                else ss = cb.Items[i] as string;
+                if (txt.Equals(ss, StringComparison.InvariantCultureIgnoreCase)) { idx = i; break; }
+            }               
+            cb.SelectedIndex = idx;
+            return idx != -1;
+        }
     }
     //================================================================================================
     public static class DataGridHelper
@@ -175,8 +187,8 @@ namespace UtilsNS
 
             if (row == null)
             {
-                object item = dataGrid.Items[rowIndex]; dataGrid.UpdateLayout();
-                dataGrid.ScrollIntoView(item); dataGrid.UpdateLayout(); 
+                object item = dataGrid.Items[rowIndex]; //dataGrid.UpdateLayout();
+                dataGrid.ScrollIntoView(item); //dataGrid.UpdateLayout(); 
                 row = dataGrid.GetRowByIndex(rowIndex);
                 if (row != null) return row.GetCellByColumnIndex(dataGrid, columnIndex);
             }

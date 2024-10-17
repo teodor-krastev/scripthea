@@ -30,17 +30,18 @@ namespace scripthea.composer
             InitializeComponent();
             allPrompts = new List<string>();
         }
-        public event Utils.LogHandler OnLog;
-        protected void Log(string txt, SolidColorBrush clr = null)
+        protected Options opts;
+        public void Init(ref Options _opts) // ■▬►
         {
-            if (OnLog != null) OnLog(txt, clr);          
+            opts = _opts;
         }
-        DataTable dTable; List<CheckBox> checks;
+
+        protected DataTable dTable; protected List<CheckBox> checks;
         public int LoadPrompts(List<string> prompts)
         {
             if (prompts.Count == 0)
             {
-                Log("Error[742]: no prompts in the list"); return -1;
+                opts.Log("Error[742]: no prompts in the list"); return -1;
             }
             allPrompts = new List<string>(prompts);
             dTable = new DataTable(); checks = new List<CheckBox>(); 
@@ -58,9 +59,9 @@ namespace scripthea.composer
             for (int i = 0; i < prompts.Count; i++)
             {
                 DataGridCell dgc = DataGridHelper.GetCellByIndices(dGrid, i, 1);
-                if (Utils.isNull(dgc)) { Log("Error[449]: missing cell #" + i.ToString()); continue; }
+                if (Utils.isNull(dgc)) { /*opts.Log("Error[449]: missing cell #" + i.ToString());*/ continue; }
                 CheckBox chk = dgc.FindVisualChild<CheckBox>();
-                if (Utils.isNull(chk)) { Log("Error[448]: missing check #" + i.ToString()); continue; }                
+                if (Utils.isNull(chk)) { /*opts.Log("Error[448]: missing check #" + i.ToString());*/ continue; }                
                 chk.Checked += new RoutedEventHandler(chkTable_Checked); chk.Unchecked += new RoutedEventHandler(chkTable_Checked);
                 checks.Add(chk);
             }                            
@@ -285,3 +286,256 @@ namespace scripthea.composer
         }
     }
 }
+/*
+ Upon the bus ride that new day, the clouds blossomed pink as if in visual empathy with the poppy red paint below.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski
+Upon the bus ride that new day, the clouds blossomed pink as if in visual empathy with the poppy red paint below.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Jaroslaw Jasnikowski
+Upon the bus ride that new day, the clouds blossomed pink as if in visual empathy with the poppy red paint below.; Jacek Yerka ; minimalism ; simplicity ; Vladimir Kush
+Upon the bus ride that new day, the clouds blossomed pink as if in visual empathy with the poppy red paint below.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Vladimir Kush
+Upon the bus ride that new day, the clouds blossomed pink as if in visual empathy with the poppy red paint below.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski; Vladimir Kush
+Upon the bus ride that new day, the clouds blossomed pink as if in visual empathy with the poppy red paint below.; Jacek Yerka ; minimalism ; simplicity ; Wes Anderson
+Upon the bus ride that new day, the clouds blossomed pink as if in visual empathy with the poppy red paint below.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Wes Anderson
+Upon the bus ride that new day, the clouds blossomed pink as if in visual empathy with the poppy red paint below.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski; Wes Anderson
+Upon the bus ride that new day, the clouds blossomed pink as if in visual empathy with the poppy red paint below.; Jacek Yerka ; minimalism ; simplicity ; Vladimir Kush; Wes Anderson
+Pink lemonade clouds wrap the sky as if Earth were a child's party gift.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall
+Pink lemonade clouds wrap the sky as if Earth were a child's party gift.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski
+Pink lemonade clouds wrap the sky as if Earth were a child's party gift.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Jaroslaw Jasnikowski
+Pink lemonade clouds wrap the sky as if Earth were a child's party gift.; Jacek Yerka ; minimalism ; simplicity ; Vladimir Kush
+Pink lemonade clouds wrap the sky as if Earth were a child's party gift.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Vladimir Kush
+Pink lemonade clouds wrap the sky as if Earth were a child's party gift.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski; Vladimir Kush
+Pink lemonade clouds wrap the sky as if Earth were a child's party gift.; Jacek Yerka ; minimalism ; simplicity ; Wes Anderson
+Pink lemonade clouds wrap the sky as if Earth were a child's party gift.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Wes Anderson
+Pink lemonade clouds wrap the sky as if Earth were a child's party gift.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski; Wes Anderson
+Pink lemonade clouds wrap the sky as if Earth were a child's party gift.; Jacek Yerka ; minimalism ; simplicity ; Vladimir Kush; Wes Anderson
+Nights of cloud could tuck me in as sure as a babe into softest quilt, for in the cooler weather were days of hearth and harkened heart.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall
+Nights of cloud could tuck me in as sure as a babe into softest quilt, for in the cooler weather were days of hearth and harkened heart.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski
+Nights of cloud could tuck me in as sure as a babe into softest quilt, for in the cooler weather were days of hearth and harkened heart.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Jaroslaw Jasnikowski
+Nights of cloud could tuck me in as sure as a babe into softest quilt, for in the cooler weather were days of hearth and harkened heart.; Jacek Yerka ; minimalism ; simplicity ; Vladimir Kush
+Nights of cloud could tuck me in as sure as a babe into softest quilt, for in the cooler weather were days of hearth and harkened heart.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Vladimir Kush
+Nights of cloud could tuck me in as sure as a babe into softest quilt, for in the cooler weather were days of hearth and harkened heart.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski; Vladimir Kush
+Nights of cloud could tuck me in as sure as a babe into softest quilt, for in the cooler weather were days of hearth and harkened heart.; Jacek Yerka ; minimalism ; simplicity ; Wes Anderson
+Nights of cloud could tuck me in as sure as a babe into softest quilt, for in the cooler weather were days of hearth and harkened heart.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Wes Anderson
+Nights of cloud could tuck me in as sure as a babe into softest quilt, for in the cooler weather were days of hearth and harkened heart.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski; Wes Anderson
+Nights of cloud could tuck me in as sure as a babe into softest quilt, for in the cooler weather were days of hearth and harkened heart.; Jacek Yerka ; minimalism ; simplicity ; Vladimir Kush; Wes Anderson
+The cloudy night is a million promise-notes of heaven's rain, each of them in graphite grey and etched upon the sky.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall
+The cloudy night is a million promise-notes of heaven's rain, each of them in graphite grey and etched upon the sky.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski
+The cloudy night is a million promise-notes of heaven's rain, each of them in graphite grey and etched upon the sky.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Jaroslaw Jasnikowski
+The cloudy night is a million promise-notes of heaven's rain, each of them in graphite grey and etched upon the sky.; Jacek Yerka ; minimalism ; simplicity ; Vladimir Kush
+The cloudy night is a million promise-notes of heaven's rain, each of them in graphite grey and etched upon the sky.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Vladimir Kush
+The cloudy night is a million promise-notes of heaven's rain, each of them in graphite grey and etched upon the sky.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski; Vladimir Kush
+The cloudy night is a million promise-notes of heaven's rain, each of them in graphite grey and etched upon the sky.; Jacek Yerka ; minimalism ; simplicity ; Wes Anderson
+The cloudy night is a million promise-notes of heaven's rain, each of them in graphite grey and etched upon the sky.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Wes Anderson
+The cloudy night is a million promise-notes of heaven's rain, each of them in graphite grey and etched upon the sky.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski; Wes Anderson
+The cloudy night is a million promise-notes of heaven's rain, each of them in graphite grey and etched upon the sky.; Jacek Yerka ; minimalism ; simplicity ; Vladimir Kush; Wes Anderson
+The cloudy night comes quietly with the gentle spirit of mother.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall
+The cloudy night comes quietly with the gentle spirit of mother.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski
+The cloudy night comes quietly with the gentle spirit of mother.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Jaroslaw Jasnikowski
+The cloudy night comes quietly with the gentle spirit of mother.; Jacek Yerka ; minimalism ; simplicity ; Vladimir Kush
+The cloudy night comes quietly with the gentle spirit of mother.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Vladimir Kush
+The cloudy night comes quietly with the gentle spirit of mother.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski; Vladimir Kush
+The cloudy night comes quietly with the gentle spirit of mother.; Jacek Yerka ; minimalism ; simplicity ; Wes Anderson
+The cloudy night comes quietly with the gentle spirit of mother.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Wes Anderson
+The cloudy night comes quietly with the gentle spirit of mother.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski; Wes Anderson
+The cloudy night comes quietly with the gentle spirit of mother.; Jacek Yerka ; minimalism ; simplicity ; Vladimir Kush; Wes Anderson
+The cloudy night softens the vibrant colours of day to soft pastel hues, the kind that awaken the soul and let it stay in serene comfort.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall
+The cloudy night softens the vibrant colours of day to soft pastel hues, the kind that awaken the soul and let it stay in serene comfort.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski
+The cloudy night softens the vibrant colours of day to soft pastel hues, the kind that awaken the soul and let it stay in serene comfort.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Jaroslaw Jasnikowski
+The cloudy night softens the vibrant colours of day to soft pastel hues, the kind that awaken the soul and let it stay in serene comfort.; Jacek Yerka ; minimalism ; simplicity ; Vladimir Kush
+The cloudy night softens the vibrant colours of day to soft pastel hues, the kind that awaken the soul and let it stay in serene comfort.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Vladimir Kush
+The cloudy night softens the vibrant colours of day to soft pastel hues, the kind that awaken the soul and let it stay in serene comfort.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski; Vladimir Kush
+The cloudy night softens the vibrant colours of day to soft pastel hues, the kind that awaken the soul and let it stay in serene comfort.; Jacek Yerka ; minimalism ; simplicity ; Wes Anderson
+The cloudy night softens the vibrant colours of day to soft pastel hues, the kind that awaken the soul and let it stay in serene comfort.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Wes Anderson
+The cloudy night softens the vibrant colours of day to soft pastel hues, the kind that awaken the soul and let it stay in serene comfort.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski; Wes Anderson
+The cloudy night softens the vibrant colours of day to soft pastel hues, the kind that awaken the soul and let it stay in serene comfort.; Jacek Yerka ; minimalism ; simplicity ; Vladimir Kush; Wes Anderson
+As we are tucked into the heavenly black to dream each night anew, the cloudy grey makes nighttime all the cosier still.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall
+As we are tucked into the heavenly black to dream each night anew, the cloudy grey makes nighttime all the cosier still.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski
+As we are tucked into the heavenly black to dream each night anew, the cloudy grey makes nighttime all the cosier still.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Jaroslaw Jasnikowski
+As we are tucked into the heavenly black to dream each night anew, the cloudy grey makes nighttime all the cosier still.; Jacek Yerka ; minimalism ; simplicity ; Vladimir Kush
+As we are tucked into the heavenly black to dream each night anew, the cloudy grey makes nighttime all the cosier still.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Vladimir Kush
+As we are tucked into the heavenly black to dream each night anew, the cloudy grey makes nighttime all the cosier still.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski; Vladimir Kush
+As we are tucked into the heavenly black to dream each night anew, the cloudy grey makes nighttime all the cosier still.; Jacek Yerka ; minimalism ; simplicity ; Wes Anderson
+As we are tucked into the heavenly black to dream each night anew, the cloudy grey makes nighttime all the cosier still.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Wes Anderson
+As we are tucked into the heavenly black to dream each night anew, the cloudy grey makes nighttime all the cosier still.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski; Wes Anderson
+As we are tucked into the heavenly black to dream each night anew, the cloudy grey makes nighttime all the cosier still.; Jacek Yerka ; minimalism ; simplicity ; Vladimir Kush; Wes Anderson
+A cloudy night is but the promise of much needed rain, and in this we are blessed.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall
+A cloudy night is but the promise of much needed rain, and in this we are blessed.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski
+A cloudy night is but the promise of much needed rain, and in this we are blessed.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Jaroslaw Jasnikowski
+A cloudy night is but the promise of much needed rain, and in this we are blessed.; Jacek Yerka ; minimalism ; simplicity ; Vladimir Kush
+A cloudy night is but the promise of much needed rain, and in this we are blessed.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Vladimir Kush
+A cloudy night is but the promise of much needed rain, and in this we are blessed.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski; Vladimir Kush
+A cloudy night is but the promise of much needed rain, and in this we are blessed.; Jacek Yerka ; minimalism ; simplicity ; Wes Anderson
+A cloudy night is but the promise of much needed rain, and in this we are blessed.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Wes Anderson
+A cloudy night is but the promise of much needed rain, and in this we are blessed.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski; Wes Anderson
+A cloudy night is but the promise of much needed rain, and in this we are blessed.; Jacek Yerka ; minimalism ; simplicity ; Vladimir Kush; Wes Anderson
+Today's sky is a blue-grey brindle with the softest accents of white.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall
+Today's sky is a blue-grey brindle with the softest accents of white.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski
+Today's sky is a blue-grey brindle with the softest accents of white.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Jaroslaw Jasnikowski
+Today's sky is a blue-grey brindle with the softest accents of white.; Jacek Yerka ; minimalism ; simplicity ; Vladimir Kush
+Today's sky is a blue-grey brindle with the softest accents of white.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Vladimir Kush
+Today's sky is a blue-grey brindle with the softest accents of white.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski; Vladimir Kush
+Today's sky is a blue-grey brindle with the softest accents of white.; Jacek Yerka ; minimalism ; simplicity ; Wes Anderson
+Today's sky is a blue-grey brindle with the softest accents of white.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Wes Anderson
+Today's sky is a blue-grey brindle with the softest accents of white.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski; Wes Anderson
+Today's sky is a blue-grey brindle with the softest accents of white.; Jacek Yerka ; minimalism ; simplicity ; Vladimir Kush; Wes Anderson
+Tucked beneath the woollen grey sky, there is a sweet warmth to the horse. He is at home here upon the heathered moor.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall
+Tucked beneath the woollen grey sky, there is a sweet warmth to the horse. He is at home here upon the heathered moor.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski
+Tucked beneath the woollen grey sky, there is a sweet warmth to the horse. He is at home here upon the heathered moor.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Jaroslaw Jasnikowski
+Tucked beneath the woollen grey sky, there is a sweet warmth to the horse. He is at home here upon the heathered moor.; Jacek Yerka ; minimalism ; simplicity ; Vladimir Kush
+Tucked beneath the woollen grey sky, there is a sweet warmth to the horse. He is at home here upon the heathered moor.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Vladimir Kush
+Tucked beneath the woollen grey sky, there is a sweet warmth to the horse. He is at home here upon the heathered moor.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski; Vladimir Kush
+Tucked beneath the woollen grey sky, there is a sweet warmth to the horse. He is at home here upon the heathered moor.; Jacek Yerka ; minimalism ; simplicity ; Wes Anderson
+Tucked beneath the woollen grey sky, there is a sweet warmth to the horse. He is at home here upon the heathered moor.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Wes Anderson
+Tucked beneath the woollen grey sky, there is a sweet warmth to the horse. He is at home here upon the heathered moor.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski; Wes Anderson
+Tucked beneath the woollen grey sky, there is a sweet warmth to the horse. He is at home here upon the heathered moor.; Jacek Yerka ; minimalism ; simplicity ; Vladimir Kush; Wes Anderson
+The sky invites the eyes to play as ever arcing birds upon wing.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall
+The sky invites the eyes to play as ever arcing birds upon wing.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski
+The sky invites the eyes to play as ever arcing birds upon wing.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Jaroslaw Jasnikowski
+The sky invites the eyes to play as ever arcing birds upon wing.; Jacek Yerka ; minimalism ; simplicity ; Vladimir Kush
+The sky invites the eyes to play as ever arcing birds upon wing.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Vladimir Kush
+The sky invites the eyes to play as ever arcing birds upon wing.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski; Vladimir Kush
+The sky invites the eyes to play as ever arcing birds upon wing.; Jacek Yerka ; minimalism ; simplicity ; Wes Anderson
+The sky invites the eyes to play as ever arcing birds upon wing.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Wes Anderson
+The sky invites the eyes to play as ever arcing birds upon wing.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski; Wes Anderson
+The sky invites the eyes to play as ever arcing birds upon wing.; Jacek Yerka ; minimalism ; simplicity ; Vladimir Kush; Wes Anderson
+Come silver-greys or floral-blues, every sky speaks to the artistic inner eye.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall
+Come silver-greys or floral-blues, every sky speaks to the artistic inner eye.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski
+Come silver-greys or floral-blues, every sky speaks to the artistic inner eye.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Jaroslaw Jasnikowski
+Come silver-greys or floral-blues, every sky speaks to the artistic inner eye.; Jacek Yerka ; minimalism ; simplicity ; Vladimir Kush
+Come silver-greys or floral-blues, every sky speaks to the artistic inner eye.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Vladimir Kush
+Come silver-greys or floral-blues, every sky speaks to the artistic inner eye.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski; Vladimir Kush
+Come silver-greys or floral-blues, every sky speaks to the artistic inner eye.; Jacek Yerka ; minimalism ; simplicity ; Wes Anderson
+Come silver-greys or floral-blues, every sky speaks to the artistic inner eye.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Wes Anderson
+Come silver-greys or floral-blues, every sky speaks to the artistic inner eye.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski; Wes Anderson
+Come silver-greys or floral-blues, every sky speaks to the artistic inner eye.; Jacek Yerka ; minimalism ; simplicity ; Vladimir Kush; Wes Anderson
+Sky expanded above as an ever-growing dream.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall
+Sky expanded above as an ever-growing dream.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski
+Sky expanded above as an ever-growing dream.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Jaroslaw Jasnikowski
+Sky expanded above as an ever-growing dream.; Jacek Yerka ; minimalism ; simplicity ; Vladimir Kush
+Sky expanded above as an ever-growing dream.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Vladimir Kush
+Sky expanded above as an ever-growing dream.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski; Vladimir Kush
+Sky expanded above as an ever-growing dream.; Jacek Yerka ; minimalism ; simplicity ; Wes Anderson
+Sky expanded above as an ever-growing dream.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Wes Anderson
+Sky expanded above as an ever-growing dream.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski; Wes Anderson
+Sky expanded above as an ever-growing dream.; Jacek Yerka ; minimalism ; simplicity ; Vladimir Kush; Wes Anderson
+Sky arcs heavenward as the greatest basilica cupola.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall
+Sky arcs heavenward as the greatest basilica cupola.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski
+Sky arcs heavenward as the greatest basilica cupola.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Jaroslaw Jasnikowski
+Sky arcs heavenward as the greatest basilica cupola.; Jacek Yerka ; minimalism ; simplicity ; Vladimir Kush
+Sky arcs heavenward as the greatest basilica cupola.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Vladimir Kush
+Sky arcs heavenward as the greatest basilica cupola.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski; Vladimir Kush
+Sky arcs heavenward as the greatest basilica cupola.; Jacek Yerka ; minimalism ; simplicity ; Wes Anderson
+Sky arcs heavenward as the greatest basilica cupola.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Wes Anderson
+Sky arcs heavenward as the greatest basilica cupola.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski; Wes Anderson
+Sky arcs heavenward as the greatest basilica cupola.; Jacek Yerka ; minimalism ; simplicity ; Vladimir Kush; Wes Anderson
+The breath of sweet nature plays in the blue, up here in the sky that hugs valleys and mountains just the same.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall
+The breath of sweet nature plays in the blue, up here in the sky that hugs valleys and mountains just the same.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski
+The breath of sweet nature plays in the blue, up here in the sky that hugs valleys and mountains just the same.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Jaroslaw Jasnikowski
+The breath of sweet nature plays in the blue, up here in the sky that hugs valleys and mountains just the same.; Jacek Yerka ; minimalism ; simplicity ; Vladimir Kush
+The breath of sweet nature plays in the blue, up here in the sky that hugs valleys and mountains just the same.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Vladimir Kush
+The breath of sweet nature plays in the blue, up here in the sky that hugs valleys and mountains just the same.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski; Vladimir Kush
+The breath of sweet nature plays in the blue, up here in the sky that hugs valleys and mountains just the same.; Jacek Yerka ; minimalism ; simplicity ; Wes Anderson
+The breath of sweet nature plays in the blue, up here in the sky that hugs valleys and mountains just the same.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Wes Anderson
+The breath of sweet nature plays in the blue, up here in the sky that hugs valleys and mountains just the same.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski; Wes Anderson
+The breath of sweet nature plays in the blue, up here in the sky that hugs valleys and mountains just the same.; Jacek Yerka ; minimalism ; simplicity ; Vladimir Kush; Wes Anderson
+The sky is dappled by the cloud, a beauty over our motley crew. So we rest on our backs and let our eyes gaze upward, enjoying the nothing that is everything.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall
+The sky is dappled by the cloud, a beauty over our motley crew. So we rest on our backs and let our eyes gaze upward, enjoying the nothing that is everything.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski
+The sky is dappled by the cloud, a beauty over our motley crew. So we rest on our backs and let our eyes gaze upward, enjoying the nothing that is everything.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Jaroslaw Jasnikowski
+The sky is dappled by the cloud, a beauty over our motley crew. So we rest on our backs and let our eyes gaze upward, enjoying the nothing that is everything.; Jacek Yerka ; minimalism ; simplicity ; Vladimir Kush
+The sky is dappled by the cloud, a beauty over our motley crew. So we rest on our backs and let our eyes gaze upward, enjoying the nothing that is everything.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Vladimir Kush
+The sky is dappled by the cloud, a beauty over our motley crew. So we rest on our backs and let our eyes gaze upward, enjoying the nothing that is everything.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski; Vladimir Kush
+The sky is dappled by the cloud, a beauty over our motley crew. So we rest on our backs and let our eyes gaze upward, enjoying the nothing that is everything.; Jacek Yerka ; minimalism ; simplicity ; Wes Anderson
+The sky is dappled by the cloud, a beauty over our motley crew. So we rest on our backs and let our eyes gaze upward, enjoying the nothing that is everything.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Wes Anderson
+The sky is dappled by the cloud, a beauty over our motley crew. So we rest on our backs and let our eyes gaze upward, enjoying the nothing that is everything.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski; Wes Anderson
+The sky is dappled by the cloud, a beauty over our motley crew. So we rest on our backs and let our eyes gaze upward, enjoying the nothing that is everything.; Jacek Yerka ; minimalism ; simplicity ; Vladimir Kush; Wes Anderson
+A grey sky swirl of stoic gravitas becomes the backing of those in hero stride.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall
+A grey sky swirl of stoic gravitas becomes the backing of those in hero stride.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski
+A grey sky swirl of stoic gravitas becomes the backing of those in hero stride.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Jaroslaw Jasnikowski
+A grey sky swirl of stoic gravitas becomes the backing of those in hero stride.; Jacek Yerka ; minimalism ; simplicity ; Vladimir Kush
+A grey sky swirl of stoic gravitas becomes the backing of those in hero stride.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Vladimir Kush
+A grey sky swirl of stoic gravitas becomes the backing of those in hero stride.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski; Vladimir Kush
+A grey sky swirl of stoic gravitas becomes the backing of those in hero stride.; Jacek Yerka ; minimalism ; simplicity ; Wes Anderson
+A grey sky swirl of stoic gravitas becomes the backing of those in hero stride.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Wes Anderson
+A grey sky swirl of stoic gravitas becomes the backing of those in hero stride.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski; Wes Anderson
+A grey sky swirl of stoic gravitas becomes the backing of those in hero stride.; Jacek Yerka ; minimalism ; simplicity ; Vladimir Kush; Wes Anderson
+In the dawn light the charcoal sky became a wispy silver, as if it was determined to become its own treasure.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall
+In the dawn light the charcoal sky became a wispy silver, as if it was determined to become its own treasure.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski
+In the dawn light the charcoal sky became a wispy silver, as if it was determined to become its own treasure.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Jaroslaw Jasnikowski
+In the dawn light the charcoal sky became a wispy silver, as if it was determined to become its own treasure.; Jacek Yerka ; minimalism ; simplicity ; Vladimir Kush
+In the dawn light the charcoal sky became a wispy silver, as if it was determined to become its own treasure.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Vladimir Kush
+In the dawn light the charcoal sky became a wispy silver, as if it was determined to become its own treasure.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski; Vladimir Kush
+In the dawn light the charcoal sky became a wispy silver, as if it was determined to become its own treasure.; Jacek Yerka ; minimalism ; simplicity ; Wes Anderson
+In the dawn light the charcoal sky became a wispy silver, as if it was determined to become its own treasure.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Wes Anderson
+In the dawn light the charcoal sky became a wispy silver, as if it was determined to become its own treasure.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski; Wes Anderson
+In the dawn light the charcoal sky became a wispy silver, as if it was determined to become its own treasure.; Jacek Yerka ; minimalism ; simplicity ; Vladimir Kush; Wes Anderson
+Even upon this wintry day, when the sky is a woollen grey shawl upon mountain peaks, I feel our happy memories become a glowing sense of warmth.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall
+Even upon this wintry day, when the sky is a woollen grey shawl upon mountain peaks, I feel our happy memories become a glowing sense of warmth.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski
+Even upon this wintry day, when the sky is a woollen grey shawl upon mountain peaks, I feel our happy memories become a glowing sense of warmth.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Jaroslaw Jasnikowski
+Even upon this wintry day, when the sky is a woollen grey shawl upon mountain peaks, I feel our happy memories become a glowing sense of warmth.; Jacek Yerka ; minimalism ; simplicity ; Vladimir Kush
+Even upon this wintry day, when the sky is a woollen grey shawl upon mountain peaks, I feel our happy memories become a glowing sense of warmth.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Vladimir Kush
+Even upon this wintry day, when the sky is a woollen grey shawl upon mountain peaks, I feel our happy memories become a glowing sense of warmth.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski; Vladimir Kush
+Even upon this wintry day, when the sky is a woollen grey shawl upon mountain peaks, I feel our happy memories become a glowing sense of warmth.; Jacek Yerka ; minimalism ; simplicity ; Wes Anderson
+Even upon this wintry day, when the sky is a woollen grey shawl upon mountain peaks, I feel our happy memories become a glowing sense of warmth.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Wes Anderson
+Even upon this wintry day, when the sky is a woollen grey shawl upon mountain peaks, I feel our happy memories become a glowing sense of warmth.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski; Wes Anderson
+Even upon this wintry day, when the sky is a woollen grey shawl upon mountain peaks, I feel our happy memories become a glowing sense of warmth.; Jacek Yerka ; minimalism ; simplicity ; Vladimir Kush; Wes Anderson
+The blue sky is my mother's eyes; it is the light that dances in the inbetween, the precious time when night is suspended.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall
+The blue sky is my mother's eyes; it is the light that dances in the inbetween, the precious time when night is suspended.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski
+The blue sky is my mother's eyes; it is the light that dances in the inbetween, the precious time when night is suspended.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Jaroslaw Jasnikowski
+The blue sky is my mother's eyes; it is the light that dances in the inbetween, the precious time when night is suspended.; Jacek Yerka ; minimalism ; simplicity ; Vladimir Kush
+The blue sky is my mother's eyes; it is the light that dances in the inbetween, the precious time when night is suspended.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Vladimir Kush
+The blue sky is my mother's eyes; it is the light that dances in the inbetween, the precious time when night is suspended.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski; Vladimir Kush
+The blue sky is my mother's eyes; it is the light that dances in the inbetween, the precious time when night is suspended.; Jacek Yerka ; minimalism ; simplicity ; Wes Anderson
+The blue sky is my mother's eyes; it is the light that dances in the inbetween, the precious time when night is suspended.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Wes Anderson
+The blue sky is my mother's eyes; it is the light that dances in the inbetween, the precious time when night is suspended.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski; Wes Anderson
+The blue sky is my mother's eyes; it is the light that dances in the inbetween, the precious time when night is suspended.; Jacek Yerka ; minimalism ; simplicity ; Vladimir Kush; Wes Anderson
+The depth of the sky's blue is as our love, that only over the years to we notice the strength of the hue. Up close it is as clear as pure water, yet when we see the miles it is the blue of fairytale dreams.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall
+The depth of the sky's blue is as our love, that only over the years to we notice the strength of the hue. Up close it is as clear as pure water, yet when we see the miles it is the blue of fairytale dreams.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski
+The depth of the sky's blue is as our love, that only over the years to we notice the strength of the hue. Up close it is as clear as pure water, yet when we see the miles it is the blue of fairytale dreams.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Jaroslaw Jasnikowski
+The depth of the sky's blue is as our love, that only over the years to we notice the strength of the hue. Up close it is as clear as pure water, yet when we see the miles it is the blue of fairytale dreams.; Jacek Yerka ; minimalism ; simplicity ; Vladimir Kush
+The depth of the sky's blue is as our love, that only over the years to we notice the strength of the hue. Up close it is as clear as pure water, yet when we see the miles it is the blue of fairytale dreams.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Vladimir Kush
+The depth of the sky's blue is as our love, that only over the years to we notice the strength of the hue. Up close it is as clear as pure water, yet when we see the miles it is the blue of fairytale dreams.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski; Vladimir Kush
+The depth of the sky's blue is as our love, that only over the years to we notice the strength of the hue. Up close it is as clear as pure water, yet when we see the miles it is the blue of fairytale dreams.; Jacek Yerka ; minimalism ; simplicity ; Wes Anderson
+The depth of the sky's blue is as our love, that only over the years to we notice the strength of the hue. Up close it is as clear as pure water, yet when we see the miles it is the blue of fairytale dreams.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Wes Anderson
+The depth of the sky's blue is as our love, that only over the years to we notice the strength of the hue. Up close it is as clear as pure water, yet when we see the miles it is the blue of fairytale dreams.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski; Wes Anderson
+The depth of the sky's blue is as our love, that only over the years to we notice the strength of the hue. Up close it is as clear as pure water, yet when we see the miles it is the blue of fairytale dreams.; Jacek Yerka ; minimalism ; simplicity ; Vladimir Kush; Wes Anderson
+This blue sky is the echo of my porcelain soul: tough, humble and pretty. It takes on the subtle changes as the day matures, an ever evolving artistic palate.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall
+This blue sky is the echo of my porcelain soul: tough, humble and pretty. It takes on the subtle changes as the day matures, an ever evolving artistic palate.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski
+This blue sky is the echo of my porcelain soul: tough, humble and pretty. It takes on the subtle changes as the day matures, an ever evolving artistic palate.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Jaroslaw Jasnikowski
+This blue sky is the echo of my porcelain soul: tough, humble and pretty. It takes on the subtle changes as the day matures, an ever evolving artistic palate.; Jacek Yerka ; minimalism ; simplicity ; Vladimir Kush
+This blue sky is the echo of my porcelain soul: tough, humble and pretty. It takes on the subtle changes as the day matures, an ever evolving artistic palate.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Vladimir Kush
+This blue sky is the echo of my porcelain soul: tough, humble and pretty. It takes on the subtle changes as the day matures, an ever evolving artistic palate.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski; Vladimir Kush
+This blue sky is the echo of my porcelain soul: tough, humble and pretty. It takes on the subtle changes as the day matures, an ever evolving artistic palate.; Jacek Yerka ; minimalism ; simplicity ; Wes Anderson
+This blue sky is the echo of my porcelain soul: tough, humble and pretty. It takes on the subtle changes as the day matures, an ever evolving artistic palate.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Wes Anderson
+This blue sky is the echo of my porcelain soul: tough, humble and pretty. It takes on the subtle changes as the day matures, an ever evolving artistic palate.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski; Wes Anderson
+This blue sky is the echo of my porcelain soul: tough, humble and pretty. It takes on the subtle changes as the day matures, an ever evolving artistic palate.; Jacek Yerka ; minimalism ; simplicity ; Vladimir Kush; Wes Anderson
+Sunlight after the rain gave the skylight edge a watercolour halo.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall
+Sunlight after the rain gave the skylight edge a watercolour halo.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski
+Sunlight after the rain gave the skylight edge a watercolour halo.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Jaroslaw Jasnikowski
+Sunlight after the rain gave the skylight edge a watercolour halo.; Jacek Yerka ; minimalism ; simplicity ; Vladimir Kush
+Sunlight after the rain gave the skylight edge a watercolour halo.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Vladimir Kush
+Sunlight after the rain gave the skylight edge a watercolour halo.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski; Vladimir Kush
+Sunlight after the rain gave the skylight edge a watercolour halo.; Jacek Yerka ; minimalism ; simplicity ; Wes Anderson
+Sunlight after the rain gave the skylight edge a watercolour halo.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Wes Anderson
+Sunlight after the rain gave the skylight edge a watercolour halo.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski; Wes Anderson
+Sunlight after the rain gave the skylight edge a watercolour halo.; Jacek Yerka ; minimalism ; simplicity ; Vladimir Kush; Wes Anderson
+The skylight was a mosaic of colour, as if it had blossomed from seeds of light.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall
+The skylight was a mosaic of colour, as if it had blossomed from seeds of light.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski
+The skylight was a mosaic of colour, as if it had blossomed from seeds of light.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Jaroslaw Jasnikowski
+The skylight was a mosaic of colour, as if it had blossomed from seeds of light.; Jacek Yerka ; minimalism ; simplicity ; Vladimir Kush
+The skylight was a mosaic of colour, as if it had blossomed from seeds of light.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Vladimir Kush
+The skylight was a mosaic of colour, as if it had blossomed from seeds of light.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski; Vladimir Kush
+The skylight was a mosaic of colour, as if it had blossomed from seeds of light.; Jacek Yerka ; minimalism ; simplicity ; Wes Anderson
+The skylight was a mosaic of colour, as if it had blossomed from seeds of light.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Wes Anderson
+The skylight was a mosaic of colour, as if it had blossomed from seeds of light.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski; Wes Anderson
+The skylight was a mosaic of colour, as if it had blossomed from seeds of light.; Jacek Yerka ; minimalism ; simplicity ; Vladimir Kush; Wes Anderson
+The skylight brought swirls of colour to the rooftop, as if all the room were nature's cradle.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall
+The skylight brought swirls of colour to the rooftop, as if all the room were nature's cradle.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski
+The skylight brought swirls of colour to the rooftop, as if all the room were nature's cradle.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Jaroslaw Jasnikowski
+The skylight brought swirls of colour to the rooftop, as if all the room were nature's cradle.; Jacek Yerka ; minimalism ; simplicity ; Vladimir Kush
+The skylight brought swirls of colour to the rooftop, as if all the room were nature's cradle.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Vladimir Kush
+The skylight brought swirls of colour to the rooftop, as if all the room were nature's cradle.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski; Vladimir Kush
+The skylight brought swirls of colour to the rooftop, as if all the room were nature's cradle.; Jacek Yerka ; minimalism ; simplicity ; Wes Anderson
+The skylight brought swirls of colour to the rooftop, as if all the room were nature's cradle.; Jacek Yerka ; minimalism ; simplicity ; Mark Chagall; Wes Anderson
+The skylight brought swirls of colour to the rooftop, as if all the room were nature's cradle.; Jacek Yerka ; minimalism ; simplicity ; Jaroslaw Jasnikowski; Wes Anderson
+The skylight brought swirls of colour to the rooftop, as if all the room were nature's cradle.; Jacek Yerka ; minimalism ; simplicity ; Vladimir Kush; Wes Anderson
+ 
+ 
+ */

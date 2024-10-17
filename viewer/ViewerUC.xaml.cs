@@ -58,7 +58,6 @@ namespace scripthea.viewer
             views = new List<iPicList>(); 
             views.Add(tableViewUC); tableViewUC.SelectEvent += new TableViewUC.PicViewerHandler(picViewerUC.loadPic); 
             views.Add(gridViewUC);  gridViewUC.SelectEvent += new GridViewUC.PicViewerHandler(picViewerUC.loadPic);
-            gridViewUC.OnLog += new Utils.LogHandler(Log); picViewerUC.OnLog += new Utils.LogHandler(Log);
             picViewerUC.OnUpdateVisRecord += new UpdateVisRecEventHandler(UpdateVisRecord);
 
         }

@@ -131,31 +131,34 @@ namespace scripthea.external
                 {
                     ComfyUIclass clue = new ComfyUIclass();
                     Dictionary<string, object> cParams = SDside.Translate2Comfy(inParams);
-                    //cParams.Add("positive", inParams["prompt"]);
-
-                    JObject historyOut = await clue.AwaitJobLive(cUtils.Workflow(cParams), "0", output =>
+                    string wf;
+                    //wf = cUtils.Workflow("workflow_defaults.json", cParams);
+                    wf = cUtils.actualWorkflow(opts.general.ComfyTemplate, cParams);
+                    if (opts.general.debug) File.WriteAllText(Path.Combine(Utils.configPath, Path.ChangeExtension(opts.general.ComfyTemplate, ".json")), wf);
+                    rslt = cUtils.IsValidJson(wf);
+                    if (rslt)
                     {
-                        /*if (output is JObject)
-                            Log((output as JObject)["current_percent"].ToString() );
+                        JObject historyOut = await clue.AwaitJobLive(wf, "0", output =>
+                        { },  System.Threading.CancellationToken.None);
 
-                        if (output is string)
-                            Log(output as string);*/
-                    },
-                    /*takeOutput,*/
-                    System.Threading.CancellationToken.None);
+                        if (historyOut != null)
+                        {
+                            (string promptId, string filename, string subfolder, bool success) = cUtils.DeconOut(historyOut);
 
-                    (string promptId, string filename, string subfolder, bool success) = cUtils.DeconOut(historyOut);
-
-                    if (success)
-                    {
-                        if (!File.Exists(SDopts.opts.SDlocComfy)) Log("Error: ComfyUI bat file <" + SDopts.opts.SDlocComfy + "> not found");
-                        string folder = Path.Combine(Path.GetDirectoryName(SDopts.opts.SDlocComfy), "ComfyUI", "output");
-                        if (!Directory.Exists(folder)) Log("Error: image output folder <" + folder + "> is missing");
-                        string imagePath = Path.Combine(folder, filename);
-                        if (File.Exists(imagePath)) File.Move(imagePath, imgFile);
-                        else Log("Error: image file <" + imagePath + "> not found");
-                    }
-                    rslt = success;
+                            if (success)
+                            {
+                                if (!File.Exists(SDopts.opts.SDlocComfy)) Log("Error: ComfyUI bat file <" + SDopts.opts.SDlocComfy + "> is not found");
+                                string folder = Path.Combine(Path.GetDirectoryName(SDopts.opts.SDlocComfy), "ComfyUI", "output");
+                                if (!Directory.Exists(folder)) Log("Error: image output folder <" + folder + "> is missing");
+                                string imagePath = Path.Combine(folder, filename);
+                                if (File.Exists(imagePath)) File.Move(imagePath, imgFile);
+                                else Log("Error: image file <" + imagePath + "> not found");
+                            }
+                            rslt = success;
+                        }
+                        else rslt = false;
+                     }
+                    else Utils.TimedMessageBox("Error: wrong json format of the template.");
                 }
             });
             try
@@ -276,10 +279,22 @@ namespace scripthea.external
             });
         }
     }
-    public static class cUtils
+    public static class cUtils // comfyUI utils
     {
+        public static bool IsValidJson(string jsonString)
+        {
+            try
+            {
+                JToken.Parse(jsonString); // This will throw an exception if the JSON is invalid.
+                return true;
+            }
+            catch (JsonReaderException)
+            {
+                return false;
+            }
+        }
         public enum prmKind { positive, negative, width, height, seed, steps, cfg, sampler_name, scheduler, model, denoise }
-        public static Dictionary<prmKind, Type> prms = new Dictionary<prmKind, Type>()
+        public static Dictionary<prmKind, Type> prmTypes = new Dictionary<prmKind, Type>()
             { { prmKind.positive, typeof(string) }, { prmKind.negative, typeof(string) }, { prmKind.width, typeof(int) }, { prmKind.height, typeof(int) }, {prmKind.seed, typeof(long) }, {prmKind.steps, typeof(int) }, {prmKind.cfg, typeof(double) }, {prmKind.sampler_name, typeof(string) }, {prmKind.scheduler, typeof(string) },  {prmKind.model, typeof(string) }, {prmKind.denoise, typeof(double) }  };
         public static bool SetPrm(JObject workflow, prmKind kind, object val) // returns the new workflow
         {
@@ -291,15 +306,15 @@ namespace scripthea.external
                     if (item.Value["class_type"] != null)
                         if ((string)item.Value["class_type"] == "KSampler") KSampler = item.Key;
                 }
-                workflow[KSampler]["inputs"][kind.ToString()] = (dynamic)Convert.ChangeType(val, prms[kind]);
+                workflow[KSampler]["inputs"][kind.ToString()] = (dynamic)Convert.ChangeType(val, prmTypes[kind]);
                 return true;
             }
             catch (System.NullReferenceException e) { return false; }
         }
-        public static string Workflow(Dictionary<string, object> prms) // return workflow, or start with Error: if problem
+        public static string Workflow(string template, Dictionary<string, object> prms) // return workflow, or start with Error:... if problem
         {
-            if (prms.Count == 0) return "Error: no params to set";
-            string defaults = File.ReadAllText(Path.Combine(Utils.configPath,"workflow_defaults.json"));
+            if (prms.Count == 0) { Utils.TimedMessageBox("Error: no params to set"); return ""; };
+            string defaults = File.ReadAllText(Path.Combine(Utils.configPath, template));
             try
             {
                 JObject workflow = JObject.Parse(defaults);
@@ -335,9 +350,106 @@ namespace scripthea.external
                             break;
                     }
                 }
+                //string wf = actualWorkflow(template, prms);
                 return JsonConvert.SerializeObject(workflow);
             }
-            catch (System.NullReferenceException e) { return "Error: wrong parameter(s)"; }
+            catch (System.NullReferenceException e) { return "Error[3641]: wrong parameter(s)"; }
+        }
+        public static string actualWorkflow(string template, Dictionary<string, object> cParams)
+        {
+            try
+            {
+                string tmpl = Path.Combine(Utils.configPath, template);
+                if (!File.Exists(tmpl)) tmpl = Path.Combine(Utils.configPath, "workflow_default.cftm");
+                if (!File.Exists(tmpl)) { Console.WriteLine("Error: no file <" + tmpl + ">"); return ""; }
+                List<string> wf = actualWorkflowList(new List<string>(File.ReadAllLines(tmpl)), cParams);
+                if (wf == null) { Console.WriteLine("Error: in workflow template"); return ""; }
+                Utils.writeList(Path.ChangeExtension(tmpl, ".json"), wf);
+                return Convert.ToString(String.Join("\n", wf.ToArray())); //File.ReadAllText(Path.Combine(Utils.configPath,Path.ChangeExtension(template, ".json"))); 
+            }
+            catch (System.NullReferenceException e) { return "Error[3642]: wrong parameter(s)"; }
+        }
+
+        public static List<string> actualWorkflowList(List<string> workflow, Dictionary<string, object> fcts)
+        {
+            List<string> ls = new List<string>();
+            foreach (string line in workflow)
+            {
+                string ss = Utils.skimRem(line);
+                foreach (var fct in fcts)
+                {
+                    string fctName = '$' + fct.Key + '$';
+                    if (line.IndexOf(fctName) == -1) continue;
+                    string st = (fct.Value is string) ? '\"' + Convert.ToString(fct.Value) + '\"' : Convert.ToString(fct.Value);
+                    ss = ss.Replace(fctName, st);
+                }
+                if (ss.IndexOf('$') > -1)
+                {
+                    Utils.TimedMessageBox("Missing parameter in " + line, "Error", 3500); return null;
+                }
+                ls.Add(ss);
+            }
+            return ls;
+        }
+        public static bool GetMetadataComfy(string imageFilePath, out Dictionary<string, string> itemMap)
+        {
+            itemMap = new Dictionary<string, string>();
+            if (!Path.GetExtension(imageFilePath).ToLower().Equals(".png")) return false;
+            var query = "/tEXt/{str=prompt}";
+            try
+            {
+                using (Stream fileStream = File.Open(imageFilePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+                {
+                    var decoder = BitmapDecoder.Create(fileStream, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.None);
+                    BitmapMetadata bitmapMetadata = decoder.Frames[0].Metadata as BitmapMetadata;
+                    if (bitmapMetadata == null) return false;
+                    var metadata = bitmapMetadata.GetQuery(query);
+                    string md = metadata?.ToString(); if (md == null) { return false; }
+                    Dictionary<string, object> dct = ExtractParams(md);
+                    itemMap = Utils.dictObject2String(dct);
+                }
+            }
+            catch (Exception e) { Utils.TimedMessageBox("Error (I/O): " + e.Message, "Error message", 3000); return false; }
+            return true;
+        }
+        public static Dictionary<string, object> ExtractParams(string workflow_str)
+        {
+            Dictionary<string, object> dct = new Dictionary<string, object>();
+            try
+            {
+                JObject workflow = JObject.Parse(workflow_str);
+                foreach (var pr in prmTypes)
+                {
+                    switch (pr.Key)
+                    {
+                        case prmKind.positive:
+                            if (workflow["6"]["class_type"].ToString() != "CLIPTextEncode") throw new System.NullReferenceException();
+                            dct.Add(pr.Key.ToString(), Convert.ChangeType(workflow["6"]["inputs"]["text"], pr.Value)); 
+                            break;
+                        case prmKind.negative:
+                            if (workflow["7"]["class_type"].ToString() != "CLIPTextEncode") throw new System.NullReferenceException();
+                            dct.Add(pr.Key.ToString(), Convert.ChangeType(workflow["7"]["inputs"]["text"], pr.Value));
+                            break;
+                        case prmKind.model:
+                            if (workflow["4"]["class_type"].ToString() != "CheckpointLoaderSimple") throw new System.NullReferenceException();
+                            dct.Add(pr.Key.ToString(), Convert.ChangeType(workflow["4"]["inputs"]["ckpt_name"], pr.Value));                            
+                            break;
+                        case prmKind.seed:
+                            dct.Add(pr.Key.ToString(), Convert.ChangeType(workflow["3"]["inputs"][pr.Key.ToString()], pr.Value));
+                            break;
+                        case prmKind.width:
+                        case prmKind.height:                        
+                            if (workflow["5"]["class_type"].ToString() != "EmptyLatentImage") throw new System.NullReferenceException();
+                            dct.Add(pr.Key.ToString(), Convert.ChangeType(workflow["5"]["inputs"][pr.Key.ToString()], pr.Value));
+                            break;
+                        default:
+                            dct.Add(pr.Key.ToString(), Convert.ChangeType(workflow["3"]["inputs"][pr.Key.ToString()], pr.Value));                            
+                            break;
+                    }
+                }
+                return dct;
+            }
+            catch (System.NullReferenceException e) { return null; }
         }
 
         public static (string promptId, string filename, string subfolder, bool success) DeconOut(JObject historyOut)

@@ -37,7 +37,7 @@ namespace scripthea.viewer
         {
             filename = ""; imageGenerator = _imageGenerator;
             if (!File.Exists(fullfilename)) return;
-            string suggestedName = ""; bool bb;
+            string suggestedName = ""; bool bb; bool be = false;
             switch (imageGenerator)
             {
                 case ImageGenerator.StableDiffusion:               
@@ -48,10 +48,11 @@ namespace scripthea.viewer
                     if (!FromCraiyonFile(fullfilename, out suggestedName)) return;
                     break;
                 case ImageGenerator.ExtGen:
-                    prompt = "[prompt for img. "+Path.GetFileNameWithoutExtension(fullfilename)+"]";
+                    be = FromSDFile(fullfilename, out suggestedName); // try SD format first
+                    if (!be) prompt = "[prompt for img. " + Path.GetFileNameWithoutExtension(fullfilename) + "]"; 
                     break;
             }
-            if (keepName|| imageGenerator.Equals(ImageGenerator.ExtGen)) { filename = Path.GetFileName(fullfilename); return; }
+            if (keepName || (imageGenerator.Equals(ImageGenerator.ExtGen) && !be)) { filename = Path.GetFileName(fullfilename); return; }
             try
             {
                 if (!fullfilename.Equals(suggestedName, StringComparison.InvariantCultureIgnoreCase))
@@ -137,10 +138,8 @@ namespace scripthea.viewer
             filename = Path.GetFileName(fullfilename);
             MD5Checksum = Utils.GetMD5Checksum(fullfilename);
             history = "";
-
             Dictionary<string, string> meta;
-            bool sd = ImgUtils.GetMetaDataItems(fullfilename, out meta);
-            if (sd) FromMetaDictionary(meta);
+            bool sd = ExtraImgUtils.GetMetadata(fullfilename, out meta, this);            
             if (!sd) { filename = ""; return false; }
 
             // suggest a name
@@ -178,14 +177,9 @@ namespace scripthea.viewer
             Dictionary<string, object> dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
             FromDictionary(dict);
         }
-        public void FromMetaString(string json)
-        {
-            Dictionary<string, string> dict = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
-            FromMetaDictionary(dict);
-        }
         public bool SameAs(ImageInfo imageInfo)
         {
-            return To_String().Equals(imageInfo?.To_String());
+            return To_String().Equals(imageInfo?.To_String(),StringComparison.InvariantCultureIgnoreCase);
         }
         public string To_String()
         {
@@ -214,7 +208,7 @@ namespace scripthea.viewer
             history = dict.ContainsKey("history") ? Convert.ToString(dict["history"]) : "";
             tags = dict.ContainsKey("tags") ? dict["history"] : null;
         }
-        public void FromMetaDictionary(Dictionary<string, string> dict)
+        public void FromMeta1111Dict(Dictionary<string, string> dict)
         {
             if (dict == null) return;
             if (dict.ContainsKey("prompt")) prompt = dict["prompt"]; negative_prompt = ""; denoising_strength = 0; batch_size = 1; restore_faces = false;
@@ -229,6 +223,29 @@ namespace scripthea.viewer
                 width = Convert.ToInt64(sa[0]); height = Convert.ToInt64(sa[1]);
             }
             if (dict.ContainsKey("model")) model = dict["model"];
+            if (dict.ContainsKey("sd_model_hash")) sd_model_hash = dict["sd_model_hash"];
+            if (dict.ContainsKey("filename")) filename = dict["filename"];
+            if (dict.ContainsKey("MD5Checksum")) MD5Checksum = dict["MD5Checksum"];
+            history = dict.ContainsKey("history") ? Convert.ToString(dict["history"]) : "";
+        }
+        // public enum prmKind { positive, negative, width, height, seed, steps, cfg, sampler_name, scheduler, model, denoise }
+        public void FromMetaComfyDict(Dictionary<string, string> dict)
+        {
+            if (dict == null) return;
+            if (dict.ContainsKey("positive")) prompt = dict["positive"];
+            if (dict.ContainsKey("negative")) negative_prompt = dict["negative"];
+            if (dict.ContainsKey("width")) width = Convert.ToInt64(dict["width"]);
+            if (dict.ContainsKey("height")) height = Convert.ToInt64(dict["height"]);
+            seed = dict.ContainsKey("seed") ? Convert.ToInt64(dict["seed"]) : 0;
+            if (dict.ContainsKey("steps")) steps = Convert.ToInt32(dict["steps"]);
+            if (dict.ContainsKey("sampler_name")) sampler_name = dict["sampler_name"];
+            if (dict.ContainsKey("scale")) cfg_scale = Convert.ToInt32(dict["scale"]);
+            if (dict.ContainsKey("scheduler")) model = dict["scheduler"];
+            if (dict.ContainsKey("model")) model = dict["model"];
+            if (dict.ContainsKey("denoise")) denoising_strength = Convert.ToDouble(dict["denoise"]);
+            batch_size = 1; restore_faces = false;
+            // not from comfy metadata
+            rate = dict.ContainsKey("rate") ? Convert.ToInt32(dict["rate"]) : 0;
             if (dict.ContainsKey("sd_model_hash")) sd_model_hash = dict["sd_model_hash"];
             if (dict.ContainsKey("filename")) filename = dict["filename"];
             if (dict.ContainsKey("MD5Checksum")) MD5Checksum = dict["MD5Checksum"];
@@ -348,8 +365,7 @@ namespace scripthea.viewer
                 foreach (string ss in body)
                 {
                     ImageInfo ii = new ImageInfo();
-                    if (oldVersion) ii.FromMetaString(ss);
-                    else ii.FromString(ss);
+                    ii.FromString(ss);
                     items.Add(ii);
                 }
             }

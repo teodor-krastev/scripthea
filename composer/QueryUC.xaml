@@ -83,7 +83,7 @@
                     </Grid>
                 </TabItem>
             </TabControl>
-            <Button x:Name="btnCopy" Margin="0,0,3,0" VerticalAlignment="Top" HorizontalAlignment="Right" Background="{x:Null}" ToolTip="Edit preferences" Cursor="Hand" Width="30" Height="28" BorderBrush="#FFCECECE" Click="btnCopy_Click">
+            <Button x:Name="btnCopy" Margin="0,0,3,0" VerticalAlignment="Top" HorizontalAlignment="Right" Background="{x:Null}" ToolTip="Copy current prompt to clipboard" Cursor="Hand" Width="30" Height="28" BorderBrush="#FFCECECE" Click="btnCopy_Click">
                 <ContentControl>
                     <Image x:Name="imgCopy" Margin="0,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" Height="20" Width="25" ToolTip="Copy to clipboard" Cursor="Hand" Source="/Scripthea;component/Properties/copy1a.png"/>
                 </ContentControl>

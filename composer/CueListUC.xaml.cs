@@ -13,8 +13,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using UtilsNS;
+using scripthea.options;
 using Path = System.IO.Path;
+using UtilsNS;
 
 namespace scripthea.composer
 {
@@ -38,15 +39,16 @@ namespace scripthea.composer
         {
             InitializeComponent();
         }
+        protected Options opts;
         private List<string> cueFiles; 
         public List<CueItemUC> allCues; // all cues
         public List<List<CueItemUC>> localCues; // cues by tab
         private List<ScrollViewer> localScrolls;
         public bool isBusy = false;
         public string cuesFolder { get { return Path.Combine(Utils.basePath, "cues"); } } 
-        public void Init(List<string> _cueFiles = null)
+        public void Init(ref Options _opts, List<string> _cueFiles = null)
         {
-            isBusy = true;
+            isBusy = true; opts = _opts;
             try
             {
                 if (Utils.isNull(_cueFiles)) cueFiles = new List<string>(Directory.GetFiles(cuesFolder, "*.cues"));
@@ -56,10 +58,10 @@ namespace scripthea.composer
                 allCues = new List<CueItemUC>(); localCues = new List<List<CueItemUC>>(); 
                 foreach (string sf in _cueFiles)
                 {
-                    if (!File.Exists(sf)) { Log("Error[74]: File <" + sf + "> is missing."); continue; }
+                    if (!File.Exists(sf)) { opts.Log("Error[74]: File <" + sf + "> is missing."); continue; }
                     string se = System.IO.Path.GetFileNameWithoutExtension(sf);
                     if (!Utils.IsValidVarName(se.Replace('-','_'))|| (se.IndexOf('_') > -1)) 
-                        { Log("Error[741]: <" + se + "> is not valid cue list name. (only special char allowed is dash.)"); continue; }
+                        { opts.Log("Error[741]: <" + se + "> is not valid cue list name. (only special char allowed is dash.)"); continue; }
                     TabItem newTabItem = new TabItem()
                     {
                         Header = se,
@@ -97,14 +99,10 @@ namespace scripthea.composer
                 else ((TabItem)tcLists.Items[i]).Background = Utils.ToSolidColorBrush("#FFFFFFF0");
             }
         }
-        public event Utils.LogHandler OnLog;
-        protected void Log(string txt, SolidColorBrush clr = null)
-        {
-            if (OnLog != null) OnLog(txt, clr);
-        }
+        
         protected void AddCues(StackPanel sp, ref List<CueItemUC> ocl, string fn)
         {
-            if (!File.Exists(fn)) { Log("Error[22]: no <" + fn + "> file found"); return; }
+            if (!File.Exists(fn)) { opts.Log("Error[22]: no <" + fn + "> file found"); return; }
             List<string> cueText = new List<string>(File.ReadAllLines(fn));
             List<string> cueList = new List<string>();
             foreach (string ss in cueText)
@@ -119,8 +117,17 @@ namespace scripthea.composer
             {               
                 if (ss.Equals("---"))
                 {
+                    string cs = String.Join("|",ls.ToArray()); // fight duplicates
+                    bool found = false;
+                    foreach (CueItemUC ci in ocl)
+                    {
+                        string hs = String.Join("|", ci.cueTextAsList(true).ToArray());
+                        found = hs.Equals(cs, StringComparison.InvariantCultureIgnoreCase);
+                        if (found) break;
+                    }
+                    if (found) continue;
+
                     CueItemUC cue = new CueItemUC(ls);
-                    cue.OnLog += new Utils.LogHandler(Log);
                     cue.rbChecked.Checked += new RoutedEventHandler(Change); //cue.rbChecked.Unchecked += new RoutedEventHandler(Change);
                     cue.checkBox.Checked += new RoutedEventHandler(Change); cue.checkBox.Unchecked += new RoutedEventHandler(Change);
                     
@@ -129,7 +136,7 @@ namespace scripthea.composer
                 }
                 else
                 {
-                    ls.Add(ss);
+                    ls.Add(ss); 
                 }
             }
         }

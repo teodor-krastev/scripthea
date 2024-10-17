@@ -100,12 +100,12 @@ namespace scripthea.master
 
         public bool RemoveAt(int idx, bool inclFile = true) // idx in iDepot
         {
-            if (!Utils.InRange(idx, 0, iDepot.items.Count-1, true)) { Log("Error[485]: index out of range"); return false; }
+            if (!Utils.InRange(idx, 0, iDepot.items.Count-1, true)) { opts.Log("Error[485]: index out of range"); return false; }
             if (inclFile)
             {
                 string filepath = Path.Combine(imageDepot, iDepot.items[idx].filename);
                 if (File.Exists(filepath)) File.Delete(filepath);
-                else Log("Error[365]: file <" + filepath + " not found");
+                else opts.Log("Error[365]: file <" + filepath + " not found");
             }
             iDepot.items.RemoveAt(idx);
             return true;
@@ -185,7 +185,7 @@ namespace scripthea.master
                         iDepot.Save(!IsReadOnly); // save the changes on disk
                         activeView.Clear();
                         if (!activeView.FeedList(ref iDepot))  // update from iDepot
-                            { Log("Error[256]: fail to update image depot"); return; }                        
+                            { opts.Log("Error[256]: fail to update image depot"); return; }                        
                         GetChecked();
                     }
                 }
@@ -209,13 +209,7 @@ namespace scripthea.master
         protected void ChangeContent(object sender, RoutedEventArgs e)
         {
             GetChecked();
-        }
-        public event Utils.LogHandler OnLog;
-        protected void Log(string txt, SolidColorBrush clr = null)
-        {
-            if (OnLog != null) OnLog(txt, clr);
-            else Utils.TimedMessageBox(txt, "Information", 3000);
-        }
+        }        
         public void SetCheckLabel(string txt)
         {
             Utils.DelayExec(300, () => { lbChecked.Content = txt; }); //lbChecked.UpdateLayout(); //Utils.DoEvents();
@@ -223,7 +217,7 @@ namespace scripthea.master
         private int GetChecked(bool print = true) // returns numb. of checked
         {
             //if (print) SetCheckLabel("---");
-            if (!isEnabled || activeView == null) { /*Log("Error[]: No active image depot found.");*/ return -1; }
+            if (!isEnabled || activeView == null) { /*opts.Log("Error[]: No active image depot found.");*/ return -1; }
             List<Tuple<int, string, int, string>> itms = activeView.GetItems(true, false);
             if (print)
                 SetCheckLabel(itms.Count.ToString() + " out of " + activeView.Count.ToString());
@@ -236,7 +230,7 @@ namespace scripthea.master
             if (tbImageDepot.Text.Trim().Equals("")) { Clear(); return; }
             if (opts != null)
                 if (opts.composer.ImageDepotFolder.Equals(tbImageDepot.Text, StringComparison.InvariantCultureIgnoreCase) && opts.composer.QueryStatus == Status.Scanning)
-                { Log("Error[1279]: the working image folder is in process of updating.", Brushes.Red); tbImageDepot.Text = ""; return; }
+                { opts.Log("Error[1279]: the working image folder is in process of updating.", Brushes.Red); tbImageDepot.Text = ""; return; }
             if (SctUtils.checkImageDepot(tbImageDepot.Text, false) > 0) tbImageDepot.Foreground = Brushes.Black;
             else tbImageDepot.Foreground = Brushes.Red;
             int iCount = SctUtils.checkImageDepot(tbImageDepot.Text, true); 
@@ -286,7 +280,7 @@ namespace scripthea.master
                     if (msk.StartsWith("[") && msk.EndsWith("]")) 
                     {
                         int i0, i1; (i0, i1) = SctUtils.rangeMask(msk, activeView.Count);
-                        if (i0 == -1 || i1 == -1) { Log("Error[575]: Wrong range syntax, it must be [num..num] ."); return; }
+                        if (i0 == -1 || i1 == -1) { opts.Log("Error[575]: Wrong range syntax, it must be [num..num] ."); return; }
                         else activeView.CheckRange(i0,i1);
                     } 
                     else activeView.MarkWithMask(msk);
@@ -337,10 +331,10 @@ namespace scripthea.master
             if (activeView.iDepot != null)
             {
                 if (!Utils.comparePaths(iDepot.path, activeView.loadedDepot)) // avoid reload already loaded depot
-                    activeView.FeedList(ref iDepot); //if (!) Log("Error[]: fail to create grid image depot(1)");
+                    activeView.FeedList(ref iDepot); //if (!) opts.Log("Error[]: fail to create grid image depot(1)");
             }
             else
-                activeView.FeedList(ref iDepot); // if (!) Log("Error[]: fail to create grid image depot(2)");
+                activeView.FeedList(ref iDepot); // if (!) opts.Log("Error[]: fail to create grid image depot(2)");
             if (lastTab == null) { lastTab = (TabItem)tcMain.SelectedItem; return; } // first load
             if (tcMain.SelectedItem.Equals(tiGrid))            
                 gridView.SynchroChecked(listView.GetItems(true, false));
