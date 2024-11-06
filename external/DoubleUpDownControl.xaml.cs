@@ -62,10 +62,8 @@ namespace scripthea.external
         private void ResetText(TextBox tb)
         {
             tb.Text = 0 < Minimum ? Minimum.ToString() : "0";
-
             tb.SelectAll();
         }
-
         private void value_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             return;
@@ -83,11 +81,15 @@ namespace scripthea.external
             try
             {
                 double val;
-                if (double.TryParse(tb.Text, out val)) { TextBoxValue.Foreground = Brushes.Black; Value = val; }
-                else { TextBoxValue.Foreground = Brushes.Red; return; }
-                if (Value < Minimum) Value = Minimum;
-                if (Value > Maximum) Value = Maximum;
-                //ValueChanged(this, new RoutedEventArgs());
+                if (!double.TryParse(tb.Text, out val)) 
+                { 
+                    TextBoxValue.Foreground = Brushes.Red; return;                    
+                }
+                TextBoxValue.Foreground = Brushes.Black; 
+                if (val < Minimum) val = Minimum;
+                if (val > Maximum) val = Maximum;
+                _Value = val;
+                ValueChanged(this, new RoutedEventArgs());
             }
             finally { lockText = false; }
         }

@@ -2,11 +2,11 @@
   "3": {
     "inputs": {
       "seed": $seed$,
-      "steps": 21,
+      "steps": $steps$,
       "cfg": $cfg$,
       "sampler_name": $sampler_name$,
       "scheduler": "karras",
-      "denoise": 1,
+      "denoise": $denoise$,
       "model": [
         "4",
         0

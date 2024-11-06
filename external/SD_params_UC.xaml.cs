@@ -89,7 +89,7 @@ namespace scripthea.external
 
         private static readonly List<string> ComfyParams = new List<string> // in internal names
         {
-            "prompt", "negative_prompt", "width", "height", "sampler_name", "seed", "cfg_scale", "steps", "denoising_strength", "model"
+            "prompt", "negative_prompt", "width", "height", "sampler_name", "seed", "cfg_scale", "steps", "denoising_strength", "model"//, "template"
         };
         public static List<string> curParams { get { return A1111 ? A1111Params : ComfyParams; } }
         public static bool CheckParam(string nm)
@@ -105,7 +105,9 @@ namespace scripthea.external
                 //if (ComfyParams.IndexOf(p.Key) == -1) Utils.TimedMessageBox("Error: in translation, unknown parameter: " + p.Key);
                 switch (p.Key)
                 {
-                    case "prompt": t.Add("positive", p.Value);
+                    case "prompt":
+                        string ss = Convert.ToString(p.Value).Replace('\"', '`').Replace('\'', '`');
+                        t.Add("positive", ss);
                         break;
                     case "negative_prompt": t.Add("negative", p.Value);
                         break;
@@ -125,6 +127,7 @@ namespace scripthea.external
                     case "width":
                     case "height":
                     case "steps":
+                    //case "template":
                     case "model": t.Add(p.Key, p.Value);
                         break;
                 }
@@ -164,7 +167,7 @@ namespace scripthea.external
             return true;
         }
     }
-    public class SDlist: Dictionary<string,SDsetting> // change to ordered dictionary later
+    public class SDlist: Dictionary<string, SDsetting> // change to ordered dictionary later
     {
         public string filename { get; private set; }
         public Dictionary<string,string> Header { get; private set; }
@@ -371,10 +374,10 @@ namespace scripthea.external
         }
         protected void CfgAdjust(object sender, double value)
         {
-            if (locked) return;
+            /*if (locked) return;
             _vPrms["cfg_scale"] = nsCFGscale.Value;
-            _vPrms["denoising_strength"] = nsDenoise.Value;
-            CheckDifference(vPrms);
+            _vPrms["denoising_strength"] = nsDenoise.Value;*/
+            visual2prms(sender, null); //CheckDifference(vPrms); 
         }
         protected void visual2prms(object sender, RoutedEventArgs e) // live update
         {

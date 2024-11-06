@@ -68,7 +68,6 @@ namespace scripthea.master
         public UserControl parrent { get { return this; } }
         public GroupBox groupFolder { get { return gbFolder; } }
         public TextBox textFolder { get { return tbImageDepot; } }
-
         public void BindData()
         {
             Binding binding = new Binding("."); //ItemsSource="{Binding Path=., Mode=TwoWay}"  SourceUpdated="OnTargetUpdated"
@@ -77,7 +76,6 @@ namespace scripthea.master
             binding.Source = dTable;
             dGrid.SetBinding(DataGrid.ItemsSourceProperty, binding);
         }
-
         private string _imageFolder;
         public string imageFolder
         {
@@ -91,8 +89,7 @@ namespace scripthea.master
             {
                 _imageFolder = value; //tbImageDepot.Text = value;
             }
-        }
-        
+        }        
         public void btnNewFolder_Click(object sender, RoutedEventArgs e)
         {
             if (!Utils.isNull(sender))

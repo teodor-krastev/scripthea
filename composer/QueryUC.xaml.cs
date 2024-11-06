@@ -610,16 +610,16 @@ namespace scripthea.composer
         }
         public void CuePoolSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (!(sender is TabControl)) return;
-            int tci = (sender as TabControl).SelectedIndex; int pc = cuePoolUC.poolCount;
-            gridSingle.IsEnabled = tci < pc; gridPrompt.IsEnabled = gridSingle.IsEnabled;
-            gridScan.IsEnabled = tci < pc || tci == pc + 1; 
+            if (sender != cuePoolUC.tabControl) { Utils.TimedMessageBox("wrong sender"); return; }
+            TabItem ti = cuePoolUC.tabControl.SelectedItem as TabItem;
+            if (ti == null) return;
+            gridSingle.IsEnabled = ti.Equals(cuePoolUC.tiA_pool) || ti.Equals(cuePoolUC.tiB_pool) || ti.Equals(cuePoolUC.tiImageDepot);
+            gridPrompt.IsEnabled = gridSingle.IsEnabled; gridScan.IsEnabled = gridSingle.IsEnabled;
         }
         private void btnCopy_Click(object sender, RoutedEventArgs e)
         {
             Clipboard.SetText(prompt); 
         }
-
         //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         #region sMacro
         public List<string> SelectCues(int percentage, int idx)

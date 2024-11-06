@@ -138,8 +138,7 @@ namespace scripthea.external
                                 else opts.Log("Error[342]: wrong image file");                                
                             }
                             QueryComplete(Path.Combine(imageFolder, iInfo.filename), true); // hooray ;)
-                            iiList?.Add(new Tuple<string, string>(iInfo.prompt,iInfo.filename));
-                            
+                            iiList?.Add(new Tuple<string, string>(iInfo.prompt,iInfo.filename));                            
                         }
                         else { opts.Log("Error[195]: image file lost"); return; } 
                     }

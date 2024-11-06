@@ -48,6 +48,12 @@
                             </StackPanel>
                         </GroupBox>
                         <CheckBox x:Name="chkOneLineCue" Content="One line cue" Width="95" Margin="314,46,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Checked="UpdateToOptions" Unchecked="UpdateToOptions" IsChecked="True" Visibility="Collapsed"  />
+                        <Button x:Name="btnCopy" Margin="0,0,3,3" VerticalAlignment="Bottom" HorizontalAlignment="Right" Background="{x:Null}" ToolTip="Copy current prompt to clipboard" Cursor="Hand" Width="30" Height="28" BorderBrush="#FFCECECE" Click="btnCopy_Click">
+                            <ContentControl>
+                                <Image x:Name="imgCopy" Margin="0,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" Height="20" Width="25" ToolTip="Copy to clipboard" Cursor="Hand" Source="/Scripthea;component/Properties/copy1a.png"/>
+                            </ContentControl>
+                        </Button>
+
                     </Grid>
                 </TabItem>
                 <TabItem x:Name="tiScan" Header="Scan" Height="28" Background="#FFECECEC" Margin="5,0,-9.063,0.089" HorizontalAlignment="Left" Width="90" BorderBrush="#FF6C009C" Style="{StaticResource RoundedTopTabItemStyle}">
@@ -83,11 +89,6 @@
                     </Grid>
                 </TabItem>
             </TabControl>
-            <Button x:Name="btnCopy" Margin="0,0,3,0" VerticalAlignment="Top" HorizontalAlignment="Right" Background="{x:Null}" ToolTip="Copy current prompt to clipboard" Cursor="Hand" Width="30" Height="28" BorderBrush="#FFCECECE" Click="btnCopy_Click">
-                <ContentControl>
-                    <Image x:Name="imgCopy" Margin="0,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" Height="20" Width="25" ToolTip="Copy to clipboard" Cursor="Hand" Source="/Scripthea;component/Properties/copy1a.png"/>
-                </ContentControl>
-            </Button>
 
             <GridSplitter x:Name="gridSplitCue" HorizontalAlignment="Stretch" Height="5" Margin="0" Grid.Row="2" VerticalAlignment="Top"/>
             <local:CuePoolUC x:Name="cuePoolUC"  Margin="0,6,0,0" Grid.Row="3"/>
