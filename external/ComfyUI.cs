@@ -148,7 +148,11 @@ namespace scripthea.external
                 if (item.Value.ContainsKey("class_type"))
                     if ((string)item.Value["class_type"] == "KSampler") KSampler = item.Key;
             }
-            if ((long)(workflowJson[KSampler]["inputs"]["seed"]) <= 0) workflowJson[KSampler]["inputs"]["seed"] = Convert.ToString(seed(15));
+            JToken KSseed = null;
+            try { KSseed = workflowJson[KSampler]["inputs"]["seed"]; }
+            catch (Exception ex) { } 
+            if (KSseed != null)
+                if ((long)(KSseed) <= 0) workflowJson[KSampler]["inputs"]["seed"] = Convert.ToString(seed(15));
 
             log("JSON parsed.");
             int expectedNodes = workflowJson.Count;

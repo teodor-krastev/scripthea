@@ -65,6 +65,10 @@ namespace scripthea.master
 
             tcMain.SelectedIndex = 1;
         }
+        public void Finish()
+        {
+
+        }
         public UserControl parrent { get { return this; } }
         public GroupBox groupFolder { get { return gbFolder; } }
         public TextBox textFolder { get { return tbImageDepot; } }

@@ -218,6 +218,8 @@ namespace scripthea
             opts.sMacro.HelpWidth = Convert.ToInt32(pyCode.colHelpWidth);
 
             pyCode.Finish();
+            importUtilUC.Finish();
+            exportUtilUC.Finish();
             queryUC.Finish();
             viewerUC.Finish();
             dirTreeUC.Finish();

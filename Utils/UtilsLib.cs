@@ -874,7 +874,7 @@ namespace UtilsNS
             {
                 if (sp.IndexOf('*').Equals(-1) && sp.IndexOf('?').Equals(-1)) sp = '*' + sp + '*';
             }
-            return Regex.IsMatch(text, WildCardToRegular(sp));
+            return Regex.IsMatch(text, WildCardToRegular(sp), RegexOptions.IgnoreCase);
         }
         public static List<string> ReadMultilineTextFromClipboard(bool RemoveEmptyEntries = true)
         {

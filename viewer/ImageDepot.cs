@@ -194,7 +194,7 @@ namespace scripthea.viewer
             if (dict.ContainsKey("steps")) steps = Convert.ToInt64(dict["steps"]);
             if (dict.ContainsKey("sampler_name")) sampler_name = Convert.ToString(dict["sampler_name"]);
             if (dict.ContainsKey("cfg_scale")) cfg_scale = Convert.ToDouble(dict["cfg_scale"]);
-            seed = dict.ContainsKey("seed") ? Convert.ToInt64(dict["seed"]) : -1;
+            seed = dict.ContainsKey("seed") ? Convert.ToInt64(dict["seed"]) : 0;
             if (dict.ContainsKey("width")) width = Convert.ToInt64(dict["width"]);
             if (dict.ContainsKey("height")) height = Convert.ToInt64(dict["height"]);
             denoising_strength = dict.ContainsKey("denoising_strength") ? Convert.ToDouble(dict["denoising_strength"]) : 0;

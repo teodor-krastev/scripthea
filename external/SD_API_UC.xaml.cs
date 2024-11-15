@@ -101,7 +101,7 @@ namespace scripthea.external
         };
         public bool GenerateImage(string imgFile, Dictionary<string, object> inParams, out Dictionary<string, object> outParams) // prompt is in inParams
         {
-            string info = ""; outParams = null;
+            string info = ""; outParams = null; long seed = 0;
             if (!Directory.Exists(Path.GetDirectoryName(imgFile))) { return false; }
             if (!CheckObjDict(inParams, possParams)) { return false; }
             bool rslt = false;
@@ -129,12 +129,13 @@ namespace scripthea.external
                 }
                 else // ComfyUI
                 {
-                    ComfyUIclass clue = new ComfyUIclass();
+                    ComfyUIclass clue = new ComfyUIclass(); 
                     Dictionary<string, object> cParams = SDside.Translate2Comfy(inParams);
                     string wf;
                     //wf = cUtils.Workflow("workflow_defaults.json", cParams);
                     wf = cUtils.actualWorkflow(opts.general.ComfyTemplate, cParams);
-                    if (opts.general.debug) File.WriteAllText(Path.Combine(Utils.configPath, Path.ChangeExtension(opts.general.ComfyTemplate, ".json")), wf);
+                    string wf_dir = Path.Combine(Utils.configPath, "workflows");
+                    if (Directory.Exists(wf_dir)) File.WriteAllText(Path.Combine(wf_dir, Path.ChangeExtension(opts.general.ComfyTemplate, ".json")), wf);
                     rslt = cUtils.IsValidJson(wf);
                     if (rslt)
                     {
@@ -143,7 +144,7 @@ namespace scripthea.external
 
                         if (historyOut != null)
                         {
-                            (string promptId, string filename, string subfolder, bool success) = cUtils.DeconOut(historyOut);
+                            (string promptId, string filename, long seedOut, string subfolder, bool success) = cUtils.DeconOut(historyOut);
 
                             if (success)
                             {
@@ -153,6 +154,7 @@ namespace scripthea.external
                                 string imagePath = Path.Combine(folder, filename);
                                 if (File.Exists(imagePath)) File.Move(imagePath, imgFile);
                                 else Log("Error: image file <" + imagePath + "> not found");
+                                seed = seedOut;
                             }
                             rslt = success;
                         }
@@ -182,6 +184,7 @@ namespace scripthea.external
                     outParams = new Dictionary<string, object>(inParams);
                     outParams["filename"] = Path.GetFileName(imgFile);
                     outParams["MD5Checksum"] = Utils.GetMD5Checksum(imgFile);
+                    outParams["seed"] = seed;
                 }
             }
             return rslt;
@@ -364,7 +367,7 @@ namespace scripthea.external
                 if (!File.Exists(tmpl)) { Console.WriteLine("Error: no file <" + tmpl + ">"); return ""; }
                 List<string> wf = actualWorkflowList(new List<string>(File.ReadAllLines(tmpl)), cParams);
                 if (wf == null) { Console.WriteLine("Error: in workflow template"); return ""; }
-                Utils.writeList(Path.ChangeExtension(tmpl, ".json"), wf);
+                //Utils.writeList(Path.ChangeExtension(tmpl, ".json"), wf);
                 return Convert.ToString(String.Join("\n", wf.ToArray())); //File.ReadAllText(Path.Combine(Utils.configPath,Path.ChangeExtension(template, ".json"))); 
             }
             catch (System.NullReferenceException e) { return "Error[3642]: wrong parameter(s)"; }
@@ -452,9 +455,9 @@ namespace scripthea.external
             catch (System.NullReferenceException e) { return null; }
         }
 
-        public static (string promptId, string filename, string subfolder, bool success) DeconOut(JObject historyOut)
+        public static (string promptId, string filename, long seed, string subfolder, bool success) DeconOut(JObject historyOut)
         {
-            try
+            try // assuming certain history structure !!!
             {
                 if (historyOut == null) throw new Exception();
                 if (historyOut.Count == 0) throw new Exception();
@@ -464,17 +467,24 @@ namespace scripthea.external
                 bool success = (string)pis["status_str"] == "success" && (bool)pis["completed"];
                 if (!historyOut.ContainsKey(promptId)) throw new Exception();
                 if (historyOut[promptId]["outputs"] == null) throw new Exception();
+
+                JToken piseed = null;
+                try { piseed = historyOut[promptId]["prompt"][2]["3"]["inputs"]["seed"]; }
+                catch(Exception ex) { }
+                long seed = piseed != null ? (long)piseed: 0;
+                
                 JToken pid = historyOut[promptId]["outputs"].First.First;
                 if (pid["images"] == null) throw new Exception();
                 JToken pif = pid["images"][0];
-                string filename = (string)pif["filename"];
-                string subfolder = (string)pif["subfolder"];
 
-                return (promptId, filename, subfolder, success);
+                string filename = (string)pif["filename"];
+                string subfolder = (string)pif["subfolder"]; // ?
+
+                return (promptId, filename, seed, subfolder, success);
             }
             catch (System.NullReferenceException e)
             {
-                return ("", "", "", false);
+                return ("", "",0, "", false);
             }
         }
         // after JObject historyOut = await clue.SendGet<JObject>($"http://{clue.serverAddress}/history", CancellationToken.None);

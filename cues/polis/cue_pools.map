@@ -1,1 +1,1 @@
-[{"city":true,"town":true,"village":true,"houses":true},{"bridges":true,"souvenir":false,"crowd":true}]
+[{"city":true,"town":true,"village":true,"houses":true,"bridges":true,"souvenir":true,"crowd":true},{}]

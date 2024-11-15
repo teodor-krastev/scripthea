@@ -499,6 +499,10 @@ namespace scripthea.composer
             if (!CheckAPIready()) return;
             if (opts.composer.SingleAuto != Options.SingleAutoSet.none) Compose(null, false); status = Status.SingeQuery;
             string pro = Compose(sender, cuePoolUC.ActiveCueList?.selectedCues()[0].cueTextAsList(true), modifiersUC.Composite(), false); // TO BE CLEARED !!! selection from image depot problem
+            if (pro.Trim().Equals(""))
+            {
+                if (!Utils.ConfirmationMessageBox("The prompt is empty! Continue anyway... ?")) { status = Status.Idle; return; }
+            }
             QueryAPI(pro); 
         }
         private void tbCue_TextChanged(object sender, TextChangedEventArgs e)

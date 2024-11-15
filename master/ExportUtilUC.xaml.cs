@@ -32,18 +32,27 @@ namespace scripthea.master
         {
             InitializeComponent();
         }
-        private Options opts;
+        private Options opts; Dictionary<string, string> wopts;
         public void Init(ref Options _opts)
         {
             opts = _opts;
             iPicker.Init(ref _opts);
             List<string> ls = new List<string>(new string[] { "keep image types", "export all as .PNG", "export all as .JPG" });
-            Button btnExport = iPicker.Configure(' ', ls, "Rename files to prompts", "Create web-page", "Export", true);
+            Button btnExport = iPicker.Configure(' ', ls, "Rename files to prompts", "Webpage options", "Export", true);
             btnExport.Click += new RoutedEventHandler(Export); btnExport.ToolTip = "Export image depot to another folder with optional web-page viewer";
-            OnChangeDepot(null, null); iPicker.chkCustom2.IsChecked = true;
+            OnChangeDepot(null, null);             
+            iPicker.chkCustom2.IsChecked = false; iPicker.chkCustom2.Checked += chkCustom2Checked_Checked; iPicker.chkCustom2.Unchecked += chkCustom2Checked_Checked;
             iPicker.OnChangeDepot += new RoutedEventHandler(OnChangeDepot);
-            iPicker.AddMenuItem("Convert .PNG to .JPG").Click += new RoutedEventHandler(ConvertPNG2JPG); 
-        }       
+            iPicker.AddMenuItem("Convert .PNG to .JPG").Click += new RoutedEventHandler(ConvertPNG2JPG);
+
+            wopts = Utils.readDict(Path.Combine(Utils.configPath, "export-template.opts"));
+            Wopts2Visuals();
+        }          
+        public void Finish()
+        {
+            Visuals2Wopts(false);
+            Utils.writeDict(Path.Combine(Utils.configPath, "export-template.opts"), wopts);
+        }
         private void OnChangeDepot(object sender, RoutedEventArgs e)
         {
             iPicker.btnCustom.IsEnabled = iPicker.isEnabled; 
@@ -71,8 +80,7 @@ namespace scripthea.master
                 }
             } finally { Mouse.OverrideCursor = null; }
             Utils.TimedMessageBox("PNG to JPG conversion successful!\r\r"+ cnt.ToString()+" JPG images created in "+ fd, "Info", 3500);    
-        }
-    
+        }    
         private void Export(object sender, RoutedEventArgs e)
         {
             if (!iPicker.isEnabled) return;
@@ -84,15 +92,21 @@ namespace scripthea.master
                 if (lot.Count.Equals(0)) { opts.Log("Error[887]: not checked images."); return; }
 
                 string sourceFolder = iPicker.iDepot.path; string targetFolder = "";
-                CommonOpenFileDialog dialog = new CommonOpenFileDialog();
-                //dialog.InitialDirectory = ImgUtils.defaultImageDepot;
-                dialog.Title = "Select a folder for the exported image depot";
+                CommonOpenFileDialog dialog = new CommonOpenFileDialog(); //dialog.InitialDirectory = ImgUtils.defaultImageDepot;
+                dialog.Title = "Select an empty folder for the exported image depot";
                 dialog.IsFolderPicker = true;
                 if (dialog.ShowDialog() == CommonFileDialogResult.Ok) targetFolder = dialog.FileName;
                 else return;
                 if (targetFolder.Equals(sourceFolder, StringComparison.InvariantCultureIgnoreCase))
                 {
                     opts.Log("Error[761]: source and target folders must be different."); return;
+                }
+                string[] files = Directory.GetFiles(targetFolder);                     
+                if (files.Length > 0)
+                {
+                    if (!Utils.ConfirmationMessageBox("Target folder <"+targetFolder+"> is not empty.\n Do you like me to clear the content?")) return;
+                    foreach (string file in files)
+                        File.Delete(file);
                 }
                 string tfn = ""; List<Tuple<int, string, int, string>> filter = new List<Tuple<int, string, int, string>>();
                 foreach (var itm in lot)
@@ -118,28 +132,84 @@ namespace scripthea.master
                     tffn = ImgUtils.CopyToImageToFormat(sffn, tffn, iFormat);
                     if (tffn != "") filter.Add(new Tuple<int, string, int, string>(itm.Item1, itm.Item2, itm.Item3, Path.GetFileName(tffn)));
                 }
-                if (iPicker.chkCustom2.IsChecked.Value)
-                {
+                if (!Visuals2Wopts(true)) return;
+                bool bcw = wopts != null;
+                if (bcw) bcw &= wopts.ContainsKey("createWebpage");
+                if (bcw) bcw &= wopts["createWebpage"] == "1";
+                if (bcw)
+                {                    
                     ImageDepot vdf = iPicker.iDepot.VirtualClone(targetFolder, filter);
                     if (Utils.isNull(vdf)) return;
                     List<string> ls = Utils.readList(Path.Combine(Utils.configPath, "export-template.xhml"), false);
-                    Dictionary<string, string> opts = Utils.readDict(Path.Combine(Utils.configPath, "export-template.opts"));
                     Dictionary<string, object> rep = new Dictionary<string, object>();
-                    foreach (var pair in opts) rep.Add(pair.Key, Convert.ToString(pair.Value));
+                    foreach (var pair in wopts) rep.Add(pair.Key, Convert.ToString(pair.Value));
+                    if (tbWebpageTitle.Text.Trim() == "") rep.Add("pageTitle", "Scripthea images generated by Stable Diffusion");
+                    else rep.Add("pageTitle", tbWebpageTitle.Text.Trim());
+
                     List<string> li = new List<string>();
                     foreach (ImageInfo ii in vdf.items)
                         li.Add(ii.To_String() + ",");
                     rep.Add("IMAGES", li);
+                    vdf.Save(true);
                     List<string> lt = Utils.CreateFromTemplate(ls, rep);
                     Utils.writeList(Path.Combine(targetFolder, "Scripthea-images.html"), lt);
-                    if (opts.ContainsKey("showWebpage"))
-                        if (Convert.ToInt32(opts["showWebpage"]) == 1)
-                            Utils.CallTheWeb(Path.Combine(targetFolder, "Scripthea-images.html"));
+                    Utils.CallTheWeb(Path.Combine(targetFolder, "Scripthea-images.html"));
                 }
                 opts.Log(lot.Count.ToString() + " images have been exported to " + targetFolder);
             }
             finally { Mouse.OverrideCursor = null; iPicker.btnCustom.Background = Brushes.White; }
-        }    
+        }
+        private void Wopts2Visuals() 
+        {
+            if (wopts == null) return;
+            if (wopts.ContainsKey("showPrompt")) chkShowPrompt.IsChecked = wopts["showPrompt"] == "1";
+            if (wopts.ContainsKey("showFilename")) chkShowFilename.IsChecked = wopts["showFilename"] == "1";
+            if (wopts.ContainsKey("createWebpage")) chkCreateWebpage.IsChecked = wopts["createWebpage"] == "1";
+
+            if (wopts.ContainsKey("imgWidth")) tbImgWidth.Text = wopts["imgWidth"].Trim('%');
+            if (wopts.ContainsKey("imgPerRow")) tbImgPerRow.Text = wopts["imgPerRow"];
+        }
+        private void chkCustom2Checked_Checked(object sender, RoutedEventArgs e)
+        {
+            if (iPicker.chkCustom2.IsChecked.Value) rowWebOptions.Height = new GridLength(70);
+            else rowWebOptions.Height = new GridLength(1);
+        }
+        private bool Visuals2Wopts(bool errorMsg)
+        {
+            void CondMsg(string msg)
+            {
+                if (errorMsg) Utils.TimedMessageBox(msg, "Error", 3000);
+            }
+            if (wopts == null) wopts = new Dictionary<string, string>();
+            wopts["showPrompt"] = chkShowPrompt.IsChecked.Value ? "1" : "0";
+            wopts["showFilename"] = chkShowFilename.IsChecked.Value ? "1" : "0";
+            wopts["createWebpage"] = chkCreateWebpage.IsChecked.Value ? "1" : "0";
+
+            int iw = 100;
+            if (!int.TryParse(tbImgWidth.Text, out iw))
+            {
+                CondMsg("Syntax error: " + tbImgWidth.Text); return false;
+            }
+            if (!Utils.InRange(iw, 10,100))
+            {
+                CondMsg("Out of range error: [10..100] " + tbImgWidth.Text);
+                iw = Utils.EnsureRange(iw, 10, 100); tbImgWidth.Text = iw.ToString();
+            }
+            wopts["imgWidth"] = iw.ToString()+'%';
+
+            int ir = 5;
+            if (!int.TryParse(tbImgPerRow.Text, out ir))
+            {
+                CondMsg("Syntax error: " + tbImgPerRow.Text); return false;
+            }
+            if (!Utils.InRange(ir, 2, 20))
+            {
+                CondMsg("Out of range error: [2..20] " + tbImgPerRow.Text);
+                iw = Utils.EnsureRange(ir, 2, 20); tbImgPerRow.Text = ir.ToString();
+            }
+            wopts["imgPerRow"] = ir.ToString();
+            return true;
+        }
     }
 }
 
