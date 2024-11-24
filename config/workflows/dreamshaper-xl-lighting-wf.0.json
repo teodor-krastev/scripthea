@@ -4,7 +4,7 @@
       "seed": 0,
       "steps": 5,
       "cfg": 2,
-      "sampler_name": "dpmpp_sde",
+      "sampler_name": "euler_ancestral",
       "scheduler": "karras",
       "denoise": 1,
       "model": [
@@ -31,7 +31,7 @@
   },
   "4": {
     "inputs": {
-      "ckpt_name": "DreamShaperXL_Lightning.safetensors"
+      "ckpt_name": "LCM_Dreamshaper_v7_4k.safetensors"
     },
     "class_type": "CheckpointLoaderSimple",
     "_meta": {
@@ -51,7 +51,7 @@
   },
   "6": {
     "inputs": {
-      "text": "",
+      "text": "The cloud was a white ribbon upon the velvet sky, making a half-spiral as if fluttering in lofty breezes. From below it decorated the sky, from above it decorate the earth, a gift of beauty to surpass any silken or woven cloth.",
       "clip": [
         "4",
         1
@@ -64,7 +64,7 @@
   },
   "7": {
     "inputs": {
-      "text": "text, watermark,lowres, worst quality, low quality,",
+      "text": "",
       "clip": [
         "4",
         1

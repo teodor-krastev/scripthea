@@ -457,23 +457,27 @@ namespace scripthea.external
 
         public static (string promptId, string filename, long seed, string subfolder, bool success) DeconOut(JObject historyOut)
         {
-            try // assuming certain history structure !!!
+            try // assuming certain historyOut structure !!!
             {
                 if (historyOut == null) throw new Exception();
                 if (historyOut.Count == 0) throw new Exception();
                 string promptId = historyOut.Properties().First().Name;
+                if (!historyOut.ContainsKey(promptId)) throw new Exception("Base {"+ promptId +"} is missing");
 
-                JToken pis = historyOut[promptId]["status"];
+                JToken pip = historyOut[promptId];
+                if (pip == null) throw new Exception();
+
+                JToken pis = pip["status"];
                 bool success = (string)pis["status_str"] == "success" && (bool)pis["completed"];
-                if (!historyOut.ContainsKey(promptId)) throw new Exception();
-                if (historyOut[promptId]["outputs"] == null) throw new Exception();
+                if (pip["outputs"] == null) throw new Exception();
 
                 JToken piseed = null;
-                try { piseed = historyOut[promptId]["prompt"][2]["3"]["inputs"]["seed"]; }
+                try { piseed = pip["prompt"][2]["3"]["inputs"]["seed"]; }
                 catch(Exception ex) { }
                 long seed = piseed != null ? (long)piseed: 0;
-                
-                JToken pid = historyOut[promptId]["outputs"].First.First;
+
+                JToken pid = pip["outputs"];
+                pid = pid.First.First;
                 if (pid["images"] == null) throw new Exception();
                 JToken pif = pid["images"][0];
 

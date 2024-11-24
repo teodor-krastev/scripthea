@@ -28,9 +28,20 @@
 		<img border="0" src="http://scripthea.com/images/v3line-6wp.png" width="16" height="2000">
 	    </td>
 	    <td align="left" valign="top">	    
-		    <p align="center"><font face="Lucida Calligraphy" size="4">$pageTitle$
-                    <a target="_blank" href="https://scripthea.com">
-			<img border="0" src="http://scripthea.com/images/penpic1wp.png" width="30" align="right"></font></a></p>	    
+		    	         <table id="title-table" width="100%" >
+		      <tr>
+		        <td align=center>
+		        	<font face="Lucida Calligraphy" size="4">$pageTitle$
+                    		</font>	
+		        </td>
+		        <td align=right>
+		        	<a target="_blank" href="https://scripthea.com">
+				<img border="0" src="http://scripthea.com/images/penpic1wp.png" width="30"></a>&nbsp;&nbsp;&nbsp;&nbsp; 
+				<font face="Lucida Sans" size="3"><a href="DESCRIPTION.idf" target=_blank>IDF</a> &nbsp; </font>		        
+		       </td>		      
+	                    </tr>
+		    </table>
+
 		    <table id="image-table" width="100%" >
 		      <tr>
 		        <!-- Insert image cells here -->

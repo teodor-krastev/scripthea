@@ -314,7 +314,7 @@ namespace scripthea.composer
             if (status.Equals(Status.Scanning)) opts.Log("@StartGeneration (" + (scanPromptIdx+1).ToString() + " / " + scanPrompts.Count.ToString() + ")");
             else opts.Log("@StartGeneration (single)");
             if (status.Equals(Status.Scanning) && scanPreviewUC.scanning) // move selection
-                scanPreviewUC.selectByPropmt(prompt);
+                scanPreviewUC.selectByIndex(scanPromptIdx); //scanPreviewUC.selectByPropmt(prompt);
             API.Query(prompt, opts.composer.ImageDepotFolder); opts.Log("-=-=-", Brushes.DarkOrange);
         }
         private string lastSingleImage = "";

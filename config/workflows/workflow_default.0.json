@@ -2,9 +2,9 @@
   "3": {
     "inputs": {
       "seed": 0,
-      "steps": 2,
-      "cfg": 1,
-      "sampler_name": "euler_ancestral",
+      "steps": 4,
+      "cfg": 1.2,
+      "sampler_name": "euler",
       "scheduler": "karras",
       "denoise": 1,
       "model": [
@@ -31,7 +31,7 @@
   },
   "4": {
     "inputs": {
-      "ckpt_name": "model-hub_sd_xl_turbo_1.0.safetensors"
+      "ckpt_name": "sd3.5_large_turbo.safetensors"
     },
     "class_type": "CheckpointLoaderSimple",
     "_meta": {
@@ -51,7 +51,7 @@
   },
   "6": {
     "inputs": {
-      "text": "Sure, you can try to build a gadget town, but you`ll always know you were never smart enough to get invited to the real one.; Van Gogh",
+      "text": "The houses were such happy compatriots upon that bonny rolling land. In all their hues, in all brightnesses of sun or cleansing rains, they were a picture well worth the painting.; Jacek Yerka",
       "clip": [
         "4",
         1

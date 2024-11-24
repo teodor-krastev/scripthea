@@ -236,14 +236,14 @@ namespace scripthea.master
             int iCount = SctUtils.checkImageDepot(tbImageDepot.Text, true); 
             if (iCount > -1)
             {
-                iDepot = new ImageDepot(tbImageDepot.Text, ImageInfo.ImageGenerator.FromDescFile, IsReadOnly);
+                iDepot = new ImageDepot(tbImageDepot.Text, ImageInfo.ImageGenerator.FromDescFile, ImageDepot.SD_WebUI.NA, IsReadOnly);
                 if (iCount == 0) isValidFolder = null;
                 else { isValidFolder = true; SetCheckLabel("processing..."); }
             }
             else 
             {
                 if (Directory.Exists(tbImageDepot.Text)) 
-                    iDepot = new ImageDepot(tbImageDepot.Text, SctUtils.DefaultImageGenerator, IsReadOnly);
+                    iDepot = new ImageDepot(tbImageDepot.Text, SctUtils.DefaultImageGenerator, ImageDepot.SD_WebUI.NA, IsReadOnly);
                 else iDepot = null;
                 isValidFolder = false;
             }

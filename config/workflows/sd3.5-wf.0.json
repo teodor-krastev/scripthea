@@ -1,12 +1,12 @@
 {
   "3": {
     "inputs": {
-      "seed": $seed$,
-      "steps": $steps$,
-      "cfg": $cfg$,
-      "sampler_name": $sampler_name$,
+      "seed": 0,
+      "steps": 4,
+      "cfg": 1.2,
+      "sampler_name": "euler",
       "scheduler": "sgm_uniform",
-      "denoise": $denoise$,
+      "denoise": 1,
       "model": [
         "4",
         0
@@ -31,7 +31,7 @@
   },
   "4": {
     "inputs": {
-      "ckpt_name": $model$
+      "ckpt_name": "sd3.5_large_turbo.safetensors"
     },
     "class_type": "CheckpointLoaderSimple",
     "_meta": {
@@ -69,7 +69,7 @@
   },
   "16": {
     "inputs": {
-      "text": $positive$,
+      "text": "The clouds are puffs of white magic in acres of blue. They are the brilliance of a new page upon a sky canvas of such consistent hue.; J.M.W. Turner",
       "clip": [
         "43",
         0
@@ -82,7 +82,7 @@
   },
   "40": {
     "inputs": {
-      "text": $negative$,
+      "text": "",
       "clip": [
         "43",
         0
@@ -127,8 +127,8 @@
   },
   "53": {
     "inputs": {
-      "width": $width$,
-      "height": $height$,
+      "width": 1024,
+      "height": 1024,
       "batch_size": 1
     },
     "class_type": "EmptySD3LatentImage",

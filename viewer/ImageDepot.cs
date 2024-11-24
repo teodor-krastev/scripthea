@@ -25,7 +25,8 @@ namespace scripthea.viewer
 {
     public class ImageInfo
     {
-        public enum ImageGenerator { StableDiffusion, ExtGen, Craiyon, AddonGen, FromDescFile } 
+        public enum ImageGenerator { StableDiffusion, ExtGen, Craiyon, AddonGen, FromDescFile }
+        
         // StableDiffusion coverts SD and Addon Gen if the latter is created from within Scrithea, in most cases identical
         // 
         // ExtGen is for unknown source, not meta data, later to be fill in from Image Depot Editor
@@ -291,7 +292,7 @@ namespace scripthea.viewer
         public static bool ClearEntriesImageDepot = true;
         public static bool Old2New(string idf)
         {
-            ImageDepot imageDepot = new ImageDepot(idf, ImageInfo.ImageGenerator.FromDescFile, true);
+            ImageDepot imageDepot = new ImageDepot(idf, ImageInfo.ImageGenerator.FromDescFile, ImageDepot.SD_WebUI.NA, true);
             imageDepot.Save(true);
             return true;
         }
@@ -325,7 +326,9 @@ namespace scripthea.viewer
     }
     public class ImageDepot
     {
-        public ImageDepot(string _folder, ImageInfo.ImageGenerator _imageGenerator = ImageInfo.ImageGenerator.FromDescFile, bool _IsReadOnly = false)
+        public enum SD_WebUI { NA, A1111, ComfyUI }
+        public SD_WebUI sd_WebUI;
+        public ImageDepot(string _folder, ImageInfo.ImageGenerator _imageGenerator = ImageInfo.ImageGenerator.FromDescFile, SD_WebUI _sd_WebUI = SD_WebUI.NA, bool _IsReadOnly = false)
         {
             if (!Directory.Exists(_folder)) return; isReadOnly = _IsReadOnly; string desc = Path.Combine(_folder, SctUtils.descriptionFile);
             header = new Dictionary<string, string>(); items = new List<ImageInfo>();
@@ -354,6 +357,13 @@ namespace scripthea.viewer
                         {
                             if (ig.Equals(header["ImageGenerator"])) imageGenerator = ig;
                         }
+                    sd_WebUI = SD_WebUI.NA;
+                    if (imageGenerator.Equals(ImageInfo.ImageGenerator.StableDiffusion) &&  header.ContainsKey("webui"))
+                    {
+                        string webui = header["webui"];                       
+                        if (webui.Equals("AUTOMATIC1111") || webui.Equals("A1111")) sd_WebUI = SD_WebUI.A1111;
+                        if (webui.Equals("ConmfyUI")) sd_WebUI = SD_WebUI.ComfyUI;
+                    }
                     if (header.ContainsKey("application"))
                     {
                         string[] sa = header["application"].Split(' ');
@@ -372,7 +382,7 @@ namespace scripthea.viewer
             else
             {
                 imageGenerator = _imageGenerator; header.Add("ImageGenerator", imageGenerator.ToString());
-                header.Add("webui", "AUTOMATIC1111"); header.Add("application", "Scripthea " + Utils.getAppFileVersion);
+                header.Add("webui", _sd_WebUI.ToString()); header.Add("application", "Scripthea " + Utils.getAppFileVersion);
             }
             if (ImageDepotConvertor.ClearEntriesImageDepot) Validate(true); // remove entries without files and save it
         }
@@ -410,7 +420,7 @@ namespace scripthea.viewer
         public ImageDepot VirtualClone(string targetPath, List<Tuple<int, string, int, string>> filter = null) // int -> index; string -> filename (may differ); string -> prompt (for consistency)
         {
             if (!Directory.Exists(targetPath)) return null;
-            ImageDepot dp = new ImageDepot(targetPath, imageGenerator, isReadOnly);
+            ImageDepot dp = new ImageDepot(targetPath, imageGenerator, sd_WebUI, isReadOnly);
             if (Utils.isNull(filter)) dp.items.AddRange(items);
             else
             {

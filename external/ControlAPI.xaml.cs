@@ -127,7 +127,13 @@ namespace scripthea.external
                             string desc = Path.Combine(imageFolder, SctUtils.descriptionFile);
                             if (!File.Exists(desc)) // create an empty iDepot 
                             {
-                                ImageDepot df = new ImageDepot(imageFolder, activeAPIname.Equals("SDiffusion") ? ImageInfo.ImageGenerator.StableDiffusion : ImageInfo.ImageGenerator.AddonGen, true);
+                                ImageInfo.ImageGenerator ig = activeAPIname.Equals("SDiffusion") ? ImageInfo.ImageGenerator.StableDiffusion : ImageInfo.ImageGenerator.AddonGen;
+                                ImageDepot.SD_WebUI sdw = ImageDepot.SD_WebUI.NA; // default
+                                if (ig.Equals(ImageInfo.ImageGenerator.StableDiffusion))
+                                {
+                                    sdw = (opts.composer.A1111) ? ImageDepot.SD_WebUI.A1111 : ImageDepot.SD_WebUI.ComfyUI;
+                                }
+                                ImageDepot df = new ImageDepot(imageFolder, ig, sdw, true);
                                 df.Save(true); df = null;
                             }
                             using (StreamWriter sw = File.AppendText(desc))

@@ -247,6 +247,12 @@ namespace scripthea.composer
             }
             return ls;
         }
+        public void selectByIndex(int idx) // 0-based
+        {
+            if (DataGridHelper.SetFocusOnRow(dGrid, Utils.EnsureRange(idx, 0, dTable.Rows.Count - 1)) == null) return;
+            if (!dGrid.IsFocused) dGrid.Focus();
+            if (dGrid.SelectedItem != null) dGrid.ScrollIntoView(dGrid.SelectedItem);
+        }
         public void selectByPropmt(string pr)
         {
             for (int i = 0; i < dTable.Rows.Count; i++)

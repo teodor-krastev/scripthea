@@ -1,5 +1,5 @@
-showPrompt=1
+showPrompt=0
 showFilename=0
 imgWidth=100%
-imgPerRow=6
+imgPerRow=5
 createWebpage=1
