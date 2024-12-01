@@ -171,8 +171,10 @@ namespace scripthea.external
     {
         public string filename { get; private set; }
         public Dictionary<string,string> Header { get; private set; }
-        public SDlist(string fn = "") 
+        protected Options opts;
+        public SDlist(ref Options _opts, string fn = "")
         {
+            opts = _opts;
             filename = fn.Equals("") ? Path.Combine(Utils.configPath,"SD_params.cfg") : fn;
             List<string> ls = Utils.readList(filename, false);
             if (Utils.isNull(ls)) throw new Exception("file <" + filename + "> is missing");
@@ -199,7 +201,8 @@ namespace scripthea.external
         public void Save()
         {
             List<string> ls = new List<string>();
-            ls.Add("#{\"ImageGenerator\":\"StableDiffusion\",\"webui\":\"parameters\",\"application\":\"Scripthea "+Utils.getAppFileVersion+"\"}");
+            string webui = opts == null ? "SD-ComfyUI" : opts.composer.API; 
+            ls.Add("#{\"ImageGenerator\":\"StableDiffusion\",\"webui\":\""+webui+"\",\"application\":\"Scripthea "+Utils.getAppFileVersion+"\"}");
             foreach (var pair in this)
                 ls.Add(pair.Key + "=" + JsonConvert.SerializeObject(pair.Value));
             Utils.writeList(filename, ls);
@@ -263,7 +266,7 @@ namespace scripthea.external
                 nsHeight.Init("Height", 512, 64, 2048, 10); nsHeight.lbTitle.Foreground = chkKeepRatio.Foreground;
                 nsSamplingSteps.Init("Sample.steps", 20, 1, 150, 1);  nsCFGscale.Init("CFG.scale", 7, 1, 30, 0.1); nsDenoise.Init("Denoise", 1, 0, 1, 0.01);
                 // sd settings
-                sdList = new SDlist(); 
+                sdList = new SDlist(ref opts); 
                 int k = sdList.UpdateCombo(opts.general.LastSDsetting, cbSettings); 
                 if (sdList.ContainsKey(opts.general.LastSDsetting)) _vPrms = new SDsetting(sdList[opts.general.LastSDsetting]);
                 else

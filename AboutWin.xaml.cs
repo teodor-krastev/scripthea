@@ -51,7 +51,7 @@ namespace scripthea
             if ((timeSpan.Days - lastChecked) >= 14  || lastChecked.Equals(-1)) 
             {
                 string msg; 
-                bool bb = IsUpdateAvalaible(out msg);
+                bool bb = IsUpdateAvalaible(out msg); if (!bb && msg == "") return;
                 lbMessage.Content = msg;
                 if (bb) { opts.general.LastUpdateCheck = timeSpan.Days; lbMessage.Foreground = Brushes.OrangeRed; }
                 else lbMessage.Foreground = Brushes.Green;
@@ -67,6 +67,10 @@ namespace scripthea
         }
         public bool IsUpdateAvalaible(out string msg) // return a message to show
         {
+            if (!Utils.CheckFileExists(@"https://scripthea.com/scripthea.xml"))
+            {
+                Utils.TimedMessageBox(@"Error[927]: pad file https://scripthea.com/scripthea.xml is not avalable!", "Error", 5000); msg = "";  return false;
+            }
             string remVer = ""; string[] sl = Utils.getAppFileVersion.Split('.'); 
             Dictionary<string, string> pad = readPAD(readXml(@"https://scripthea.com/scripthea.xml"));
             bool ok = true;

@@ -204,6 +204,7 @@ namespace scripthea.master
         protected void ChangeDepot(object sender, RoutedEventArgs e)
         {
             if (OnChangeDepot != null) OnChangeDepot(sender, e);
+            activeView.SetChecked(true);
             tbImageDepot.Foreground = Brushes.Black;
         }
         protected void ChangeContent(object sender, RoutedEventArgs e)
@@ -242,8 +243,15 @@ namespace scripthea.master
             }
             else 
             {
-                if (Directory.Exists(tbImageDepot.Text)) 
-                    iDepot = new ImageDepot(tbImageDepot.Text, SctUtils.DefaultImageGenerator, ImageDepot.SD_WebUI.NA, IsReadOnly);
+                if (Directory.Exists(tbImageDepot.Text))
+                {
+                    ImageDepot.SD_WebUI sdw = ImageDepot.SD_WebUI.NA; // default
+                    if (opts.composer.API.StartsWith("SD"))
+                    {
+                        sdw = (opts.composer.A1111) ? ImageDepot.SD_WebUI.A1111 : ImageDepot.SD_WebUI.ComfyUI;
+                    }
+                    iDepot = new ImageDepot(tbImageDepot.Text, SctUtils.DefaultImageGenerator, sdw, IsReadOnly);
+                }               
                 else iDepot = null;
                 isValidFolder = false;
             }
@@ -260,7 +268,8 @@ namespace scripthea.master
             if (iDepot != null) 
                 if (iDepot.isEnabled) ChangeDepot(iDepot, null);
             lastTab = null;
-            tcMain_SelectionChanged(null, null); 
+            tcMain_SelectionChanged(null, null);
+            activeView.SetChecked(true);
             GetChecked();
         }
         private void mi_Click(object sender, RoutedEventArgs e)

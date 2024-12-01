@@ -31,7 +31,7 @@
   },
   "4": {
     "inputs": {
-      "ckpt_name": "dreamshaper_4BakedVae.safetensors"
+      "ckpt_name": "DreamShaper_4BakedVae.safetensors"
     },
     "class_type": "CheckpointLoaderSimple",
     "_meta": {
@@ -51,7 +51,7 @@
   },
   "6": {
     "inputs": {
-      "text": "Upon the bus ride that new day, the clouds blossomed pink as if in visual empathy with the poppy red paint below.; Jacek Yerka",
+      "text": "In the gloom pick up your loom and weave light into every thread you can, you are my Rapunzel turning straw into gold.; impressionism ; Wassily Kandinsky",
       "clip": [
         "4",
         1
@@ -91,40 +91,27 @@
       "title": "VAE Decode"
     }
   },
-  "9": {
+  "10": {
+    "inputs": {
+      "text": "Scripthea template: workflow_ext-save.cftm"
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "Comment"
+    }
+  },
+  "11": {
     "inputs": {
       "filename_prefix": "ComfyUI",
+      "file_type": "PNG",
       "images": [
         "8",
         0
       ]
     },
-    "class_type": "SaveImage",
+    "class_type": "SaveImageExtended",
     "_meta": {
-      "title": "Save Image"
+      "title": "Save Image (Extended)"
     }
   }
-  "11":{
-      "type": "Note",
-      "pos": [
-        113,
-        541
-      ],
-      "size": {
-        "0": 210,
-        "1": 58
-      },
-      "flags": {},
-      "order": 2,
-      "mode": 0,
-      "properties": {
-        "text": ""
-      },
-      "widgets_values": [
-        "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-      ],
-      "color": "#432",
-      "bgcolor": "#653"
-    }
-
 }

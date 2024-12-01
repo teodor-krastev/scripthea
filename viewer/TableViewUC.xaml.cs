@@ -104,14 +104,15 @@ namespace scripthea.viewer
             }
             catch { }
         }
-        public void SetChecked(bool? check)
+        public void SetChecked(bool? check) // null -> invert
         {
             if (!checkable) return;
             foreach (DataRow row in dTable.Rows)
             {                
                 if (check == null) row["on"] = !Convert.ToBoolean(row["on"]);
                 else row["on"] = Convert.ToBoolean(check);
-            }            
+            }
+            //BindData(); dGrid.UpdateLayout();
         }
                 
         public string imageFolder { get { return iDepot?.path; } }

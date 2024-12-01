@@ -503,6 +503,7 @@ namespace scripthea
         private void btnPreferences_Click(object sender, RoutedEventArgs e)
         {
             preferencesWindow.ShowWindow(tabControl.SelectedIndex, dirTreeUC.history);
+
             if (opts.sMacro.pythonEnabled) tiSMacro.Visibility = Visibility.Visible;
             else { if (tabControl.SelectedItem == tiSMacro) tabControl.SelectedIndex = 0; tiSMacro.Visibility = Visibility.Collapsed; }
         }

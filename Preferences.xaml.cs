@@ -104,7 +104,9 @@ namespace scripthea
         {            
             history = new List<string>(_history);
             opts2visuals();
-            ShowDialog();
+            try { ShowDialog(); }
+            catch (Exception ex) 
+                { Utils.TimedMessageBox(@"Error[927]: pad file https://scripthea.com/scripthea.xml is not avalable. RESTART !", "Error", 5000); opts.general.UpdateCheck = false; keepOpen = false; this.Close(); }           
         }
         /// <summary>
         /// Accepting and saving the changes

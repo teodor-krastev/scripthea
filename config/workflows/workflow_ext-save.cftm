@@ -1,12 +1,12 @@
 {
   "3": {
     "inputs": {
-      "seed": 0,
-      "steps": 25,
-      "cfg": 7,
-      "sampler_name": "euler_ancestral",
+      "seed": $seed$,
+      "steps": $steps$,
+      "cfg": $cfg$,
+      "sampler_name": $sampler_name$,
       "scheduler": "karras",
-      "denoise": 1,
+      "denoise": $denoise$,
       "model": [
         "4",
         0
@@ -31,7 +31,7 @@
   },
   "4": {
     "inputs": {
-      "ckpt_name": "dreamshaper_4BakedVae.safetensors"
+      "ckpt_name": $model$
     },
     "class_type": "CheckpointLoaderSimple",
     "_meta": {
@@ -40,8 +40,8 @@
   },
   "5": {
     "inputs": {
-      "width": 1024,
-      "height": 862,
+      "width": $width$,
+      "height": $height$,
       "batch_size": 1
     },
     "class_type": "EmptyLatentImage",
@@ -51,7 +51,7 @@
   },
   "6": {
     "inputs": {
-      "text": "Upon the bus ride that new day, the clouds blossomed pink as if in visual empathy with the poppy red paint below.; Jacek Yerka",
+      "text": $positive$,
       "clip": [
         "4",
         1
@@ -64,7 +64,7 @@
   },
   "7": {
     "inputs": {
-      "text": "",
+      "text": $negative$,
       "clip": [
         "4",
         1
@@ -91,40 +91,27 @@
       "title": "VAE Decode"
     }
   },
-  "9": {
+  "10": {
+    "inputs": {
+      "text": $template$
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "Comment"
+    }
+  },
+  "11": {
     "inputs": {
       "filename_prefix": "ComfyUI",
+      "file_type": "PNG",
       "images": [
         "8",
         0
       ]
     },
-    "class_type": "SaveImage",
+    "class_type": "SaveImageExtended",
     "_meta": {
-      "title": "Save Image"
+      "title": "Save Image (Extended)"
     }
   }
-  "11":{
-      "type": "Note",
-      "pos": [
-        113,
-        541
-      ],
-      "size": {
-        "0": 210,
-        "1": 58
-      },
-      "flags": {},
-      "order": 2,
-      "mode": 0,
-      "properties": {
-        "text": ""
-      },
-      "widgets_values": [
-        "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-      ],
-      "color": "#432",
-      "bgcolor": "#653"
-    }
-
 }

@@ -11,6 +11,8 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+//using System.Drawing;
+using System.Drawing.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Path = System.IO.Path;
@@ -19,6 +21,7 @@ using Brushes = System.Windows.Media.Brushes;
 using UtilsNS;
 using System.Windows.Media.Animation;
 using Image = System.Windows.Controls.Image;
+using CompactExifLib;
 
 namespace UtilsNS
 {
@@ -293,6 +296,82 @@ namespace UtilsNS
             catch (Exception e) { Utils.TimedMessageBox("Error (I/O): " + e.Message, "Error message", 3000); return false; }
             return itemMap.Count > 0;
         }
+        public static bool GetMetadataStringComfy(string imageFilePath, out string meta)
+        {
+            meta = "";
+            if (!Path.GetExtension(imageFilePath).ToLower().Equals(".png")) return false;
+            var query = "/tEXt/{str=prompt}";
+            try
+            {
+                using (Stream fileStream = File.Open(imageFilePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+                {
+                    var decoder = BitmapDecoder.Create(fileStream, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.None);
+                    BitmapMetadata bitmapMetadata = decoder.Frames[0].Metadata as BitmapMetadata;
+                    if (bitmapMetadata == null) return false;
+                    var metadata = bitmapMetadata.GetQuery(query);
+                    meta = metadata?.ToString(); if (meta == null) { return false; }                    
+                }
+            }
+            catch (Exception e) { Utils.TimedMessageBox("Error (I/O): " + e.Message, "Error message", 3000); return false; }
+            return true;
+        }
+
+        public static int workflow_id = 37510;
+        public static string GetJpgMetadata(string imagePath)
+        {
+            if (!File.Exists(imagePath)) { Utils.TimedMessageBox("Error: file <" + imagePath + "> not found"); return ""; }
+            if (GetImageType(imagePath) != ImageType.Jpg) { Utils.TimedMessageBox("Error: file <" + imagePath + "> is not jpeg type"); return ""; }
+            using (System.Drawing.Image image = System.Drawing.Image.FromFile(imagePath))
+            {
+                foreach (PropertyItem property in image.PropertyItems)
+                {
+                    if (property.Id.Equals(workflow_id)) return Encoding.UTF8.GetString(property.Value).Trim(); //&& property.Type.Equals(2)
+                }
+            }
+            return "";
+        }
+        public static string GetJpgMetadataExt(string imagePath)
+        {
+            if (!File.Exists(imagePath)) { Utils.TimedMessageBox("Error: file <" + imagePath + "> not found"); return ""; }
+            if (GetImageType(imagePath) != ImageType.Jpg) { Utils.TimedMessageBox("Error: file <" + imagePath + "> is not jpeg type"); return ""; }
+
+            Dictionary<string, string> dct = new Dictionary<string, string>(); 
+            using (System.Drawing.Image image = System.Drawing.Image.FromFile(imagePath))
+            {
+                foreach (PropertyItem property in image.PropertyItems)
+                {
+                    //if (property.Id.Equals(0x010E) && property.Type.Equals(2)) return Encoding.UTF8.GetString(property.Value).Trim(); // for description
+                    dct.Add(property.Id.ToString()+":"+ property.Type.ToString(), Encoding.ASCII.GetString(property.Value).Trim());
+                }
+            }
+            //Utils.writeDict(@"d:/meta.txt", dct);
+            return "";
+        }
+        public static bool SaveJpgWfAware(string imagePng, string imageJpg, bool exportJson)
+        {
+            if (!File.Exists(imagePng)) { Utils.TimedMessageBox("Error: file <" + imagePng + "> not found"); return false; }
+            if (GetImageType(imagePng) != ImageType.Png) { Utils.TimedMessageBox("Error: file <" + imagePng + "> is not of png type"); return false; }
+            if (GetImageType(imageJpg) != ImageType.Jpg) { Utils.TimedMessageBox("Error: file <" + imageJpg + "> is not of jpeg type"); return false; }
+
+            string meta = "";  GetMetadataStringComfy(imagePng, out meta);
+            if (exportJson && meta != "") File.WriteAllText(Path.ChangeExtension(imageJpg, ".json"), meta);
+
+            CopyToImageToFormat(imagePng, imageJpg, ImageType.Jpg);
+
+            return true; // SetJpgMetadata(imageJpg, meta);
+        }
+           
+        public static bool SetJpgMetadata(string imagePath, string workflow)
+        {
+            if (!File.Exists(imagePath)) { Utils.TimedMessageBox("Error: file <" + imagePath + "> not found"); return false; }
+            if (GetImageType(imagePath) != ImageType.Jpg) { Utils.TimedMessageBox("Error: file <" + imagePath + "> is not jpeg type"); return false; }
+            if (workflow == "") { Utils.TimedMessageBox("Error: workflow is missing"); return false; }
+            ExifData d = new ExifData(imagePath);            
+            if (d.SetTagValue(ExifTag.UserComment, workflow+"\0\0", StrCoding.Utf8)) d.Save();
+            else return false;
+            return true;
+        }
+
         public static bool SaveBitmapImageToDisk(BitmapImage bitmapImage, string filePath) // in PNG format
         {
             // Create a BitmapEncoder object
@@ -561,6 +640,54 @@ class Program
         }
     }
 }
+================================================================================================
+// meta from/to JPG
 
-}*/
+using System;
+using System.Drawing;
+using System.Drawing.Imaging;
+
+class Program
+{
+    static void Main()
+    {
+        string imagePath = "path_to_your_image.jpg";
+        using (Image image = Image.FromFile(imagePath))
+        {
+            foreach (PropertyItem property in image.PropertyItems)
+            {
+                Console.WriteLine($"ID: {property.Id}, Type: {property.Type}, Length: {property.Len}");
+            }
+        }
+    }
+}
+---------------------------------------------------------------------------------------------
+using System;
+using System.Drawing;
+using System.Drawing.Imaging;
+
+class Program
+{
+    static void Main()
+    {
+        string imagePath = "path_to_your_image.jpg";
+        string outputPath = "output_image.jpg";
+
+        using (Image image = Image.FromFile(imagePath))
+        {
+            // Get or create a PropertyItem
+            PropertyItem prop = image.PropertyItems[0];
+            prop.Id = 0x010E; // Example: PropertyTagImageDescription
+            prop.Type = 2; // ASCII
+            prop.Value = System.Text.Encoding.ASCII.GetBytes("My Description\0");
+            prop.Len = prop.Value.Length;
+
+            // Add the property to the image
+            image.SetPropertyItem(prop);
+            image.Save(outputPath);
+        }
+    }
+}
+
+*/
 

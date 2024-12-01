@@ -131,6 +131,7 @@ namespace scripthea.external
                 {
                     ComfyUIclass clue = new ComfyUIclass(); 
                     Dictionary<string, object> cParams = SDside.Translate2Comfy(inParams);
+                    cParams.Add("template", "Scripthea template: " + opts.general.ComfyTemplate);
                     string wf;
                     //wf = cUtils.Workflow("workflow_defaults.json", cParams);
                     wf = cUtils.actualWorkflow(opts.general.ComfyTemplate, cParams);
@@ -365,6 +366,7 @@ namespace scripthea.external
                 string tmpl = Path.Combine(Utils.configPath, template);
                 if (!File.Exists(tmpl)) tmpl = Path.Combine(Utils.configPath, "workflow_default.cftm");
                 if (!File.Exists(tmpl)) { Console.WriteLine("Error: no file <" + tmpl + ">"); return ""; }
+
                 List<string> wf = actualWorkflowList(new List<string>(File.ReadAllLines(tmpl)), cParams);
                 if (wf == null) { Console.WriteLine("Error: in workflow template"); return ""; }
                 //Utils.writeList(Path.ChangeExtension(tmpl, ".json"), wf);

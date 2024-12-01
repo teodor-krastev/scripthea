@@ -25,6 +25,7 @@ using MessageBox = System.Windows.Forms.MessageBox;
 using Label = System.Windows.Controls.Label;
 using FontFamily = System.Windows.Media.FontFamily;
 using System.Linq;
+using System.Net.Http;
 
 namespace UtilsNS
 {
@@ -770,6 +771,31 @@ namespace UtilsNS
             catch (WebException we) { TimedMessageBox(we.Message); bb = false; }
             return bb;
         }
+
+        public static bool CheckFileExists(string url) 
+        {
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    client.Timeout = TimeSpan.FromSeconds(10);
+                    // Create a HEAD request
+                    HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Head, url);
+
+                    // Send the request synchronously
+                    HttpResponseMessage response = client.SendAsync(request).GetAwaiter().GetResult();
+
+                    // Return true if the status code is 200 (OK)
+                    return response.IsSuccessStatusCode;
+                }
+            }
+            catch (HttpRequestException)
+            {
+                // Handle request exceptions (e.g., invalid URL, no network)
+                return false;
+            }
+        }
+
 
         /* PROBLEMS ??? 
          * https://www.csharp-examples.net/download-files/#:~:text=The%20simply%20way%20how%20to,want%20to%20save%20the%20file

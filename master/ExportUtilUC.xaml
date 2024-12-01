@@ -28,12 +28,15 @@
                     <TextBox x:Name="tbImgPerRow" HorizontalAlignment="Left" VerticalAlignment="Center" Width="60"></TextBox>
                 </StackPanel>
             </StackPanel>
-            <StackPanel Margin="13,10,0,0">
-                <CheckBox x:Name="chkCreateWebpage" Content="Create webpage at export location" HorizontalAlignment="Left" Margin="3,3,0,0" VerticalAlignment="Center"/>
-                <StackPanel Orientation="Horizontal" Margin="0,3,0,0">
+            <StackPanel Margin="13,10,0,0" Width="375">
+                <StackPanel Orientation="Horizontal" Width="375">
+                    <CheckBox x:Name="chkCreateWebpage" Content="Create webpage at export location" HorizontalAlignment="Left" Margin="3,3,0,0" VerticalAlignment="Center"/>
+                    <CheckBox x:Name="chkCreateJson" Content="Create json workflows" Margin="5,3,0,0" VerticalAlignment="Center"></CheckBox>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,3,0,0" Width="375">
                     <Label Content="Webpage title" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0"></Label>
-                        <TextBox x:Name="tbWebpageTitle" HorizontalAlignment="Left" VerticalAlignment="Center" Width="250"></TextBox>
-                    </StackPanel>
+                    <TextBox x:Name="tbWebpageTitle" HorizontalAlignment="Left" VerticalAlignment="Center" Width="280"></TextBox>
+                </StackPanel>
             </StackPanel>
         </StackPanel>
     </Grid>

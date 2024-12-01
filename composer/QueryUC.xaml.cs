@@ -766,6 +766,26 @@ namespace scripthea.composer
         #endregion
         private void btnTest_Click(object sender, RoutedEventArgs e)
         {
+            CommonOpenFileDialog dialog = new CommonOpenFileDialog(); //dialog.InitialDirectory = ImgUtils.defaultImageDepot;
+            dialog.Title = "Select an empty folder for the exported image depot";
+            dialog.IsFolderPicker = false;
+            if (dialog.ShowDialog() != CommonFileDialogResult.Ok) return;
+            string md = ""; string ext = "";
+            switch (ImgUtils.GetImageType(dialog.FileName))
+            {
+                case ImgUtils.ImageType.Jpg: md = ImgUtils.GetJpgMetadata(dialog.FileName); ext = ".jtx";
+                    break;
+                case ImgUtils.ImageType.Png: ImgUtils.GetMetadataStringComfy(dialog.FileName, out md); ext = ".ptx";
+                    break;
+            }
+            File.WriteAllText(Path.ChangeExtension(dialog.FileName, ext), md);
+
+
+            //string md = File.ReadAllText(@"d:/meta1.txt");// ImgUtils.GetJpgMetadataExt(@"d:/ComfyUI_00310_.jpg");
+
+            //ImgUtils.SetJpgMetadata(@"d:/24-11-09_10-18-56.jpg", md); //@"d:/test.jpg"
+            
+            opts.Log(md);
             /*List<string> files = new List<string>(Directory.GetFiles(tbImageDepot.Text, "*.png"));
             opts.Log(files.Count.ToString()+" files"); DateTime t0 = DateTime.Now;
             Dictionary<string, string> meta; int ns = 0;
@@ -775,10 +795,10 @@ namespace scripthea.composer
             }
             double t = (DateTime.Now - t0).TotalSeconds;
             opts.Log("time taken = "+t.ToString("G3")+" [sec]  "+ns.ToString()+" files OK");
-            opts.Log("time " + (t / ns).ToString("G3") + " [sec] per file");*/
+            opts.Log("time " + (t / ns).ToString("G3") + " [sec] per file");
             //CombiIndexes(3, 5);
-            opts.Log("=============================");
-            new MiniTimedMessage("===============").ShowDialog();
+           
+            new MiniTimedMessage("===============").ShowDialog();*/
 
 
         }

@@ -32,7 +32,7 @@ namespace scripthea.master
         {
             InitializeComponent();
         }
-        private Options opts; Dictionary<string, string> wopts;
+        private Options opts; Dictionary<string, string> wopts; private string exportOptions = Path.Combine(Utils.configPath, "export-template.opts");
         public void Init(ref Options _opts)
         {
             opts = _opts;
@@ -44,14 +44,14 @@ namespace scripthea.master
             iPicker.chkCustom2.IsChecked = false; iPicker.chkCustom2.Checked += chkCustom2Checked_Checked; iPicker.chkCustom2.Unchecked += chkCustom2Checked_Checked;
             iPicker.OnChangeDepot += new RoutedEventHandler(OnChangeDepot);
             iPicker.AddMenuItem("Convert .PNG to .JPG").Click += new RoutedEventHandler(ConvertPNG2JPG);
-
-            wopts = Utils.readDict(Path.Combine(Utils.configPath, "export-template.opts"));
+            iPicker.comboCustom.SelectionChanged += FileType_SelectionChanged;
+            wopts = Utils.readDict(exportOptions);
             Wopts2Visuals();
         }          
         public void Finish()
         {
             Visuals2Wopts(false);
-            Utils.writeDict(Path.Combine(Utils.configPath, "export-template.opts"), wopts);
+            Utils.writeDict(exportOptions, wopts);
         }
         private void OnChangeDepot(object sender, RoutedEventArgs e)
         {
@@ -59,10 +59,16 @@ namespace scripthea.master
             ImageDepot df = sender as ImageDepot;
             df?.Validate(null); 
         }
+        private void FileType_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (iPicker.comboCustom.SelectedIndex == 2) chkCreateJson.Visibility = Visibility.Visible;
+            else chkCreateJson.Visibility = Visibility.Collapsed;
+        }
+
         private void ConvertPNG2JPG(object sender, RoutedEventArgs e)
         {
             CommonOpenFileDialog dialog = new CommonOpenFileDialog();
-            dialog.InitialDirectory = SctUtils.defaultImageDepot;
+            dialog.InitialDirectory = iPicker.imageDepot == "" ? SctUtils.defaultImageDepot : iPicker.imageDepot;
             dialog.Title = "Select a PNG File";
             dialog.Multiselect = true; 
             dialog.DefaultExtension = ".png"; dialog.Filters.Add(new CommonFileDialogFilter("PNG images", "png"));
@@ -116,7 +122,7 @@ namespace scripthea.master
                     if (!Utils.validFileName(tfn)) tfn = itm.Item4; // prompt text not suitable for filename
                     string sffn = Path.Combine(iPicker.imageDepot, itm.Item4); // src full path
                     string tffn = Path.Combine(targetFolder, tfn);
-                    ImgUtils.ImageType iFormat = ImgUtils.ImageType.Unknown;
+                    ImgUtils.ImageType iFormat = ImgUtils.ImageType.Unknown; // intended (target) format
                     switch (iPicker.comboCustom.SelectedIndex)
                     {
                         case 0:
@@ -129,7 +135,22 @@ namespace scripthea.master
                             iFormat = ImgUtils.ImageType.Jpg;
                             break;
                     }
-                    tffn = ImgUtils.CopyToImageToFormat(sffn, tffn, iFormat);
+
+                    if (iFormat == ImgUtils.ImageType.Jpg)
+                    {
+                        ImgUtils.ImageType sFormat = ImgUtils.GetImageType(sffn);
+                        tffn = Path.ChangeExtension(tffn, ".jpg");
+                        switch (sFormat)
+                        {
+                            case ImgUtils.ImageType.Png: ImgUtils.SaveJpgWfAware(sffn, tffn, chkCreateJson.IsChecked.Value);
+                                break;
+                            case ImgUtils.ImageType.Jpg: File.Copy(sffn, tffn);
+                                break;
+                            default: opts.Log("Error: image types conflict");
+                                break;
+                        }
+                    }
+                    else tffn = ImgUtils.CopyToImageToFormat(sffn, tffn, iFormat);
                     if (tffn != "") filter.Add(new Tuple<int, string, int, string>(itm.Item1, itm.Item2, itm.Item3, Path.GetFileName(tffn)));
                 }
                 if (!Visuals2Wopts(true)) return;
@@ -165,6 +186,8 @@ namespace scripthea.master
             if (wopts.ContainsKey("showPrompt")) chkShowPrompt.IsChecked = wopts["showPrompt"] == "1";
             if (wopts.ContainsKey("showFilename")) chkShowFilename.IsChecked = wopts["showFilename"] == "1";
             if (wopts.ContainsKey("createWebpage")) chkCreateWebpage.IsChecked = wopts["createWebpage"] == "1";
+            if (wopts.ContainsKey("exportType")) iPicker.comboCustom.SelectedIndex = Convert.ToInt32(wopts["exportType"]);
+            if (wopts.ContainsKey("exportJson")) chkCreateJson.IsChecked = wopts["exportJson"] == "1";
 
             if (wopts.ContainsKey("imgWidth")) tbImgWidth.Text = wopts["imgWidth"].Trim('%');
             if (wopts.ContainsKey("imgPerRow")) tbImgPerRow.Text = wopts["imgPerRow"];
@@ -184,6 +207,8 @@ namespace scripthea.master
             wopts["showPrompt"] = chkShowPrompt.IsChecked.Value ? "1" : "0";
             wopts["showFilename"] = chkShowFilename.IsChecked.Value ? "1" : "0";
             wopts["createWebpage"] = chkCreateWebpage.IsChecked.Value ? "1" : "0";
+            wopts["exportType"] = iPicker.comboCustom.SelectedIndex.ToString();
+            wopts["exportJson"] = chkCreateJson.IsChecked.Value ? "1" : "0"; 
 
             int iw = 100;
             if (!int.TryParse(tbImgWidth.Text, out iw))
