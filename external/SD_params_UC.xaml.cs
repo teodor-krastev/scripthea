@@ -278,7 +278,7 @@ namespace scripthea.external
                 chkAutoSynch.IsChecked = opts.general.AutoRefreshSDsetting;               
                 // events
                 nsWidth.OnValueChanged += new NumericSliderUC.ValueChangedHandler(SizeAdjust); nsHeight.OnValueChanged += new NumericSliderUC.ValueChangedHandler(SizeAdjust);
-                nsSamplingSteps.dblBox.ValueChanged += new RoutedEventHandler(visual2prms); 
+                nsSamplingSteps.dblBox.OnValueChanged += new RoutedEventHandler(visual2prms); 
                 nsCFGscale.OnValueChanged += new DoubleSliderUC.ValueChangedHandler(CfgAdjust);  nsDenoise.OnValueChanged += new DoubleSliderUC.ValueChangedHandler(CfgAdjust);
             }            
             btnSetParams_Click(null, null); // update visual from setting/prms

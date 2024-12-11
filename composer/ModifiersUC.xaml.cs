@@ -56,6 +56,7 @@ namespace scripthea.composer
         {           
             ModifiersFolder = System.IO.Path.Combine(Utils.basePath, "modifiers");
             opts = _opts;
+            numSample.Maximum = 9; numSample.Minimum = 1;
             chkMSetsEnabled.IsChecked = opts.composer.mSetsEnabled; chkMSetsEnabled_Checked(null, null);
             chkAddEmpty.IsChecked = opts.composer.AddEmptyModif; 
             numSample.Value = Utils.EnsureRange(opts.composer.ModifSample, 1,9);

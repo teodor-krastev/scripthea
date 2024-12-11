@@ -1,8 +1,10 @@
-﻿<UserControl x:Class="scripthea.external.NumericBox"
-               xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+﻿<UserControl x:Class="scripthea.external.IntegerBox"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:scripthea.external"
+             mc:Ignorable="d" 
    Height="25" Width="80">
     <Border BorderBrush="#60000000" BorderThickness="0.5">
         <Grid Margin="1">
@@ -11,8 +13,7 @@
                 <ColumnDefinition Width="17" />
             </Grid.ColumnDefinitions>
 
-            <TextBox Name="TextBoxValue"
-					 PreviewTextInput="value_PreviewTextInput" TextChanged="value_TextChanged" PreviewKeyDown="value_PreviewKeyDown"					 
+            <TextBox Name="TextBoxValue"  TextChanged="value_TextChanged" PreviewKeyDown="value_PreviewKeyDown"					 
                      TextAlignment="Right"
 					 Grid.Column="0" Margin="0"/>
             <StackPanel Orientation="Vertical"

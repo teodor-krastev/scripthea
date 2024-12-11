@@ -35,7 +35,10 @@ namespace scripthea.external
         SDoptions opts; private NVidia nVidia;
         public void Init(ref SDoptions _opts)
         {
-            opts = _opts; opts2Visual(true); 
+            opts = _opts;
+            numGPUThreshold.Maximum = 100; numGPUThreshold.Minimum = 2;
+            numDly.Maximum = 100; numDly.Minimum = 2;
+            opts2Visual(true); 
         }
         public void Finish()
         {
@@ -138,7 +141,7 @@ namespace scripthea.external
         private void numGPUThreshold_ValueChanged(object sender, RoutedEventArgs e)
         {
             if (opts != null)
-                opts.GPUThreshold = (sender as NumericBox).Value;
+                opts.GPUThreshold = (sender as IntegerBox).Value;
         }
     }
 }

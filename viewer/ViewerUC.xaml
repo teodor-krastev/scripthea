@@ -59,7 +59,7 @@
                         <Image Source="/Scripthea;component/Properties/stop.png"  Cursor="Hand"></Image>
                     </ContentControl>
                 </Button>
-                <external:NumericBox x:Name="numDly" HorizontalAlignment="Left" Height="25" Margin="0,0,8,0" VerticalAlignment="Center" Width="47" Value="5" Minimum="1" Maximum="99" ValueChanged="numDly_ValueChanged" ToolTip="Delay to next image in slide show [s]"/>
+                <external:IntegerBox x:Name="numDly" HorizontalAlignment="Left" Height="25" Margin="0,0,8,0" VerticalAlignment="Center" Width="47" OnValueChanged="numDly_ValueChanged" ToolTip="Delay to next image in slide show [s]"/>
                 <Label x:Name="lbDepotInfo" Content="" VerticalAlignment="Top" Margin="0,0,5,0" HorizontalAlignment="Left" ></Label>
             </StackPanel>
             <TabControl x:Name="tabCtrlViews" Grid.Row="1" SelectedIndex="0" BorderBrush="{x:Null}" Panel.ZIndex="10" SelectionChanged="tabCtrlViews_SelectionChanged">

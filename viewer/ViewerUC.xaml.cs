@@ -72,6 +72,7 @@ namespace scripthea.viewer
         public void Init(ref Options _opts) // ■▬►
         {
             opts = _opts;
+            numDly.Minimum = 1; numDly.Maximum = 99;
             imageFolder = opts.composer.ImageDepotFolder; chkAutoRefresh.IsChecked = opts.viewer.Autorefresh; iDepot = null;
             colListWidth.Width = new GridLength(opts.composer.ViewColWidth);
             ImageDepotConvertor.AutoConvert = true; 
@@ -92,7 +93,7 @@ namespace scripthea.viewer
         public UserControl parrent { get { return this; } }
         public GroupBox groupFolder { get { return gbFolder; } }
         public TextBox textFolder { get { return tbImageDepot; } }
-
+        public string imageFolderShown { get; private set; }
         private string _imageFolder;
         public string imageFolder
         {
@@ -133,7 +134,6 @@ namespace scripthea.viewer
             {
                 if (OnLog != null) OnLog(txt, clr);
             }
-
             public void ClearState()
             {
                 ii = null; idx = -1; bitmapImage = null;
@@ -259,6 +259,8 @@ namespace scripthea.viewer
             iDepot = new ImageDepot(imageFolder);
             if (!iDepot.isEnabled) { Log("Error[96]: This is not an image depot."); return; }
             else lbDepotInfo.Content = iDepot.items.Count.ToString() + " images"; 
+            imageFolderShown = imageFolder;
+
             List<Tuple<int, string, int, string>> decompImageDepot = iDepot.Export2Viewer(); 
             if (!Utils.isNull(decompImageDepot))
             {

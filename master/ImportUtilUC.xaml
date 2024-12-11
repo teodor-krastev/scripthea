@@ -17,13 +17,13 @@
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
-                    <ColumnDefinition Width="70"/>
+                    <ColumnDefinition Width="100"/>
                 </Grid.ColumnDefinitions>
                 <TextBox x:Name="tbImageDepot" Background="{x:Null}" Margin="0,2,2.962,-2" IsReadOnly="True" BorderThickness="0" TextChanged="tbImageDepot_TextChanged" >
                 </TextBox>
                 <Button x:Name="btnNewFolder" Grid.Column="1" Content="Browse" Click="btnNewFolder_Click" HorizontalAlignment="Left" Margin="5.038,0,0,-0.051" Width="60" Foreground="#FF0F8001" FontWeight="Bold" Background="White" Visibility="Collapsed">
                 </Button>
-                <Button x:Name="btnConvertFolder" Grid.Column="1" Content="Import" Click="btnConvertFolder_Click" HorizontalAlignment="Center" Margin="0" Width="65" Foreground="#FF0049BB" FontWeight="Bold" Background="White" IsEnabled="False" FontSize="13" FontFamily="Segoe UI Semibold" Style="{StaticResource RoundedButtonStyle}" ToolTip="Import images in a folder to an image depot"/>
+                <Button x:Name="btnConvertFolder" Grid.Column="1" Content="Import" Click="btnConvertFolder_Click" HorizontalAlignment="Center" Margin="0" Width="90" Foreground="#FF0049BB"  Background="White" IsEnabled="False" FontSize="13" FontFamily="Segoe UI Semibold" Style="{StaticResource RoundedButtonStyle}" ToolTip="Import images in a folder to an image depot"/>
             </Grid>
         </GroupBox>
         <Grid Grid.Row="1">

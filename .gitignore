@@ -388,3 +388,6 @@ FodyWeavers.xsd
 /config/sd3.5-wf.1.json
 /docs/LLM prompt guides
 /docs/presentation format
+/config/workflows/step-back
+/config/workflows/dreamshaper-xl-lighting-wf.0.H.json
+/config/workflows/dreamshaper-xl-lighting-wf.0.Q.json

@@ -129,22 +129,24 @@ namespace scripthea.external
                 }
                 else // ComfyUI
                 {
-                    ComfyUIclass clue = new ComfyUIclass(); 
+                    ComfyUIclass clue = new ComfyUIclass(ref opts); 
                     Dictionary<string, object> cParams = SDside.Translate2Comfy(inParams);
                     cParams.Add("template", "Scripthea template: " + opts.general.ComfyTemplate);
                     string wf;
                     //wf = cUtils.Workflow("workflow_defaults.json", cParams);
                     wf = cUtils.actualWorkflow(opts.general.ComfyTemplate, cParams);
                     string wf_dir = Path.Combine(Utils.configPath, "workflows");
-                    if (Directory.Exists(wf_dir)) File.WriteAllText(Path.Combine(wf_dir, Path.ChangeExtension(opts.general.ComfyTemplate, ".json")), wf);
+                    if (Directory.Exists(wf_dir)) File.WriteAllText(Path.Combine(wf_dir, Path.ChangeExtension(opts.general.ComfyTemplate, ".Q.json")), wf);
                     rslt = cUtils.IsValidJson(wf);
                     if (rslt)
                     {
+
                         JObject historyOut = await clue.AwaitJobLive(wf, "0", output =>
                         { },  System.Threading.CancellationToken.None);
 
                         if (historyOut != null)
                         {
+                            if (Directory.Exists(wf_dir)) File.WriteAllText(Path.Combine(wf_dir, Path.ChangeExtension(opts.general.ComfyTemplate, ".H.json")), JsonConvert.SerializeObject(historyOut));
                             (string promptId, string filename, long seedOut, string subfolder, bool success) = cUtils.DeconOut(historyOut);
 
                             if (success)
@@ -154,14 +156,14 @@ namespace scripthea.external
                                 if (!Directory.Exists(folder)) Log("Error: image output folder <" + folder + "> is missing");
                                 string imagePath = Path.Combine(folder, filename);
                                 if (File.Exists(imagePath)) File.Move(imagePath, imgFile);
-                                else Log("Error: image file <" + imagePath + "> not found");
+                                else { Utils.TimedMessageBox("Error: image file <" + imagePath + "> not found"); rslt = false; return; }
                                 seed = seedOut;
                             }
                             rslt = success;
                         }
                         else rslt = false;
-                     }
-                    else Utils.TimedMessageBox("Error: wrong json format of the template.");
+                    }
+                    else Utils.TimedMessageBox("Error: in json (from template) sent to API.");
                 }
             });
             try
@@ -456,8 +458,8 @@ namespace scripthea.external
             }
             catch (System.NullReferenceException e) { return null; }
         }
-
-        public static (string promptId, string filename, long seed, string subfolder, bool success) DeconOut(JObject historyOut)
+        // deconstruct ComfyUI output
+        public static (string promptId, string filename, long seed, string subfolder, bool success) DeconOut(JObject historyOut) 
         {
             try // assuming certain historyOut structure !!!
             {

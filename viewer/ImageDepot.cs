@@ -32,7 +32,7 @@ namespace scripthea.viewer
         // ExtGen is for unknown source, not meta data, later to be fill in from Image Depot Editor
         public ImageInfo()
         {
-
+            
         }        
         public void ImageImport(string fullfilename, ImageGenerator _imageGenerator, bool keepName) // only for import from file
         {

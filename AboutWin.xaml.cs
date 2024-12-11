@@ -53,8 +53,9 @@ namespace scripthea
                 string msg; 
                 bool bb = IsUpdateAvalaible(out msg); if (!bb && msg == "") return;
                 lbMessage.Content = msg;
-                if (bb) { opts.general.LastUpdateCheck = timeSpan.Days; lbMessage.Foreground = Brushes.OrangeRed; }
+                if (bb) lbMessage.Foreground = Brushes.OrangeRed; 
                 else lbMessage.Foreground = Brushes.Green;
+                opts.general.LastUpdateCheck = timeSpan.Days; 
             }
             else
             {
@@ -72,7 +73,8 @@ namespace scripthea
                 Utils.TimedMessageBox(@"Error[927]: pad file https://scripthea.com/scripthea.xml is not avalable!", "Error", 5000); msg = "";  return false;
             }
             string remVer = ""; string[] sl = Utils.getAppFileVersion.Split('.'); 
-            Dictionary<string, string> pad = readPAD(readXml(@"https://scripthea.com/scripthea.xml"));
+            string plus = "?b=" + ((sl.Length > 3) ? sl[3] : "");
+            Dictionary<string, string> pad = readPAD(readXml(@"https://scripthea.com/scripthea.xml"+plus));
             bool ok = true;
             if (pad.ContainsKey("Program_Info.Program_Version")) remVer = pad["Program_Info.Program_Version"];
             else ok = false;

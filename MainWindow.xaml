@@ -8,7 +8,7 @@
         xmlns:python="clr-namespace:scripthea.python"
     x:Name="MainWindow1" x:Class="scripthea.MainWindow"
         mc:Ignorable="d"
-        Title="Scripthea - text-to-image prompt composer" Height="450" Width="1080.709" Loaded="MainWindow1_Loaded" Closing="MainWindow1_Closing" Icon="Properties/penzy4.png" FontSize="13" KeyDown="MainWindow1_KeyDown" PreviewKeyDown="MainWindow1_PreviewKeyDown">
+        Title="Scripthea - text-to-image prompt composer" Height="450" Width="1552.967" Loaded="MainWindow1_Loaded" Closing="MainWindow1_Closing" Icon="Properties/penzy4.png" FontSize="13" KeyDown="MainWindow1_KeyDown" PreviewKeyDown="MainWindow1_PreviewKeyDown">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="300" x:Name="pnlLog" MinWidth="100" MaxWidth="1000"/>
@@ -69,14 +69,13 @@
                 </Grid>
             </TabItem>
             <TabItem x:Name="tiDepotMaster" Header=" Image Depot Master " Width="136" Height="33" Background="#FFECECEC" HorizontalAlignment="Left"  Margin="12,0,-12,0" BorderBrush="#FFB95C57" Style="{StaticResource RoundedTopTabItemStyle}">
-                <Grid >
+                <Grid x:Name="gridIDMaster"  SizeChanged="depotMaster_SizeChanged">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition x:Name="colMasterWidth" Width="371*" MinWidth="600" MaxWidth="2000"/>
                         <ColumnDefinition Width="179*"/>
                     </Grid.ColumnDefinitions>
                     <master:DepotMasterUC x:Name="depotMaster" Margin="0"/>
-                    <GridSplitter x:Name="gridSplitterM" HorizontalAlignment="Left" Grid.Column="1" Margin="0" Width="5" Background="#FFE0EFFB"/>
-
+                    <GridSplitter x:Name="gridSplitterM" HorizontalAlignment="Left" Grid.Column="1" Margin="0" Width="5" Background="#FFE0EFFB" />
                 </Grid>
             </TabItem>
             <TabItem x:Name="tiUtils" Header="Import/Export" Width="110" Height="33" Background="#FFECECEC" HorizontalAlignment="Left" Margin="15,0,-15,0" BorderBrush="#FFCE8A00"  Style="{StaticResource RoundedTopTabItemStyle}">

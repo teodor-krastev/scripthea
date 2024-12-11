@@ -1,29 +1,8 @@
-﻿// http://www.CodeUnplugged.wordpress.com NotifyIcon for WPF
-// Copyright (c) 2010 Inderpreet Gujral
-// Contact and Information: http://www.CodeUnplugged.wordpress.com
-//
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the Code Project Open License (CPOL);
-// either version 1.0 of the License, or (at your option) any later
-// version.
-// 
-// The above copyright notice and this permission notice shall be
-// included in all copies or substantial portions of the Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-// OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-// OTHER DEALINGS IN THE SOFTWARE.
-//
-// THIS COPYRIGHT NOTICE MAY NOT BE REMOVED FROM THIS FILE
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -33,35 +12,32 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.Text.RegularExpressions;
 
 namespace scripthea.external
 {
     /// <summary>
-    /// Interaction logic for NumericBox.xaml
+    /// Interaction logic for IntegerUpDownControl.xaml
     /// </summary>
-
-    public partial class DoubleBox : UserControl
+    public partial class IntegerBox : UserControl
     {
-        public double Maximum = double.MaxValue; public double Minimum = double.MinValue; public double Interval = 0.5; public string DoubleFormat = "F2";
-        public DoubleBox()
+        public int Maximum = int.MaxValue; public int Minimum = int.MinValue; public int Interval = 1; 
+
+        public IntegerBox()
         {
             InitializeComponent();
-
             TextBoxValue.Text = "0";
         }
-
         public event RoutedEventHandler OnValueChanged;
-        protected void ValueChanged(object sender, RoutedEventArgs e) 
+        protected void ValueChanged(object sender, RoutedEventArgs e)
         {
-            if (OnValueChanged != null) OnValueChanged(sender,e);
+            if (OnValueChanged != null) OnValueChanged(sender, e);
         }
 
         private void ResetText(TextBox tb)
         {
             tb.Text = 0 < Minimum ? Minimum.ToString() : "0";
             tb.SelectAll();
-        }        
+        }
         bool lockText = false;
         private void value_TextChanged(object sender, TextChangedEventArgs e)
         {
@@ -70,16 +46,16 @@ namespace scripthea.external
             lockText = true;
             try
             {
-                double val;
-                if (!double.TryParse(tb.Text, out val)) 
-                { 
-                    TextBoxValue.Foreground = Brushes.Red; return;                    
+                int val;
+                if (!int.TryParse(tb.Text, out val))
+                {
+                    TextBoxValue.Foreground = Brushes.Red; return;
                 }
                 if ((val < Minimum) || (val > Maximum))
                 {
                     TextBoxValue.Foreground = Brushes.Red; return;
                 }
-                TextBoxValue.Foreground = Brushes.Black;            
+                TextBoxValue.Foreground = Brushes.Black;
                 _Value = val;
                 ValueChanged(this, new RoutedEventArgs());
             }
@@ -106,8 +82,8 @@ namespace scripthea.external
 
         /// <summary>The Value property represents the TextBoxValue of the control.</summary>
         /// <returns>The current TextBoxValue of the control</returns>      
-        private double _Value = 0;
-        public double Value
+        private int _Value = 0;
+        public int Value
         {
             get
             {
@@ -116,18 +92,18 @@ namespace scripthea.external
             set
             {
                 if (lockText) return;
-                _Value = value; 
+                _Value = value;
                 if (value < Minimum) _Value = Minimum;
-                if (value > Maximum) _Value = Maximum;                              
-                TextBoxValue.Text = _Value.ToString(DoubleFormat);
-                
+                if (value > Maximum) _Value = Maximum;
+                TextBoxValue.Text = _Value.ToString();
+
                 ValueChanged(this, new RoutedEventArgs());
             }
-        }       
+        }
         /// <summary>
         /// Minimum value of the numeric up down conrol.
         /// </summary>
-       
+
 
         /// <summary>
         /// Checking for Up and Down events and updating the value accordingly
@@ -135,7 +111,7 @@ namespace scripthea.external
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void value_PreviewKeyDown(object sender, KeyEventArgs e)
-        {            
+        {
             if (e.IsDown && e.Key == Key.Up && Value < Maximum)
             {
                 Value += Interval;
@@ -148,8 +124,8 @@ namespace scripthea.external
             }
             if (e.IsDown && e.Key == Key.Enter)
             {
-                double val; TextBox tb = (TextBox)sender;
-                if (!double.TryParse(tb.Text, out val))
+                int val; TextBox tb = (TextBox)sender;
+                if (!int.TryParse(tb.Text, out val))
                 {
                     TextBoxValue.Foreground = Brushes.Red; return;
                 }
@@ -159,4 +135,3 @@ namespace scripthea.external
 
     }
 }
-

@@ -85,6 +85,7 @@
                                 <ComboBoxItem x:Name="cbiCraiyon" Content="Craiyon"/>
                             </ComboBox>
                             <Image x:Name="imgAPIdialog"  Width="25" Height="25" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="6,3,0,0" Cursor="Hand" MouseDown="imgAPIdialog_MouseDown" Source="/Scripthea;component/Properties/gears1.png"/>
+                            <Label x:Name="lbSessionSpan" Margin="10,0,0,0"></Label>
                         </StackPanel>
                     </Grid>
                 </TabItem>

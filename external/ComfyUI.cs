@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Text;
+using scripthea.options;
 
 namespace scripthea.external
 {
@@ -88,9 +89,11 @@ namespace scripthea.external
         public readonly string serverAddress;
         private HttpClient httpClient;
         public ServerMonitor serverMonitor;
+        private Options opts;
 
-        public ComfyUIclass()
+        public ComfyUIclass(ref Options _opts)
         {
+            opts = _opts;
             serverAddress = "127.0.0.1:8188";
             httpClient = new HttpClient();
         }

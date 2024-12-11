@@ -34,7 +34,7 @@ namespace scripthea.composer
     /// </summary>
     public partial class QueryUC : UserControl, iFocusControl
     {
-        const string strScan = "S c a n";
+        const string strScan = "S c a n"; protected DateTime sessionStart;
         protected Options opts;
         public ControlAPI API;
         public QueryUC()
@@ -44,9 +44,9 @@ namespace scripthea.composer
         public void Init(ref Options _opts)
         {
             status = Status.Undefined;            
-            opts = _opts;
+            opts = _opts; sessionStart = DateTime.Now;
             UpdateFromOptions();
-            status = Status.Idle;
+            status = Status.Idle; 
 
             opts.Log("@_Header=loading cues files (*.cues)");              
             cuePoolUC.ExternalSelectionChanged += new SelectionChangedEventHandler(CuePoolSelectionChanged);
@@ -87,6 +87,7 @@ namespace scripthea.composer
         {
             sd_params_UC.Finish();
             UpdateToOptions(null, null);
+            opts.composer.SessionsSpan += Convert.ToInt32((DateTime.Now - sessionStart).TotalMinutes);
             cuePoolUC.Finish(); modifiersUC.Finish();
             if (!Utils.isNull(API))
             {
@@ -122,6 +123,7 @@ namespace scripthea.composer
                         tiSingle.IsEnabled = false;
                         tiScan.IsEnabled = true;
                         tiOptions.IsEnabled = false;
+                        if (!tcQuery.SelectedItem.Equals(tiScan)) tcQuery.SelectedItem = tiScan;
                         break;
                 }
                 _status = value; if (opts != null) opts.composer.QueryStatus = value;
@@ -163,13 +165,13 @@ namespace scripthea.composer
         }*/
         protected void ChangeCue(List<string> selCues)
         {
-            //opts.Log("conditions changed");
+            if (opts == null) return;
             if ((opts.composer.SingleAuto == Options.SingleAutoSet.cue || opts.composer.SingleAuto == Options.SingleAutoSet.both) && cuePoolUC.radioMode) 
                 Compose(null, selCues, modifiersUC.Composite(), false);
         }
         protected void ChangeModif(object sender, RoutedEventArgs e)
         {
-            //opts.Log("conditions changed");           
+            if (opts == null) return;           
             if ((opts.composer.SingleAuto == Options.SingleAutoSet.modif || opts.composer.SingleAuto == Options.SingleAutoSet.both) && tcQuery.SelectedItem.Equals(tiSingle)) 
                 Compose(sender,false);
         }
@@ -322,7 +324,10 @@ namespace scripthea.composer
         {
             if (!success)
             {
-                if (imageFilePath == "") { opts.Log("Error[887]: Problem with image generator/server!"); opts.Log("@StopRun"); status = Status.Idle; }
+                if (imageFilePath == "") 
+                { 
+                    opts.Log("Error[887]: Problem with image generator/server! Look at the server terminal for details."); opts.Log("@StopRun"); status = Status.Idle; 
+                }
                 else opts.Log("Error with " + imageFilePath);
             }
             switch (status)
@@ -512,6 +517,11 @@ namespace scripthea.composer
         private void tcQuery_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (Utils.isNull(tcQuery.SelectedItem)) return;
+            if (sessionStart != null)
+            {
+                TimeSpan ts = DateTime.Now - sessionStart;
+                ChangeModif(sender, e); lbSessionSpan.Content = "Session "+ts.ToString(@"hh\:mm")+" [hh:mm]";
+            }
             if (tcQuery.SelectedItem.Equals(tiOptions))
             {
                 opts?.Log("@ExplorerPart=100"); return;
@@ -535,7 +545,6 @@ namespace scripthea.composer
             if (Utils.isNull(cuePoolUC)) return;
             cuePoolUC.radioMode = tcQuery.SelectedItem.Equals(tiSingle);
             modifiersUC.SetSingleScanMode(tcQuery.SelectedItem.Equals(tiSingle));
-            ChangeModif(sender, e);
             if (!Utils.isNull(e)) e.Handled = true;
         }
         private readonly string[] miTitles = { "Copy", "Cut", "Paste", "\"...\" synonyms", "\"...\" meaning", "\"...\" antonyms" };
@@ -590,14 +599,14 @@ namespace scripthea.composer
         }
         private void btnScanPreviewProcs_Click(object sender, RoutedEventArgs e)
         {
-            if (scanPreviewUC.btnScanChecked.Equals(sender))
+            if (scanPreviewUC.btnScanChecked.Equals(sender)) 
             {
-                if (scanPreviewUC.scanning)
+                if (scanPreviewUC.scanning) // cancel request
                 {
                     scanPreviewUC.scanning = false; status = Status.Request2Cancel;
                     opts.Log("Warning: User cancelation!", Brushes.Tomato); btnScanPreview.IsEnabled = true; btnAppend2Preview.IsEnabled = true;
                 }
-                else
+                else // scanning request
                 {
                     scanPrompts = scanPreviewUC.checkedPrompts();
                     if (scanPrompts.Count == 0) { opts.Log("Error[285]: no prompts checked"); return; }

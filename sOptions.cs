@@ -65,6 +65,7 @@ namespace scripthea.options
             public int QueryRowHeight;
             public int QueryColWidth;
             public int ViewColWidth;
+            public double SessionsSpan;
             [JsonIgnore]
             public Status QueryStatus; 
             // query single

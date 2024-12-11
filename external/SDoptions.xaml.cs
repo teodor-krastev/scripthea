@@ -63,6 +63,9 @@ namespace scripthea.external
         public SDoptionsWindow(bool _A1111)
         {
             InitializeComponent();
+            numTimeOutImgGen.Maximum = 1000; numTimeOutImgGen.Minimum = 10;
+            numGPUThreshold.Maximum = 100; numGPUThreshold.Minimum = 2;
+            numGPUstackDepth.Maximum = 100; numGPUstackDepth.Minimum = 2;
             if (File.Exists(configFilename))
             {
                 string fileJson = File.ReadAllText(configFilename);

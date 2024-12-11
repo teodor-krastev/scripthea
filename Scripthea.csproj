@@ -180,6 +180,9 @@
     <Compile Include="external\DoubleUpDownControl.xaml.cs">
       <DependentUpon>DoubleUpDownControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="external\IntegerUpDownControl.xaml.cs">
+      <DependentUpon>IntegerUpDownControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="external\NumericSliderUC.xaml.cs">
       <DependentUpon>NumericSliderUC.xaml</DependentUpon>
     </Compile>
@@ -219,9 +222,6 @@
     </Compile>
     <Compile Include="external\CraiyonWebUC.xaml.cs">
       <DependentUpon>CraiyonWebUC.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="external\NumericUpDownControl.xaml.cs">
-      <DependentUpon>NumericUpDownControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="external\SDiffusionUC.xaml.cs">
       <DependentUpon>SDiffusionUC.xaml</DependentUpon>
@@ -326,6 +326,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="external\IntegerUpDownControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="external\NumericSliderUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -377,10 +381,6 @@
     <Page Include="external\CraiyonWebUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="external\NumericUpDownControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="external\SDiffusionUC.xaml">
       <Generator>MSBuild:Compile</Generator>

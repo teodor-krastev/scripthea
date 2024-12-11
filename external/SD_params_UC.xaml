@@ -36,9 +36,9 @@
             <local:DoubleSliderUC x:Name="nsCFGscale" Height="28" Margin="0,5"/>
             <local:DoubleSliderUC x:Name="nsDenoise" Height="28" Margin="0,5"/>
             <StackPanel x:Name="stpModel" Height="50" VerticalAlignment="Top" Orientation="Horizontal">
-                <Label Margin="10,0,0,0" Content="Model:" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="13"></Label>
+                <Label Margin="10,0,0,0" Content="Model (case sensitive):" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="13"></Label>
                 <CheckBox x:Name="chkDefaultModel" VerticalAlignment="Center" Content="Default" Margin="10,0,0,0" FontSize="13" IsChecked="True" Checked="chkDefaultModel_Checked" Unchecked="chkDefaultModel_Checked" Visibility="Collapsed"></CheckBox>
-                <TextBox x:Name="tbModel" HorizontalAlignment="Left" VerticalAlignment="Center" Text="enter your model here (filename.ext only)" Margin="10,0,0,0" FontSize="13" Width="360" Height="25" TextChanged="tbModel_TextChanged"></TextBox>
+                <TextBox x:Name="tbModel" HorizontalAlignment="Left" VerticalAlignment="Center" Text="enter your model here (filename.ext only)" Margin="10,12,0,12" FontSize="13" Width="390" Height="26" TextChanged="tbModel_TextChanged"></TextBox>
             </StackPanel>
         </StackPanel>
         <StackPanel Grid.Column="1">

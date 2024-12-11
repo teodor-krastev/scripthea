@@ -43,7 +43,7 @@
                     <Label Content="Scan. modif. sample #" ToolTip="Number of scanable modifiers in a prompt" FontWeight="Bold" Margin="0,0,0,3" Background="MintCream" FontFamily="Segoe UI Semibold" FontSize="13" VerticalAlignment="Center"/>
                     <StackPanel Orientation="Horizontal" Margin="0,-3,0,5" Background="MintCream" VerticalAlignment="Center">
                         <Label x:Name="lbSample" Content="in a prompt  " FontWeight="Bold" FontFamily="Segoe UI Semibold"/>
-                        <external:NumericBox x:Name="numSample" Width="40" Maximum="9" Minimum="1" ValueChanged="numSample_ValueChanged" FontWeight="Bold"/>
+                        <external:IntegerBox x:Name="numSample" Width="40"  OnValueChanged="numSample_ValueChanged" FontWeight="Bold"/>
                     </StackPanel>
                     <CheckBox x:Name="chkAddEmpty" Content="Add an empty modifier" Margin="0,5,0,3" ToolTip="Add an empty modfifier to the scan list" Checked="chkAddEmpty_Checked" Unchecked="chkAddEmpty_Checked"/>
                     <StackPanel Orientation="Horizontal" Margin="-2,8,0,7" Background="MintCream">

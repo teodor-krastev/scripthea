@@ -71,9 +71,9 @@
                             <CheckBox x:Name="chkGPUtemperature" Margin="5,-16,0,0"></CheckBox>
                             <StackPanel Margin="2,5,2,2" Orientation="Horizontal">
                                 <Label x:Name="lbGPUvalue" Content="Threshold [°C]"></Label>
-                                <external:NumericBox x:Name="numGPUThreshold" HorizontalAlignment="Left" Height="25" Margin="0" VerticalAlignment="Top" Width="50" FontSize="13" Maximum="100" Minimum="2" Value="60"/>
+                                <external:IntegerBox x:Name="numGPUThreshold" HorizontalAlignment="Left" Height="25" Margin="0" VerticalAlignment="Top" Width="50" FontSize="13"/>
                                 <Label x:Name="lbGPUvalueDepth" Content="Aver/Max stack depth " Margin="6,0,0,0"></Label>
-                                <external:NumericBox x:Name="numGPUstackDepth" HorizontalAlignment="Left" Height="25" Margin="0" VerticalAlignment="Top" Width="50" FontSize="13" Maximum="100" Minimum="2" Value="10"/>
+                                <external:IntegerBox x:Name="numGPUstackDepth" HorizontalAlignment="Left" Height="25" Margin="0" VerticalAlignment="Top" Width="50" FontSize="13" />
                             </StackPanel>
                         </Grid>
                     </GroupBox>
@@ -85,7 +85,7 @@
         <StackPanel Grid.Row="1" Margin="10,0,0,0">
             <StackPanel Orientation="Horizontal" Height="28" Margin="0" HorizontalAlignment="Left" VerticalAlignment="Top">
                 <Label Content="Time out for image gen." Height="27" ></Label>
-                <external:NumericBox x:Name="numTimeOutImgGen" HorizontalAlignment="Left" Height="25" Margin="0,3,0,-0.051" VerticalAlignment="Top" Width="52" FontSize="13" Maximum="1000" Minimum="2" Value="60"/>
+                <external:IntegerBox x:Name="numTimeOutImgGen" HorizontalAlignment="Left" Height="25" Margin="0,3,0,-0.051" VerticalAlignment="Top" Width="52" FontSize="13"  Value="60"/>
                 <Label Content="[sec]" Height="27" ></Label>
             </StackPanel>
             <CheckBox x:Name="chkAutoCloseCmd" Content="Auto close SD server window at Scripthea exit" Margin="0,5,0,0"/>

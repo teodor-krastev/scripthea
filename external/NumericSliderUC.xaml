@@ -13,7 +13,7 @@
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
         <Label x:Name="lbTitle" Content="Label" HorizontalAlignment="Center" Margin="0" VerticalAlignment="Center"/>
-        <local:NumericBox x:Name="dblBox" Grid.Column="1" Height="24" Margin="0" VerticalAlignment="Center"  FontSize="13" ValueChanged="numBox_ValueChanged"/>
+        <local:IntegerBox x:Name="dblBox" Grid.Column="1" Height="24" Margin="0" VerticalAlignment="Center"  FontSize="13" OnValueChanged="numBox_ValueChanged"/>
         <Slider x:Name="slider" Grid.Column="2" Value="10" Maximum="100" VerticalAlignment="Center" ValueChanged="slider_ValueChanged" Foreground="#FFCEFF96"/>
     </Grid>
 </UserControl>

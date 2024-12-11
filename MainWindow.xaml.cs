@@ -409,7 +409,7 @@ namespace scripthea
                 }
                 else ExplorerPart = 0;
             }
-            if (tabControl.SelectedItem.Equals(tiViewer))
+            if (tabControl.SelectedItem.Equals(tiViewer)) // for now that is the best way I can think of, subject to more poundering...
             {
                 bool bb = false;
                 if (oldTab.Equals(tiComposer))
@@ -515,6 +515,10 @@ namespace scripthea
                 if (sa.Length != 2) return;
                 dirTreeUC.CatchAFolder(sa[1].Trim());
             }
+        }
+        private void depotMaster_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            colMasterWidth.MaxWidth = gridIDMaster.ActualWidth-5; 
         }
     }
 }
