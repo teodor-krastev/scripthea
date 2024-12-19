@@ -24,7 +24,7 @@
                 <Button x:Name="btnCustom" Grid.Column="1" Content="btnCustom" HorizontalAlignment="Center" Margin="0,0,2.797,-0.051" Width="90" Foreground="#FF0049BB" Background="White" FontSize="13" FontFamily="Segoe UI Semibold" Style="{StaticResource RoundedButtonStyle}"/>
             </Grid>
         </GroupBox>
-        <Button x:Name="btnMenu" Width="30" Margin="3,0,0,0" ToolTip="Local menu" Background="{x:Null}" Grid.Row="1" Panel.ZIndex="15" HorizontalAlignment="Left" Height="30">
+        <Button x:Name="btnMenu" Width="30" Margin="3,-3,0,0" ToolTip="Local menu" Background="{x:Null}" Grid.Row="1" Panel.ZIndex="15" HorizontalAlignment="Left" Height="30">
             <ContentControl>
                 <Image x:Name="imgMenu" Margin="2,2,0,0" VerticalAlignment="Center" Width="28" Source="/Scripthea;component/Properties/TripleBarTeal.png" ToolTip="Single click - menu; Double left - invert" Cursor="Hand" HorizontalAlignment="Center" Height="28" MouseDown="imgMenu_MouseDown" >
                 </Image>
@@ -37,10 +37,11 @@
                     <MenuItem Header="Check with Mask or Range" Click="mi_Click"/>
                     <Separator/>
                     <MenuItem Header="Refresh" Click="mi_Click"/>
+                    <MenuItem Header="Clear" Click="mi_Click"/>
                 </ContextMenu>
             </Button.ContextMenu>
         </Button>
-        <Grid Grid.Row="1" Panel.ZIndex="20" Margin="140,0,0,0">
+        <Grid Grid.Row="1" Panel.ZIndex="20" Margin="165,0,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition Width="120"/>
@@ -55,10 +56,10 @@
             <Label x:Name="lbChecked" Content="# images" MouseDoubleClick="MCheckUncheck" Foreground="Blue" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,3.667,0" Grid.Column="1" />
         </Grid>
         <TabControl x:Name="tcMain" Grid.Row="1" BorderBrush="{x:Null}" SelectedIndex="0" Margin="0" BorderThickness="0" SelectionChanged="tcMain_SelectionChanged" Grid.RowSpan="2" Panel.ZIndex="10">
-            <TabItem x:Name="tiList" Header="List" Height="28" Width="50" Margin="25,-2,-50,0"  BorderBrush="Navy" Style="{StaticResource RoundedTopTabItemStyle}">
+            <TabItem x:Name="tiList" Header="List" Height="28" Width="60" Margin="25,-2,-50,0"  BorderBrush="Navy" Style="{StaticResource RoundedTopTabItemStyle}">
                 <viewer:TableViewUC x:Name="listView" Margin="0" />
             </TabItem>
-            <TabItem x:Name="tiGrid" Header="Grid" Height="28" Width="50" Margin="32,-2,-50,0" BorderBrush="DarkGreen" Style="{StaticResource RoundedTopTabItemStyle}">
+            <TabItem x:Name="tiGrid" Header="Grid" Height="28" Width="60" Margin="32,-2,-50,0" BorderBrush="DarkGreen" Style="{StaticResource RoundedTopTabItemStyle}">
                 <viewer:GridViewUC x:Name="gridView"  Margin="0"/>
             </TabItem>
         </TabControl>

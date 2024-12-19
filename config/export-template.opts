@@ -3,5 +3,5 @@ showFilename=0
 imgWidth=100%
 imgPerRow=5
 createWebpage=1
-exportType=0
+exportType=2
 exportJson=1

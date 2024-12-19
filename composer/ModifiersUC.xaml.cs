@@ -232,7 +232,7 @@ namespace scripthea.composer
         }
         private void tbSearch_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key.Equals(Key.Enter)) btnSearch_Click(sender, e);
+            if (e.Key.Equals(Key.Enter)) { btnSearch_Click(sender, e); e.Handled = true; }
         }
         private void chkAddEmpty_Checked(object sender, RoutedEventArgs e)
         {

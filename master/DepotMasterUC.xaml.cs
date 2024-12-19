@@ -42,9 +42,9 @@ namespace scripthea.master
             iPicker.Init(ref opts); iPicker.Configure(letter, new List<string>(), "", "", "", false);
             iPicker.OnChangeDepot += new RoutedEventHandler(ChangeDepot);
             iPicker.cmImgMenu.Items.Add(new Separator());
-            mi1 = new MenuItem() { Header = "Remove entries without images", Tag = letter };
+            mi1 = new MenuItem() { Header = "Remove IDF entries without images", Tag = letter };
             mi1.Click += new RoutedEventHandler(miSynchronize_Click); iPicker.cmImgMenu.Items.Add(mi1);
-            mi2 = new MenuItem() { Header = "Remove images without entries", Tag = letter };
+            mi2 = new MenuItem() { Header = "Remove images without IDF entries", Tag = letter };
             mi2.Click += new RoutedEventHandler(miSynchronize_Click); iPicker.cmImgMenu.Items.Add(mi2);
             mi3 = new MenuItem() { Header = "Synchronize image depot", Tag = letter };
             mi3.Click += new RoutedEventHandler(miSynchronize_Click); iPicker.cmImgMenu.Items.Add(mi3);
@@ -232,7 +232,7 @@ namespace scripthea.master
                     List<string> ls = new List<string>(df.Extras());
                     if (ls.Count == 0) return; MessageBoxResult result = MessageBoxResult.OK;
                     if (opts.iDutilities.MasterValidationAsk)
-                        result = MessageBox.Show("All the files without image depot entry (" + ls.Count.ToString() + ") will be deleted. Continue?",
+                        result = MessageBox.Show("All the images without image depot entry (" + ls.Count.ToString() + ") will be deleted. Continue?",
                         "Confirmation", MessageBoxButton.OKCancel, MessageBoxImage.Question);
                     if (result == MessageBoxResult.Cancel) return;
                     foreach (string fn in ls)

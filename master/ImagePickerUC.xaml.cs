@@ -194,9 +194,9 @@ namespace scripthea.master
             }
         }
         public void Clear()
-        {
-            activeView.Clear();
-            iDepot = null;
+        {            
+            activeView.Clear(); 
+            iDepot = null; 
             isValidFolder = false;
             GetChecked();
         }
@@ -297,6 +297,8 @@ namespace scripthea.master
                 case "Invert Checking": activeView.SetChecked(null);
                     break;
                 case "Refresh": ReloadDepot();
+                    break;
+                case "Clear": tbImageDepot.Text = ""; ReloadDepot();
                     break;
             }
             GetChecked();

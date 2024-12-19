@@ -166,7 +166,7 @@ namespace scripthea
             if (k == -1)
             {
                 if (opts.general.NewVersion.Equals("")) preferencesWindow.lbNewVer.Content = "Your version is up to date";
-                else preferencesWindow.lbNewVer.Content = "New version: " + opts.general.NewVersion;
+                else preferencesWindow.lbNewVer.Content = "New release: " + opts.general.NewVersion;
             }
         }
         public int ExplorerPart // from 0 to 100% directory tree
@@ -475,6 +475,7 @@ namespace scripthea
             {
                 case Key.F1: 
                     if (sender.Equals(MainWindow1)) Utils.CallTheWeb("https://scripthea.com");
+                    e.Handled = true;
                     break;
                 case Key.Enter: 
                     string fld = "";
@@ -496,9 +497,9 @@ namespace scripthea
             if (tabControl.SelectedItem.Equals(tiViewer))
             {
                 if (viewerUC == null) return;
-                if (e.Key.Equals(Key.F11)) viewerUC.animation = true;
-                if (e.Key.Equals(Key.Escape)) viewerUC.animation = false;
-            }
+                if (e.Key.Equals(Key.F11)) { viewerUC.animation = true; e.Handled = true; }
+                if (e.Key.Equals(Key.Escape)) { viewerUC.animation = false; e.Handled = true; }
+                }
         }
         private void btnPreferences_Click(object sender, RoutedEventArgs e)
         {

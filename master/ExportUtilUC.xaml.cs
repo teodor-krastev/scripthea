@@ -64,6 +64,19 @@ namespace scripthea.master
             if (iPicker.comboCustom.SelectedIndex == 2) chkCreateJson.Visibility = Visibility.Visible;
             else chkCreateJson.Visibility = Visibility.Collapsed;
         }
+        public bool SaveJpgWfAware(string imagePng, string imageJpg, ImageInfo ii) 
+        {
+            if (!File.Exists(imagePng)) { Utils.TimedMessageBox("Error: file <" + imagePng + "> not found"); return false; }
+            if (ImgUtils.GetImageType(imagePng) != ImgUtils.ImageType.Png) { Utils.TimedMessageBox("Error: file <" + imagePng + "> is not of png type"); return false; }
+            if (ImgUtils.GetImageType(imageJpg) != ImgUtils.ImageType.Jpg) { Utils.TimedMessageBox("Error: file <" + imageJpg + "> is not of jpeg type"); return false; }
+            string meta = ""; ImgUtils.GetMetadataStringComfy(imagePng, out meta); if (meta == null) meta = "";  meta = meta.Trim(); string ext = ".json";
+            if (meta == "" && ii != null) { meta = ii.To_String(); ext = ".dict"; }
+            if (meta != "") File.WriteAllText(Path.ChangeExtension(imageJpg, ext), meta);
+
+            ImgUtils.CopyToImageToFormat(imagePng, imageJpg, ImgUtils.ImageType.Jpg);
+
+            return true; // SetJpgMetadata(imageJpg, meta);
+        }
 
         private void ConvertPNG2JPG(object sender, RoutedEventArgs e)
         {
@@ -138,10 +151,10 @@ namespace scripthea.master
                     if (iFormat == ImgUtils.ImageType.Jpg)
                     {
                         ImgUtils.ImageType sFormat = ImgUtils.GetImageType(sffn);
-                        tffn = Path.ChangeExtension(tffn, ".jpg");
-                        switch (sFormat)
+                        tffn = Path.ChangeExtension(tffn, ".jpg"); ImageInfo ii = Utils.InRange(itm.Item1,0, iPicker.iDepot.items.Count-1) ? iPicker.iDepot.items[itm.Item1] : null;
+                        switch (sFormat) // source format
                         {
-                            case ImgUtils.ImageType.Png: ImgUtils.SaveJpgWfAware(sffn, tffn, chkCreateJson.IsChecked.Value);
+                            case ImgUtils.ImageType.Png: SaveJpgWfAware(sffn, tffn, ii);
                                 break;
                             case ImgUtils.ImageType.Jpg: File.Copy(sffn, tffn);
                                 break;

@@ -115,12 +115,12 @@ namespace scripthea.external
             if (e.IsDown && e.Key == Key.Up && Value < Maximum)
             {
                 Value += Interval;
-                //ValueChange(this, new RoutedEventArgs());
+                e.Handled = true;
             }
             if (e.IsDown && e.Key == Key.Down && Value > Minimum)
             {
                 Value -= Interval;
-                //ValueChange(this, new RoutedEventArgs());
+                e.Handled = true;
             }
             if (e.IsDown && e.Key == Key.Enter)
             {
@@ -130,6 +130,7 @@ namespace scripthea.external
                     TextBoxValue.Foreground = Brushes.Red; return;
                 }
                 else Value = val;
+                e.Handled = true;
             }
         }
 

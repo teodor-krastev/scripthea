@@ -157,12 +157,9 @@ namespace scripthea
             e.Cancel = true;
             Hide();
         }
+        private void lbCoffee_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Utils.CallTheWeb("https://www.buymeacoffee.com/theokrastev");
+        }
     }
 }
-
-/*
-
-
-
-
- */

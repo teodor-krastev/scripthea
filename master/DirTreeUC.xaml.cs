@@ -295,6 +295,7 @@ namespace scripthea.master
             {
                 string pth = (tvFolders.SelectedItem as TreeViewItem).Tag.ToString();
                 Active(pth); tbSelected.Text = pth;
+                e.Handled = true;
             }
         }
         public string selectedPath { 

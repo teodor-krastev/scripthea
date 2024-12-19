@@ -299,9 +299,10 @@ namespace scripthea.viewer
                 {
                     var chk = DataGridHelper.GetCellByIndices(dGrid, sr, 1).FindVisualChild<CheckBox>();
                     if (chk != null) chk.IsChecked = !chk.IsChecked.Value;
-                    ChangeContent(this, null);  //OnSelect(sr, imageFolder, SelectedItem(sr-1));
+                    ChangeContent(this, null);  //OnSelect(sr, imageFolder, SelectedItem(sr-1));                    
                 }
                 else dGrid.SelectedIndex = Utils.EnsureRange(sr + 1, 0, dTable.Rows.Count - 1); 
+                e.Handled = true;
             }           
         }
         private void dGrid_BeginningEdit(object sender, DataGridBeginningEditEventArgs e)  // TO BE FINISHED !!!

@@ -373,6 +373,7 @@ namespace scripthea.viewer
             {
                 Log("@Explore=70"); 
                 RemoveSelected(opts.viewer.RemoveImagesInIDF);
+                e.Handled = true; return;
             }           
             if (e.Key.Equals(Key.Add)) // recover from undo
             {
@@ -392,6 +393,7 @@ namespace scripthea.viewer
                 activeView.selectedIndex = Utils.EnsureRange(si, 0, iDepot.items.Count-1);
                 activeView.MarkWithMask(tbFind.Text);
                 checkImageDepot();
+                e.Handled = true; return;
             }
             int intKey = (int)e.Key-74;
             if (Utils.InRange(intKey, 0, 74))
@@ -400,6 +402,7 @@ namespace scripthea.viewer
                 if (!iDepot.isEnabled) return;
                 if (opts.composer.QueryStatus == Status.Scanning) { Utils.TimedMessageBox("Error[886]: the IDF is updating."); return; }
                 picViewerUC.sldRate.Value = intKey;
+                e.Handled = true; return;
             }
         }
         private void btnMark_Click(object sender, RoutedEventArgs e)

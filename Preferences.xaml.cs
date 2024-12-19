@@ -48,7 +48,7 @@ namespace scripthea
         
         public void opts2visuals()
         {
-            if (!opts.general.NewVersion.Equals("")) { lbNewVer.Content = "New available release: " + opts.general.NewVersion; lbNewVer.Foreground = Brushes.Firebrick; }
+            if (!opts.general.NewVersion.Equals("")) { lbNewVer.Content = "New release: " + opts.general.NewVersion; lbNewVer.Foreground = Brushes.Firebrick; }
             chkUpdates.IsChecked = opts.general.UpdateCheck;
             cbStartupImageDepotFolder.Text = opts.composer.StartupImageDepotFolder == null ? "": opts.composer.StartupImageDepotFolder;
             if (history != null)

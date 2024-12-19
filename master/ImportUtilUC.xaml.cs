@@ -362,6 +362,7 @@ namespace scripthea.master
                 if (Utils.isNull(chk)) return;
                 chk.IsChecked = !chk.IsChecked.Value;
                 GetChecked();
+                e.Handled = true;
             }                
         }  
 

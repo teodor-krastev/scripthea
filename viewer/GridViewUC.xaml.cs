@@ -388,7 +388,7 @@ namespace scripthea.viewer
                     break;
                 case Key.Space:
                     if (selectedIndex == -1) return;
-                    if (picItems[selectedIndex].checkable) picItems[selectedIndex].IsChecked = !picItems[selectedIndex].IsChecked;
+                    if (picItems[selectedIndex].checkable) { picItems[selectedIndex].IsChecked = !picItems[selectedIndex].IsChecked; e.Handled = true; }
                     else btnItemUp_MouseDown(btnItemDown, null);                    
                     break;
                 case Key.Right:

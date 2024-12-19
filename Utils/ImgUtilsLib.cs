@@ -346,21 +346,7 @@ namespace UtilsNS
             }
             //Utils.writeDict(@"d:/meta.txt", dct);
             return "";
-        }
-        public static bool SaveJpgWfAware(string imagePng, string imageJpg, bool exportJson)
-        {
-            if (!File.Exists(imagePng)) { Utils.TimedMessageBox("Error: file <" + imagePng + "> not found"); return false; }
-            if (GetImageType(imagePng) != ImageType.Png) { Utils.TimedMessageBox("Error: file <" + imagePng + "> is not of png type"); return false; }
-            if (GetImageType(imageJpg) != ImageType.Jpg) { Utils.TimedMessageBox("Error: file <" + imageJpg + "> is not of jpeg type"); return false; }
-
-            string meta = "";  GetMetadataStringComfy(imagePng, out meta);
-            if (exportJson && meta != "") File.WriteAllText(Path.ChangeExtension(imageJpg, ".json"), meta);
-
-            CopyToImageToFormat(imagePng, imageJpg, ImageType.Jpg);
-
-            return true; // SetJpgMetadata(imageJpg, meta);
-        }
-           
+        }           
         public static bool SetJpgMetadata(string imagePath, string workflow)
         {
             if (!File.Exists(imagePath)) { Utils.TimedMessageBox("Error: file <" + imagePath + "> not found"); return false; }
