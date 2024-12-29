@@ -15,6 +15,10 @@
             <RadioButton x:Name="rbChecked" Content="" Margin="0" VerticalAlignment="Center" HorizontalAlignment="Center" GroupName="RadioSeeds" />
             <CheckBox x:Name="checkBox" Content="" Margin="0" VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="Collapsed"/>
         </Grid>
-        <TextBox x:Name="tbCue" Grid.Column="1" Margin="2,3" TextWrapping="Wrap" IsReadOnly="True" Background="White" Text="□" FontSize="13" FontStyle="Normal" AcceptsReturn="True" BorderThickness="1" BorderBrush="#FFD9DADB"/>
+        <StackPanel Grid.Column="1" Margin="2,3" >
+            <TextBox x:Name="tbTitle" TextWrapping="Wrap" IsReadOnly="True" Background="White" Text="□" FontSize="13" FontStyle="Normal" AcceptsReturn="True" BorderThickness="0.5" BorderBrush="#FFD9DADB" Visibility="Collapsed" Foreground="#FF7C7C7C"/>
+            <TextBox x:Name="tbCue" TextWrapping="Wrap" IsReadOnly="True" Background="White" Text="□" FontSize="13" FontStyle="Normal" AcceptsReturn="True" BorderThickness="1" BorderBrush="#FFD9DADB"/>
+            <TextBox x:Name="tbSubtitle" TextWrapping="Wrap" IsReadOnly="True" Background="White" Text="□" FontSize="13" FontStyle="Normal" AcceptsReturn="True" BorderThickness="0.5" BorderBrush="#FFD9DADB" Visibility="Collapsed"  Foreground="#FF7C7C7C"/>
+        </StackPanel>
     </Grid>
 </UserControl>

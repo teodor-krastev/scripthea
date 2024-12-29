@@ -119,6 +119,40 @@ namespace UtilsNS
             timer = new DispatcherTimer(new TimeSpan(0, 0, 0, 0, Delay),
                 DispatcherPriority.Normal, (snd, ea) => { timer.Stop(); action(); }, Dispatcher.CurrentDispatcher);
         }
+        public static bool UrlExists(string url)
+        {
+            try
+            {
+                // Create a web request to the URL
+                var request = WebRequest.Create(url);
+                request.Method = "HEAD"; // Use HEAD request to avoid downloading the whole file
+
+                // Get the response
+                using (var response = request.GetResponse() as HttpWebResponse)
+                {
+                    // Check if the status code indicates success
+                    if (response.StatusCode == HttpStatusCode.OK)
+                    {
+                        return true;
+                    }
+                }
+            }
+            catch (WebException ex)
+            {
+                // If the file doesn't exist, a WebException will be thrown
+                if (ex.Status == WebExceptionStatus.ProtocolError &&
+                    ex.Response is HttpWebResponse errorResponse &&
+                    errorResponse.StatusCode == HttpStatusCode.NotFound)
+                {
+                    return false;
+                }
+
+                // Handle other exceptions as needed
+                TimedMessageBox($"Error: checking URL {ex.Message}");
+            }
+
+            return false;
+        }
         public static void CallTheWeb(string query)
         {
             System.Diagnostics.Process.Start(query);
@@ -893,7 +927,7 @@ namespace UtilsNS
         {
             return "^" + Regex.Escape(value).Replace("\\?", ".").Replace("\\*", ".*") + "$";
         }
-        public static bool IsWildCardMatch(string text, string searchPattern, bool strict = false)
+        public static bool IsWildCardMatch(string text, string searchPattern, bool strict = false) // 
         {
             string sp = searchPattern;
             if (!strict)

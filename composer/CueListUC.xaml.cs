@@ -98,8 +98,7 @@ namespace scripthea.composer
                 if (selectedCues(i).Count > 0 && !radioMode) ((TabItem)tcLists.Items[i]).Background = Utils.ToSolidColorBrush("#FFFFF3DE");
                 else ((TabItem)tcLists.Items[i]).Background = Utils.ToSolidColorBrush("#FFFFFFF0");
             }
-        }
-        
+        }        
         protected void AddCues(StackPanel sp, ref List<CueItemUC> ocl, string fn)
         {
             if (!File.Exists(fn)) { opts.Log("Error[22]: no <" + fn + "> file found"); return; }
@@ -127,7 +126,7 @@ namespace scripthea.composer
                     }
                     if (found) continue;
 
-                    CueItemUC cue = new CueItemUC(ls);
+                    CueItemUC cue = new CueItemUC(ls); //cue.ignoreTitles = false; cue.titleText = "Title ============"; cue.subtitleText = "Subtitle ============";
                     cue.rbChecked.Checked += new RoutedEventHandler(Change); //cue.rbChecked.Unchecked += new RoutedEventHandler(Change);
                     cue.checkBox.Checked += new RoutedEventHandler(Change); cue.checkBox.Unchecked += new RoutedEventHandler(Change);
                     

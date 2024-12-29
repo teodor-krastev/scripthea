@@ -48,14 +48,14 @@ namespace scripthea.composer
             dTable.Columns.Add(new DataColumn("#", typeof(int)));
             dTable.Columns.Add(new DataColumn("On", typeof(bool)));
             dTable.Columns.Add(new DataColumn("Prompt", typeof(string)));
+            dTable.BeginLoadData();
             for (int i = 0; i < prompts.Count; i++)
                 dTable.Rows.Add(i + 1, true, prompts[i]);
-            dGrid.ItemsSource = dTable.DefaultView; 
-            if (!this.IsVisible) return -1;
-            Utils.DoEvents();
-
-            //chkTable_Checked(null, null); return;
+            dTable.EndLoadData();
+            dGrid.ItemsSource = dTable.DefaultView;                      
             
+            if (!this.IsVisible) return -1; Utils.DoEvents();
+
             for (int i = 0; i < prompts.Count; i++)
             {
                 DataGridCell dgc = DataGridHelper.GetCellByIndices(dGrid, i, 1);
@@ -64,7 +64,7 @@ namespace scripthea.composer
                 if (Utils.isNull(chk)) { /*opts.Log("Error[448]: missing check #" + i.ToString());*/ continue; }                
                 chk.Checked += new RoutedEventHandler(chkTable_Checked); chk.Unchecked += new RoutedEventHandler(chkTable_Checked);
                 checks.Add(chk);
-            }                            
+            }       
             if (dTable.Rows.Count > 0) dGrid.SelectedIndex = 0;
             Utils.DelayExec(1000, () => { chkTable_Checked(null, null); });
             return dTable.Rows.Count;

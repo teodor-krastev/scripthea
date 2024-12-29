@@ -140,6 +140,9 @@
     <Compile Include="composer\CuePoolUC.xaml.cs">
       <DependentUpon>CuePoolUC.xaml</DependentUpon>
     </Compile>
+    <Compile Include="composer\ExtCollectionsUC.xaml.cs">
+      <DependentUpon>ExtCollectionsUC.xaml</DependentUpon>
+    </Compile>
     <Compile Include="composer\ModifListUC.xaml.cs">
       <DependentUpon>ModifListUC.xaml</DependentUpon>
     </Compile>
@@ -169,6 +172,9 @@
     </Compile>
     <Compile Include="composer\ScanPreviewUC.xaml.cs">
       <DependentUpon>ScanPreviewUC.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="composer\ExtCollMng.xaml.cs">
+      <DependentUpon>ExtCollMng.xaml</DependentUpon>
     </Compile>
     <Compile Include="external\ComfyUI.cs" />
     <Compile Include="external\CraiyonAPIUC.xaml.cs">
@@ -274,6 +280,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="composer\ExtCollectionsUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="composer\ModifListUC.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -311,6 +321,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="composer\ScanPreviewUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="composer\ExtCollMng.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -585,6 +599,20 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Properties\yellow-lock.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Properties\Delete-icon.png" />
+    <Resource Include="Properties\Edit-icon.png" />
+    <Resource Include="Properties\Left-arrow-icon.png" />
+    <Resource Include="Properties\Right-arrow-icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Properties\Down-arrow-icon.png" />
+    <Resource Include="Properties\Up-arrow-icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Properties\Waves_48.ico" />
+    <Resource Include="Properties\Waves_48.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

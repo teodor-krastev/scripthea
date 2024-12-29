@@ -1,0 +1,54 @@
+﻿<UserControl
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:scripthea.composer"
+             xmlns:external="clr-namespace:scripthea.external" x:Class="scripthea.composer.ExtCollectionsUC"
+             mc:Ignorable="d" Width="489.718" Height="149.569" FontSize="13">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="35"/>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="10"/>
+        </Grid.RowDefinitions>
+        <Grid Margin="0" VerticalAlignment="Center" HorizontalAlignment="Left" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="400"/>
+                <ColumnDefinition Width="100"/>
+            </Grid.ColumnDefinitions>
+            <Label x:Name="lbInfo" FontSize="14" Content="Extract cues from external prompt collection" Margin="20,0,0,0" HorizontalAlignment="Left" />
+            <Button x:Name="btnExtColl" HorizontalAlignment="Right" Margin="0" Width="32" Background="#FFF8F8F8" BorderBrush="{x:Null}" Height="32" Click="btnExtColl_Click" VerticalAlignment="Center" Visibility="Collapsed">
+                <ContentControl>
+                    <Image x:Name="ibtnExtColl" Source="/Scripthea;component/Properties/Waves_48.png" Margin="1,1,0,0" Width="26" Height="26"  
+                       Cursor="Hand" HorizontalAlignment="Center" VerticalAlignment="Center"></Image>
+                </ContentControl>
+            </Button>
+            <Button x:Name="btnExtract" Content="Extract" HorizontalAlignment="Center" Margin="0,0,5,0" VerticalAlignment="Center" Width="75" Background="#FFFFFFF5" FontFamily="Segoe UI Semibold" Height="30" FontSize="13" Click="btnExtract_Click" Grid.Column="1" Style="{StaticResource RoundedButtonStyle}" />
+        </Grid>
+        <StackPanel Margin="0,3,0,0" VerticalAlignment="Center" Orientation="Horizontal" Grid.Row="1" Height="2" Background="#FFE2E2E2">
+            <TextBlock x:Name="tbInfo" Text="info" Margin="10,0,0,0" Visibility="Collapsed"/>
+        </StackPanel>
+        <StackPanel HorizontalAlignment="Left" Margin="0,3,0,0" VerticalAlignment="Center" Orientation="Horizontal" Grid.Row="2" Height="30">
+            <CheckBox x:Name="chkSegment" Content="Segment" VerticalAlignment="Center" Margin="5,0,0,0" ToolTip="Restrict the extraction to a segment"/>
+            <external:IntegerBox x:Name="numSegmentFrom" Value="1" Width="59" VerticalAlignment="Center" Margin="5,2,0,2" Height="26"/>
+            <Label FontSize="13" Content=". ." HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold"/>
+            <external:IntegerBox x:Name="numSegmentTo" Value="200" Width="71" VerticalAlignment="Center" Margin="0,2" Height="26"/>
+            <CheckBox x:Name="chkWords" FontSize="13" Content="Size in words" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="15,0,0,0" ToolTip="Extract only the prompts with limited length"/>
+            <external:IntegerBox x:Name="numWordsMin" Value="1" Width="49" VerticalAlignment="Center" Margin="5,2,0,2" Height="26"/>
+            <Label FontSize="13" Content=". . " HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold"/>
+            <external:IntegerBox x:Name="numWordsMax" Value="100" Width="61" VerticalAlignment="Center" Height="26" Margin="0,2"/>
+        </StackPanel>
+        <StackPanel HorizontalAlignment="Left" Margin="0,3,0,0" VerticalAlignment="Center" Orientation="Horizontal" Grid.Row="3" Height="30">
+            <Label FontSize="13" Content="Filter" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,0,0"/>
+            <TextBox x:Name="tbFilter" Text="" Width="244" VerticalAlignment="Center" Margin="0,5" ToolTip="Look for a particular word or phrase"/>
+            <CheckBox x:Name="chkRandomSample" Content="Random sample  #" VerticalAlignment="Center" Margin="10,0,0,0" IsChecked="True" ToolTip="Randomly sample the extracted prompts"/>
+            <external:IntegerBox x:Name="numRandomSample" Value="30" Width="60" VerticalAlignment="Center" Margin="3,2,0,2" Height="26"/>
+        </StackPanel>
+        <StackPanel Margin="0,3,0,0" VerticalAlignment="Top" Orientation="Horizontal" Grid.Row="4" Height="2" Background="#FFE8FFF8">
+        </StackPanel>
+        <Rectangle x:Name="rectCover" Grid.RowSpan="4" Fill="#7FF5F5F5" Visibility="Collapsed"></Rectangle>
+    </Grid>
+</UserControl>

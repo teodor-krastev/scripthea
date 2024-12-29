@@ -25,6 +25,7 @@ namespace scripthea.composer
         {
             InitializeComponent();
         }
+        public bool ignoreTitles = true;
         public CueItemUC(string text, bool _radioChecked = false)
         {
             InitializeComponent(); radioChecked = _radioChecked;
@@ -74,6 +75,30 @@ namespace scripthea.composer
         {
             get { return tbCue.Text.Trim().Trim('\"').Trim(); }
             set { tbCue.Text = value.Trim().Trim('\"').Trim(); }
+        }
+        public string titleText
+        {
+            get { return tbTitle.Text.Trim().Trim('\"').Trim(); }
+            set 
+            {
+                if (ignoreTitles) return;
+                string txt = value.Trim().Trim('\"').Trim();
+                if (txt == "") tbTitle.Visibility = Visibility.Collapsed;
+                else tbTitle.Visibility = Visibility.Visible;
+                tbTitle.Text = txt; 
+            }
+        }
+        public string subtitleText
+        {
+            get { return tbSubtitle.Text.Trim().Trim('\"').Trim(); }
+            set 
+            {
+                if (ignoreTitles) return;
+                string txt = value.Trim().Trim('\"').Trim();
+                if (txt == "") tbSubtitle.Visibility = Visibility.Collapsed;
+                else tbSubtitle.Visibility = Visibility.Visible;
+                tbSubtitle.Text = txt; 
+            }
         }
         public bool empty
         {

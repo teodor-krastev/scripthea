@@ -105,6 +105,7 @@ namespace scripthea.external
         {
             tempRegulator.Finish();
             sd_api_uc.Finish(); sdScriptUC.Finish();
+            if (SDopts == null) return;
             if (SDopts.opts.autoCloseCmd && genOpts.general.AppTerminating) closeProcess();
             SDopts.keepOpen = false; SDopts.Close(); SDopts = null;
         }

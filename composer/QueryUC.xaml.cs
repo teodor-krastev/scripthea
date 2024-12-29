@@ -260,7 +260,25 @@ namespace scripthea.composer
         public string prompt
         {
             get { return Utils.stringFlatTextBox(tbCue, true) + Utils.stringFlatTextBox(tbModifier,true); }
-        }       
+        }
+        public string PreviewCompose(List<string> selectedCue, string modifiers) 
+        {
+            string prt = "";
+            string ComposeCue(List<string> selCue)
+            {
+                string rslt = "";
+                foreach (string line in selCue)
+                {
+                    if (line.Equals("")) continue;
+                    if (line.Length > 1)
+                        if (line.StartsWith("##")) continue;
+                    rslt += line + " ";
+                }
+                return rslt;
+            }
+            prt = ComposeCue(selectedCue) + modifiers;
+            return prt;
+        }
         public string Compose(object sender, List<string> selectedCue, string modifiers, bool forced)  // !forced - soft compose by SingleAuto mode; forced - disregard opts.SingleAuto
         { 
             void ComposeCue(List<string> selCue)
@@ -270,7 +288,7 @@ namespace scripthea.composer
                 {
                     if (line.Equals("")) continue;
                     if (line.Length > 1)
-                        if (line.Substring(0, 2).Equals("##")) continue;
+                        if (line.StartsWith("##")) continue;
                     tbCue.Text += line + (opts.composer.OneLineCue ? " " : Environment.NewLine);
                 }
             }
@@ -360,14 +378,14 @@ namespace scripthea.composer
         }
         private List<string> scanPrompts = new List<string>();
         private int scanPromptIdx;
-        private List<string> GetScanPrompts()
+        private List<string> GetScanPrompts(bool PreviewScan = false)
         {        
-            scanPrompts = new List<string>(); 
+            scanPrompts = new List<string>();
             if (cuePoolUC.activeCourier == null) { opts.Log("Error[145]: no cue is selected"); return scanPrompts; }
             List<List<string>> lls = cuePoolUC.activeCourier.GetCues();
             if (lls.Count.Equals(0)) { opts.Log("Error[96]: no cue is selected"); return scanPrompts; }
             List<string> ScanModifs = CombiModifs(modifiersUC.ModifItemsByType(ModifStatus.Scannable), opts.composer.ModifPrefix, Utils.EnsureRange(opts.composer.ModifSample, 1, 9));
-            string fis = modifiersUC.FixItemsAsString();
+            string fis = modifiersUC.FixItemsAsString(); 
             foreach (List<string> ls in lls)
             {
                 if (ScanModifs.Count.Equals(0))
@@ -378,7 +396,8 @@ namespace scripthea.composer
                 {                
                     foreach (string sc in ScanModifs)
                     {
-                        scanPrompts.Add(Compose(null, ls, fis + (sc.Equals("") ? "" : opts.composer.ModifPrefix) + sc, true));                        
+                        if (PreviewScan) scanPrompts.Add(PreviewCompose(ls, fis + (sc.Equals("") ? "" : opts.composer.ModifPrefix) + sc));
+                        else scanPrompts.Add(Compose(null, ls, fis + (sc.Equals("") ? "" : opts.composer.ModifPrefix) + sc, true));
                     }
                 }
             }
@@ -590,12 +609,12 @@ namespace scripthea.composer
             tcModScanPre.SelectedIndex = 1; tcModScanPre.UpdateLayout(); Utils.DoEvents(); //DateTime t0 = DateTime.Now;
             List<string> ls = (sender == btnAppend2Preview) ? new List<string>(scanPreviewUC.allPrompts) : new List<string>();
             
-            GetScanPrompts(); //opts.Log("time 1: " + ((DateTime.Now - t0).TotalSeconds).ToString("G3") + " [sec]");
+            GetScanPrompts(true); 
             if (scanPrompts.Count == 0) { opts.Log("Warning: No prompts generated"); scanPreviewUC.lbCheckCount.Content = ""; return; }
             ls.AddRange(scanPrompts); //opts.Log("time 2: " + ((DateTime.Now - t0).TotalSeconds).ToString("G3") + " [sec]");
             tiModifiers.Visibility = Visibility.Visible; tiScanPreview.Visibility = Visibility.Visible;
             scanPreviewUC.lbCheckCount.Content = "loading...";
-            scanPreviewUC.LoadPrompts(ls); //opts.Log("time 3: " + ((DateTime.Now - t0).TotalSeconds).ToString("G3") + " [sec]");
+            scanPreviewUC.LoadPrompts(ls); //opts.Log("time 1: " + ((DateTime.Now - t0).TotalSeconds).ToString("G3") + " [sec]"); 
         }
         private void btnScanPreviewProcs_Click(object sender, RoutedEventArgs e)
         {

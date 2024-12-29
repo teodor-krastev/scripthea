@@ -66,6 +66,7 @@ namespace scripthea.composer
         private Options opts; Button btnSDparams; Courier.CueSelectionHandler ChangeCue;
         public void Init(ref Options _opts, ref Courier.CueSelectionHandler _ChangeCue)
         {
+            if (opts == null) { extCollUC.NewCuesEvent += new EventHandler(ExtCuesAdded); }
             opts = _opts; ChangeCue = _ChangeCue;
             if (Directory.Exists(opts.composer.WorkCuesFolder)) cuesFolder = opts.composer.WorkCuesFolder;
             else 
@@ -80,6 +81,7 @@ namespace scripthea.composer
             int spot = workCuesIndex();
             if (spot < 0) { cuesFolder = rootCuesFolder; cbCuesFolders.SelectedIndex = 0; }
             else cbCuesFolders.SelectedIndex = spot;
+            extCollUC.Init(ref opts); 
 
             iPickerX.Init(ref _opts); iPickerX.Configure('X', new List<string>(), "Including modifiers", "", "Browse", true).Click += new RoutedEventHandler(Browse_Click);
             iPickerX.chkCustom1.IsChecked = true;
@@ -89,7 +91,7 @@ namespace scripthea.composer
             btnSDparams.Click += new RoutedEventHandler(btnSDparams_Click); 
             iPickerX.stPnl2.Children.Add(btnSDparams);                        
 
-            updateCuesFolder(cuesFolder);
+            updateFromCuesFolder(cuesFolder);
             
             // editor tab
             cueEditor.Init(ref opts);
@@ -99,22 +101,25 @@ namespace scripthea.composer
             int k = 0; int spot = -1;  string workCuesName = cuesFolderNameByPath(cuesFolder);
             foreach (ComboBoxItem cbi in cbCuesFolders.Items)
             {
-                if (workCuesName.Equals(Convert.ToString(cbi.Content), StringComparison.InvariantCultureIgnoreCase))  { spot = k; cbi.FontFamily = new FontFamily("Segoe UI Semibold"); }
+                if (workCuesName.Equals(Convert.ToString(cbi.Content), StringComparison.InvariantCultureIgnoreCase)) { spot = k; cbi.FontFamily = new FontFamily("Segoe UI Semibold"); }
                 else cbi.FontFamily = new FontFamily("Segoe UI");
                 k++;
             }
             if (spot < 0) ((ComboBoxItem)cbCuesFolders.Items[0]).FontFamily = new FontFamily("Segoe UI Semibold");
             return spot;
         }
-        public void updateCuesFolder(string _cuesFolder)
+        public void updateFromCuesFolder(string _cuesFolder)
         {
             cuesFolder = Directory.Exists(_cuesFolder) ? _cuesFolder : rootCuesFolder;
             opts.composer.WorkCuesFolder = cuesFolder;
+            extCollUC.CoverOn = !cuesFolder.EndsWith("-coll");
+            if (!extCollUC.CoverOn) extCollUC.SetFolder(cuesFolder);
+            else extCollUC.SetFolder("");
             if (File.Exists(mapFile))
             {
                 string json = System.IO.File.ReadAllText(mapFile);
                 poolMap = JsonConvert.DeserializeObject<List<Dictionary<string, bool>>>(json);
-                if (!poolMap.Count.Equals(poolCount)) throw new Exception("Error[359]: Broken pool-map file. Fix or delete it and restart.");
+                if (!poolMap.Count.Equals(poolCount)) { Log("Error[359]: Broken pool-map file. Fix or delete it and restart."); return; }
                 for (int i = 0; i < poolCount; i++)
                 {
                     string nf = missingCues(i);
@@ -192,11 +197,9 @@ namespace scripthea.composer
             if (ii == null) return; 
             OnSDparams(ii.To_String(), null);
         }
-
-        public event Utils.LogHandler OnLog;
         protected void Log(string txt, SolidColorBrush clr = null)
         {
-            if (OnLog != null) OnLog(txt, clr);
+            if (opts != null) opts.Log(txt, clr);
         }
         private bool _radioMode = true;
         public bool radioMode
@@ -240,8 +243,7 @@ namespace scripthea.composer
                     poolMap[i].Add(chk.Content.ToString(), chk.IsChecked.Value);
                 }
             }
-        }
-        
+        }       
         public void Finish() 
         {
             foreach (CueListUC clu in cueLists)
@@ -249,30 +251,7 @@ namespace scripthea.composer
             UpdatePoolMapFromVisuals();
             File.WriteAllText(mapFile, JsonConvert.SerializeObject(poolMap));
             opts.composer.WorkCuesFolder = cuesFolder;
-        }
-        private void imgDown_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (Utils.isNull(lBoxApool.SelectedItem))
-            {
-                Log("No item is selected for the move."); return;
-            }
-            CheckBox chk = lBoxApool.SelectedItem as CheckBox;
-            CheckBox newChk = new CheckBox()
-            { Content = chk.Content, IsChecked = chk.IsChecked.Value, Margin = new Thickness(3) };
-            lBoxApool.Items.Remove(lBoxApool.SelectedItem);
-            lBoxBpool.Items.Add(newChk); lBoxBpool.SelectedItem = newChk;
-        }
-        private void imgUp_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (Utils.isNull(lBoxBpool.SelectedItem))
-            {
-                Log("No item is selected for the move."); return;
-            }
-            CheckBox chk = lBoxBpool.SelectedItem as CheckBox;
-            CheckBox newChk = new CheckBox()
-            { Content = chk.Content, IsChecked = chk.IsChecked.Value, Margin = new Thickness(3) };
-            lBoxBpool.Items.Remove(lBoxBpool.SelectedItem);
-            lBoxApool.Items.Add(newChk); lBoxApool.SelectedItem = newChk;
+            extCollUC.Finish();
         }
         private TabItem lastTab = null; private int lastPoolIdx = -1;
         public event SelectionChangedEventHandler ExternalSelectionChanged;
@@ -284,7 +263,7 @@ namespace scripthea.composer
             if (tiEditor.Equals(lastTab) && Utils.InRange(idx, 0, poolCount+1) && cueEditor.newCues) // out of editor tab
             {
                 if (cuesFolder == string.Empty) Init(ref opts, ref ChangeCue);
-                else updateCuesFolder(cuesFolder);
+                else updateFromCuesFolder(cuesFolder);
                 cueEditor.newCues = false;
             }
             if (tiPoolMap.Equals(lastTab) && Utils.InRange(idx, 0,poolCount-1)) // out of map tab
@@ -323,15 +302,15 @@ namespace scripthea.composer
         // multi-folder for cues
         public string cuesFolderPathByName(string nm)
         {
-            if (nm.Equals(string.Empty)) return "";
+            if (nm.Equals(string.Empty)) return string.Empty;
             if (nm.Equals("<root>")) return rootCuesFolder;
             string folder = Path.Combine(rootCuesFolder, nm);
             if (Directory.Exists(folder)) return folder;
-            else return "";
+            else return string.Empty;
         }
         public string cuesFolderNameByPath(string path)
         {
-            if (path.Equals(string.Empty)) return "";
+            if (path.Equals(string.Empty)) return string.Empty;
             if (Utils.comparePaths(path, rootCuesFolder)) return "<root>";
             DirectoryInfo directoryInfo = new DirectoryInfo(path);          
             return directoryInfo.Name;
@@ -343,7 +322,11 @@ namespace scripthea.composer
             foreach (string subdirectory in subdirectoryEntries)
             {
                 string[] files = Directory.GetFiles(subdirectory, "*.cues");
-                if (files.Length == 0) continue;
+                if (subdirectory.EndsWith("-coll"))
+                {
+                    if (!File.Exists(Path.Combine(subdirectory, ECdesc.descName))) continue;
+                }
+                else if (files.Length == 0) continue;
                 if (OnlyNames) ls.Add(cuesFolderNameByPath(subdirectory));
                 else ls.Add(subdirectory);
             }
@@ -358,8 +341,136 @@ namespace scripthea.composer
         private void btnLoad_Click(object sender, RoutedEventArgs e)
         {
             UpdatePoolMapFromVisuals(); File.WriteAllText(mapFile, JsonConvert.SerializeObject(poolMap));
-            updateCuesFolder(cuesFolderPathByName(Convert.ToString(((ComboBoxItem)cbCuesFolders.SelectedItem).Content)));
+            if (sender != null && e != null) updateFromCuesFolder(cuesFolderPathByName(Convert.ToString(((ComboBoxItem)cbCuesFolders.SelectedItem).Content)));
             cbCuesFolders_SelectionChanged(null, null); workCuesIndex();
+        }
+        protected void ReopenCuesFolder() // after the the cues folder content has been changed
+        {
+            if (Directory.Exists(cuesFolder)) updateFromCuesFolder(cuesFolder);
+            else Log("Error[187]: <" + cuesFolder + "> folder not found.");
+        }
+        public void MapUpdateFromVisuals()
+        {
+            UpdatePoolMapFromVisuals(); File.WriteAllText(mapFile, JsonConvert.SerializeObject(poolMap));
+            //cbCuesFolders_SelectionChanged(null, null); workCuesIndex();
+        }
+        private bool ListboxReady(ListBox listBox)
+        {
+            bool bb = false;
+            if (listBox.Equals(lBoxApool)) bb = grpApool.BorderBrush == Brushes.Navy;
+            if (listBox.Equals(lBoxBpool)) bb = grpBpool.BorderBrush == Brushes.Navy;
+            return !Utils.isNull(listBox.SelectedItem) && bb; 
+        }
+        private void imgLeft_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (ListboxReady(lBoxApool))
+                { Log("Error: No item is selected to be moved."); return; }
+            CheckBox chk = lBoxApool.SelectedItem as CheckBox;
+            if (chk == null)
+                { Log("Error: No item is selected to be moved. 2"); return; }
+            CheckBox newChk = new CheckBox()
+                { Content = chk.Content, IsChecked = chk.IsChecked.Value, Margin = new Thickness(3) };
+            lBoxApool.Items.Remove(lBoxApool.SelectedItem);
+            lBoxBpool.Items.Add(newChk); lBoxBpool.SelectedItem = newChk;
+        }
+        private void imgRight_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (ListboxReady(lBoxBpool))
+                { Log("Error: No item is selected to be moved."); }
+            CheckBox chk = lBoxBpool.SelectedItem as CheckBox;
+            if (chk == null)
+                { Log("Error: No item is selected to be moved. 2"); return; }
+            CheckBox newChk = new CheckBox()
+                { Content = chk.Content, IsChecked = chk.IsChecked.Value, Margin = new Thickness(3) };
+            lBoxBpool.Items.Remove(lBoxBpool.SelectedItem);
+            lBoxApool.Items.Add(newChk); lBoxApool.SelectedItem = newChk;
+        }
+        private void imgUp_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (!ListboxReady(lBoxApool) && !ListboxReady(lBoxBpool))
+                { Log("Error: No item is selected to be reordered."); return; }
+            int j = sender == imgUp ? -1 : 1;
+            if (ListboxReady(lBoxApool))
+            {
+                int k = lBoxApool.SelectedIndex; 
+                if (Utils.InRange(k + j, 0, lBoxApool.Items.Count - 1))
+                {
+                    var item = lBoxApool.Items[k];
+                    lBoxApool.Items.RemoveAt(k);
+                    lBoxApool.Items.Insert(k + j, item);  lBoxApool.SelectedIndex = k + j;
+                }
+            }           
+            if (ListboxReady(lBoxBpool))
+            {
+                int k = lBoxBpool.SelectedIndex;
+                if (Utils.InRange(k + j, 0, lBoxApool.Items.Count - 1))
+                {
+                    var item = lBoxBpool.Items[k];
+                    lBoxBpool.Items.RemoveAt(k);
+                    lBoxBpool.Items.Insert(k + j, item); lBoxBpool.SelectedIndex = k + j;
+                }
+            }
+        }
+        private void imgEdit_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (!ListboxReady(lBoxApool) && !ListboxReady(lBoxBpool))
+                { Log("Error: No item is selected to be renamed."); return; }
+            CheckBox chk = new CheckBox();
+            if (ListboxReady(lBoxApool))
+                chk = lBoxApool.SelectedItem as CheckBox;
+            if (ListboxReady(lBoxBpool))
+                chk = lBoxBpool.SelectedItem as CheckBox;
+            string oldName = Convert.ToString(chk.Content);
+            string newName = new InputBox("Rename Cues file to...", oldName, "").ShowDialog();
+            if (newName == "") return;
+            oldName += ".cues";
+            if (!File.Exists(Path.Combine(cuesFolder, oldName))) { Log("Error: cues file not found ->" + oldName); return; }            
+            if (!File.Exists(Path.Combine(cuesFolder, newName))) 
+                { if (!Utils.ConfirmationMessageBox("The file <"+newName+"> already exists, overwrite?")) return; }
+            //chk.Content = newName;
+            File.Move(Path.Combine(cuesFolder, oldName), Path.Combine(cuesFolder, newName));
+            ReopenCuesFolder();
+        }
+        private void imgDelete_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (!ListboxReady(lBoxApool) && !ListboxReady(lBoxBpool))
+                { Log("Error: No item is selected to be deleted."); return; }
+            CheckBox chk = new CheckBox();
+            if (ListboxReady(lBoxApool))
+            {
+                chk = lBoxApool.SelectedItem as CheckBox; string fn = Convert.ToString(chk.Content) + ".cues";
+                if (!Utils.ConfirmationMessageBox("Please confirm. Yes will delete " + fn)) return;
+                lBoxApool.Items.Remove(lBoxApool.SelectedItem);
+                File.Delete(Path.Combine(cuesFolder, fn));
+            }
+            if (ListboxReady(lBoxBpool))
+            {
+                chk = lBoxBpool.SelectedItem as CheckBox; string fn = Convert.ToString(chk.Content) + ".cues";
+                if (!Utils.ConfirmationMessageBox("Please confirm. Yes will delete " + fn)) return;
+                lBoxBpool.Items.Remove(lBoxBpool.SelectedItem);
+                File.Delete(Path.Combine(cuesFolder, fn));
+            }
+            ReopenCuesFolder();
+        }   
+        protected void ExtCuesAdded(object sender, EventArgs e)
+        {
+            ReopenCuesFolder();
+        }
+        private void lBoxApool_GotFocus(object sender, RoutedEventArgs e)
+        {
+            grpApool.BorderBrush = Brushes.Navy;           
+        }       
+        private void lBoxBpool_GotFocus(object sender, RoutedEventArgs e)
+        {            
+            grpBpool.BorderBrush = Brushes.Navy;
+        }
+        private void lBoxApool_LostFocus(object sender, RoutedEventArgs e)
+        {
+            grpApool.BorderBrush = Brushes.Silver;
+        }
+        private void lBoxBpool_LostFocus(object sender, RoutedEventArgs e)
+        {
+            grpBpool.BorderBrush = Brushes.Silver;
         }
     }
     public class Courier // two ways messenger between (the active pool or image depot) and queryUC

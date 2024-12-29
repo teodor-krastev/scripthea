@@ -36,7 +36,7 @@ namespace scripthea.external
             opts = new Dictionary<string, string>();
         }
         private PipeServer2S server2s; private PipeServer2C server2c;
-        SDoptionsWindow SDopts; private bool localDebug = true;
+        SDoptionsWindow SDopts; private bool localDebug = true; 
         public Dictionary<string, string> opts { get; set; } // interfaceAPI: main (non API specific) options 
         public void Init(ref SDoptionsWindow _SDopts) // init and update visuals from opts
         {
@@ -64,14 +64,14 @@ namespace scripthea.external
             if (!Utils.isNull(server2c)) server2c.CloseSession(); // close server 
         }
         public void Finish()
-        {            
+        {
             CloseServer(); Utils.Sleep(500);
             if (!Utils.isNull(server2s))
             {
                 server2s.reader.Close(); server2s.reader = null; GC.Collect();
                 server2s.Dispose();
             }
-            server2c?.Dispose(); inLog("Scripthea server restarting...", Brushes.Red);
+            server2c?.Dispose(); //inLog("Scripthea server restarting...", Brushes.Red);
             Utils.Sleep(500);
             lbStatus.Content = "COMM: closed"; server2s = null; server2c = null; GC.Collect(); GC.WaitForPendingFinalizers();
         }
