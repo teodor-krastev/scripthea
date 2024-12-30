@@ -45,10 +45,11 @@
                             </Grid>
                         </GroupBox>
                         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0" Grid.Column="1" >
-                            <Image x:Name="imgLeft" Source="/Scripthea;component/Properties/Right-arrow-icon.png" Margin="0,20,0,0" Cursor="Hand" Width="35" Stretch="Fill" ToolTip="Move from left to right pool" MouseDown="imgLeft_MouseDown"/>
-                            <Image x:Name="imgRight" Source="/Scripthea;component/Properties/Left-arrow-icon.png" Margin="0,5,0,0" Cursor="Hand" Stretch="Fill" Width="35" ToolTip="Move from right to left pool" MouseDown="imgRight_MouseDown"/>
+                            <Image x:Name="imgRight" Source="/Scripthea;component/Properties/Right-arrow-icon.png" Margin="0,20,0,0" Cursor="Hand" Width="35" Stretch="Fill" ToolTip="Move from left to right pool" MouseDown="imgRight_MouseDown"/>
+                            <Image x:Name="imgLeft" Source="/Scripthea;component/Properties/Left-arrow-icon.png" Margin="0,5,0,0" Cursor="Hand" Stretch="Fill" Width="35" ToolTip="Move from right to left pool" MouseDown="imgLeft_MouseDown"/>
                             <Image x:Name="imgUp" Source="/Scripthea;component/Properties/Up-arrow-icon.png" Margin="0,20,0,0" Cursor="Hand" Width="35" Stretch="Fill" ToolTip="Move an item up" MouseDown="imgUp_MouseDown"/>
                             <Image x:Name="imgDown" Source="/Scripthea;component/Properties/Down-arrow-icon.png" Margin="0,5,0,0" Cursor="Hand" Stretch="Fill" Width="35" ToolTip="Move an item down" MouseDown="imgUp_MouseDown"/>
+                            <Image x:Name="imgExtractOpts" Source="/Scripthea;component/Properties/Extract-opts-icon.png" Margin="0,20,0,0" Cursor="Hand" Stretch="Fill" Width="35" ToolTip="Get extract options from the selected item" MouseDown="imgExtractOpts_MouseDown"/>
                             <Image x:Name="imgEdit" Source="/Scripthea;component/Properties/Edit-icon.png" Margin="0,25,0,0" Cursor="Hand" Stretch="Fill" Width="35" ToolTip="Rename selected" MouseDown="imgEdit_MouseDown"/>
                             <Image x:Name="imgDelete" Source="/Scripthea;component/Properties/Delete-icon.png" Margin="0,5,0,0" Cursor="Hand" Width="35" Stretch="Fill" ToolTip="Delete selected" MouseDown="imgDelete_MouseDown"/>
                         </StackPanel>

@@ -108,13 +108,18 @@ namespace scripthea.composer
             if (spot < 0) ((ComboBoxItem)cbCuesFolders.Items[0]).FontFamily = new FontFamily("Segoe UI Semibold");
             return spot;
         }
-        public void updateFromCuesFolder(string _cuesFolder)
+        public void updateFromCuesFolder(string _cuesFolder, bool updateSame = false)
         {
             cuesFolder = Directory.Exists(_cuesFolder) ? _cuesFolder : rootCuesFolder;
             opts.composer.WorkCuesFolder = cuesFolder;
             extCollUC.CoverOn = !cuesFolder.EndsWith("-coll");
-            if (!extCollUC.CoverOn) extCollUC.SetFolder(cuesFolder);
-            else extCollUC.SetFolder("");
+            if (extCollUC.CoverOn) imgExtractOpts.Visibility = Visibility.Collapsed;
+            else imgExtractOpts.Visibility = Visibility.Visible;
+            if (!updateSame)
+            {                
+                if (!extCollUC.CoverOn) extCollUC.SetFolder(cuesFolder);
+                else extCollUC.SetFolder("");
+            }            
             if (File.Exists(mapFile))
             {
                 string json = System.IO.File.ReadAllText(mapFile);
@@ -346,12 +351,12 @@ namespace scripthea.composer
         }
         protected void ReopenCuesFolder() // after the the cues folder content has been changed
         {
-            if (Directory.Exists(cuesFolder)) updateFromCuesFolder(cuesFolder);
+            UpdatePoolMapFromVisuals(); File.WriteAllText(mapFile, JsonConvert.SerializeObject(poolMap));
+            if (Directory.Exists(cuesFolder)) updateFromCuesFolder(cuesFolder, true);
             else Log("Error[187]: <" + cuesFolder + "> folder not found.");
         }
         public void MapUpdateFromVisuals()
         {
-            UpdatePoolMapFromVisuals(); File.WriteAllText(mapFile, JsonConvert.SerializeObject(poolMap));
             //cbCuesFolders_SelectionChanged(null, null); workCuesIndex();
         }
         private bool ListboxReady(ListBox listBox)
@@ -359,11 +364,12 @@ namespace scripthea.composer
             bool bb = false;
             if (listBox.Equals(lBoxApool)) bb = grpApool.BorderBrush == Brushes.Navy;
             if (listBox.Equals(lBoxBpool)) bb = grpBpool.BorderBrush == Brushes.Navy;
-            return !Utils.isNull(listBox.SelectedItem) && bb; 
+            bb &= !Utils.isNull(listBox.SelectedItem);
+            return bb; 
         }
-        private void imgLeft_MouseDown(object sender, MouseButtonEventArgs e)
+        private void imgRight_MouseDown(object sender, MouseButtonEventArgs e) // from A to B
         {
-            if (ListboxReady(lBoxApool))
+            if (!ListboxReady(lBoxApool))
                 { Log("Error: No item is selected to be moved."); return; }
             CheckBox chk = lBoxApool.SelectedItem as CheckBox;
             if (chk == null)
@@ -373,12 +379,12 @@ namespace scripthea.composer
             lBoxApool.Items.Remove(lBoxApool.SelectedItem);
             lBoxBpool.Items.Add(newChk); lBoxBpool.SelectedItem = newChk;
         }
-        private void imgRight_MouseDown(object sender, MouseButtonEventArgs e)
+        private void imgLeft_MouseDown(object sender, MouseButtonEventArgs e)  // from B to A
         {
-            if (ListboxReady(lBoxBpool))
-                { Log("Error: No item is selected to be moved."); }
+            if (!ListboxReady(lBoxBpool))
+                { Log("Error: No item is selected to be moved."); return; }
             CheckBox chk = lBoxBpool.SelectedItem as CheckBox;
-            if (chk == null)
+             if (chk == null)
                 { Log("Error: No item is selected to be moved. 2"); return; }
             CheckBox newChk = new CheckBox()
                 { Content = chk.Content, IsChecked = chk.IsChecked.Value, Margin = new Thickness(3) };
@@ -411,6 +417,24 @@ namespace scripthea.composer
                 }
             }
         }
+        private void imgExtractOpts_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (!ListboxReady(lBoxApool) && !ListboxReady(lBoxBpool))
+            { Log("Error: No item is selected to be renamed."); return; }
+            CheckBox chk = new CheckBox();
+            if (ListboxReady(lBoxApool))
+                chk = lBoxApool.SelectedItem as CheckBox;
+            if (ListboxReady(lBoxBpool))
+                chk = lBoxBpool.SelectedItem as CheckBox;
+            string item = Path.ChangeExtension(Convert.ToString(chk.Content), ".cues");
+            string fullPath = Path.Combine(cuesFolder, item);
+            if (!File.Exists(fullPath)) { Log("Error: cues file not found ->" + item); return; }
+            List<string> ls = Utils.readList(fullPath, false);
+            if (ls.Count <3) { Log("Error: wrong cues file ->" + item); return; }
+            string eo = ls[0];
+            if (!eo.StartsWith("## query:")) { Log("Error: wrong cues file ->" + item); return; }           
+            extCollUC.SetQuery2Visuals(ECquery.ReadECquery(eo.Substring(9).Trim()));
+        }
         private void imgEdit_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (!ListboxReady(lBoxApool) && !ListboxReady(lBoxBpool))
@@ -423,13 +447,13 @@ namespace scripthea.composer
             string oldName = Convert.ToString(chk.Content);
             string newName = new InputBox("Rename Cues file to...", oldName, "").ShowDialog();
             if (newName == "") return;
-            oldName += ".cues";
+            oldName = Path.ChangeExtension(oldName, ".cues"); string newName1 = Path.ChangeExtension(newName, ".cues");
             if (!File.Exists(Path.Combine(cuesFolder, oldName))) { Log("Error: cues file not found ->" + oldName); return; }            
-            if (!File.Exists(Path.Combine(cuesFolder, newName))) 
-                { if (!Utils.ConfirmationMessageBox("The file <"+newName+"> already exists, overwrite?")) return; }
-            //chk.Content = newName;
-            File.Move(Path.Combine(cuesFolder, oldName), Path.Combine(cuesFolder, newName));
-            ReopenCuesFolder();
+            if (File.Exists(Path.Combine(cuesFolder, newName1))) 
+                { if (!Utils.ConfirmationMessageBox("The file <"+newName1+"> already exists, overwrite?")) return; }
+            chk.Content = newName;
+            File.Move(Path.Combine(cuesFolder, oldName), Path.Combine(cuesFolder, newName1));
+            ReopenCuesFolder(); // updateFromCuesFolder(cuesFolder); 
         }
         private void imgDelete_MouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -451,7 +475,8 @@ namespace scripthea.composer
                 File.Delete(Path.Combine(cuesFolder, fn));
             }
             ReopenCuesFolder();
-        }   
+        }
+
         protected void ExtCuesAdded(object sender, EventArgs e)
         {
             ReopenCuesFolder();
@@ -472,6 +497,7 @@ namespace scripthea.composer
         {
             grpBpool.BorderBrush = Brushes.Silver;
         }
+
     }
     public class Courier // two ways messenger between (the active pool or image depot) and queryUC
     {

@@ -111,7 +111,10 @@ namespace scripthea.composer
 
         public bool RandomSampleFlag;
         public int RandomSampleSize;
-
+        public static ECquery ReadECquery(string json)
+        {
+            return JsonConvert.DeserializeObject<ECquery>(json);
+        }
         public string ToJson()
         {
             return JsonConvert.SerializeObject(this);

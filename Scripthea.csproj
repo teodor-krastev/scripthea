@@ -614,5 +614,8 @@
     <Resource Include="Properties\Waves_48.ico" />
     <Resource Include="Properties\Waves_48.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Properties\Extract-opts-icon.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
