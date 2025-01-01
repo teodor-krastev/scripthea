@@ -231,7 +231,7 @@ namespace scripthea.composer
                 opts.Log("sampling " + k + " lines to extract " + lst.Count + " cues; " + ss1 + " sec.");
             }
             else opts.Log("number of cues extracted: " + lst.Count + "  "+ss1+" sec." );
-            if (Utils.InRange(lst.Count, 500, 1000))
+            if (Utils.InRange(lst.Count, 501, 1000))
             {
                 if (!Utils.ConfirmationMessageBox("The extracted cues number is "+lst.Count+" (>500).\n Would you like continue (Yes) or Cancel (No) the extraction?"))
                 { lst.Clear(); return lst; }

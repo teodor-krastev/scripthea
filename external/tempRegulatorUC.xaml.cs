@@ -53,12 +53,12 @@ namespace scripthea.external
                 if (!dTimer.IsEnabled) dTimer?.Start();
                 if (nVidiaAvailable)
                 {
-                    while (((currentTmp > opts.GPUThreshold) || (currentTmp == -1)) && opts.GPUtemperature) { Thread.Sleep(500); }
+                    while ((((currentTmp > opts.GPUThreshold) || (currentTmp == -1)) && opts.GPUtemperature) || Paused) { Thread.Sleep(500); }
                 }
                 else
                 {
                     timeLeft = opts.GPUThreshold;
-                    while ((timeLeft > 0) && opts.GPUtemperature) { Thread.Sleep(500); }
+                    while (((timeLeft > 0) && opts.GPUtemperature) || Paused) { Thread.Sleep(500); }
                 }
             }
             else { timeLeft = 0; dTimer?.Stop(); }
@@ -142,6 +142,21 @@ namespace scripthea.external
         {
             if (opts != null)
                 opts.GPUThreshold = (sender as IntegerBox).Value;
+        }
+        private bool _paused = false;
+        public bool Paused
+        {
+            get { return _paused; }
+            private set
+            {
+                _paused = value;
+                if (value) { imgPauseOff.Visibility = Visibility.Collapsed; imgPauseOn.Visibility = Visibility.Visible; }
+                else { imgPauseOff.Visibility = Visibility.Visible; imgPauseOn.Visibility = Visibility.Collapsed; }
+            }
+        }
+        private void imgPauseOff_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Paused = !Paused;
         }
     }
 }

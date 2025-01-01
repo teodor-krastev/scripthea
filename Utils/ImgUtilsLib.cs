@@ -101,6 +101,29 @@ namespace UtilsNS
             }
             return newBitmap;
         }
+        public static Point GetActualSizeInPixels(FrameworkElement element)
+        {
+            // Retrieve the PresentationSource for the element
+            PresentationSource source = PresentationSource.FromVisual(element);
+
+            if (source != null)
+            {
+                // Get the matrix that converts from DIUs (device-independent units) to device pixels
+                Matrix transformToDevice = source.CompositionTarget.TransformToDevice;
+
+                // M11 is the scale factor along the X-axis (width), M22 is for the Y-axis (height)
+                double widthInPixels = element.ActualWidth * transformToDevice.M11;
+                double heightInPixels = element.ActualHeight * transformToDevice.M22;
+
+                return new Point(widthInPixels, heightInPixels);
+            }
+            else
+            {
+                // Fallback if the PresentationSource cannot be retrieved
+                // (This will simply return the DIU values in the Point, which may not be accurate for high DPI)
+                return new Point(element.ActualWidth, element.ActualHeight);
+            }
+        }
         public static Color GetColorFromGradient(double intensity, Color color1, Color color2)
         {
             // Clamp intensity between 0 and 1

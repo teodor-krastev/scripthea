@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:UtilsNS="clr-namespace:UtilsNS"
              xmlns:local="clr-namespace:scripthea.external"
              mc:Ignorable="d" 
-             d:DesignHeight="65" d:DesignWidth="320">
+             d:DesignHeight="65" d:DesignWidth="400">
     <Grid>
         <StackPanel Orientation="Horizontal">
             <Grid x:Name="gridTmpr" Width="160" Height="60">
@@ -23,6 +23,10 @@
                 </StackPanel>
                 <local:IntegerBox x:Name="numDly" VerticalAlignment="Bottom" HorizontalAlignment="Left" Height="25" Margin="4,0,0,0"  Width="51" FontSize="13" OnValueChanged="numGPUThreshold_ValueChanged"/>
                 <Label x:Name="lbTimeLeft"  Content=""  VerticalAlignment="Bottom" Height="26" Margin="60,0,0,2"></Label>
+            </Grid>
+            <Grid Margin="5,0,0,0" Width="60" Background="#FFFBFBFB">
+                <Image x:Name="imgPauseOff" Width="40" Height="40" HorizontalAlignment="Center" VerticalAlignment="Center" Source="/Scripthea;component/Properties/Pause-grey-icon.png" Cursor="Hand" MouseDown="imgPauseOff_MouseDown"></Image>
+                <Image x:Name="imgPauseOn" Width="40" Height="40" HorizontalAlignment="Center" VerticalAlignment="Center" Source="/Scripthea;component/Properties/Pause-orange-icon.png" Cursor="Hand" Visibility="Collapsed" MouseDown="imgPauseOff_MouseDown"></Image>
             </Grid>
         </StackPanel>    
     </Grid>

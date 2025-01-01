@@ -617,5 +617,15 @@
   <ItemGroup>
     <Resource Include="Properties\Extract-opts-icon.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Properties\Pause-navy-icon.png" />
+    <Resource Include="Properties\Pause-orange-icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Properties\Pause-gray-icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Properties\Pause-grey-icon.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

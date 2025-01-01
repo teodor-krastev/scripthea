@@ -5,14 +5,14 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:scripthea.composer"
              xmlns:external="clr-namespace:scripthea.external" x:Class="scripthea.composer.ExtCollectionsUC"
-             mc:Ignorable="d" Width="489.718" Height="149.569" FontSize="13">
+             mc:Ignorable="d" Width="489.718" Height="140" FontSize="13">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="35"/>
             <RowDefinition Height="10"/>
             <RowDefinition Height="40"/>
             <RowDefinition Height="40"/>
-            <RowDefinition Height="10"/>
+            <RowDefinition Height="5"/>
         </Grid.RowDefinitions>
         <Grid Margin="0" VerticalAlignment="Center" HorizontalAlignment="Left" >
             <Grid.ColumnDefinitions>
@@ -41,13 +41,17 @@
             <Label FontSize="13" Content=". . " HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold"/>
             <external:IntegerBox x:Name="numWordsMax" Value="100" Width="61" VerticalAlignment="Center" Height="26" Margin="0,2"/>
         </StackPanel>
-        <StackPanel HorizontalAlignment="Left" Margin="0,3,0,0" VerticalAlignment="Center" Orientation="Horizontal" Grid.Row="3" Height="30">
-            <Label FontSize="13" Content="Filter" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,0,0"/>
-            <TextBox x:Name="tbFilter" Text="" Width="244" VerticalAlignment="Center" Margin="0,5" ToolTip="Look for a particular word or phrase"/>
-            <CheckBox x:Name="chkRandomSample" Content="Random sample  #" VerticalAlignment="Center" Margin="10,0,0,0" IsChecked="True" ToolTip="Randomly sample the extracted prompts"/>
+        <StackPanel HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" Orientation="Horizontal" Grid.Row="3">
+            <StackPanel Margin="0,-5,0,0">
+                <Label FontSize="13" Content="Pattern" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,0,0" Height="24" Width="61" Panel.ZIndex="1"/>
+                <Label FontSize="13" Content="matching" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,-7,0,0" Height="28" Panel.ZIndex="2"/>
+            </StackPanel>
+            
+            <TextBox x:Name="tbFilter" Text="" Width="233" VerticalAlignment="Center" Margin="0,5" ToolTip="Look for a particular word or a phrase"/>
+            <CheckBox x:Name="chkRandomSample" Content="Random sample" VerticalAlignment="Center" Margin="10,0,0,0" IsChecked="True" ToolTip="Randomly sample the extracted prompts"/>
             <external:IntegerBox x:Name="numRandomSample" Value="30" Width="60" VerticalAlignment="Center" Margin="3,2,0,2" Height="26"/>
         </StackPanel>
-        <StackPanel Margin="0,3,0,0" VerticalAlignment="Top" Orientation="Horizontal" Grid.Row="4" Height="2" Background="#FFE8FFF8">
+        <StackPanel Margin="0,3,0,0" VerticalAlignment="Top" Orientation="Horizontal" Grid.Row="4" Height="4" Background="#FFE8FFF8">
         </StackPanel>
         <Rectangle x:Name="rectCover" Grid.RowSpan="4" Fill="#7FF5F5F5" Visibility="Collapsed"></Rectangle>
     </Grid>

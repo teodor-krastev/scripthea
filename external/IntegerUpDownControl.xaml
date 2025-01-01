@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:scripthea.external"
              mc:Ignorable="d" 
    Height="25" Width="80">
-    <Border BorderBrush="#60000000" BorderThickness="0.5">
+    <Border BorderBrush="#60000000" BorderThickness="0.7">
         <Grid Margin="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
@@ -15,7 +15,7 @@
 
             <TextBox Name="TextBoxValue"  TextChanged="value_TextChanged" PreviewKeyDown="value_PreviewKeyDown"					 
                      TextAlignment="Right"
-					 Grid.Column="0" Margin="0"/>
+					 Grid.Column="0" Margin="0" BorderBrush="{x:Null}"/>
             <StackPanel Orientation="Vertical"
 						Grid.Column="1" Margin="0" VerticalAlignment="Center">
                 <Button x:Name="Increase"

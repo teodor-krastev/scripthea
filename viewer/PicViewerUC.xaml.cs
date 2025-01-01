@@ -101,7 +101,7 @@ namespace scripthea.viewer
         }
         protected bool IsModified(string imageDir, ImageInfo ii)
         {
-            bool modified = !String.IsNullOrEmpty(ii.MD5Checksum);
+            bool modified = !String.IsNullOrEmpty(ii.MD5Checksum); 
             if (modified) modified = !Utils.GetMD5Checksum(Path.Combine(imageDir,ii.filename)).Equals(ii.MD5Checksum);
             return modified;
         }
@@ -110,22 +110,20 @@ namespace scripthea.viewer
             get 
             {
                 if (image == null) return -1;
-                if (image.Source == null) return -1;
-                ImageSource imageSource = image.Source;
-                double xScale = image.ActualWidth / imageSource.Width; double yScale = image.ActualHeight / imageSource.Height; 
+                if (image.Source == null) return -1; 
+                ImageSource imageSource = image.Source; Point wh = ImgUtils.GetActualSizeInPixels(image);
+                double xScale = wh.X / imageSource.Width; double yScale = wh.Y / imageSource.Height; 
                 int scale = Convert.ToInt32(100.0 * (xScale + yScale) / 2); // aver
-                lbZoomFactor.Content = scale.ToString() + " %";
+                lbZoomFactor.Content = scale.ToString() + " % ";
                 return scale; 
             }
-        }
-        
+        }        
         private void UpdateMeta(int idx, ImageDepot _iDepot, bool? modified, bool tryFileMeta = false)
         {
             ImageInfo ii = SelectedItem(idx, iDepot); 
             if (ii == null) return;
             UpdateMeta(_iDepot.path, ii, modified);
-        }
-        
+        }        
         private bool UpdateMeta(string imageDir, ImageInfo ii, bool? modified, bool tryFileMeta = false) // update to visuals, null -> clear
         {
             if (modified == null) // get it here (later)

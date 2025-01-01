@@ -3,7 +3,7 @@
     "inputs": {
       "seed": 0,
       "steps": 25,
-      "cfg": 7,
+      "cfg": 6,
       "sampler_name": "euler_ancestral",
       "scheduler": "karras",
       "denoise": 1,
@@ -41,7 +41,7 @@
   "5": {
     "inputs": {
       "width": 1024,
-      "height": 862,
+      "height": 1024,
       "batch_size": 1
     },
     "class_type": "EmptyLatentImage",
@@ -51,7 +51,7 @@
   },
   "6": {
     "inputs": {
-      "text": "Left handed Jimi Hendrix playing guitar southpaw lefty ambidextrous with a Day-Glo halo at the Pearly Gates of Heaven, pink tinged heavenly clouds, beautiful buxom angels in bikinis with detailed beautiful pretty faces resembling Lena Horne and Tuesday Weld, flying around his head blowing iridescent soap bubbles, Halle Berry as an angel with a harp wearing golden white robes, ornate tall golden gates adorned with iridescent mother of pearl inlay, Behind the gates is a beautiful waterfall and rainbow, by Rudolph Belarski and Thomas Kinkade, trending on artstation, matte painting ",
+      "text": "A surreal digital artwork merges Art Nouveau with Japanese ukiyo-e woodblock print aesthetics, portraying an enigmatic creature reminiscent of a phoenix, composed of tender cherry blossom petals in their prime. The ethereal being gracefully glides above the skyline during sunset, its luminous presence bathing the towering glass and steel structures below in a tapestry of warm pink and orange hues. As it drifts over a lively street market thronged with people, the phoenix`s wings trace an ephemeral path of blossoming flowers that sway gently amidst the soft evening air, invoking a sense of both awe and longing for transient memories. This distinctive blend of nature and technology encapsulates a fleeting moment of loveliness in a world perpetually undergoing transformation.",
       "clip": [
         "4",
         1

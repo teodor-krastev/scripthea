@@ -180,6 +180,25 @@ namespace scripthea.master
             history.Insert(0, path);
             while (history.Count > 12) history.RemoveAt(history.Count - 1);
         }
+        private List<string> GetAllDirectories(string path)
+        {
+            DirectoryInfo directoryInfo = new DirectoryInfo(path);
+            DirectoryInfo[] subDirectories = directoryInfo.GetDirectories();
+
+            List<string> allDirectories = new List<string>();
+
+            foreach (DirectoryInfo dir in subDirectories)
+            {
+                allDirectories.Add(dir.FullName);
+
+                if ((dir.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden)
+                {
+                    allDirectories.Add(dir.FullName);
+                }
+            }
+            return allDirectories;
+        }
+
         protected TreeViewItem dummyNode = null;
         protected void folder_Expanded(object sender, RoutedEventArgs e)
         {
@@ -189,7 +208,10 @@ namespace scripthea.master
                 item.Items.Clear();
                 try
                 {
-                    foreach (string s in Directory.GetDirectories(item.Tag.ToString()))
+                    string path = item.Tag.ToString();
+                    List<string> dirs = new List<string>(Directory.GetDirectories(path));//GetAllDirectories(path); 
+
+                    foreach (string s in dirs)
                     {
                         TreeViewItem subitem = new TreeViewItem();
                         subitem.Header = s.Substring(s.LastIndexOf("\\") + 1);  // the name of the folder
@@ -228,7 +250,7 @@ namespace scripthea.master
         {
             string s = (cbDrives.SelectedItem as ComboBoxItem).Content.ToString();
 
-            if (s.Equals(AppDataStr)) s = AppData;
+            if (s.Equals(AppDataStr, StringComparison.InvariantCultureIgnoreCase)) s = AppData;
             TreeViewItem item = new TreeViewItem();
             item.Header = s;
             item.Tag = s;
@@ -320,7 +342,7 @@ namespace scripthea.master
             cmFolders.Items.Add(new Separator());
             MenuItem mk = new MenuItem(); mk.Header = "Copy folder path to clipbrd"; mk.Click += mi_Click; cmFolders.Items.Add(mk);
         }
-        void mi_Click(object sender, RoutedEventArgs e)
+        private void mi_Click(object sender, RoutedEventArgs e)
         {
             if (tvFolders.SelectedItem.Equals(null)) return;
             string pth = (tvFolders.SelectedItem as TreeViewItem).Tag.ToString(); string prn = pth.EndsWith("\\") ? pth : pth + "\\"; // Directory.GetParent(pth).FullName; 
