@@ -15,7 +15,8 @@
                     <GroupBox Height="60" Margin="0,3" Header="Startup image depot folder (if empty - the last working one)">
                         <ComboBox x:Name="cbStartupImageDepotFolder" Background="{x:Null}" Margin="5" IsEditable="True"/>
                     </GroupBox>
-                    <GroupBox Height="62" Margin="0,10,0,0" Header="Updates">
+                    <CheckBox x:Name="chkShowCueMeta" IsChecked="True" Content="Show cue's header and footer (if any)" Margin="0,5,0,0"></CheckBox>
+                    <GroupBox Height="62" Margin="0,5,0,0" Header="Updates">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,4,0,0">
                             <CheckBox x:Name="chkUpdates" Content="Biweekly check for updates" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5,0,0,0"></CheckBox>
                             <Button x:Name="btnCheck4Update" Content=" Check Now " HorizontalAlignment="Left" VerticalAlignment="Center" Background="#FFFAF5E5" Margin="10,0,0,0" Height="28" Width="80"  Style="{StaticResource RoundedButtonStyle}"></Button>

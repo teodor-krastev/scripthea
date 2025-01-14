@@ -116,9 +116,13 @@ namespace scripthea.composer
             if (extCollUC.CoverOn) imgExtractOpts.Visibility = Visibility.Collapsed;
             else imgExtractOpts.Visibility = Visibility.Visible;
             if (!updateSame)
-            {                
-                if (!extCollUC.CoverOn) extCollUC.SetFolder(cuesFolder);
+            {
+                if (!extCollUC.CoverOn)
+                { 
+                    extCollUC.SetFolder(cuesFolder);                    
+                }
                 else extCollUC.SetFolder("");
+                rowExtColl.Height = new GridLength(extCollUC.sjlFlag ? 220 : 143); 
             }            
             if (File.Exists(mapFile))
             {
@@ -217,6 +221,11 @@ namespace scripthea.composer
                 foreach (CueListUC clu in cueLists)
                     clu.radioMode = value;
             }
+        }
+        public void UpdateShowMeta(bool showMeta)
+        {
+            foreach (CueListUC clu in cueLists)
+                clu.UpdateShowMeta(showMeta);
         }
         private ListBox ListBoxByIndex(int idx)
         {

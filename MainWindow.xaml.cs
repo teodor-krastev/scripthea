@@ -114,6 +114,7 @@ namespace scripthea
                 if (opts.composer.ImageDepotFolder.Equals("<default.image.depot>")) opts.composer.ImageDepotFolder = SctUtils.defaultImageDepot;
             }
             else opts = new Options();
+            opts.composer.ShowCueMeta = true; // !!!
             opts.composer.QueryStatus = Status.Idle;
             aboutWin.Init(ref opts); 
             if (opts.general.UpdateCheck) Check4Update(null,null);
@@ -503,7 +504,9 @@ namespace scripthea
         }
         private void btnPreferences_Click(object sender, RoutedEventArgs e)
         {
+            bool scm = opts.composer.ShowCueMeta;
             preferencesWindow.ShowWindow(tabControl.SelectedIndex, dirTreeUC.history);
+            if (scm != opts.composer.ShowCueMeta) queryUC.cuePoolUC.UpdateShowMeta(opts.composer.ShowCueMeta);
 
             if (opts.sMacro.pythonEnabled) tiSMacro.Visibility = Visibility.Visible;
             else { if (tabControl.SelectedItem == tiSMacro) tabControl.SelectedIndex = 0; tiSMacro.Visibility = Visibility.Collapsed; }

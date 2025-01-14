@@ -25,7 +25,6 @@ namespace scripthea.composer
         {
             InitializeComponent();
         }
-        public bool ignoreTitles = true;
         public CueItemUC(string text, bool _radioChecked = false)
         {
             InitializeComponent(); radioChecked = _radioChecked;
@@ -34,8 +33,13 @@ namespace scripthea.composer
         public CueItemUC(List<string> text, bool _radioChecked = false)
         {
             InitializeComponent(); radioChecked = _radioChecked;
-            tbCue.Text = ""; 
-            foreach (string line in text) tbCue.Text += line + Environment.NewLine;
+            tbCue.Text = ""; int k = 0;
+            foreach (string line in text)
+            {
+                if (line.StartsWith("#") && k == 0) { headerText = line.Trim('#').Trim(); k++; continue; }
+                if (line.StartsWith("#") && k == text.Count - 1) { footerText = line.Trim('#').Trim(); break; }
+                tbCue.Text += line + Environment.NewLine; k++;
+            }               
             tbCue.Text = tbCue.Text.Trim().Trim('\"');
         }
         private int _index = 0; // zero based
@@ -76,28 +80,32 @@ namespace scripthea.composer
             get { return tbCue.Text.Trim().Trim('\"').Trim(); }
             set { tbCue.Text = value.Trim().Trim('\"').Trim(); }
         }
-        public string titleText
+        private bool _showMeta = true; 
+        public bool showMeta 
+        { 
+            get { return _showMeta; }
+            set { _showMeta = value; headerText = tbHeader.Text;  footerText = tbFooter.Text;  }
+        }
+        public string headerText
         {
-            get { return tbTitle.Text.Trim().Trim('\"').Trim(); }
+            get { return tbHeader.Text.Trim(new char[] { '{', '}', '\"', '#' }).Trim(); }
             set 
             {
-                if (ignoreTitles) return;
-                string txt = value.Trim().Trim('\"').Trim();
-                if (txt == "") tbTitle.Visibility = Visibility.Collapsed;
-                else tbTitle.Visibility = Visibility.Visible;
-                tbTitle.Text = txt; 
+                string txt = value.Trim(new char[] { '{', '}', '\"', '#' }).Trim();
+                if (txt != string.Empty && showMeta) tbHeader.Visibility = Visibility.Visible;
+                else tbHeader.Visibility = Visibility.Collapsed;
+                tbHeader.Text = "# " + txt; 
             }
         }
-        public string subtitleText
+        public string footerText
         {
-            get { return tbSubtitle.Text.Trim().Trim('\"').Trim(); }
+            get { return tbFooter.Text.Trim(new char[] { '{', '}', '\"', '#' }).Trim(); }
             set 
             {
-                if (ignoreTitles) return;
-                string txt = value.Trim().Trim('\"').Trim();
-                if (txt == "") tbSubtitle.Visibility = Visibility.Collapsed;
-                else tbSubtitle.Visibility = Visibility.Visible;
-                tbSubtitle.Text = txt; 
+                string txt = value.Trim(new char[] {'{','}','\"','#'}).Trim();
+                if (txt != string.Empty && showMeta) tbFooter.Visibility = Visibility.Visible;
+                else tbFooter.Visibility = Visibility.Collapsed;
+                tbFooter.Text = "# " + txt; 
             }
         }
         public bool empty

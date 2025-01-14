@@ -25,8 +25,8 @@
                 <Label x:Name="lbTimeLeft"  Content=""  VerticalAlignment="Bottom" Height="26" Margin="60,0,0,2"></Label>
             </Grid>
             <Grid Margin="5,0,0,0" Width="60" Background="#FFFBFBFB">
-                <Image x:Name="imgPauseOff" Width="40" Height="40" HorizontalAlignment="Center" VerticalAlignment="Center" Source="/Scripthea;component/Properties/Pause-grey-icon.png" Cursor="Hand" MouseDown="imgPauseOff_MouseDown"></Image>
-                <Image x:Name="imgPauseOn" Width="40" Height="40" HorizontalAlignment="Center" VerticalAlignment="Center" Source="/Scripthea;component/Properties/Pause-orange-icon.png" Cursor="Hand" Visibility="Collapsed" MouseDown="imgPauseOff_MouseDown"></Image>
+                <Image x:Name="imgPauseOff" Width="40" Height="40" HorizontalAlignment="Center" VerticalAlignment="Center" Source="/Scripthea;component/Properties/Pause-grey-icon.png" Cursor="Hand" MouseDown="imgPauseOff_MouseDown" ToolTip="Pause of a scan"></Image>
+                <Image x:Name="imgPauseOn" Width="40" Height="40" HorizontalAlignment="Center" VerticalAlignment="Center" Source="/Scripthea;component/Properties/Pause-orange-icon.png" Cursor="Hand" Visibility="Collapsed" MouseDown="imgPauseOff_MouseDown" ToolTip="Release Pause of a scan"></Image>
             </Grid>
         </StackPanel>    
     </Grid>

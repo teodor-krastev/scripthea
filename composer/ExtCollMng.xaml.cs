@@ -20,14 +20,15 @@ namespace scripthea.composer
     
     public class ECwebRecord
     {
-        public string name; // a must. 
+        public string name; // a must.   
         public string urlSource; // dataset card at huggingface or elsewhere (not now, maybe later)
         public int rowNumber; // must (total if multi-file)
-        public string usage;
+        public string usage; // what's that
         public string version;
         public string comment; // what's new
+        public string zipName;
         public int zipSize;
-        public string MD5;
+        public string zipMD5; // of the zip
         public static ECwebRecord OpenECwebRecord(string json)
         {
             return JsonConvert.DeserializeObject<ECwebRecord>(json);

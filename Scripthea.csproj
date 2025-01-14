@@ -158,9 +158,6 @@
     <Compile Include="composer\mSetUC.xaml.cs">
       <DependentUpon>mSetUC.xaml</DependentUpon>
     </Compile>
-    <Compile Include="composer\PauseUC.xaml.cs">
-      <DependentUpon>PauseUC.xaml</DependentUpon>
-    </Compile>
     <Compile Include="composer\QueryUC.xaml.cs">
       <DependentUpon>QueryUC.xaml</DependentUpon>
     </Compile>
@@ -301,10 +298,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="composer\mSetUC.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="composer\PauseUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -125,8 +125,7 @@ namespace scripthea.composer
                         if (found) break;
                     }
                     if (found) continue;
-
-                    CueItemUC cue = new CueItemUC(ls); //cue.ignoreTitles = false; cue.titleText = "Title ============"; cue.subtitleText = "Subtitle ============";
+                    CueItemUC cue = new CueItemUC(ls); cue.showMeta = opts.composer.ShowCueMeta; 
                     cue.rbChecked.Checked += new RoutedEventHandler(Change); //cue.rbChecked.Unchecked += new RoutedEventHandler(Change);
                     cue.checkBox.Checked += new RoutedEventHandler(Change); cue.checkBox.Unchecked += new RoutedEventHandler(Change);
                     
@@ -138,6 +137,10 @@ namespace scripthea.composer
                     ls.Add(ss); 
                 }
             }
+        }
+        public void UpdateShowMeta(bool showMeta)
+        {
+            foreach (CueItemUC ci in allCues) ci.showMeta = showMeta;
         }
         protected void PoolChecking(bool? bl)
         {

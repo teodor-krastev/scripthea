@@ -1,1 +1,1 @@
-{"SegmentFlag":false,"SegmentFrom":200,"SegmentTo":12200,"categories":[],"WordsFlag":false,"WordsMin":1,"WordsMax":80,"Filter":"nature","RandomSampleFlag":true,"RandomSampleSize":500}
+{"sjlFlag":true,"SegmentFlag":false,"SegmentFrom":1,"SegmentTo":500,"WordsFlag":false,"WordsMin":1,"WordsMax":80,"CatFlag":true,"categories":[4],"CatThreshold":71,"Filter":"","RandomSampleFlag":true,"RandomSampleSize":500}

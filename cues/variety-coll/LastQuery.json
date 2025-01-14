@@ -1,1 +1,1 @@
-{"SegmentFlag":true,"SegmentFrom":200,"SegmentTo":72200,"categories":[],"WordsFlag":true,"WordsMin":1,"WordsMax":100,"Filter":"","RandomSampleFlag":true,"RandomSampleSize":800}
+{"sjlFlag":false,"SegmentFlag":true,"SegmentFrom":200,"SegmentTo":72200,"WordsFlag":true,"WordsMin":1,"WordsMax":100,"CatFlag":false,"categories":null,"CatThreshold":0,"Filter":"","RandomSampleFlag":true,"RandomSampleSize":800}

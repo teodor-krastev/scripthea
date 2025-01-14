@@ -252,6 +252,11 @@ namespace scripthea.master
             wopts["imgPerRow"] = ir.ToString();
             return true;
         }
+
+        private void iPicker_Loaded()
+        {
+
+        }
     }
 }
 

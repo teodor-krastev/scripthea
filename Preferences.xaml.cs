@@ -58,6 +58,7 @@ namespace scripthea
                     cbStartupImageDepotFolder.Items.Add(new ComboBoxItem() { Content = ss });
                 }
             }
+            chkShowCueMeta.IsChecked = opts.composer.ShowCueMeta;
             chkViewerRemoveImages.IsChecked = opts.viewer.RemoveImagesInIDF;
             tbCuesFolder.Text = opts.composer.WorkCuesFolder;
             chkClearEntriesImageDepot.IsChecked = opts.iDutilities.MasterClearEntries; ;
@@ -92,6 +93,7 @@ namespace scripthea
         {
             opts.general.UpdateCheck = chkUpdates.IsChecked.Value;
             opts.composer.StartupImageDepotFolder = cbStartupImageDepotFolder.Text;
+            opts.composer.ShowCueMeta = chkShowCueMeta.IsChecked.Value;
             opts.viewer.RemoveImagesInIDF = chkViewerRemoveImages.IsChecked.Value;
             opts.iDutilities.MasterClearEntries = chkClearEntriesImageDepot.IsChecked.Value; ImageDepotConvertor.ClearEntriesImageDepot = opts.iDutilities.MasterClearEntries;
             opts.iDutilities.MasterValidationAsk = chkValidationAsk.IsChecked.Value;

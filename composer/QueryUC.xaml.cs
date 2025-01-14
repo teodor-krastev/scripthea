@@ -463,7 +463,7 @@ namespace scripthea.composer
                     case Status.Scanning:
                         opts.Log("Error[45]: internal error"); return;
                 }
-                status = Status.Scanning; btnScan.Content = "Cancel"; btnScan.Background = Brushes.Coral;
+                status = Status.Scanning; btnScan.Content = "Cancel"; btnScan.Background = Brushes.Orange;
                 btnScanPreview.IsEnabled = false; btnAppend2Preview.IsEnabled = false;
             }
             else // if button title is Cancel
