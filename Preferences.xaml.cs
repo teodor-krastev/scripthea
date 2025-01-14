@@ -64,30 +64,16 @@ namespace scripthea
             chkClearEntriesImageDepot.IsChecked = opts.iDutilities.MasterClearEntries; ;
             chkValidationAsk.IsChecked = opts.iDutilities.MasterValidationAsk;
             //python
-            if (!opts.common.pythonOn) tiPython.Visibility = Visibility.Collapsed;
+            if (!opts.sMacro.pythonOn) { tiPython.Visibility = Visibility.Collapsed; return; }
             if (opts.sMacro.pythonIntegrated) rbIntegrated.IsChecked = true;
             else rbCustom.IsChecked = true;
-            ValidatePythonLocation(false);
             chkPythonEnabled.IsEnabled = opts.sMacro.pythonValid;
             if (chkPythonEnabled.IsEnabled) chkPythonEnabled.IsChecked = opts.sMacro.pythonEnabled;
             else chkPythonEnabled.IsChecked = false;           
-            tbValidLog.Text = ""; tbPyCustomLocation.Text = opts.sMacro.pyCustomLocation;   
-            if (opts.sMacro.pythonValid) { vLog(""); vLog("Your Python location has been validated."); gbPyLoc.BorderBrush = Brushes.SeaGreen; }
-            else
-            {
-                if (opts.sMacro.pythonIntegrated) { vLog("Broken Scripthea installation: <python-embed> folder is missing or damaged."); vLog(""); }
-                else
-                {
-                    vLog("No installation of Python is found!"); vLog("");
-                    vLog("If you don't have Python (embedded or standard) installed, you may go to https://www.python.org/downloads/windows/ then download and run Windows embeddable package of Python of your choosing."); vLog("");
-                    vLog("After that browse to your python installation and validate the location.");
-                }
-                gbPyLoc.BorderBrush = Brushes.Red; return;
-            }                     
         }
         private void vLog(string text)
         {
-            Utils.log(tbValidLog, text); tbValidLog.UpdateLayout();
+            Utils.log(tbValidLog, text); /*tbValidLog.UpdateLayout();*/ Utils.DoEvents();
         }
         public void visuals2opts()
         {
@@ -211,8 +197,27 @@ namespace scripthea
                 return "Error:" + ex.Message;
             }
             return output;
-        }       
-       
+        }
+
+        private void chkPythonEnabled_Checked(object sender, RoutedEventArgs e)
+        {
+            vLog("Validating your Python location...");
+            ValidatePythonLocation(false);
+            tbValidLog.Text = ""; tbPyCustomLocation.Text = opts.sMacro.pyCustomLocation;
+            if (opts.sMacro.pythonValid) { vLog(""); vLog("Your Python location has been validated."); gbPyLoc.BorderBrush = Brushes.SeaGreen; }
+            else
+            {
+                if (opts.sMacro.pythonIntegrated) { vLog("Broken Scripthea installation: <python-embed> folder is missing or damaged."); vLog(""); }
+                else
+                {
+                    vLog("No installation of Python is found!"); vLog("");
+                    vLog("If you don't have Python (embedded or standard) installed, you may go to https://www.python.org/downloads/windows/ then download and run Windows embeddable package of Python of your choosing."); vLog("");
+                    vLog("After that browse to your python installation and validate the location.");
+                }
+                gbPyLoc.BorderBrush = Brushes.Red;
+            }
+        }
+
 
         /*public string CheckCuesFolder(string cuesFolder)
         {

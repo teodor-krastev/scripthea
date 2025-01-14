@@ -88,10 +88,10 @@ namespace scripthea.composer
         }
         public string headerText
         {
-            get { return tbHeader.Text.Trim(new char[] { '{', '}', '\"', '#' }).Trim(); }
+            get { return tbHeader.Text.Trim(new char[] { '{', '}', '#' }).Trim(); }
             set 
             {
-                string txt = value.Trim(new char[] { '{', '}', '\"', '#' }).Trim();
+                string txt = value.Trim(new char[] { '{', '}', '#' }).Trim();
                 if (txt != string.Empty && showMeta) tbHeader.Visibility = Visibility.Visible;
                 else tbHeader.Visibility = Visibility.Collapsed;
                 tbHeader.Text = "# " + txt; 
@@ -99,10 +99,10 @@ namespace scripthea.composer
         }
         public string footerText
         {
-            get { return tbFooter.Text.Trim(new char[] { '{', '}', '\"', '#' }).Trim(); }
+            get { return tbFooter.Text.Trim(new char[] { '{', '}', '#' }).Trim(); }
             set 
             {
-                string txt = value.Trim(new char[] {'{','}','\"','#'}).Trim();
+                string txt = value.Trim(new char[] {'{','}','#'}).Trim();
                 if (txt != string.Empty && showMeta) tbFooter.Visibility = Visibility.Visible;
                 else tbFooter.Visibility = Visibility.Collapsed;
                 tbFooter.Text = "# " + txt; 

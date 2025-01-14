@@ -15,7 +15,7 @@
                     <GroupBox Height="60" Margin="0,3" Header="Startup image depot folder (if empty - the last working one)">
                         <ComboBox x:Name="cbStartupImageDepotFolder" Background="{x:Null}" Margin="5" IsEditable="True"/>
                     </GroupBox>
-                    <CheckBox x:Name="chkShowCueMeta" IsChecked="True" Content="Show cue's header and footer (if any)" Margin="0,5,0,0"></CheckBox>
+                    <CheckBox x:Name="chkShowCueMeta" IsChecked="True" Content="Show cue's header and footer (if any)" Margin="10,5,0,0"></CheckBox>
                     <GroupBox Height="62" Margin="0,5,0,0" Header="Updates">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,4,0,0">
                             <CheckBox x:Name="chkUpdates" Content="Biweekly check for updates" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5,0,0,0"></CheckBox>
@@ -23,7 +23,7 @@
                             <Label x:Name="lbNewVer" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="6,0,0,0" FontFamily="Segoe UI Semibold"></Label>
                         </StackPanel>
                     </GroupBox>
-                    <CheckBox x:Name="chkClearEntriesImageDepot" Content="Remove image depot entries of missing image flies when depot opens." HorizontalAlignment="Left" VerticalAlignment="Top" Margin="7,8,0,0" IsChecked="True" />
+                    <CheckBox x:Name="chkClearEntriesImageDepot" Content="Remove image depot entries of missing image flies when depot opens." HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,8,0,0" IsChecked="True" />
                     <GroupBox Height="95" Margin="0,10,0.333,3" Header="Cues folder (if empty - the factory one)" Visibility="Collapsed">
                         <Grid>
                             <Grid.RowDefinitions>
@@ -59,7 +59,7 @@
                     </Grid.RowDefinitions>
                     <StackPanel Margin="0,0,0,0.333" Grid.RowSpan="2">
                         <StackPanel Margin="0,7,0,3" Orientation="Horizontal" >
-                            <CheckBox x:Name="chkPythonEnabled" Content="Enable Python macros" FontFamily="Segoe UI Semibold" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,5,0,5"/>
+                            <CheckBox x:Name="chkPythonEnabled" Content="Enable Python macros" FontFamily="Segoe UI Semibold" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,5,0,5" Checked="chkPythonEnabled_Checked"/>
                             <Label Margin="50,0,0,3" Content="Location type" VerticalAlignment="Center"></Label>
                             <RadioButton x:Name="rbIntegrated" VerticalAlignment="Center" Margin="0" Content="Integrated" IsChecked="True"></RadioButton>
                             <RadioButton x:Name="rbCustom" VerticalAlignment="Center" Margin="5,0,0,0" Content="Custom"></RadioButton>
@@ -78,7 +78,7 @@
                         </GroupBox>
                         <Button x:Name="btnValidatePython" Content="   Validate python location   " HorizontalAlignment="Right" Margin="0,10,0,0" Height="30" Background="White"  Style="{StaticResource RoundedButtonStyle}" Click="btnValidatePython_Click"></Button>
 
-                        <TextBox x:Name="tbValidLog" Grid.Row="1" Margin="0,3,-1,0" BorderBrush="{x:Null}" VerticalScrollBarVisibility="Visible" TextWrapping="Wrap" />
+                        <TextBox x:Name="tbValidLog" Grid.Row="1" Margin="0,3,-1,0" BorderBrush="{x:Null}" VerticalScrollBarVisibility="Visible" TextWrapping="Wrap" Height="200" />
                     </StackPanel>
                 </Grid>
             </TabItem>

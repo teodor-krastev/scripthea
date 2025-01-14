@@ -81,8 +81,16 @@ namespace scripthea
             pyCode.Register("prm", queryUC.sd_params_UC, queryUC.sd_params_UC.HelpList());
             // on/off
             //if (!opts.common.pythonOn) opts.sMacro.pythonEnabled = false; ???
-            if (opts.sMacro.pythonEnabled) tiSMacro.Visibility = Visibility.Visible;            
-            else tiSMacro.Visibility = Visibility.Collapsed;
+            //if (opts.sMacro.pythonEnabled) tiSMacro.Visibility = Visibility.Visible;            
+            //else tiSMacro.Visibility = Visibility.Collapsed;
+            pythonSwitch();
+        }
+        public void pythonSwitch()
+        {
+            tiSMacro.IsEnabled = opts.sMacro.pythonEnabled;
+            if (opts.sMacro.pythonEnabled) tiSMacro.Foreground = Brushes.Black;
+            else tiSMacro.Foreground = Brushes.DarkGray;
+            if (!opts.sMacro.pythonEnabled && tabControl.SelectedItem == tiSMacro) tabControl.SelectedItem = tiComposer;
         }
         private void FocusControl()
         {
@@ -508,8 +516,7 @@ namespace scripthea
             preferencesWindow.ShowWindow(tabControl.SelectedIndex, dirTreeUC.history);
             if (scm != opts.composer.ShowCueMeta) queryUC.cuePoolUC.UpdateShowMeta(opts.composer.ShowCueMeta);
 
-            if (opts.sMacro.pythonEnabled) tiSMacro.Visibility = Visibility.Visible;
-            else { if (tabControl.SelectedItem == tiSMacro) tabControl.SelectedIndex = 0; tiSMacro.Visibility = Visibility.Collapsed; }
+            pythonSwitch();
         }
         private void tbImageDepot_MouseDown(object sender, MouseButtonEventArgs e)
         {

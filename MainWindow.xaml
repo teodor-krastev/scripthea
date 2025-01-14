@@ -92,7 +92,7 @@
                 </Grid>
             </TabItem>
             <TabItem x:Name="tiSMacro" Header=" python sMacro " Width="136" Height="33" Background="#FFECECEC" HorizontalAlignment="Left"  Margin="25,0,-25,0" BorderBrush="#FF787878" Style="{StaticResource RoundedTopTabItemStyle}">
-                <Grid >
+                <Grid Margin="5" >
                     <python:PythonUC x:Name="pyCode"/>
                 </Grid>
             </TabItem>

@@ -115,6 +115,7 @@ namespace scripthea.options
         public SMacro sMacro;
         public class SMacro
         {
+            public bool pythonOn { get { return true; } } // main python switch (for debug mostly)
             public bool pythonEnabled; // a wish for python to be on
             public bool pythonValid; // actual validation
             public bool pythonIntegrated;
@@ -147,7 +148,6 @@ namespace scripthea.options
             private int _wInt;
             public int wInt { get { return _wInt; } set { _wInt = wInt; Change(); } }
             // python
-            public bool pythonOn { get { return true; } } // main switch
             public delegate void Register2sMacroHandler(string moduleName, object moduleObject, List<Tuple<string, string>> help);
             public event Register2sMacroHandler OnRegister2sMacro;
             public void Register2sMacro(string moduleName, object moduleObject, List<Tuple<string, string>> help)

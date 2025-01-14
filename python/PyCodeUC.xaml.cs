@@ -93,7 +93,7 @@ namespace scripthea.python
         public void OnChangePythonLocation() // (re)locate and validate python
         {
             opts.sMacro.pythonValid = false;
-            if (!opts.common.pythonOn) return;
+            if (!opts.sMacro.pythonOn) return;
             
             if (PythonEngine.IsInitialized) PythonEngine.Shutdown();
             if (!File.Exists(opts.sMacro.pyEmbedLocation))
@@ -111,7 +111,7 @@ namespace scripthea.python
         public void Init(ref Options _opts) 
         {
             opts = _opts;
-            if (!opts.common.pythonOn) return;
+            if (!opts.sMacro.pythonOn) return;
             colCodeWidth = opts.sMacro.CodeWidth; colLogWidth = opts.sMacro.LogWidth; colHelpWidth = opts.sMacro.HelpWidth;
             avalEdit.DefaultDirectory = Path.Combine(Utils.basePath, "sMacro");
             if (!avalEdit.Open(opts.sMacro.pyLastFilename))
@@ -139,7 +139,7 @@ namespace scripthea.python
         public bool Register(string moduleName, object moduleObject, List<Tuple<string,string>> help) // method help -> <syntax,description> 
         {
             helpTree.SetModuleHelp(moduleName, help);
-            if (!opts.common.pythonOn || moduleName.Equals("") || moduleObject == null) return false;
+            if (!opts.sMacro.pythonOn || moduleName.Equals("") || moduleObject == null) return false;
             scripted.Add(moduleName, moduleObject);
             return true;
         }
