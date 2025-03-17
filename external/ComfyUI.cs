@@ -159,7 +159,7 @@ namespace scripthea.external
 
             log("JSON parsed.");
             int expectedNodes = workflowJson.Count;
-            string id = Guid.NewGuid().ToString(); ;
+            string id = Guid.NewGuid().ToString(); 
             ClientWebSocket socket = null;
             if (socket is null)
             {

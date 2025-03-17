@@ -12,7 +12,7 @@
         <TabControl x:Name="tabControl" Margin="0,0,0,4" TabStripPlacement="Bottom" SelectionChanged="tabControl_SelectionChanged" FontSize="14" Padding="2" >
             <TabItem x:Name="tiA_pool" Header="A-pool" Height="30" Width="70" Margin="3,-2,-9,0" Background="#FFEEEDED" BorderBrush="#FF0331BE" Style="{StaticResource RoundedBottomTabItemStyle}" />
             <TabItem x:Name="tiB_pool" Header="B-pool" Height="30" Width="70"  Margin="5,-2,-9,0" Background="#FFEEEDED" BorderBrush="#FF022AA3" Style="{StaticResource RoundedBottomTabItemStyle}"/>
-            <TabItem x:Name="tiPoolMap" Header="Pools Map" Width="100"  Margin="8,-2,-9,0" Background="#FFEEEDED" BorderBrush="#FF0441F8" Style="{StaticResource RoundedBottomTabItemStyle}" Height="30">
+            <TabItem x:Name="tiPoolMap" Header="Pool Map" Width="100"  Margin="8,-2,-9,0" Background="#FFEEEDED" BorderBrush="#FF0441F8" Style="{StaticResource RoundedBottomTabItemStyle}" Height="30">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="36"/>
@@ -22,7 +22,7 @@
                     </Grid.RowDefinitions>
                     <StackPanel Orientation="Horizontal" Background="#FFF6FBFC">
                         <Label Content="Cues'/Collection folder" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5,0,0,0"></Label>
-                        <ComboBox x:Name="cbCuesFolders" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" Width="200" SelectionChanged="cbCuesFolders_SelectionChanged">
+                        <ComboBox x:Name="cbCuesFolders" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5,0,0,0" Width="200" SelectionChanged="cbCuesFolders_SelectionChanged" FontFamily="Segoe UI Semibold" Foreground="Black">
                             <ComboBox.Background>
                                 <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
                                     <GradientStop Color="#FFF0F0F0" Offset="0"/>
@@ -30,7 +30,13 @@
                                 </LinearGradientBrush>
                             </ComboBox.Background>
                         </ComboBox>
-                        <Button x:Name="btnLoad" Margin="20,5,0,5" HorizontalAlignment="Left" VerticalAlignment="Center" Content="Load" Background="#FFF0FEF9" Width="90" Style="{StaticResource RoundedButtonStyle}" Height="26" BorderBrush="#FF017133" Click="btnLoad_Click" FontFamily="Segoe UI Semibold" ></Button>
+                        <Button x:Name="btnLoad" Margin="10,5,0,5" HorizontalAlignment="Left" VerticalAlignment="Center" Content="Load" Background="#FFF0FEF9" Width="90" Style="{StaticResource RoundedButtonStyle}" Height="26" BorderBrush="#FF017133" Click="btnLoad_Click" FontFamily="Segoe UI Semibold" ></Button>
+                        <Button x:Name="btnExtColl" HorizontalAlignment="Right" Margin="5,0,0,0" Width="32" Background="#FFF8F8F8" BorderBrush="{x:Null}" Height="32" VerticalAlignment="Center" ToolTip="Download external collections" >
+                            <ContentControl>
+                                <Image x:Name="ibtnExtColl" Source="/Scripthea;component/Properties/Waves_48.png" Margin="1,1,0,0" Width="30" Height="30"  
+                       Cursor="Hand" HorizontalAlignment="Center" VerticalAlignment="Center"></Image>
+                            </ContentControl>
+                        </Button>
                     </StackPanel>
                     <local:ExtCollectionsUC x:Name="extCollUC" Grid.Row="1" HorizontalAlignment="Left" Margin="0,5,0,0" Height="255"/>
                     <Grid Grid.Row="3">

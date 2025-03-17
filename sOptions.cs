@@ -73,7 +73,7 @@ namespace scripthea.options
             public SingleAutoSet SingleAuto;
             public bool OneLineCue;
             // query
-            public string WorkCuesFolder;
+            public string WorkCuesFolder; // the last active one
             public string ImageDepotFolder;
             public string StartupImageDepotFolder;
             // API

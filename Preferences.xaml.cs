@@ -121,8 +121,16 @@ namespace scripthea
         
         public bool ValidatePythonLocation(bool local)
         {
-            if (local) visuals2opts();
-            opts.sMacro.ChangePythonLocation(); // try to setup python from python.NET
+            if (local)
+            {
+                visuals2opts();
+                opts.sMacro.ChangePythonLocation(); // try to setup python from python.NET
+            }
+            else
+            {
+                if (opts.sMacro.pythonEnabled && !opts.sMacro.pythonValid) 
+                    opts.sMacro.ChangePythonLocation();
+            }
             return opts.sMacro.pythonValid;
         }
         private void btnValidatePython_Click(object sender, RoutedEventArgs e)
@@ -204,7 +212,7 @@ namespace scripthea
             vLog("Validating your Python location...");
             ValidatePythonLocation(false);
             tbValidLog.Text = ""; tbPyCustomLocation.Text = opts.sMacro.pyCustomLocation;
-            if (opts.sMacro.pythonValid) { vLog(""); vLog("Your Python location has been validated."); gbPyLoc.BorderBrush = Brushes.SeaGreen; }
+            if (opts.sMacro.pythonValid) { vLog(""); vLog("Your Python location is valid."); gbPyLoc.BorderBrush = Brushes.SeaGreen; }
             else
             {
                 if (opts.sMacro.pythonIntegrated) { vLog("Broken Scripthea installation: <python-embed> folder is missing or damaged."); vLog(""); }

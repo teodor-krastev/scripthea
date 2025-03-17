@@ -5,7 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:scripthea.composer"
              xmlns:external="clr-namespace:scripthea.external" x:Class="scripthea.composer.QueryUC"
-             mc:Ignorable="d" d:DesignHeight="450" FontSize="13">
+             xmlns:extcoll="clr-namespace:ExtCollMng;assembly=ExtCollMng" 
+             mc:Ignorable="d" d:DesignHeight="850" FontSize="13" d:DesignWidth="1698.667">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition x:Name="colQuery" Width="585" MinWidth="250" MaxWidth="1700"/>
@@ -53,7 +54,6 @@
                                 <Image x:Name="imgCopy" Margin="0,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" Height="20" Width="25" ToolTip="Copy to clipboard" Cursor="Hand" Source="/Scripthea;component/Properties/copy1a.png"/>
                             </ContentControl>
                         </Button>
-
                     </Grid>
                 </TabItem>
                 <TabItem x:Name="tiScan" Header="Scan" Height="28" Background="#FFECECEC" Margin="5,0,-9.063,0.089" HorizontalAlignment="Left" Width="90" BorderBrush="#FF6C009C" Style="{StaticResource RoundedTopTabItemStyle}">
@@ -102,24 +102,35 @@
                 <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
             <Grid x:Name="gridAPI" Margin="7,0,0,0"/>
-            <TabControl Grid.Row="1"  x:Name="tcModScanPre" Margin="5,-3,0,0" BorderBrush="#FF19B995" BorderThickness="0,1,0,0" TabStripPlacement="Bottom" FontFamily="Lucida Sans" FontSize="14" >
-                <TabItem x:Name="tiModifiers" Header="Modifiers" Background="#FFECECEC"  Height="30" Width="150" Margin="5,-3,-5,0" BorderBrush="#FF13A387"  Style="{StaticResource RoundedBottomTabItemStyle}">
+            <TabControl Grid.Row="1"  x:Name="tcModScanPre" Margin="5,-3,0,0" BorderBrush="#FF19B995" BorderThickness="0,1,0,0" TabStripPlacement="Bottom" SelectionChanged="tcModScanPre_SelectionChanged"  >
+                <TabItem x:Name="tiModifiers" Header="Modifiers" Background="#FFECECEC"  Height="30" Width="150" Margin="5,-3,-5,0" BorderBrush="#FF13A387" FontFamily="Lucida Sans" FontSize="14" Style="{StaticResource RoundedBottomTabItemStyle}">
                     <Grid>
                         <ScrollViewer Margin="0" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto" FontFamily="Segoe UI" FontSize="13">
                             <local:ModifiersUC x:Name="modifiersUC"/>
                         </ScrollViewer>
                     </Grid>
                 </TabItem>
-                <TabItem x:Name="tiScanPreview" Header="Scan Preview" Background="#FFECECEC" Height="30" Width="150" Margin="10,-3,-10,0" BorderBrush="#FF993109" Style="{StaticResource RoundedBottomTabItemStyle}">
+                <TabItem x:Name="tiScanPreview" Header="Scan Preview" Background="#FFECECEC" Height="30" Width="150" Margin="10,-3,-10,0" BorderBrush="#FF993109" FontFamily="Lucida Sans" FontSize="14" Style="{StaticResource RoundedBottomTabItemStyle}">
                     <Grid>
                         <local:ScanPreviewUC x:Name="scanPreviewUC" Margin="0" FontFamily="Segoe UI" FontSize="13"/>
                     </Grid>
                 </TabItem>
-                <TabItem x:Name="tiSD_API" Header="SD Parameters" Background="#FFECECEC" Height="30" Width="150" Margin="20,-3,-20,0" BorderBrush="#FF144397" Style="{StaticResource RoundedBottomTabItemStyle}">
+                <TabItem x:Name="tiSD_API" Header="SD Parameters" Background="#FFECECEC" Height="30" Width="150" Margin="20,-3,-20,0" BorderBrush="#FF144397" FontFamily="Lucida Sans" FontSize="14" Style="{StaticResource RoundedBottomTabItemStyle}">
                     <Grid>
                         <external:SD_params_UC x:Name="sd_params_UC" Margin="0" FontFamily="Segoe UI" FontSize="13"/>
                     </Grid>
                 </TabItem>
+                <TabItem x:Name="tiExtCollMng" Header="External collections" Background="#FFECECEC" Height="30" Width="150" Margin="20,-3,-20,0" BorderBrush="#FF144397" Style="{StaticResource RoundedBottomTabItemStyle}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="500"/>
+                            <RowDefinition Height="6*"/>
+                        </Grid.RowDefinitions>
+                        <extcoll:ExtCollMngUC x:Name="ExtCollManager" Margin="0,10,0,5" HorizontalAlignment="Left" Width="900"/>
+                        <GridSplitter VerticalAlignment="Top" HorizontalAlignment="Stretch" Height="4" Grid.Row="1"></GridSplitter>
+                    </Grid>
+                </TabItem>
+
             </TabControl>
         </Grid>
     </Grid>

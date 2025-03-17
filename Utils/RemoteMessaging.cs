@@ -819,7 +819,7 @@ namespace UtilsNS
                 }
             }
         }
-        public static void copyGraphToClipboard(NationalInstruments.Controls.Graph gr, string filename)
+        /*public static void copyGraphToClipboard(NationalInstruments.Controls.Graph gr, string filename)
         {
             Rect bounds; RenderTargetBitmap bitmap;
             bounds = System.Windows.Controls.Primitives.LayoutInformation.GetLayoutSlot(gr);
@@ -840,7 +840,7 @@ namespace UtilsNS
                     encoder.Save(stream);
                 }
             }
-        }
+        }*/
     }
     #endregion ImgUtl
 }

@@ -21,12 +21,6 @@
                 <ColumnDefinition Width="100"/>
             </Grid.ColumnDefinitions>
             <Label x:Name="lbInfo" FontSize="14" Content="Extract cues from external prompt collection" Margin="20,0,0,0" HorizontalAlignment="Left" />
-            <Button x:Name="btnExtColl" HorizontalAlignment="Right" Margin="0" Width="32" Background="#FFF8F8F8" BorderBrush="{x:Null}" Height="32" Click="btnExtColl_Click" VerticalAlignment="Center" Visibility="Collapsed">
-                <ContentControl>
-                    <Image x:Name="ibtnExtColl" Source="/Scripthea;component/Properties/Waves_48.png" Margin="1,1,0,0" Width="26" Height="26"  
-                       Cursor="Hand" HorizontalAlignment="Center" VerticalAlignment="Center"></Image>
-                </ContentControl>
-            </Button>
             <Button x:Name="btnExtract" Content="Extract" HorizontalAlignment="Center" Margin="0,0,5,0" VerticalAlignment="Center" Width="75" Background="#FFFFFFF5" FontFamily="Segoe UI Semibold" Height="30" FontSize="13" Click="btnExtract_Click" Grid.Column="1" Style="{StaticResource RoundedButtonStyle}" />
         </Grid>
         <StackPanel Margin="0,3,0,0" VerticalAlignment="Center" Orientation="Horizontal" Grid.Row="1" Height="2" Background="#FFE2E2E2">
@@ -37,7 +31,8 @@
             <external:IntegerBox x:Name="numSegmentFrom" Value="1" Width="59" VerticalAlignment="Center" Margin="5,2,0,2" Height="26"/>
             <Label FontSize="13" Content=". ." HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold"/>
             <external:IntegerBox x:Name="numSegmentTo" Value="200" Width="71" VerticalAlignment="Center" Margin="0,2" Height="26"/>
-            <CheckBox x:Name="chkWords" FontSize="13" Content="Size in words" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="15,0,0,0" ToolTip="Extract only the prompts with limited length"/>
+            <Rectangle Fill="#FFBABABA" Width="2" HorizontalAlignment="Left" Margin="7,0,0,0"></Rectangle>
+            <CheckBox x:Name="chkWords" FontSize="13" Content="Size in words" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="8,0,0,0" ToolTip="Extract only the prompts with limited length"/>
             <external:IntegerBox x:Name="numWordsMin" Value="1" Width="49" VerticalAlignment="Center" Margin="5,2,0,2" Height="26"/>
             <Label FontSize="13" Content=". . " HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold"/>
             <external:IntegerBox x:Name="numWordsMax" Value="100" Width="61" VerticalAlignment="Center" Height="26" Margin="0,2"/>
@@ -59,10 +54,11 @@
             </StackPanel>
             
             <TextBox x:Name="tbFilter" Text="" Width="233" VerticalAlignment="Center" Margin="0,5" ToolTip="Look for a particular word or a phrase"/>
-            <CheckBox x:Name="chkRandomSample" Content="Random sample" VerticalAlignment="Center" Margin="10,0,0,0" IsChecked="True" ToolTip="Randomly sample the extracted prompts"/>
+            <Rectangle Fill="#FFBABABA" Width="2" HorizontalAlignment="Left" Margin="7,0,0,0" Height="30" VerticalAlignment="Center"></Rectangle>
+            <CheckBox x:Name="chkRandomSample" Content="Random sample" VerticalAlignment="Center" Margin="7,0,0,0" IsChecked="True" ToolTip="Randomly sample the extracted prompts"/>
             <external:IntegerBox x:Name="numRandomSample" Value="30" Width="60" VerticalAlignment="Center" Margin="3,2,0,2" Height="26"/>
         </StackPanel>
-        <Rectangle Height="4" Fill="#FFE8FFF8" Grid.Row="5"></Rectangle>
+        <Rectangle Height="4" Fill="#FFE9F6F2" Grid.Row="5"></Rectangle>
         <Rectangle x:Name="rectCover" Grid.RowSpan="5" Fill="#7FF5F5F5" Visibility="Collapsed"></Rectangle>
     </Grid>
 </UserControl>

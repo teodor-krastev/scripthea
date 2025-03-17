@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Input;
 using System.Text;
+using System.Linq;
 using System.Windows.Threading;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -19,13 +20,15 @@ using System.Threading.Tasks.Dataflow;
 using System.Reflection;
 using System.Drawing;
 using System.Net;
+using System.Net.Http;
 using System.Net.NetworkInformation;
+using System.Security.Cryptography;
 using MessageBox = System.Windows.Forms.MessageBox;
+using System.IO.Compression;
 
 using Label = System.Windows.Controls.Label;
 using FontFamily = System.Windows.Media.FontFamily;
-using System.Linq;
-using System.Net.Http;
+using Newtonsoft.Json.Linq;
 
 namespace UtilsNS
 {
@@ -146,16 +149,19 @@ namespace UtilsNS
                 {
                     return false;
                 }
-
                 // Handle other exceptions as needed
                 TimedMessageBox($"Error: checking URL {ex.Message}");
             }
-
             return false;
         }
-        public static void CallTheWeb(string query)
+        public static bool CallTheWeb(string query)
         {
-            System.Diagnostics.Process.Start(query);
+            try
+            {
+                System.Diagnostics.Process.Start(query);
+                return true;
+            }
+            catch { return false; }
         }
         public enum SearchEngine { google, bing, duckduckgo }
         public static SearchEngine searchEngine = SearchEngine.google;
@@ -163,6 +169,105 @@ namespace UtilsNS
         {
             string imageSwitch = imagesTab ? "&tbm=isch" : "";
             CallTheWeb("https://www." + Convert.ToString(searchEngine) + ".com/search?q=" + query.Trim().Replace(' ', '+') + imageSwitch);
+        }
+        public static void DownloadZipFile(string url, string destinationPath)
+        {
+            if (!Directory.Exists(destinationPath)) return;
+            using (WebClient client = new WebClient())
+            {
+                client.DownloadFile(url, destinationPath);
+            }
+        }
+        public static async Task DownloadZipFileAsync(string url, string destinationPath)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                using (HttpResponseMessage response = await client.GetAsync(url))
+                {
+                    response.EnsureSuccessStatusCode();
+
+                    using (var stream = await response.Content.ReadAsStreamAsync())
+                    {
+                        using (var fileStream = new FileStream(destinationPath, FileMode.Create, FileAccess.Write))
+                        {
+                            await stream.CopyToAsync(fileStream);
+                        }
+                    }
+                }
+            }
+        }
+        public static Dictionary<string, int> ZipContent(string zipPath)
+        {
+            /*using (ZipArchive archive = ZipFile.OpenRead(zipPath))
+            {
+                // Iterate through each entry (file) in the archive
+                foreach (ZipArchiveEntry entry in archive.Entries)
+                {
+                    // entry.FullName: the full name (including path within the ZIP)
+                    // entry.Name:     just the filename
+                    // entry.Length:   the uncompressed size in bytes
+                    // entry.CompressedLength: the compressed size in bytes
+
+                    Console.WriteLine($"File Name:         {entry.FullName}");
+                    Console.WriteLine($"Uncompressed Size: {entry.Length} bytes");
+                    Console.WriteLine($"Compressed Size:   {entry.CompressedLength} bytes");
+                    Console.WriteLine(new string('-', 40));
+                }
+            }*/
+            Dictionary<string, int> dct = new Dictionary<string, int>();
+            /*try
+            {
+                using (ZipArchive archive = ZipFile.OpenRead(zipPath))
+                {
+                    Console.WriteLine("Files in the zip archive:");
+                    foreach (ZipArchiveEntry entry in archive.Entries)
+                    {
+                        dct.Add(entry.FullName,entry.Length);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error reading zip file: {ex.Message}");
+            }*/
+            return dct;
+        }
+        public static void UnzipFile(string zipFilePath, string destinationDirectory)
+        {
+            ZipFile.ExtractToDirectory(zipFilePath, destinationDirectory);
+        }
+        public static bool CompareFilesByHash(string file1, string file2)
+        {
+            using (var md5 = MD5.Create())
+            {
+                using (var fs1 = new FileStream(file1, FileMode.Open))
+                using (var fs2 = new FileStream(file2, FileMode.Open))
+                {
+                    var hash1 = md5.ComputeHash(fs1);
+                    var hash2 = md5.ComputeHash(fs2);
+
+                    return hash1.SequenceEqual(hash2);
+                }
+            }
+        }
+        public static bool TryParse(string json, out JObject jObject)
+        {
+            if (string.IsNullOrWhiteSpace(json))
+            {
+                jObject = null;
+                return false;
+            }
+
+            try
+            {
+                jObject = JObject.Parse(json);
+                return true;
+            }
+            catch
+            {
+                jObject = null;
+                return false;
+            }
         }
         /// <summary>
         /// start batch file and when it's time to close it: 
@@ -217,7 +322,6 @@ namespace UtilsNS
             var cmds = new List<string>() { cmd };
             return RunCommands(workingDirectory, cmds, exitAtEnd);
         }
-
         public static string RunCommands(string workingDirectory, List<string> cmds, bool exitAtEnd = true)
         {
             string output;
@@ -263,7 +367,6 @@ namespace UtilsNS
             }
             return output;
         }
-
         public static (string, string) ExecCommandLine(string cl)
         {
             try
@@ -548,6 +651,17 @@ namespace UtilsNS
             }
             return randomizedList;
         }
+        public static List<int> RandomList(int nSamples, int maxIdx)
+        {
+            HashSet<int> hsi = new HashSet<int>();
+            Random rnd = new Random(RandomnSeed);
+            while (hsi.Count < nSamples)
+            {
+                hsi.Add(rnd.Next(maxIdx));
+            }
+            List<int> lsi = new List<int>(hsi); lsi.Sort();
+            return lsi;
+        }
         public static bool keyStatus(string key) // check for one of Shift; Ctrl; Alt
         {
             bool rslt = false;
@@ -613,7 +727,7 @@ namespace UtilsNS
         /// <param name="clr">color</param>
         public static void log(RichTextBox richText, string txt, SolidColorBrush clr = null)
         {
-            if (isNull(System.Windows.Application.Current)) return;
+            if (isNull(System.Windows.Application.Current) || richText == null) return;
             Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, 
               new Action(() =>
               {
@@ -1340,26 +1454,58 @@ namespace UtilsNS
         public static string appName = System.Reflection.Assembly.GetEntryAssembly().GetName().Name;
         public static bool localConfig = File.Exists(Path.ChangeExtension(System.Reflection.Assembly.GetEntryAssembly().Location, ".PDB"));
 
+        public static string GetTopDirectory(string path) // folder or file
+        {
+            if (path.Trim() == "") return "";
+            // Ensure the path is fully qualified
+            string fullPath = Path.GetFullPath(path);
+            // Get the drive or root portion (e.g., "C:\" or "\\Server\Share\")
+            string root = Path.GetPathRoot(fullPath);
+            // Remove the root from the full path
+            string relativePath = fullPath.Substring(root.Length);
+            // Split the remainder into directory parts
+            string[] parts = relativePath.Split(
+                new char[] { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar },
+                StringSplitOptions.RemoveEmptyEntries
+            );
+
+            // If there are no directories beyond the root, return null or empty
+            if (parts.Length == 0)
+                return null;
+
+            // The first directory part is the top directory
+            return parts[parts.Length-1];
+        }
         public static string GetParrentDirectory(string path)
         {
             DirectoryInfo parentDir = Directory.GetParent(path);
             return parentDir.FullName;
         }
-        public enum BaseLocation { oneUp, twoUp, appData, auto }
+        public enum BaseLocation { oneUp, twoUp, threeUp, fourUp, appData, auto }
         public static BaseLocation baseLocation = BaseLocation.auto;
         public static string GetBaseLocation(BaseLocation bl)
         {
+            string fr = "";
             switch (bl)
             {
                 case BaseLocation.oneUp:
-                    return Directory.GetParent(appFullPath).Parent.FullName;
+                    fr = Directory.GetParent(appFullPath).FullName;
+                    break; 
                 case BaseLocation.twoUp:
-                    return Directory.GetParent(Directory.GetParent(appFullPath).Parent.FullName).FullName;
+                    fr = Directory.GetParent(Directory.GetParent(appFullPath).FullName).FullName;
+                    break; 
+                case BaseLocation.threeUp:
+                    fr = Directory.GetParent(Directory.GetParent(Directory.GetParent(appFullPath).FullName).FullName).FullName;
+                    break;
+                case BaseLocation.fourUp:
+                    fr = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(appFullPath).FullName).FullName).FullName).FullName;
+                    break;
                 case BaseLocation.appData:
                     return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), appName);
                 default:
                     return "";
             }
+            return fr;
         }
         public static string basePath
         {
@@ -1371,7 +1517,9 @@ namespace UtilsNS
                     if (localConfig)
                     {
                         if (Directory.Exists(Path.Combine(GetBaseLocation(BaseLocation.oneUp), requiredFolder))) baseLocation = BaseLocation.oneUp;
-                        if (Directory.Exists(Path.Combine(GetBaseLocation(BaseLocation.twoUp), requiredFolder))) baseLocation = BaseLocation.twoUp;
+                        else if (Directory.Exists(Path.Combine(GetBaseLocation(BaseLocation.twoUp), requiredFolder))) baseLocation = BaseLocation.twoUp;
+                             else if (Directory.Exists(Path.Combine(GetBaseLocation(BaseLocation.threeUp), requiredFolder))) baseLocation = BaseLocation.threeUp;
+                                  else if (Directory.Exists(Path.Combine(GetBaseLocation(BaseLocation.fourUp), requiredFolder))) baseLocation = BaseLocation.fourUp;
                     }
                     else baseLocation = BaseLocation.appData;
                 }
@@ -1413,7 +1561,6 @@ namespace UtilsNS
             if (Convert.ToInt32(sa[2]) > Convert.ToInt32(sb[2])) return false;
             return false;
         }
-
         public static int RandomnSeed
         {
             get 

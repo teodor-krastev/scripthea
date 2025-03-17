@@ -16,6 +16,7 @@ using Newtonsoft.Json;
 using scripthea.master;
 using scripthea.viewer;
 using scripthea.options;
+using ExtCollMng;
 using UtilsNS;
 
 namespace scripthea.composer
@@ -73,11 +74,15 @@ namespace scripthea.composer
             {   cuesFolder = rootCuesFolder; 
                 if (opts.composer.WorkCuesFolder != "") Log("Error: cues folder <" + opts.composer.WorkCuesFolder + "> does not exist.\n\n Set to default."); 
             }
-            List<string> cfs = cuesFolders(); cfs.Insert(0, "<root>"); 
+            List<string> cfs = cuesFolders(false); cfs.Insert(0, "<root>"); 
             foreach (string cf in cfs)
             {
-                cbCuesFolders.Items.Add(new ComboBoxItem() { Content = cf });                
+                if (cf.Equals("<root>")) { cbCuesFolders.Items.Add(new ComboBoxItem() { Content = cf, Foreground = Utils.ToSolidColorBrush("#FF02CB02"), FontFamily = new FontFamily("Segoe UI Semibold") }); continue; }
+                string fldName = cuesFolderNameByPath(cf);
+                if (extCollUC.IsCollectionFolder(cf)) { cbCuesFolders.Items.Add(new ComboBoxItem() { Content = fldName, Foreground = Brushes.Blue, FontFamily = new FontFamily("Segoe UI Semibold") }); continue; }
+                if (Directory.GetFiles(cf, "*.cues").Length > 0) cbCuesFolders.Items.Add(new ComboBoxItem() { Content = fldName, Foreground = Utils.ToSolidColorBrush("#FF02CB02"), FontFamily = new FontFamily("Segoe UI Semibold") });
             }
+            
             int spot = workCuesIndex();
             if (spot < 0) { cuesFolder = rootCuesFolder; cbCuesFolders.SelectedIndex = 0; }
             else cbCuesFolders.SelectedIndex = spot;
@@ -112,7 +117,7 @@ namespace scripthea.composer
         {
             cuesFolder = Directory.Exists(_cuesFolder) ? _cuesFolder : rootCuesFolder;
             opts.composer.WorkCuesFolder = cuesFolder;
-            extCollUC.CoverOn = !cuesFolder.EndsWith("-coll");
+            extCollUC.CoverOn = !extCollUC.IsCollectionFolder(cuesFolder);
             if (extCollUC.CoverOn) imgExtractOpts.Visibility = Visibility.Collapsed;
             else imgExtractOpts.Visibility = Visibility.Visible;
             if (!updateSame)
@@ -269,6 +274,7 @@ namespace scripthea.composer
         }
         private TabItem lastTab = null; private int lastPoolIdx = -1;
         public event SelectionChangedEventHandler ExternalSelectionChanged;
+        public event EventHandler OnExtCollOff;
         private void tabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!(sender as TabControl).Name.Equals("tabControl")) return;
@@ -290,6 +296,7 @@ namespace scripthea.composer
                         cueLists[i].Init(ref opts, GetLists(i)); cueLists[i].radioMode = radioMode;
                     }
                 }
+                OnExtCollOff?.Invoke(this, EventArgs.Empty);
             }
             if (Utils.InRange(idx, 0, poolCount-1) && !Utils.isNull(cueLists)) 
                 cueLists[idx].tabControl_SelectionChanged(null, null);
@@ -335,12 +342,13 @@ namespace scripthea.composer
             string[] subdirectoryEntries = Directory.GetDirectories(rootCuesFolder, "*", SearchOption.AllDirectories);
             foreach (string subdirectory in subdirectoryEntries)
             {
-                string[] files = Directory.GetFiles(subdirectory, "*.cues");
+                if (cuesFolderNameByPath(subdirectory).Equals("_temp", StringComparison.InvariantCultureIgnoreCase)) continue;
+                /*string[] files = Directory.GetFiles(subdirectory, "*.cues");
                 if (subdirectory.EndsWith("-coll"))
                 {
                     if (!File.Exists(Path.Combine(subdirectory, ECdesc.descName))) continue;
                 }
-                else if (files.Length == 0) continue;
+                else if (files.Length == 0) continue;*/
                 if (OnlyNames) ls.Add(cuesFolderNameByPath(subdirectory));
                 else ls.Add(subdirectory);
             }
@@ -506,7 +514,6 @@ namespace scripthea.composer
         {
             grpBpool.BorderBrush = Brushes.Silver;
         }
-
     }
     public class Courier // two ways messenger between (the active pool or image depot) and queryUC
     {

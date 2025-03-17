@@ -105,7 +105,7 @@ namespace scripthea
         }
         private void MainWindow1_Loaded(object sender, RoutedEventArgs e)
         {
-            optionsFile = Path.Combine(Utils.configPath, "Scripthea.cfg");
+            optionsFile = Path.Combine(Utils.configPath, "Scripthea.cfg"); 
             if (!Directory.Exists(Utils.configPath))
             {
                 string msg = "Fatal error: Directory <" + Utils.configPath + "> does not exist.";
@@ -123,8 +123,8 @@ namespace scripthea
             }
             else opts = new Options();
             opts.composer.ShowCueMeta = true; // !!!
-            opts.composer.QueryStatus = Status.Idle;
-            aboutWin.Init(ref opts); 
+            opts.composer.QueryStatus = Status.Idle; 
+            aboutWin.Init(ref opts);
             if (opts.general.UpdateCheck) Check4Update(null,null);
             else
             {
@@ -147,25 +147,24 @@ namespace scripthea
                 if (args.Length == 1) { clSwitches.Add(args[0], ""); continue; } 
                 if (args.Length == 2) { clSwitches.Add(args[0], args[1]); continue; }
                 Log("Error[225]: command line argument syntax problem");
-            }       
-
+            }
             Title = "Scripthea - options loaded";
 
             SettingMainComponents();
             FocusControl();
-
             string penpicFile = Path.Combine(Utils.configPath, "penpic1.png");
             if (File.Exists(penpicFile)) { penpic = ImgUtils.LoadBitmapImageFromFile(penpicFile); imgAbout.Source = penpic.Clone(); }
             else throw new Exception(penpicFile + " file is missing");
             ExplorerPart = 0;
             gridSplitLeft_MouseDoubleClick(null, null);
-            Title = "Scripthea - text-to-image prompt composer v" + Utils.getAppFileVersion;   
+            Title = "Scripthea - text-to-image prompt composer v" + Utils.getAppFileVersion;
             if (opts.layout.Width < 0)
             {
                 Log("Assuming that you run Scripthea for the first time:", Brushes.Blue);
                 Log("1. Check and modify (if needed) the default preferences (three bar button above).", Brushes.Blue);
                 Log("2. If you have Stable Diffusion (A1111 or Forge) installed go to SD panel (here top/right), open Options and on the second tab point the Stable Diffusion installation locaton", Brushes.Blue);
                 Log(""); Log("Press F1 for Scripthea online help.", Brushes.Green);
+                Log(""); Log("Enjoy Scripthea, now with access to more than a milion and a half selected and unique prompts!", Brushes.Maroon);
             }           
         }
         public void Check4Update(object sender, RoutedEventArgs e)

@@ -20,6 +20,7 @@ using Newtonsoft.Json.Converters;
 using scripthea.external;
 using scripthea.master;
 using scripthea.options;
+using ExtCollMng;
 using UtilsNS;
 using Path = System.IO.Path;
 
@@ -81,7 +82,12 @@ namespace scripthea.composer
                 cbActiveAPI.Items.Add(new ComboBoxItem() { Name = "cbiSimulation", Content = "Simulation" }); 
                 //cbActiveAPI.SelectedIndex = 3;
             }
-            else { btnTest.Visibility = Visibility.Collapsed; }             
+            else { btnTest.Visibility = Visibility.Collapsed; }
+            ExtCollManager.Init(new Utils.LogHandler(opts.Log), Path.Combine(Utils.basePath,"cues")); 
+            cuePoolUC.btnExtColl.Click += new RoutedEventHandler(btnExtColl_Click);
+            if (Utils.TheosComputer()) tiExtCollMng.Visibility = Visibility.Visible;
+            else tiExtCollMng.Visibility = Visibility.Hidden;
+            cuePoolUC.OnExtCollOff += new EventHandler(ExtCollInvisible);
         }
         public void Finish()
         {
@@ -758,6 +764,42 @@ namespace scripthea.composer
             return newFolder;
         }
         public string getStatus { get { return status.ToString(); } }
+        protected void ExtCollInvisible(object sender, EventArgs e)
+        {
+            ExtCollMngVisibility = false;
+        }
+        protected bool _ExtCollMngVisibility;
+        protected bool ExtCollMngVisibility
+        {
+            get { return _ExtCollMngVisibility; }
+            set
+            {
+                if (_ExtCollMngVisibility == value) return;
+                tiModifiers.IsEnabled = !value; tiScanPreview.IsEnabled = !value; tiSD_API.IsEnabled = !value;
+                if (value) 
+                { 
+                    tcModScanPre.SelectedItem = tiExtCollMng;
+                    tiModifiers.Visibility = Visibility.Hidden; tiScanPreview.Visibility = Visibility.Hidden; tiSD_API.Visibility = Visibility.Hidden;
+                }
+                else 
+                { 
+                    tcModScanPre.SelectedItem = tiModifiers;
+                    tiModifiers.Visibility = Visibility.Visible; tiScanPreview.Visibility = Visibility.Visible; tiSD_API.Visibility = Visibility.Visible;
+                }
+                Utils.DoEvents(); _ExtCollMngVisibility = value;
+            }
+        }        
+        private void btnExtColl_Click(object sender, RoutedEventArgs e)
+        {
+            ExtCollMngVisibility = true;
+            if (cuePoolUC.extCollUC.IsCollectionFolder(cuePoolUC.cuesFolder)) ExtCollManager.UpdateCollInfo(cuePoolUC.cuesFolder);
+            else ExtCollManager.UpdateCollInfo();
+        }
+
+        private void tcModScanPre_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            //opts?.Log(ExtCollMngVisibility.ToString()+ " / " + tcModScanPre.SelectedItem.ToString());  
+        }
 
         public List<Tuple<string, string>> HelpList()
         {
@@ -827,7 +869,6 @@ namespace scripthea.composer
             //CombiIndexes(3, 5);
            
             new MiniTimedMessage("===============").ShowDialog();*/
-
 
         }
 
