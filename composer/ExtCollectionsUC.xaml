@@ -13,6 +13,7 @@
             <RowDefinition Height="40"/>
             <RowDefinition x:Name="rowDefCats" Height="75"/>
             <RowDefinition Height="40"/>
+            <RowDefinition Height="40"/>
             <RowDefinition Height="5"/>
         </Grid.RowDefinitions>
         <Grid Margin="0" VerticalAlignment="Center" HorizontalAlignment="Left" >
@@ -38,7 +39,7 @@
             <external:IntegerBox x:Name="numWordsMax" Value="100" Width="61" VerticalAlignment="Center" Height="26" Margin="0,2"/>
         </StackPanel>
         <StackPanel Margin="0,3,0,0" VerticalAlignment="Top" Grid.Row="3" Height="70" Background="#FFF7F7F7">
-            <WrapPanel x:Name="wpCats" Height="43">
+            <WrapPanel x:Name="wpCats" Height="43" Width="500">
                 
             </WrapPanel>
             <StackPanel Orientation="Horizontal">
@@ -53,12 +54,15 @@
                 <Label FontSize="13" Content="matching" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,-7,0,0" Height="28" Panel.ZIndex="2"/>
             </StackPanel>
             
-            <TextBox x:Name="tbFilter" Text="" Width="233" VerticalAlignment="Center" Margin="0,5" ToolTip="Look for a particular word or a phrase"/>
-            <Rectangle Fill="#FFBABABA" Width="2" HorizontalAlignment="Left" Margin="7,0,0,0" Height="30" VerticalAlignment="Center"></Rectangle>
+            <TextBox x:Name="tbPatternMatching" Text="" Width="359" VerticalAlignment="Center" Margin="0,5" ToolTip="Look for a particular word or a phrase" Height="24"/>
+            <CheckBox x:Name="chkRegEx" Content="Reg.Ex." VerticalAlignment="Center" Margin="7,0,0,0" ToolTip="Randomly sample the extracted prompts"/>
+        </StackPanel>
+        <StackPanel HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" Orientation="Horizontal" Grid.Row="5">
             <CheckBox x:Name="chkRandomSample" Content="Random sample" VerticalAlignment="Center" Margin="7,0,0,0" IsChecked="True" ToolTip="Randomly sample the extracted prompts"/>
             <external:IntegerBox x:Name="numRandomSample" Value="30" Width="60" VerticalAlignment="Center" Margin="3,2,0,2" Height="26"/>
+            <Rectangle Fill="#FFBABABA" Width="2" HorizontalAlignment="Left" Margin="7,0,0,0" Height="30" VerticalAlignment="Center"></Rectangle>
         </StackPanel>
-        <Rectangle Height="4" Fill="#FFE9F6F2" Grid.Row="5"></Rectangle>
+        <Rectangle Height="4" Fill="#FFE9F6F2" Grid.Row="6"></Rectangle>
         <Rectangle x:Name="rectCover" Grid.RowSpan="5" Fill="#7FF5F5F5" Visibility="Collapsed"></Rectangle>
     </Grid>
 </UserControl>

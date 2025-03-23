@@ -55,7 +55,7 @@ namespace scripthea.composer
         public bool CoverOn 
         { 
             get { return rectCover.Visibility == Visibility.Visible; } 
-            set { if (value) rectCover.Visibility = Visibility.Visible; else rectCover.Visibility = Visibility.Collapsed; sjlFlag = !value; } 
+            set { if (value) rectCover.Visibility = Visibility.Visible; else rectCover.Visibility = Visibility.Collapsed; } 
         }
         private HashSet<Categories> GetCategories()
         {
@@ -78,9 +78,20 @@ namespace scripthea.composer
         }
         public ECquery GetQueryFromVisuals()
         {
+            bool bb = ecdesc != null;
+            bool sf = _sjlFlag;
+            if (bb)
+            {
+                bool? bc = ecdesc.sjlFlag();
+                if (bc != null)
+                { 
+                    sf = (bool)bc;
+                    if (sf != _sjlFlag) opts.Log("Error: internal error #587");
+                }
+            }
             ECquery ecq = new ECquery()
             {
-                sjlFlag = _sjlFlag,
+                sjlFlag = sf,
 
                 SegmentFlag = Convert.ToBoolean(chkSegment.IsChecked.Value),
                 SegmentFrom = numSegmentFrom.Value,
@@ -92,12 +103,13 @@ namespace scripthea.composer
                 WordsMin = numWordsMin.Value,
                 WordsMax = numWordsMax.Value,
 
-                Filter = tbFilter.Text,
+                Pattern = tbPatternMatching.Text,
+                RegExFlag = chkRegEx.IsChecked.Value,
 
                 RandomSampleFlag = Convert.ToBoolean(chkRandomSample.IsChecked.Value),
                 RandomSampleSize = numRandomSample.Value
             };
-            bool bb = ecdesc != null;
+            
             if (bb) bb = ecdesc.useCategogies;
             if (sjlFlag && bb)
             {
@@ -130,7 +142,8 @@ namespace scripthea.composer
             numWordsMin.Value = qry.WordsMin;
             numWordsMax.Value = qry.WordsMax;
 
-            tbFilter.Text = qry.Filter;
+            tbPatternMatching.Text = qry.Pattern;
+            chkRegEx.IsChecked = qry.RegExFlag;
 
             chkRandomSample.IsChecked = qry.RandomSampleFlag;
             numRandomSample.Value = qry.RandomSampleSize;

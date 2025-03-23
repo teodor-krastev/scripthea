@@ -44,13 +44,18 @@ namespace scripthea.composer
         public List<CueItemUC> allCues; // all cues
         public List<List<CueItemUC>> localCues; // cues by tab
         private List<ScrollViewer> localScrolls;
-        public bool isBusy = false;
+        public bool isBusy
+        {
+            get { return Mouse.OverrideCursor == Cursors.Wait; }
+            set { if (value) Mouse.OverrideCursor = Cursors.Wait; else Mouse.OverrideCursor = null; }
+        }
         public string cuesFolder { get { return Path.Combine(Utils.basePath, "cues"); } } 
         public void Init(ref Options _opts, List<string> _cueFiles = null)
         {
-            isBusy = true; opts = _opts;
+            opts = _opts;
             try
             {
+                isBusy = true;
                 if (Utils.isNull(_cueFiles)) cueFiles = new List<string>(Directory.GetFiles(cuesFolder, "*.cues"));
                 else cueFiles = new List<string>(_cueFiles);
 

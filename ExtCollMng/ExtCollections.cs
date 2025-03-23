@@ -27,6 +27,15 @@ namespace ExtCollMng
         public string filename; // must; no path; if contains * OR ? multifile
                                 // ext: .STX -> prompt only text file, categogies and separModif - ireleveant;
                                 // .SJL -> jsonl format 
+        public bool? sjlFlag()
+        {
+            if (!Directory.Exists(folderPath)) return null;
+            if (!Validate()) return null;
+            string ext = Path.GetExtension(filename).ToUpper();
+            if (ext.Equals(".STX")) return false;
+            else if (ext.Equals(".SJL")) return true;
+            else return null;
+        } 
         [JsonIgnore]
         public string folderPath = "";
         public string folder()
@@ -142,7 +151,8 @@ namespace ExtCollMng
         public HashSet<Categories> categories;
         public int CatThreshold;
 
-        public string Filter;
+        public string Pattern;
+        public bool RegExFlag;
 
         public bool RandomSampleFlag;
         public int RandomSampleSize;
@@ -217,9 +227,10 @@ namespace ExtCollMng
                 eCnt["cat"] += 1;
             }
             // regex filter
-            if (!ecq.Filter.Trim().Equals(string.Empty))
+            if (!ecq.Pattern.Trim().Equals(string.Empty))
             {
-                if (!Utils.IsWildCardMatch(aprt, ecq.Filter)) return false;
+                if (ecq.RegExFlag) { if (!Utils.RegexIsMatch(aprt, ecq.Pattern)) return false; }
+                else { if (!Utils.IsWildCardMatch(aprt, ecq.Pattern)) return false; }
                 eCnt["regex"] += 1;
             }
             return true;
@@ -282,7 +293,7 @@ namespace ExtCollMng
             {
                 ss1 += "; categories cut: " + eCnt["cat"];
             }
-            if (!ecq.Filter.Trim().Equals(string.Empty))
+            if (!ecq.Pattern.Trim().Equals(string.Empty))
             {
                 ss2 = "key word cut: " + eCnt["regex"];
             }

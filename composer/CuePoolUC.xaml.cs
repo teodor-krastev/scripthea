@@ -127,7 +127,7 @@ namespace scripthea.composer
                     extCollUC.SetFolder(cuesFolder);                    
                 }
                 else extCollUC.SetFolder("");
-                rowExtColl.Height = new GridLength(extCollUC.sjlFlag ? 220 : 143); 
+                rowExtColl.Height = new GridLength(extCollUC.sjlFlag ? 255 : 190); 
             }            
             if (File.Exists(mapFile))
             {

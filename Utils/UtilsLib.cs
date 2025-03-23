@@ -1050,6 +1050,10 @@ namespace UtilsNS
             }
             return Regex.IsMatch(text, WildCardToRegular(sp), RegexOptions.IgnoreCase);
         }
+        public static bool RegexIsMatch(string text, string searchPattern) 
+        {            
+            return Regex.IsMatch(text, searchPattern);
+        }
         public static List<string> ReadMultilineTextFromClipboard(bool RemoveEmptyEntries = true)
         {
             List<string> lines = new List<string>();
@@ -2059,7 +2063,6 @@ namespace UtilsNS
             dictLog(dictS); 
         }
     }
-
     /// <summary>
     /// Read dictionary from multi-column text file (tab separated)
     /// format first line #header (for conditions) - optional
@@ -2170,7 +2173,6 @@ namespace UtilsNS
             return next;
         }
     }
-    
     #endregion
     /// <summary>
     /// Hour-glass cursor while waiting for Godot
