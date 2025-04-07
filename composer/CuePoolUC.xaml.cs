@@ -74,18 +74,7 @@ namespace scripthea.composer
             {   cuesFolder = rootCuesFolder; 
                 if (opts.composer.WorkCuesFolder != "") Log("Error: cues folder <" + opts.composer.WorkCuesFolder + "> does not exist.\n\n Set to default."); 
             }
-            List<string> cfs = cuesFolders(false); cfs.Insert(0, "<root>"); 
-            foreach (string cf in cfs)
-            {
-                if (cf.Equals("<root>")) { cbCuesFolders.Items.Add(new ComboBoxItem() { Content = cf, Foreground = Utils.ToSolidColorBrush("#FF02CB02"), FontFamily = new FontFamily("Segoe UI Semibold") }); continue; }
-                string fldName = cuesFolderNameByPath(cf);
-                if (extCollUC.IsCollectionFolder(cf)) { cbCuesFolders.Items.Add(new ComboBoxItem() { Content = fldName, Foreground = Brushes.Blue, FontFamily = new FontFamily("Segoe UI Semibold") }); continue; }
-                if (Directory.GetFiles(cf, "*.cues").Length > 0) cbCuesFolders.Items.Add(new ComboBoxItem() { Content = fldName, Foreground = Utils.ToSolidColorBrush("#FF02CB02"), FontFamily = new FontFamily("Segoe UI Semibold") });
-            }
-            
-            int spot = workCuesIndex();
-            if (spot < 0) { cuesFolder = rootCuesFolder; cbCuesFolders.SelectedIndex = 0; }
-            else cbCuesFolders.SelectedIndex = spot;
+            UpdateCueMapFromDisk();
             extCollUC.Init(ref opts); 
 
             iPickerX.Init(ref _opts); iPickerX.Configure('X', new List<string>(), "Including modifiers", "", "Browse", true).Click += new RoutedEventHandler(Browse_Click);
@@ -100,6 +89,22 @@ namespace scripthea.composer
             
             // editor tab
             cueEditor.Init(ref opts);
+        }
+        public void UpdateCueMapFromDisk()
+        {
+            cbCuesFolders.Items.Clear();
+            List<string> cfs = cuesFolders(false); cfs.Insert(0, "<root>");
+            foreach (string cf in cfs)
+            {
+                if (cf.Equals("<root>")) { cbCuesFolders.Items.Add(new ComboBoxItem() { Content = cf, Foreground = Utils.ToSolidColorBrush("#FF02CB02"), FontFamily = new FontFamily("Segoe UI Semibold") }); continue; }
+                string fldName = cuesFolderNameByPath(cf);
+                if (extCollUC.IsCollectionFolder(cf)) { cbCuesFolders.Items.Add(new ComboBoxItem() { Content = fldName, Foreground = Brushes.Blue, FontFamily = new FontFamily("Segoe UI Semibold") }); continue; }
+                if (Directory.GetFiles(cf, "*.cues").Length > 0) cbCuesFolders.Items.Add(new ComboBoxItem() { Content = fldName, Foreground = Utils.ToSolidColorBrush("#FF02CB02"), FontFamily = new FontFamily("Segoe UI Semibold") });
+            }
+
+            int spot = workCuesIndex();
+            if (spot < 0) { cuesFolder = rootCuesFolder; cbCuesFolders.SelectedIndex = 0; }
+            else cbCuesFolders.SelectedIndex = spot;
         }
         private int workCuesIndex()
         {
@@ -339,7 +344,7 @@ namespace scripthea.composer
         public List<string> cuesFolders(bool OnlyNames = true) 
         {
             List<string> ls = new List<string>();            
-            string[] subdirectoryEntries = Directory.GetDirectories(rootCuesFolder, "*", SearchOption.AllDirectories);
+            string[] subdirectoryEntries = Directory.GetDirectories(rootCuesFolder, "*", SearchOption.TopDirectoryOnly);
             foreach (string subdirectory in subdirectoryEntries)
             {
                 if (cuesFolderNameByPath(subdirectory).Equals("_temp", StringComparison.InvariantCultureIgnoreCase)) continue;
@@ -356,6 +361,7 @@ namespace scripthea.composer
         }       
         private void cbCuesFolders_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (cbCuesFolders.SelectedItem == null) return;
             cbCuesFolders.ToolTip = cuesFolderPathByName(Convert.ToString(((ComboBoxItem)cbCuesFolders.SelectedItem).Content));
             btnLoad.IsEnabled = !Utils.comparePaths(Convert.ToString(cbCuesFolders.ToolTip), cuesFolder);
             btnLoad.Foreground = btnLoad.IsEnabled ? Brushes.Black : Brushes.Silver;

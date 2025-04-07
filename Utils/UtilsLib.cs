@@ -238,6 +238,8 @@ namespace UtilsNS
         }
         public static bool CompareFilesByHash(string file1, string file2)
         {
+            if (!File.Exists(file1) || !File.Exists(file2)) return false; 
+
             using (var md5 = MD5.Create())
             {
                 using (var fs1 = new FileStream(file1, FileMode.Open))
@@ -1554,6 +1556,7 @@ namespace UtilsNS
         }
         public static bool newerVersion(string ver1, string ver2) // check if ver2 is later than ver1
         {
+            if (string.IsNullOrEmpty(ver1) || string.IsNullOrEmpty(ver2)) return false;
             string[] sa = ver1.Split('.'); string[] sb = ver2.Split('.');
             if (sa.Length == 4 && sb.Length == 4) return Convert.ToInt32(sa[3]) < Convert.ToInt32(sb[3]);
             if (sa.Length < 3 || sb.Length < 3) return false;

@@ -252,9 +252,11 @@ namespace ExtCollMng
         {
             RadioButton rb = sender as RadioButton; rb.FontFamily = new FontFamily("Segoe UI");
         }
+        public event Action OnChangeColls;
         private void btnLoadColl_Click(object sender, RoutedEventArgs e)
         {
             UpdateCollInfo();
+            OnChangeColls?.Invoke();
         }        
         private void btnVisitSource_Click(object sender, RoutedEventArgs e)
         {
@@ -335,7 +337,6 @@ namespace ExtCollMng
                 }
                 else { Log("Error: Download unsuccessful! (file not found)"); return; }
                 progressDownload.Visibility = Visibility.Hidden;
-
                 UnpackColl(downFile, wr.fldName);
             }
             catch (IOException ex) { Log("Error: Download unsuccessful! " + ex.Message);  Log("If the error persists you may try <Download coll. zip via browser>.", Brushes.Maroon); }
@@ -346,6 +347,7 @@ namespace ExtCollMng
         }
         private void UnpackColl(string downFile, string fldName, bool clearAfter = true)
         {
+            string fldLocal = "";
             try
             {           
                 if (!Directory.Exists(tempFolder)) Directory.CreateDirectory(tempFolder);
@@ -354,7 +356,7 @@ namespace ExtCollMng
 
                 Utils.UnzipFile(downFile, tempFolder); Log("Unziping to " + fldRemote);
                 if (!Directory.Exists(fldRemote)) { Log("Error:  Download unsuccessful! Folder <" + fldRemote + "> not found)."); return; }
-                string fldLocal = Path.Combine(cuesFolder, fldName);
+                fldLocal = Path.Combine(cuesFolder, fldName);
                 bool bb = false;
                 if (Directory.Exists(fldLocal)) // if Local there
                 {
@@ -374,8 +376,15 @@ namespace ExtCollMng
                 }
                 if (Directory.Exists(fldLocal)) // if Local there, remove the files to be moved from remote
                 {
-                    string[] fa = Directory.GetFiles(fldRemote);
-                    foreach (string fn in fa)
+                    List<string> fl = new List<string>(Directory.GetFiles(fldLocal, "*.STX"));
+                    fl.AddRange(new List<string>(Directory.GetFiles(fldLocal, "*.SJL")));
+                    foreach (string fn in fl)
+                    {
+                        File.Delete(fn); Log("clear: " + fn);
+                    }
+
+                    fl = new List<string>(Directory.GetFiles(fldRemote)); // temp
+                    foreach (string fn in fl)
                     {
                         string fr = Path.Combine(fldLocal, Path.GetFileName(fn));
                         if (File.Exists(fr)) { File.Delete(fr); Log("clear: " + fr); }
@@ -388,9 +397,9 @@ namespace ExtCollMng
             finally
             {
                 if (File.Exists(downFile) && clearAfter) { File.Delete(downFile); Log("clear up: " + downFile); }
-                Log("DONE !");
+                if (Directory.Exists(fldLocal)) { Log("Succesful  ext. collection unpacking!"); btnLoadColl_Click(null, null); }           
                 tbStatus.Text = "Status";
-            }
+            }               
         }
         private void btnDownloadZip_Click(object sender, RoutedEventArgs e)
         {        

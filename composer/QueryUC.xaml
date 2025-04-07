@@ -126,7 +126,7 @@
                             <RowDefinition Height="500"/>
                             <RowDefinition Height="6*"/>
                         </Grid.RowDefinitions>
-                        <extcoll:ExtCollMngUC x:Name="ExtCollManager" Margin="0,10,0,5" HorizontalAlignment="Left" Width="900"/>
+                        <extcoll:ExtCollMngUC x:Name="extCollMng" Margin="0,10,0,5" HorizontalAlignment="Left" Width="900"/>
                         <GridSplitter VerticalAlignment="Top" HorizontalAlignment="Stretch" Height="4" Grid.Row="1"></GridSplitter>
                     </Grid>
                 </TabItem>

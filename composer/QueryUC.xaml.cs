@@ -83,10 +83,12 @@ namespace scripthea.composer
                 //cbActiveAPI.SelectedIndex = 3;
             }
             else { btnTest.Visibility = Visibility.Collapsed; }
-            ExtCollManager.Init(new Utils.LogHandler(opts.Log), Path.Combine(Utils.basePath,"cues")); 
+            
+            extCollMng.Init(new Utils.LogHandler(opts.Log), Path.Combine(Utils.basePath,"cues"));
+            extCollMng.OnChangeColls += new Action(cuePoolUC.UpdateCueMapFromDisk);
             cuePoolUC.btnExtColl.Click += new RoutedEventHandler(btnExtColl_Click);
-            if (Utils.TheosComputer()) tiExtCollMng.Visibility = Visibility.Visible;
-            else tiExtCollMng.Visibility = Visibility.Hidden;
+            /*if (Utils.TheosComputer()) tiExtCollMng.Visibility = Visibility.Visible;
+            else */ tiExtCollMng.Visibility = Visibility.Hidden;
             cuePoolUC.OnExtCollOff += new EventHandler(ExtCollInvisible);
         }
         public void Finish()
@@ -144,7 +146,6 @@ namespace scripthea.composer
             }
             return sd_params_UC.vPrms;
         }
-
         private bool _showAPI;
         public bool showAPI
         {
@@ -792,8 +793,8 @@ namespace scripthea.composer
         private void btnExtColl_Click(object sender, RoutedEventArgs e)
         {
             ExtCollMngVisibility = true;
-            if (cuePoolUC.extCollUC.IsCollectionFolder(cuePoolUC.cuesFolder)) ExtCollManager.UpdateCollInfo(cuePoolUC.cuesFolder);
-            else ExtCollManager.UpdateCollInfo();
+            if (cuePoolUC.extCollUC.IsCollectionFolder(cuePoolUC.cuesFolder)) extCollMng.UpdateCollInfo(cuePoolUC.cuesFolder);
+            else extCollMng.UpdateCollInfo();
         }
 
         private void tcModScanPre_SelectionChanged(object sender, SelectionChangedEventArgs e)

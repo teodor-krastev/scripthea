@@ -58,8 +58,8 @@ namespace scripthea
                 opts.general.LastUpdateCheck = timeSpan.Days; 
             }
             else
-            {
-                if (!opts.general.NewVersion.Equals(""))
+            {               
+                if (Utils.newerVersion(Utils.getAppFileVersion, opts.general.NewVersion))
                 {
                     lbMessage.Foreground = Brushes.Tomato;
                     lbMessage.Content = "New release (" + opts.general.NewVersion + ") is available at Scripthea.com !"; 
