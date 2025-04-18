@@ -226,10 +226,12 @@ namespace scripthea.composer
             get { return _radioMode; }
             set
             {
+                bool bb = !_radioMode && value;
                 _radioMode = value;
                 if (Utils.isNull(cueLists)) return;
                 foreach (CueListUC clu in cueLists)
                     clu.radioMode = value;
+                tabControl_SelectionChanged(tabControl, null);
             }
         }
         public void UpdateShowMeta(bool showMeta)

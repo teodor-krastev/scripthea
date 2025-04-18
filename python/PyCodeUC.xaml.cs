@@ -24,16 +24,20 @@ namespace scripthea.python
 {    
     public class St // default output
     {
-        protected RichTextBox rtb; protected CheckBox details;
+        protected RichTextBox rtb; protected CheckBox details; protected Options opts;
         public CancellationTokenSource cts;
-        public St(ref RichTextBox _rtb, ref CheckBox _details)
+        public St(ref RichTextBox _rtb, ref CheckBox _details, ref Options _opts)
         {
-            rtb = _rtb; details = _details;
+            rtb = _rtb; details = _details; opts = _opts;
             cts = new CancellationTokenSource();
         }
         public void resetCancellation()
         {
             if (IsCancellationRequested) { cts?.Dispose(); cts = new CancellationTokenSource(); }               
+        }
+        public void log(dynamic txt)
+        {
+            opts.Log(txt.ToString());
         }
         public void print(dynamic txt, string color)
         {
@@ -123,7 +127,7 @@ namespace scripthea.python
             opts.sMacro.OnChangePythonLocation -= OnChangePythonLocation; opts.sMacro.OnChangePythonLocation += OnChangePythonLocation;
 
             scripted = new Dictionary<string,object>();
-            st = new St(ref tbLog, ref chkDetails);
+            st = new St(ref tbLog, ref chkDetails, ref opts); 
             Register("st", st, st.help);
         }
         public void Finish()

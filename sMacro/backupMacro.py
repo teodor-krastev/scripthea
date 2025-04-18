@@ -6,7 +6,7 @@ import sys
 st.log("out: "+qry.Text2Image('Desert sunrise by Turner'))
 
 # select some cues, 10% of the whole pool
-lr = qry.SelectCues(3, -1)
+lr = qry.SelectCues(30, 0)
 st.log(str(lr.Count)+' cues selected')
 
 # select some modifiers

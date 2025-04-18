@@ -215,10 +215,10 @@ namespace scripthea.composer
         {
             List<string> ls = new List<string>();
             if (radioMode) return ls;
-            if (idx == 0) return SelRandomSelect(perc); // selected one
+            if (idx == 0 || (localCues.Count == 1 && idx < 0)) return SelRandomSelect(perc); // selected one
             if (idx < 0) // all of them
             {
-                bool bb = true; int hi = selListIdx;
+                int hi = selListIdx;
                 for (int i = 0; i < localCues.Count; i++)
                 {
                     selListIdx = i; ls.AddRange(SelRandomSelect(perc));

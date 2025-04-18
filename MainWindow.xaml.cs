@@ -481,10 +481,6 @@ namespace scripthea
         {
             switch (e.Key)
             {
-                case Key.F1: 
-                    if (sender.Equals(MainWindow1)) Utils.CallTheWeb("https://scripthea.com");
-                    e.Handled = true;
-                    break;
                 case Key.Enter: 
                     string fld = "";
                     if (sender.Equals(queryUC.tbImageDepot) && tabControl.SelectedItem.Equals(tiComposer)) fld = queryUC.tbImageDepot.Text;
@@ -502,12 +498,34 @@ namespace scripthea
         }
         private void MainWindow1_PreviewKeyDown(object sender, KeyEventArgs e)
         {
+            if (e.Key.Equals(Key.F1))
+            {
+                string pg = "";
+                switch (tabControl.SelectedIndex)
+                {
+                    case 0: pg = "composer";
+                        if (queryUC.cuePoolUC.tabControl.SelectedIndex == 2) pg = "ext-collections";
+                        if (queryUC.cuePoolUC.tabControl.SelectedIndex == 4) pg = "cues";
+                        break;
+                    case 1: pg = "viewer";
+                        break;
+                    case 2: pg = "depot-master";
+                        break;
+                    case 3: pg = "import-export";
+                        break;
+                    case 4: pg = "smacro";
+                        break;
+                }
+                if (pg != "") pg = "?pg=" + pg;
+                if (sender.Equals(MainWindow1)) Utils.CallTheWeb("https://scripthea.com"+pg);
+                e.Handled = true; return;
+            }
             if (tabControl.SelectedItem.Equals(tiViewer))
             {
                 if (viewerUC == null) return;
                 if (e.Key.Equals(Key.F11)) { viewerUC.animation = true; e.Handled = true; }
                 if (e.Key.Equals(Key.Escape)) { viewerUC.animation = false; e.Handled = true; }
-                }
+            }
         }
         private void btnPreferences_Click(object sender, RoutedEventArgs e)
         {

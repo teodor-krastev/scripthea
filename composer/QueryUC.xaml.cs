@@ -569,7 +569,7 @@ namespace scripthea.composer
             }
             tbModifier.Text = "";
             if (Utils.isNull(cuePoolUC)) return;
-            cuePoolUC.radioMode = tcQuery.SelectedItem.Equals(tiSingle);
+            cuePoolUC.radioMode = tcQuery.SelectedItem.Equals(tiSingle);           
             modifiersUC.SetSingleScanMode(tcQuery.SelectedItem.Equals(tiSingle));
             if (!Utils.isNull(e)) e.Handled = true;
         }
