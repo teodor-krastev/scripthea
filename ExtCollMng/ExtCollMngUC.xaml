@@ -47,7 +47,7 @@
                     <ColumnDefinition Width="150"/>
                     <ColumnDefinition Width="525*"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock x:Name="tbStatus" Text="Status" VerticalAlignment="Top" Margin="10,2,-0.333,0" Grid.ColumnSpan="2" Foreground="#FF565656"/>
+                <TextBlock x:Name="tbStatus" Text="Status:" VerticalAlignment="Top" Margin="10,2,-0.333,0" Grid.ColumnSpan="2" Foreground="#FF565656" FontSize="14"/>
                 <ProgressBar x:Name="progressDownload" Margin="1" VerticalAlignment="Center" Height="20" Background="WhiteSmoke" Grid.Column="1" Foreground="#FF89EA9B" Visibility="Hidden"/>
             </Grid>
             <Grid Grid.Row="1">

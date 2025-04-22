@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:scripthea"
         mc:Ignorable="d"
-        Title="About Scripthea" Height="356.358" Width="451.738" MouseDown="aboutWin_MouseDown" Icon="Properties/penzy4.png" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Topmost="True" ShowInTaskbar="False" WindowStyle="ThreeDBorderWindow" Closing="AboutWindow_Closing">
+        Title="About Scripthea" Height="390" Width="480" MouseDown="aboutWin_MouseDown" Icon="Properties/penzy4.png" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Topmost="True" ShowInTaskbar="False" WindowStyle="ThreeDBorderWindow" Closing="AboutWindow_Closing">
     <Grid Margin="0">
         <Grid.RowDefinitions>
             <RowDefinition Height="136.101"/>
@@ -13,22 +13,26 @@
         </Grid.RowDefinitions>
         <StackPanel Margin="0,2.899,-0.025,-0.456" Grid.Row="1">
             <Label x:Name="lbDesc" Content="text-to-image prompt composer ...and much more" HorizontalAlignment="Center" FontSize="15" FontWeight="Bold" FontFamily="Segoe UI Semibold" Foreground="Navy"/>
-            <StackPanel Orientation="Horizontal" Width="250">
-                <Label x:Name="lbPreAuthor" Content="written and copyright" FontSize="14"/>
-                <TextBlock x:Name="lbAuthor" Text="Teodor Krastev" Foreground="Blue" TextDecorations="Underline" FontSize="14" Cursor="Hand" Margin="0,5,0,0" MouseDown="lbAuthor_MouseDown" ToolTip="Contact the author"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Label x:Name="lbPreAuthor" Content="written by and copyright" FontSize="14"/>
+                <TextBlock x:Name="lbAuthor" Text="Teodor Krastev"  FontSize="14" Cursor="Hand" Margin="0,5,0,0" MouseDown="lbAuthor_MouseDown" ToolTip="Contact the author" FontFamily="Segoe UI Semibold"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                 <Label x:Name="lbLicense" Content="open source project (MIT license)" HorizontalAlignment="Center" FontSize="13"/>
                 <TextBlock x:Name="tbSources" FontSize="13" Foreground="Blue" TextDecorations="Underline" Cursor="Hand" MouseDown="tbSources_MouseDown" Margin="0,5,0,0">Scripthea GitHub repository</TextBlock>
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <Label x:Name="lbGithub" HorizontalAlignment="Left" Margin="0" Content="For online help and app.setup visit " FontSize="13"></Label>
+                <Label x:Name="lbGithub" HorizontalAlignment="Left" Margin="0" Content="For online help and documentation visit " FontSize="13"></Label>
                 <TextBlock x:Name="tbkWebsite" FontSize="15" Foreground="Blue" TextDecorations="Underline" Cursor="Hand" Text="Scripthea.com" Padding="0,2,0,0" MouseDown="tbkWebsite_MouseDown"/>
             </StackPanel>
-            <Label x:Name="lbMessage" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,3,0,0"></Label>
-            <StackPanel Margin="0,3,0,0" Orientation="Horizontal" HorizontalAlignment="Center">
+            <Label x:Name="lbMessage" HorizontalAlignment="Center" Margin="0,5,0,0" FontSize="14" FontFamily="Segoe UI Semibold"></Label>
+            <StackPanel Margin="0,5,0,0" Orientation="Horizontal" HorizontalAlignment="Center">
                 <Label x:Name="lbInvite" HorizontalAlignment="Center" Content="If you like Scripthea you may" FontFamily="Segoe UI Semibold" FontSize="13"></Label>
                 <TextBlock x:Name="lbCoffee" HorizontalAlignment="Center" Text="buy me a coffee" FontFamily="Segoe UI Semibold" FontSize="13" Margin="0,5,0,0" MouseDown="lbCoffee_MouseDown" TextDecorations="Underline" Foreground="Blue" Cursor="Hand"></TextBlock>
+            </StackPanel>
+            <StackPanel Margin="0,10,0,0" Orientation="Horizontal" HorizontalAlignment="Center">
+                <Label x:Name="lbEmail" HorizontalAlignment="Center" Content="For assistance and bug report email me at" FontFamily="Segoe UI Semibold" FontSize="14" Foreground="#FF004A43"></Label>
+                <TextBlock x:Name="tbEmail" HorizontalAlignment="Center" Text="scripthea@sicyon.com" FontFamily="Segoe UI Semibold" FontSize="14" Margin="0,5,0,0"  TextDecorations="Underline" Foreground="Blue" Cursor="Hand" MouseDown="tbEmail_MouseDown"></TextBlock>
             </StackPanel>
         </StackPanel>
         <Image x:Name="imgLogo" Margin="18,25,17.975,13.101" Source="Properties/ScriptheaLogo2.png" Stretch="None" HorizontalAlignment="Center" VerticalAlignment="Center" Height="118" Width="314"/>

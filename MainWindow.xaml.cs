@@ -249,7 +249,7 @@ namespace scripthea
         {
             try
             {
-                string txt = msg.Trim(); bool skipLog = false;
+                string txt = msg.Trim(); bool skipLog = false; // skip log of inner calls
                 if (txt.Length > 7)
                     switch (txt.Substring(0, 8)) // if starts with @ - command or mode switch; not real log.
                     {
@@ -454,7 +454,7 @@ namespace scripthea
         }
         protected void Active(string path)
         {
-            focusControl.ifc.textFolder.Text = path;            
+            focusControl.ifc.textFolder.Text = path; Utils.DoEvents(); Utils.Sleep(100);           
         }
         private void imgAbout_MouseDown(object sender, MouseButtonEventArgs e)
         {

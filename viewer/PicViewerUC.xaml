@@ -40,31 +40,39 @@
                 <ColumnDefinition x:Name="colMeta" Width="100" MinWidth="8"/>
             </Grid.ColumnDefinitions>
             <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="1*"/>
-                    <RowDefinition x:Name="rowNegative" Height="28"/>
-                </Grid.RowDefinitions>
-            <TextBox x:Name="tbCue" Margin="3,3,23,3" TextWrapping="Wrap" Text="" Background="White" IsReadOnly="True" FontSize="13" BorderThickness="0,0,0,0" HorizontalAlignment="Center" VerticalScrollBarVisibility="Auto" />
-            <StackPanel x:Name="stpNegative" Grid.Row="1" Orientation="Horizontal" Background="#FFF7F7F7">
-                    <Label Content="Neg." FontFamily="Segoe UI Semibold" VerticalAlignment="Top" Margin="0"></Label>
-                    <TextBox x:Name="tbNegative" Margin="3,3,23,3" Text="" Background="{x:Null}" IsReadOnly="True" FontSize="13" BorderThickness="0,0,0,0" HorizontalAlignment="Left" VerticalScrollBarVisibility="Auto" VerticalAlignment="Center" />
-            </StackPanel>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="28"/>
+                </Grid.ColumnDefinitions>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition x:Name="rowNegative" Height="1"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBox x:Name="tbCue" Margin="3" TextWrapping="Wrap" Text="" Background="White" IsReadOnly="True" FontSize="13" BorderThickness="0,0,0,0" HorizontalAlignment="Center" VerticalScrollBarVisibility="Auto" />
+                    <StackPanel x:Name="stpNegative" Grid.Row="1" Orientation="Horizontal" Background="#FFF7F7F7">
+                        <Label Content="Neg." FontFamily="Segoe UI Semibold" VerticalAlignment="Top" Margin="0"></Label>
+                        <TextBox x:Name="tbNegative" Margin="3" Text="" Background="{x:Null}" IsReadOnly="True" FontSize="13" BorderThickness="0,0,0,0" HorizontalAlignment="Left" VerticalScrollBarVisibility="Auto" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Grid>
+                <Slider x:Name="sldRate" Grid.Column="1" Margin="0" Width="20" Value="3" Orientation="Vertical" ValueChanged="sldRate_ValueChanged" MouseWheel="sldRate_MouseWheel" Cursor="SizeNS">
+                    <Slider.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem x:Name="miNeutral" Header="Neutral" IsCheckable="True" IsChecked="True" Click="miNeutral_Click"/>
+                            <MenuItem x:Name="miBlueRed" Header="Blue-Red" IsCheckable="True" Click="miNeutral_Click"/>
+                        </ContextMenu>
+                    </Slider.ContextMenu>
+                    <Slider.Background>
+                        <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                            <GradientStop x:Name="topGradient" Color="White"/>
+                            <GradientStop x:Name="bottomGradient" Color="#FF3C3C3C" Offset="1"/>
+                        
+                        </LinearGradientBrush>
+                    </Slider.Background>
+                </Slider>
             </Grid>
-            <Slider x:Name="sldRate" HorizontalAlignment="Right" Margin="0" Width="20" Value="3" Orientation="Vertical" ValueChanged="sldRate_ValueChanged">
-                <Slider.ContextMenu>
-                    <ContextMenu>
-                        <MenuItem x:Name="miNeutral" Header="Neutral" IsCheckable="True" IsChecked="True" Click="miNeutral_Click"/>
-                        <MenuItem x:Name="miBlueRed" Header="Blue-Red" IsCheckable="True" Click="miNeutral_Click"/>
-                    </ContextMenu>
-                </Slider.ContextMenu>
-                <Slider.Background>
-                    <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
-                        <GradientStop x:Name="topGradient" Color="#FFFA6262"/>
-                        <GradientStop x:Name="bottomGradient" Color="#FF7FB4FF" Offset="1"/>
-                        <GradientStop Color="#FFAF93C1" Offset="0.568"/>
-                    </LinearGradientBrush>
-                </Slider.Background>
-            </Slider>
+           
             <GridSplitter Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Stretch" Background="#FFECEFE2" Width="3"></GridSplitter>
             <ListBox x:Name="lboxMetadata" Margin="4,0,0,0" Grid.Column="1" ></ListBox>
         </Grid>

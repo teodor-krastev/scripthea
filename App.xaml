@@ -1,7 +1,7 @@
-<Application x:Class="image_cues.App"
+<Application x:Class="scripthea.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:image_cues"
+             xmlns:local="clr-namespace:scripthea"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
        <!--  <Style x:Key="{x:Type Label}" TargetType="{x:Type Label}"> label's underscore fix (questionable)

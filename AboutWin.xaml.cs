@@ -103,7 +103,7 @@ namespace scripthea
         }
         private void tbkWebsite_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            Utils.CallTheWeb(@"https://scripthea.com");
+            Utils.CallTheWeb(@"https://scripthea.com"); 
         }
         public XmlDocument readXml(string url) 
         {
@@ -160,6 +160,10 @@ namespace scripthea
         private void lbCoffee_MouseDown(object sender, MouseButtonEventArgs e)
         {
             Utils.CallTheWeb("https://www.buymeacoffee.com/theokrastev");
+        }
+        private void tbEmail_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Utils.CallTheWeb(@"mailto:scripthea@sicyon.com"); 
         }
     }
 }

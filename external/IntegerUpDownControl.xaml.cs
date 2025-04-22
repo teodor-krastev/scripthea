@@ -134,5 +134,10 @@ namespace scripthea.external
             }
         }
 
+        private void TextBoxValue_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (e.Delta > 0) Increase_Click(sender, null);
+            if (e.Delta < 0) Decrease_Click(sender, null);
+        }
     }
 }

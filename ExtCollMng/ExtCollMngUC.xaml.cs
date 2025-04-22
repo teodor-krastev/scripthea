@@ -91,7 +91,6 @@ namespace ExtCollMng
         }
         public List<ECwebRecord> ReadRemoteExtColls()
         {
-            //Log("Reading remote ext.collections info.");
             Uri url = new Uri(urlColl + descColl);
             string[] jsonl = new string[0]; //File.ReadAllLines(Path.Combine(cuesFolder,"ext-collections.DESC"));  
             using (var client = new WebClient())
@@ -175,6 +174,7 @@ namespace ExtCollMng
                 totalLocal += pair.Value.rowCount;
             }
             if (!Utils.IsInternetConnectionAvailable()) { Log("Warning: Internet connection issue!"); return dct; }
+            tbStatus.Text = "Status: reading remote ext.collections info..."; Utils.DoEvents(); Utils.Sleep(200);
             foreach (ECwebRecord wr in ReadRemoteExtColls())
             {
                 if (dct.ContainsKey(wr.fldName)) dct[wr.fldName].webRecord = wr; // both places

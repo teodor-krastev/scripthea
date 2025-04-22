@@ -623,5 +623,18 @@
   <ItemGroup>
     <Resource Include="Properties\Pause-grey-icon.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Properties\bookmark_48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Properties\clear_48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Properties\play-off.png" />
+    <Resource Include="Properties\play-on.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Properties\play-on-blue.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -278,14 +278,18 @@ namespace scripthea.viewer
 
             if (!iDepot.isReadOnly) iDepot.IsChanged = true;
         }
-
         private void miNeutral_Click(object sender, RoutedEventArgs e)
         {
             if (opts == null) return;
             if (sender != null) opts.viewer.BnWrate = sender.Equals(miNeutral);
             miNeutral.IsChecked = opts.viewer.BnWrate; miBlueRed.IsChecked = !miNeutral.IsChecked;
-            if (opts.viewer.BnWrate) { topGradient.Color = Brushes.White.Color; bottomGradient.Color = Brushes.DarkSlateGray.Color;  } 
-            else { topGradient.Color = Utils.ToSolidColorBrush("#FFFA6262").Color; bottomGradient.Color = Utils.ToSolidColorBrush("#FF7FB4FF").Color; } //#FFFE9177;#FF7FB4FF
+            if (opts.viewer.BnWrate) { topGradient.Color = Brushes.White.Color; bottomGradient.Color = Brushes.Black.Color; }
+            else { topGradient.Color = Brushes.OrangeRed.Color; bottomGradient.Color = Brushes.DodgerBlue.Color; } //Utils.ToSolidColorBrush("#FF7FB4FF").Color Utils.ToSolidColorBrush("#FFFA6262").Color;
+        }
+        private void sldRate_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (e.Delta > 0) sldRate.Value += 1;
+            if (e.Delta < 0) sldRate.Value -= 1; 
         }
     }
 }

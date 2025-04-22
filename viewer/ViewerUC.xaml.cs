@@ -72,7 +72,7 @@ namespace scripthea.viewer
         public void Init(ref Options _opts) // ■▬►
         {
             opts = _opts;
-            numDly.Minimum = 1; numDly.Maximum = 99;
+            numDly.Minimum = 1; numDly.Maximum = 99; numDly.Value = 3;
             imageFolder = opts.composer.ImageDepotFolder; chkAutoRefresh.IsChecked = opts.viewer.Autorefresh; iDepot = null;
             colListWidth.Width = new GridLength(opts.composer.ViewColWidth);
             ImageDepotConvertor.AutoConvert = true; 

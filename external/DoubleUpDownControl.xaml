@@ -14,7 +14,7 @@
 
             <TextBox Name="TextBoxValue" TextChanged="value_TextChanged" PreviewKeyDown="value_PreviewKeyDown"					 
                      TextAlignment="Right"
-					 Grid.Column="0" Margin="0" BorderBrush="{x:Null}"/>
+					 Grid.Column="0" Margin="0" BorderBrush="{x:Null}" MouseWheel="TextBoxValue_MouseWheel"/>
             <StackPanel Orientation="Vertical"
 						Grid.Column="1" Margin="0" VerticalAlignment="Center">
                 <Button x:Name="Increase"
