@@ -84,6 +84,7 @@ namespace scripthea.viewer
         public ImageInfo(Dictionary<string, object> dict)
         {
             FromDictionary(dict);
+            if (!dict.ContainsKey("job_timestamp")) job_timestamp = DateTime.Now.ToString("G");
         }
         /*{"prompt", "String" }, {"negative_prompt", "String" }, { "seed", "Int64" }, { "width", "Int64" }, { "height", "Int64" },
             { "sampler_name", "String" }, { "cfg_scale", "Double" }, { "steps", "Int64" }, { "batch_size", "Int64" }, { "restore_faces", "Boolean" },
@@ -265,11 +266,11 @@ namespace scripthea.viewer
             dict.Add("seed", seed);
             dict.Add("model", model);
             dict.Add("sd_model_hash", sd_model_hash);
-            dict.Add("filename", filename);
             dict.Add("job_timestamp", job_timestamp);
             dict.Add("denoising_strength", denoising_strength);
             dict.Add("batch_size", batch_size);
             dict.Add("restore_faces", restore_faces);
+            dict.Add("filename", filename);
             if (!SDonly)
             {
                 dict.Add("MD5Checksum", MD5Checksum);
@@ -552,7 +553,7 @@ namespace scripthea.viewer
             if (!forced)
                 if (isReadOnly) return;
             List<string> ls = new List<string>();
-            header["application"] = "Scripthea " + Utils.getAppFileVersion;
+            if (!header.ContainsKey("application")) header["application"] = "Scripthea " + Utils.getAppFileVersion;
             ls.Add("#" + JsonConvert.SerializeObject(header));
             foreach (ImageInfo ii in items)
                 ls.Add(ii.To_String());

@@ -149,7 +149,7 @@ namespace scripthea.master
             activeView.selectedIndex = idx;
         }
         private List<iPicList> views;
-        iPicList activeView { get { return views[tcMain.SelectedIndex]; } }
+        iPicList activeView { get { int idx = tcMain.SelectedIndex == 2 ? 0 : tcMain.SelectedIndex; return views[idx]; } }
         public string imageDepot // save shortcut to iDepot.depotFolder
         {
             get
@@ -160,16 +160,24 @@ namespace scripthea.master
                 return _imageDepot.EndsWith("\\") ? _imageDepot : _imageDepot + "\\";
             }
         }
-        public bool isEnabled 
+        public bool isEnabled // valid iDepot
         { 
             get 
             {   
                 if (iDepot == null) return false;
-                else return iDepot.isEnabled;
+                return iDepot.isEnabled;
             } 
         }
         public bool? isValidFolder { get; private set; } // false - invalid; true - valid and not empty; null - valid and empty !!! future use
-
+        public bool isValid // it looks ready to be used
+        {
+            get
+            {
+                if (!isEnabled) return false;
+                bool bb = isValidFolder ?? false; bb &= tcMain.SelectedItem != tiStats;
+                return bb;
+            }
+        }
         private bool _isChanging = false;
         
         public bool isChanging
@@ -204,13 +212,22 @@ namespace scripthea.master
         protected void ChangeDepot(object sender, RoutedEventArgs e)
         {
             if (OnChangeDepot != null) OnChangeDepot(sender, e);
+            if (tcMain.SelectedItem == tiStats && sender is ImageDepot)
+            {
+                string path = ((ImageDepot)sender).path;
+                if (iDepotStats.iDepot != null)
+                    if (!iDepotStats.iDepot.SameAs(path)) 
+                        image.Source = null;
+                iDepotStats.OnChangeDepot(path); 
+                return;
+            }
             activeView.SetChecked(true);
             tbImageDepot.Foreground = Brushes.Black;
         }
         protected void ChangeContent(object sender, RoutedEventArgs e)
         {
             GetChecked();
-        }        
+        }       
         public void SetCheckLabel(string txt)
         {
             Utils.DelayExec(300, () => { lbChecked.Content = txt; }); //lbChecked.UpdateLayout(); //Utils.DoEvents();
@@ -228,7 +245,7 @@ namespace scripthea.master
         public bool converting = false; public ImageDepot iDepot = null;
         private void tbImageDepot_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (tbImageDepot.Text.Trim().Equals("")) { Clear(); return; }
+            if (tbImageDepot.Text.Trim().Equals("")) { Clear(); ChangeDepot(null, null); return; }
             if (opts != null)
                 if (opts.composer.ImageDepotFolder.Equals(tbImageDepot.Text, StringComparison.InvariantCultureIgnoreCase) && opts.composer.QueryStatus == Status.Scanning)
                 { opts.Log("Error[1279]: the working image folder is in process of updating.", Brushes.Red); tbImageDepot.Text = ""; return; }
@@ -264,13 +281,12 @@ namespace scripthea.master
                     if (pa.Length < 2) continue;
                     ii.prompt = pa[0];
                 }
-            }
-            if (iDepot != null) 
-                if (iDepot.isEnabled) ChangeDepot(iDepot, null);
+            }            
             lastTab = null;
             tcMain_SelectionChanged(null, null);
             activeView.SetChecked(true);
             GetChecked();
+            ChangeDepot(iDepot, null);
         }
         private void mi_Click(object sender, RoutedEventArgs e)
         {
@@ -321,6 +337,7 @@ namespace scripthea.master
         }
         public void loadPic(int idx, ImageDepot iDepot)
         {
+            if (tcMain.SelectedItem == tiStats) return;
             ImageInfo ii = SelectedItem(idx, iDepot);
             string filePath = Path.Combine(iDepot.path, ii.filename);
             if (File.Exists(filePath)) { image.Source = ImgUtils.UnhookedImageLoad(filePath, ImgUtils.ImageType.Png); lastLoadedPic = filePath; }
@@ -338,21 +355,37 @@ namespace scripthea.master
         }*/
         private void tcMain_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (tcMain == null || iDepot == null) return;            
-            if (activeView.iDepot != null)
-            {
-                if (!Utils.comparePaths(iDepot.path, activeView.loadedDepot)) // avoid reload already loaded depot
-                    activeView.FeedList(ref iDepot); //if (!) opts.Log("Error[]: fail to create grid image depot(1)");
+            try
+            {            
+                if (tcMain == null || iDepot == null) return;            
+                if (activeView.iDepot != null)
+                {
+                    if (!Utils.comparePaths(iDepot.path, activeView.loadedDepot)) // avoid reload already loaded depot
+                        activeView.FeedList(ref iDepot); //if (!) opts.Log("Error[]: fail to create grid image depot(1)");
+                }
+                else
+                    activeView.FeedList(ref iDepot); // if (!) opts.Log("Error[]: fail to create grid image depot(2)");
+                if (lastTab == null) { lastTab = (TabItem)tcMain.SelectedItem; return; } // first load
+                if (tcMain.SelectedItem.Equals(tiGrid))            
+                    gridView.SynchroChecked(listView.GetItems(true, false));
+                if (tcMain.SelectedItem.Equals(tiList))
+                {
+                    listView.SynchroChecked(gridView.GetItems(true, false));
+                    if (lastTab.Equals(tiStats)) { listView.focusFirstRow(); listView.dGrid_SelectionChanged(null, null); }
+                }
+                
+                if (tcMain.SelectedItem.Equals(tiStats) && iDepot != null)
+                {
+                    string path = iDepot.path;
+                    if (iDepotStats.iDepot != null)
+                        if (!iDepotStats.iDepot.SameAs(path)) 
+                            image.Source = null;
+                    iDepotStats.OnChangeDepot(path);                
+                }
+                lastTab = (TabItem)tcMain.SelectedItem;
+                GetChecked();
             }
-            else
-                activeView.FeedList(ref iDepot); // if (!) opts.Log("Error[]: fail to create grid image depot(2)");
-            if (lastTab == null) { lastTab = (TabItem)tcMain.SelectedItem; return; } // first load
-            if (tcMain.SelectedItem.Equals(tiGrid))            
-                gridView.SynchroChecked(listView.GetItems(true, false));
-            if (tcMain.SelectedItem.Equals(tiList))
-                listView.SynchroChecked(gridView.GetItems(true, false));
-            lastTab = (TabItem)tcMain.SelectedItem;
-            GetChecked();
+            finally { if (views != null) ChangeDepot(iDepot, null); }
         }
         private void image_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {

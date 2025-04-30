@@ -445,11 +445,12 @@ namespace scripthea
                         dirTreeUC.CatchAFolder(exportUtilUC?.iPicker?.tbImageDepot.Text);
                 }
             }
-            if(tabControl.SelectedItem.Equals(tiSMacro))
+            if (tabControl.SelectedItem.Equals(tiSMacro))
             {
                 ExplorerPart = 0;
             }
-            oldTab = (TabItem)tabControl.SelectedItem;
+            if (oldTab == tiViewer) viewerUC.RefreshFileWithChanges(); // refresh the desc. file
+            oldTab = tabControl.SelectedItem as TabItem;
             e.Handled = true;
         }
         protected void Active(string path)

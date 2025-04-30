@@ -83,7 +83,7 @@ namespace scripthea.composer
             btnSDparams = new Button() { Content = "set SD params ►>", Background = null, VerticalAlignment = VerticalAlignment.Center, Height = 26, Width = 130, IsEnabled = false,
                     ToolTip = "Copy parameters from selected image to SD parameters tab", Margin = new Thickness(7, 2, 0, 0) };
             btnSDparams.Click += new RoutedEventHandler(btnSDparams_Click); 
-            iPickerX.stPnl2.Children.Add(btnSDparams);                        
+            iPickerX.stPnl2.Children.Add(btnSDparams); iPickerX.tiStats.Visibility = Visibility.Collapsed;                       
 
             updateFromCuesFolder(cuesFolder);
             

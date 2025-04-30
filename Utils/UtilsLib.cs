@@ -804,7 +804,6 @@ namespace UtilsNS
             }                  
             return ds;
         }
-
         public static Dictionary<string, string> dictDouble2String(Dictionary<string, double> dv, string prec = "G5")
         {
             Dictionary<string, string> ds = new Dictionary<string, string>();
@@ -812,10 +811,9 @@ namespace UtilsNS
                 ds.Add(item.Key, item.Value.ToString(prec));
             return ds;
         }
-
-        public static void dict2ListBox(Dictionary<string, string> ds, ListBox lbox)
+        public static void dict2ListBox(Dictionary<string, string> ds, ListBox lbox, bool add2 = false)
         {
-            //lbox.Items.Clear();
+            if (!add2) lbox.Items.Clear();
             int cnt = lbox.Items.Count; 
             for (int i = 0; i<cnt; i++)
                 if (lbox.Items[lbox.Items.Count - 1] is ListBoxItem) lbox.Items.RemoveAt(lbox.Items.Count - 1);
@@ -921,7 +919,6 @@ namespace UtilsNS
             catch (WebException we) { TimedMessageBox(we.Message); bb = false; }
             return bb;
         }
-
         public static bool CheckFileExists(string url) 
         {
             try

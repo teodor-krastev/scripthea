@@ -2,8 +2,8 @@
   "3": {
     "inputs": {
       "seed": 0,
-      "steps": 25,
-      "cfg": 6,
+      "steps": 30,
+      "cfg": 6.6,
       "sampler_name": "euler_ancestral",
       "scheduler": "karras",
       "denoise": 1,
@@ -40,8 +40,8 @@
   },
   "5": {
     "inputs": {
-      "width": 1024,
-      "height": 1024,
+      "width": 1163,
+      "height": 994,
       "batch_size": 1
     },
     "class_type": "EmptyLatentImage",
@@ -51,7 +51,7 @@
   },
   "6": {
     "inputs": {
-      "text": "Surrealistic colorful clouds of dreams escaping through the eyes of a sleeping woman, frozen orchestra, detailed room with vintage decor, melancholic mood, cool color palette, dimmed light, intricate patterns, chandelier, large windows, cityscape at night, snowfall, pastel colors, velvet textures, high quality, detailed, sharp focus, intricate details, vivid colors, dramatic contrast. ",
+      "text": "The leaves are such a jocund company in their green-hue gaiety.; Gustav Klimt",
       "clip": [
         "4",
         1

@@ -21,6 +21,7 @@ using scripthea.master;
 using scripthea.options;
 using scripthea.composer;
 using UtilsNS;
+using System.Globalization;
 
 namespace scripthea.viewer 
 {
@@ -47,6 +48,8 @@ namespace scripthea.viewer
         int Count { get; }
         List<Tuple<int, string, int, string>> GetItems(bool check, bool uncheck); // idx, filename, prompt
     }
+
+    
     /// <summary>
     /// Interaction logic for ViewerUC.xaml
     /// </summary>
@@ -62,7 +65,7 @@ namespace scripthea.viewer
 
         }
         private ImageDepot iDepot; // { get; private set; }
-        public iPicList activeView { get { return views[tabCtrlViews.SelectedIndex]; } }
+        public iPicList activeView { get { int idx = tabCtrlViews.SelectedIndex == 2 ? 0 : tabCtrlViews.SelectedIndex; return views[idx]; } }
         private DispatcherTimer timer;
         private Options opts;
         public void UpdateVisRecord(int idx, ImageInfo ii) // update visual record from ii
@@ -239,37 +242,53 @@ namespace scripthea.viewer
             else { lbDepotInfo.Content = "This is not an image depot."; lbDepotInfo.Foreground = Brushes.Tomato; }
             return cnt;
         }
+        private TabItem lastTabItem = null;
+        public void RefreshFileWithChanges()
+        {
+            iDepot?.OnClose(); // update the file
+        }
         public void Refresh(string iFolder = "", object sender = null) 
         {
-            iDepot?.OnClose();
-            string folder = iFolder;
-            if (iDepot != null && iFolder == "")
+            try
             {
-                if (iDepot.isEnabled && Directory.Exists(iDepot.path)) folder = iDepot.path;
-                else folder = imageFolder;
-            }
-            if (!Directory.Exists(folder)) { Log("Error[874]: Missing directory > " + folder); return; }
-            if (iDepot != null && sender != btnRefresh)
-            {
-                bool bb = sender == tabCtrlViews;
-                bool bc = activeView == gridViewUC;
-                if (bc) bc = iDepot.SameAs(activeView.loadedDepot);                
-                if (iDepot.SameAs(folder) && bb && bc) return;                                        
-            }                
-            iDepot = new ImageDepot(imageFolder);
-            if (!iDepot.isEnabled) { Log("Error[96]: This is not an image depot."); return; }
-            else lbDepotInfo.Content = iDepot.items.Count.ToString() + " images"; 
-            imageFolderShown = imageFolder;
+                RefreshFileWithChanges();
+                string folder = iFolder;
+                if (iDepot != null && iFolder == "")
+                {
+                    if (iDepot.isEnabled && Directory.Exists(iDepot.path)) folder = iDepot.path;
+                    else folder = imageFolder;
+                }
+                if (!Directory.Exists(folder)) { Log("Error[874]: Missing directory > " + folder); return; }
+                if (tabCtrlViews.SelectedItem == tiStats)
+                {
+                    if (iDepotStats.iDepot != null)
+                        if (!iDepotStats.iDepot.SameAs(iFolder)) picViewerUC.Clear();
+                    iDepotStats.OnChangeDepot(folder);
+                    return;
+                }
+                if (iDepot != null && sender != btnRefresh)
+                {
+                    bool bb = sender == tabCtrlViews;
+                    bool bc = activeView == gridViewUC;
+                    if (bc) bc = iDepot.SameAs(activeView.loadedDepot);
+                    if (iDepot.SameAs(folder) && bb && bc) return;
+                }
+                iDepot = new ImageDepot(imageFolder);
+                if (!iDepot.isEnabled) { Log("Error[96]: This is not an image depot."); return; }
+                else lbDepotInfo.Content = iDepot.items.Count.ToString() + " images";
+                imageFolderShown = imageFolder;
 
-            List<Tuple<int, string, int, string>> decompImageDepot = iDepot.Export2Viewer(); 
-            if (!Utils.isNull(decompImageDepot))
-            {
-                showing = false;
-                activeView.FeedList(ref iDepot); picViewerUC.SetiDepot(iDepot);
-                if (activeView == tableViewUC) tableViewUC.focusFirstRow();
-                showing = true;
+                List<Tuple<int, string, int, string>> decompImageDepot = iDepot.Export2Viewer();
+                if (!Utils.isNull(decompImageDepot))
+                {
+                    showing = false;
+                    activeView.FeedList(ref iDepot); picViewerUC.SetiDepot(iDepot);
+                    if (activeView == tableViewUC) tableViewUC.focusFirstRow();
+                    showing = true;
+                }
+                animation = false; btnPlay.IsEnabled = decompImageDepot.Count > 0;
             }
-            animation = false; btnPlay.IsEnabled = decompImageDepot.Count > 0;            
+            finally { lastTabItem = (TabItem)tabCtrlViews.SelectedItem; }
         }
         private void btnRefresh_Click(object sender, RoutedEventArgs e) 
         {
@@ -313,7 +332,8 @@ namespace scripthea.viewer
                 }
             }
             lastIdx = tabCtrlViews.SelectedIndex;
-            if (chkAutoRefresh.IsChecked.Value && showing) btnRefresh_Click(sender, e);             
+            if (chkAutoRefresh.IsChecked.Value && showing) btnRefresh_Click(sender, e);
+            btnPlay.IsEnabled = !tabCtrlViews.SelectedItem.Equals(tiStats);
             if (!Utils.isNull(e)) e.Handled = true;
         }        
         public bool animation

@@ -16,7 +16,7 @@
         </Grid.ColumnDefinitions>
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="35"/>
+                <RowDefinition Height="45"/>
                 <RowDefinition x:Name="rowLog" Height="499*"/>
                 <RowDefinition x:Name="rowExplorer" Height="200*"/>
             </Grid.RowDefinitions>

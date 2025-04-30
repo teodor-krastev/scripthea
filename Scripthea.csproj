@@ -207,6 +207,9 @@
     <Compile Include="external\tempRegulatorUC.xaml.cs">
       <DependentUpon>tempRegulatorUC.xaml</DependentUpon>
     </Compile>
+    <Compile Include="master\IDepotStatsUC.xaml.cs">
+      <DependentUpon>IDepotStatsUC.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Preferences.xaml.cs">
       <DependentUpon>Preferences.xaml</DependentUpon>
     </Compile>
@@ -249,9 +252,6 @@
       <DependentUpon>PyCodeUC.xaml</DependentUpon>
     </Compile>
     <Compile Include="sOptions.cs" />
-    <Compile Include="viewer\DepotStastsUC.xaml.cs">
-      <DependentUpon>DepotStastsUC.xaml</DependentUpon>
-    </Compile>
     <Compile Include="viewer\GridViewUC.xaml.cs">
       <DependentUpon>GridViewUC.xaml</DependentUpon>
     </Compile>
@@ -360,6 +360,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="master\IDepotStatsUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Preferences.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -423,10 +427,6 @@
     <Page Include="python\PyCodeUC.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="viewer\DepotStastsUC.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="viewer\GridViewUC.xaml">
       <SubType>Designer</SubType>

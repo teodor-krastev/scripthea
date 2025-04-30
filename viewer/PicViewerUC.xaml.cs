@@ -174,10 +174,11 @@ namespace scripthea.viewer
             removeMetaItem("batch_size", "1");
             removeMetaItem("restore_faces", "False");
             removeMetaItem("sd_model_hash", "*");
-            removeMetaItem("job_timestamp", "");
             if (meta.ContainsKey("MD5Checksum")) meta.Remove("MD5Checksum");            
             int r = meta.ContainsKey("rate") ? Convert.ToInt32(meta["rate"]) : 0;            
             removeMetaItem("rate", "*");
+            if (meta.ContainsKey("job_timestamp"))
+                if (meta["job_timestamp"] == "") removeMetaItem("job_timestamp", "");
 
             if (meta.ContainsKey("sampler_name"))
                 if (meta["sampler_name"] == "") meta["sampler_name"] = "<default>";
@@ -198,7 +199,16 @@ namespace scripthea.viewer
                 lbi.Content = "--MODIFIED--"; lbi.Foreground = System.Windows.Media.Brushes.Red;
                 lboxMetadata.Items.Add(lbi);
             }
+            foreach (object obj in lboxMetadata.Items)
+            {
+                ListBoxItem lbit = obj as ListBoxItem; if (lbit == null) continue;
+                lbit.Selected += new RoutedEventHandler(OnItemSelected);
+            }
             return true;
+        }
+        private void OnItemSelected(object sender, RoutedEventArgs e)
+        {
+            e.Handled = true;
         }
         private void imageMove(double h, double v) // ?
         {

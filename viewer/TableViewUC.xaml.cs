@@ -17,9 +17,26 @@ using System.Windows.Shapes;
 using Path = System.IO.Path;
 using scripthea.options;
 using UtilsNS;
+using System.Globalization;
 
 namespace scripthea.viewer
 {
+    public static class Mask { public static string Value { get; set; } }
+    public class MarkConditionToBrushConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            string prompt = value as string;
+            if (string.IsNullOrEmpty(Mask.Value)) return new SolidColorBrush(Colors.White);
+            if (!string.IsNullOrEmpty(prompt) && Utils.IsWildCardMatch(prompt, Mask.Value))
+                return new SolidColorBrush(Colors.MintCream);
+            return new SolidColorBrush(Colors.White);
+        }
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
     /// <summary>
     /// Interaction logic for TableViewUC.xaml
     /// </summary>
@@ -28,7 +45,7 @@ namespace scripthea.viewer
         private DataTable dTable; private const string FilenameHeader = "_     Image  Filename     _";
         public TableViewUC()
         {
-            InitializeComponent();
+            InitializeComponent(); Mask.Value = "";
         }
         Options opts;
         public bool checkable { get; private set; }
@@ -116,38 +133,36 @@ namespace scripthea.viewer
         }
                 
         public string imageFolder { get { return iDepot?.path; } }
-        public void SetRowColor(int idx0, bool bb)
-        {
-            if (!Utils.InRange(idx0, 0, dTable.Rows.Count - 1)) return;
-            DataGridRow dRow = DataGridHelper.GetRowByIndex(dGrid, idx0);
-            if (dRow == null) return;
-            if (bb) dRow.Background = Brushes.MintCream;  //ImgUtils.ToSolidColorBrush("#FFE6FFF3");
-            else dRow.Background = Brushes.White;
-        }
+
+        public string markMask { get { return Mask.Value; } }
         public void CheckRange(int first, int last)
         {
             foreach (DataRow row in dTable.Rows)
                 if (checkable) row["on"] = Utils.InRange(Convert.ToInt32(row["#"]), first,last);
         }
-        private string _markMask = "";
-        public string markMask { get { return _markMask; } }
-        public void MarkWithMask(string mask)  
+        private void ForcedViewUpdate() // artificial but effective
         {
-            _markMask = mask;
             foreach (DataRow row in dTable.Rows)
             {
-                string prompt = Convert.ToString(row["Prompt"]); 
-                bool bb = mask.Equals("") ? false :  Utils.IsWildCardMatch(prompt, mask);
-                if (checkable) row["on"] = Convert.ToBoolean(bb);
-                else
-                {   
-                    int idx0 = Convert.ToInt32(row["#"])-1;
-                    DataGridRow dRow = DataGridHelper.GetRowByIndex(dGrid, idx0);
-                    if (dRow == null) continue;
-                    if (bb) dRow.Background = Brushes.MintCream; // ImgUtils.ToSolidColorBrush("#FFEBFFF5");
-                    else dRow.Background = Brushes.White;
+                string prompt = Convert.ToString(row["Prompt"]);
+                if (prompt.EndsWith(" ")) row["Prompt"] = prompt.TrimEnd();
+                else row["Prompt"] = prompt + " ";
+            }
+        }
+        public void MarkWithMask(string mask)  
+        {
+            Mask.Value = ""; // reset
+            if (checkable)
+            {
+                foreach (DataRow row in dTable.Rows)
+                {
+                    string prompt = Convert.ToString(row["Prompt"]);
+                    bool bb = mask.Equals("") ? false : Utils.IsWildCardMatch(prompt, mask);
+                    row["on"] = Convert.ToBoolean(bb);
                 }
             }
+            else { if (mask != "") Mask.Value = mask; ForcedViewUpdate(); }
+            dGrid.UpdateLayout();            
         }
         public void Clear(bool inclDepotItems = false)
         {
@@ -273,7 +288,7 @@ namespace scripthea.viewer
             return ii;
         }
         int lastSelectedRow = -1;
-        private void dGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        public void dGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {           
             DataRowView dataRow = (DataRowView)dGrid.SelectedItem; 
             if (Utils.isNull(dataRow)) return;

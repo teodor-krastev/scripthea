@@ -45,6 +45,7 @@ namespace scripthea.master
             iPicker.OnChangeDepot += new RoutedEventHandler(OnChangeDepot);
             iPicker.AddMenuItem("Convert .PNG to .JPG").Click += new RoutedEventHandler(ConvertPNG2JPG);
             iPicker.comboCustom.SelectionChanged += FileType_SelectionChanged;
+            iPicker.tiStats.Visibility = Visibility.Collapsed;
             wopts = Utils.readDict(exportOptions);
             Wopts2Visuals();
         }          

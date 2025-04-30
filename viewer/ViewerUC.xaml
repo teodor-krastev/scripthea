@@ -1,9 +1,10 @@
-﻿<UserControl x:Name="ucViewer" x:Class="scripthea.viewer.ViewerUC"
+﻿<UserControl
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:scripthea.viewer" xmlns:external="clr-namespace:scripthea.external" xmlns:UtilsNS="clr-namespace:UtilsNS"
+             xmlns:master="clr-namespace:scripthea.master" x:Name="ucViewer" x:Class="scripthea.viewer.ViewerUC"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800" PreviewKeyDown="ucViewer_PreviewKeyDown" Focusable="True">
     <Grid>
@@ -24,11 +25,10 @@
                         <ColumnDefinition x:Name="colRefresh"  Width="40"/>
                         <ColumnDefinition Width="100"/>
                     </Grid.ColumnDefinitions>
-                    <TextBox x:Name="tbImageDepot" Background="{x:Null}" TextChanged="tbImageDepot_TextChanged" Margin="0,2,2.962,-2" BorderThickness="0">
-                    </TextBox>
+                    <TextBox x:Name="tbImageDepot" Background="{x:Null}" TextChanged="tbImageDepot_TextChanged" Margin="0,2,2.962,-2" BorderThickness="0"/>
                     <Button x:Name="btnRefresh" Grid.Column="1" Foreground="#FF0F8001" HorizontalAlignment="Center" Width="36" FontWeight="Bold"  Click="btnRefresh_Click" Background="{x:Null}" ToolTip="Refresh from image depot">
                         <ContentControl>
-                            <Image Source="/Scripthea;component/Properties/refresh.png"  Cursor="Hand"></Image>
+                            <Image Source="/Scripthea;component/Properties/refresh.png"  Cursor="Hand"/>
                         </ContentControl>
                     </Button>
                     <CheckBox x:Name="chkAutoRefresh" Grid.Column="2" Content="Auto-refresh" Foreground="#FF028500" HorizontalAlignment="Center"  Background="#FFF4F4F4" Margin="2,0,3,0" VerticalAlignment="Center" Checked="chkAutoRefresh_Checked" Unchecked="chkAutoRefresh_Checked" FontSize="13" />
@@ -39,28 +39,28 @@
                     <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width="135"/>
                 </Grid.ColumnDefinitions>
-                <Label Content="Find" HorizontalAlignment="Left" FontFamily="Segoe UI Semibold" VerticalAlignment="Center"></Label>
+                <Label Content="Find" HorizontalAlignment="Left" FontFamily="Segoe UI Semibold" VerticalAlignment="Center"/>
                 <TextBox x:Name="tbFind" Margin="34,3,5,3"/>
                 <StackPanel Grid.Column="1" Orientation="Horizontal">
                     <Image x:Name="btnFindUp"  Width="25" Source="/Scripthea;component/Properties/find_up.png" Margin="0,0,0,0" Cursor="Hand" ToolTip="Find Up" MouseDown="btnFindUp_MouseDown" Height="25"/>
                     <Image x:Name="btnFindDown"  Width="25" Source="/Scripthea;component/Properties/find_down.png" Margin="0,0,0,0" Cursor="Hand" ToolTip="Find Down" MouseDown="btnFindUp_MouseDown" Height="25"/>
-                    <Button x:Name="btnMark" FontWeight="Bold" Content=" Mark " Background="MintCream" Margin="5,0,5,0" Foreground="#FF058402" Click="btnMark_Click" FontSize="13" FontFamily="Segoe UI Semibold" ></Button>
-                    <Button x:Name="btnClearMark" FontWeight="Bold" Content="Rst" Background="White" Margin="0,0,0,0" Foreground="#FFA80303"   Click="btnMark_Click" Width="28" ></Button>
+                    <Button x:Name="btnMark" FontWeight="Bold" Content=" Mark " Background="MintCream" Margin="5,0,5,0" Foreground="#FF058402" Click="btnMark_Click" FontSize="13" FontFamily="Segoe UI Semibold" />
+                    <Button x:Name="btnClearMark" FontWeight="Bold" Content="Rst" Background="White" Margin="0,0,0,0" Foreground="#FFA80303"   Click="btnMark_Click" Width="28" />
                 </StackPanel>
             </Grid>
             <StackPanel Grid.Row="1" Orientation="Horizontal" Height="27" HorizontalAlignment="Right" VerticalAlignment="Top" Panel.ZIndex="20" Margin="0">
                 <Button x:Name="btnPlay" Width="35" Margin="0,0,4,0" Background="White" HorizontalAlignment="Left" VerticalAlignment="Center" Click="btnPlay_Click" IsEnabled="False" ToolTip="Start slide show" Cursor="Hand" Height="27">
                     <ContentControl>
-                        <Image Source="/Scripthea;component/Properties/play-on-blue.png"  Cursor="Hand"></Image>
+                        <Image Source="/Scripthea;component/Properties/play.png"  Cursor="Hand" Width="22"/>
                     </ContentControl>
                 </Button>
                 <Button x:Name="btnStop" Width="35" Margin="0,0,4,0" Background="White" HorizontalAlignment="Left" VerticalAlignment="Center" Click="btnPlay_Click" Visibility="Collapsed" ToolTip="Stop slide show" Cursor="Hand" Height="27">
                     <ContentControl>
-                        <Image Source="/Scripthea;component/Properties/stop.png"  Cursor="Hand"></Image>
+                        <Image Source="/Scripthea;component/Properties/stop.png"  Cursor="Hand"/>
                     </ContentControl>
                 </Button>
                 <external:IntegerBox x:Name="numDly" HorizontalAlignment="Left" Height="25" Margin="0,0,8,0" VerticalAlignment="Center" Width="47" OnValueChanged="numDly_ValueChanged" ToolTip="Delay to next image in slide show [s]"/>
-                <Label x:Name="lbDepotInfo" Content="" VerticalAlignment="Top" Margin="0,0,5,0" HorizontalAlignment="Left" ></Label>
+                <Label x:Name="lbDepotInfo" Content="" VerticalAlignment="Top" Margin="0,0,5,0" HorizontalAlignment="Left" />
             </StackPanel>
             <TabControl x:Name="tabCtrlViews" Grid.Row="1" SelectedIndex="0" BorderBrush="{x:Null}" Panel.ZIndex="10" SelectionChanged="tabCtrlViews_SelectionChanged">
                 <TabItem x:Name="tiTable" Header="List view"  Height="27" Background="#FFECECEC" Width="120" BorderBrush="Navy" Style="{StaticResource RoundedTopTabItemStyle}">
@@ -68,15 +68,19 @@
                         <local:TableViewUC x:Name="tableViewUC"/>
                     </Grid>
                 </TabItem>
-                <TabItem x:Name="tiGrid" Header="Grid view" Height="27" Background="#FFECECEC"  Width="120" Margin="2.38,-1,-10.835,0.911" BorderBrush="DarkGreen" Style="{StaticResource RoundedTopTabItemStyle}">
+                <TabItem x:Name="tiGrid" Header="Grid view" Height="27" Background="#FFECECEC"  Width="120" Margin="2.38,0,-10.835,0.911" BorderBrush="DarkGreen" Style="{StaticResource RoundedTopTabItemStyle}">
                     <Grid>
                         <local:GridViewUC x:Name="gridViewUC"/>
                     </Grid>
                 </TabItem>
+                <TabItem x:Name="tiStats" Header="Statistics" Height="27" Background="#FFECECEC"  Width="120" Margin="10,0,-30.835,0.911" BorderBrush="DarkGreen" Style="{StaticResource RoundedTopTabItemStyle}">
+                    <Grid>
+                        <master:IDepotStatsUC x:Name="iDepotStats" Width="500" Margin="15" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                    </Grid>
+                </TabItem>
             </TabControl>
         </Grid>
-        <Grid Grid.Column="1" Margin="0" >
-        </Grid>
+        <Grid Grid.Column="1" Margin="0" />
         <GridSplitter x:Name="gridSplitter" HorizontalAlignment="Left" Grid.Column="1" Margin="0" Width="5"/>
         <local:PicViewerUC x:Name="picViewerUC" Grid.Column="1" Margin="0" />
     </Grid>

@@ -201,10 +201,17 @@ namespace UtilsNS
         {
             if (dataGrid == null)
                 return null;
-
             ValidateRowIndex(dataGrid, rowIndex);
 
-            return (DataGridRow)dataGrid.ItemContainerGenerator.ContainerFromIndex(rowIndex);
+            DataGridRow row =(DataGridRow)dataGrid.ItemContainerGenerator.ContainerFromIndex(rowIndex);
+            if (row == null)
+            {
+                // If row is not yet generated (virtualization), force its generation
+                dataGrid.UpdateLayout();
+                dataGrid.ScrollIntoView(dataGrid.Items[rowIndex]);
+                row = (DataGridRow)dataGrid.ItemContainerGenerator.ContainerFromIndex(rowIndex);
+            }
+            return row;
         }
         public static DataGridColumn GetRowColumnByIndex(this DataGridRow row, DataGrid dataGrid, int columnIndex)
         {

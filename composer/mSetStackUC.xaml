@@ -22,7 +22,7 @@
             <Button x:Name="btnUpdate" HorizontalAlignment="Left" Background="White" Margin="3" Click="btnUpdate_Click">
                 <Image Source="/Scripthea;component/Properties/update.png" Stretch="UniformToFill" Width="20" ToolTip="Update mSet"/>
             </Button>
-            <CheckBox x:Name="chkAdd" VerticalAlignment="Center" Content="Accumul." Margin="3,0,0,0" ToolTip="Accumulating mSets"></CheckBox>
+            <CheckBox x:Name="chkAdd" VerticalAlignment="Center" Content="Append" Margin="3,0,0,0" ToolTip="Accumulating mSets"></CheckBox>
         </StackPanel>
         <ListBox x:Name="mSetListBox" Margin="0" Grid.Row="2" BorderThickness="1,1,1,1" SelectionChanged="mSetListBox_SelectionChanged" IsSynchronizedWithCurrentItem="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled" KeyDown="mSetListBox_KeyDown">
         </ListBox>

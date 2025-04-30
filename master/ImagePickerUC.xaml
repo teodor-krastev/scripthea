@@ -62,6 +62,12 @@
             <TabItem x:Name="tiGrid" Header="Grid" Height="28" Width="60" Margin="32,-2,-50,0" BorderBrush="DarkGreen" Style="{StaticResource RoundedTopTabItemStyle}">
                 <viewer:GridViewUC x:Name="gridView"  Margin="0"/>
             </TabItem>
+            <TabItem x:Name="tiStats" Header="Stats" Height="27" Background="#FFECECEC"  Width="60" Margin="40,0,-70.835,0.911" BorderBrush="DarkGreen" Style="{StaticResource RoundedTopTabItemStyle}">
+                <Grid>
+                    <local:IDepotStatsUC x:Name="iDepotStats" Width="500" Margin="15" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                </Grid>
+            </TabItem>
+
         </TabControl>
         <GridSplitter Grid.Row="3" VerticalAlignment="Top" HorizontalAlignment="Stretch" Height="3"/>
         <Grid x:Name="gridImage" Grid.Row="3" Margin="5" >

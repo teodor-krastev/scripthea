@@ -48,8 +48,7 @@ namespace scripthea.master
             mi2.Click += new RoutedEventHandler(miSynchronize_Click); iPicker.cmImgMenu.Items.Add(mi2);
             mi3 = new MenuItem() { Header = "Synchronize image depot", Tag = letter };
             mi3.Click += new RoutedEventHandler(miSynchronize_Click); iPicker.cmImgMenu.Items.Add(mi3);
-        }
-        
+        }       
         protected void ChangeDepot(object sender, RoutedEventArgs e) // allow button access by iPicker states
         {
             void SetCursor(Button btn, bool normal)
@@ -57,14 +56,15 @@ namespace scripthea.master
                 if (normal) btn.Cursor = Cursors.Hand;
                 else btn.Cursor = Cursors.No;
             }
-            bool bb = !iPickerA.imageDepot.Equals("") && !iPickerB.imageDepot.Equals("") && 
-                !iPickerA.imageDepot.Equals(iPickerB.imageDepot, StringComparison.InvariantCultureIgnoreCase);
+            bool bb = iPickerA.isValid && iPickerB.isValid;
+            if (bb) bb &= !Utils.comparePaths(iPickerA.imageDepot,iPickerB.imageDepot);
             btnCopyA2B.IsEnabled = bb; SetCursor(btnCopyA2B, bb);
             btnCopyB2A.IsEnabled = bb; SetCursor(btnCopyB2A, bb);
             btnMoveA2B.IsEnabled = bb; SetCursor(btnMoveA2B, bb);
             btnMoveB2A.IsEnabled = bb; SetCursor(btnMoveB2A, bb);
-            btnDeleteInA.IsEnabled = iPickerA.isEnabled; SetCursor(btnDeleteInA, iPickerA.isEnabled);
-            btnDeleteInB.IsEnabled = iPickerB.isEnabled; SetCursor(btnDeleteInB, iPickerB.isEnabled);
+
+            btnDeleteInA.IsEnabled = iPickerA.isValid; SetCursor(btnDeleteInA, iPickerA.isValid);
+            btnDeleteInB.IsEnabled = iPickerB.isValid; SetCursor(btnDeleteInB, iPickerB.isValid);
         }
         private void btnCopyA2B_Click(object sender, RoutedEventArgs e)
         {
