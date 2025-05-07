@@ -244,14 +244,14 @@ namespace scripthea.master
         }
         public bool converting = false; public ImageDepot iDepot = null;
         private void tbImageDepot_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            if (tbImageDepot.Text.Trim().Equals("")) { Clear(); ChangeDepot(null, null); return; }
+        {            
+            if (tbImageDepot.Text.Trim().Equals("")) { Clear(); ChangeDepot(null, null); return; }            
             if (opts != null)
                 if (opts.composer.ImageDepotFolder.Equals(tbImageDepot.Text, StringComparison.InvariantCultureIgnoreCase) && opts.composer.QueryStatus == Status.Scanning)
                 { opts.Log("Error[1279]: the working image folder is in process of updating.", Brushes.Red); tbImageDepot.Text = ""; return; }
             if (SctUtils.checkImageDepot(tbImageDepot.Text, false) > 0) tbImageDepot.Foreground = Brushes.Black;
             else tbImageDepot.Foreground = Brushes.Red;
-            int iCount = SctUtils.checkImageDepot(tbImageDepot.Text, true); 
+            int iCount = SctUtils.checkImageDepot(tbImageDepot.Text, true); Utils.DoEvents(); 
             if (iCount > -1)
             {
                 iDepot = new ImageDepot(tbImageDepot.Text, ImageInfo.ImageGenerator.FromDescFile, ImageDepot.SD_WebUI.NA, IsReadOnly);

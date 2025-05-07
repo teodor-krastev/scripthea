@@ -306,7 +306,7 @@ namespace scripthea.viewer
                 tbImageDepot.Foreground = Brushes.Black;
                 if (chkAutoRefresh.IsChecked.Value)
                 {
-                    btnRefresh_Click(sender, e);
+                    Utils.DoEvents(); btnRefresh_Click(sender, e);
                 }
             }
             else 

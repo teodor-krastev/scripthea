@@ -124,14 +124,14 @@ namespace scripthea.master
         {
             Dictionary<string, string> dict = new Dictionary<string, string>();           
             dict.Add("number of images", fileInfos.Count.ToString());
-            double sizeInK = 0;
-            foreach (FileInfo fileInfo in fileInfos) sizeInK += fileInfo.Length / 1024.0; 
-            dict.Add("average image size", (sizeInK / fileInfos.Count).ToString("F1")+ " kB");
-            double promptSizeCh = 0; double promptSizeWr = 0;
+            List<double> sizeInK = new List<double>();
+            foreach (FileInfo fileInfo in fileInfos) sizeInK.Add(fileInfo.Length / 1024.0); 
+            dict.Add("image size", (sizeInK.Average()).ToString("F0") + "  (" + sizeInK.Min().ToString("F0") + " . . " + sizeInK.Max().ToString("F0") + ") kB");
+            List<double> promptSizeCh = new List<double>(); List<double> promptSizeWr = new List<double>();
             foreach (ImageInfo ii in iDepot.items)
-                { promptSizeCh += ii.prompt.Length; promptSizeWr += WordCount(ii.prompt); }
-            dict.Add("average prompt size in chars", (promptSizeCh / fileInfos.Count).ToString("F1"));
-            dict.Add("average prompt size in words", (promptSizeWr / fileInfos.Count).ToString("F1"));
+                { promptSizeCh.Add(ii.prompt.Length); promptSizeWr.Add(WordCount(ii.prompt)); }
+            dict.Add("prompt size in chars", (promptSizeCh.Average()).ToString("F1") + "  ("+ promptSizeCh.Min().ToString("F0") + " . . " + promptSizeCh.Max().ToString("F0") + ")");
+            dict.Add("prompt size in words", (promptSizeWr.Average()).ToString("F1") + "  (" + promptSizeWr.Min().ToString("F0") + " . . " + promptSizeWr.Max().ToString("F0") + ")");
             Utils.dict2ListBox(dict, lbImages);
             return dict;
         }

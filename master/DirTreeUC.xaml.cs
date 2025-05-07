@@ -320,7 +320,8 @@ namespace scripthea.master
                 e.Handled = true;
             }
         }
-        public string selectedPath { 
+        public string selectedPath 
+        { 
             get 
             {
                 if (tvFolders.SelectedItem == null) return "";

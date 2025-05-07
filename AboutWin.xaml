@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:scripthea"
         mc:Ignorable="d"
-        Title="About Scripthea" Height="390" Width="480" MouseDown="aboutWin_MouseDown" Icon="Properties/penzy4.png" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Topmost="True" ShowInTaskbar="False" WindowStyle="ThreeDBorderWindow" Closing="AboutWindow_Closing">
+        Title="About Scripthea" Height="400" Width="480" MouseDown="aboutWin_MouseDown" Icon="Properties/penzy4.png" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Topmost="True" ShowInTaskbar="False" WindowStyle="ThreeDBorderWindow" Closing="AboutWindow_Closing">
     <Grid Margin="0">
         <Grid.RowDefinitions>
             <RowDefinition Height="136.101"/>

@@ -21,14 +21,14 @@ using System.Globalization;
 
 namespace scripthea.viewer
 {
-    public static class Mask { public static string Value { get; set; } }
+    public static class MarkMask { public static string Value { get; set; } }
     public class MarkConditionToBrushConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             string prompt = value as string;
-            if (string.IsNullOrEmpty(Mask.Value)) return new SolidColorBrush(Colors.White);
-            if (!string.IsNullOrEmpty(prompt) && Utils.IsWildCardMatch(prompt, Mask.Value))
+            if (string.IsNullOrEmpty(MarkMask.Value)) return new SolidColorBrush(Colors.White);
+            if (!string.IsNullOrEmpty(prompt) && Utils.IsWildCardMatch(prompt, MarkMask.Value))
                 return new SolidColorBrush(Colors.MintCream);
             return new SolidColorBrush(Colors.White);
         }
@@ -45,7 +45,7 @@ namespace scripthea.viewer
         private DataTable dTable; private const string FilenameHeader = "_     Image  Filename     _";
         public TableViewUC()
         {
-            InitializeComponent(); Mask.Value = "";
+            InitializeComponent(); MarkMask.Value = "";
         }
         Options opts;
         public bool checkable { get; private set; }
@@ -134,7 +134,7 @@ namespace scripthea.viewer
                 
         public string imageFolder { get { return iDepot?.path; } }
 
-        public string markMask { get { return Mask.Value; } }
+        public string markMask { get { return MarkMask.Value; } }
         public void CheckRange(int first, int last)
         {
             foreach (DataRow row in dTable.Rows)
@@ -151,7 +151,7 @@ namespace scripthea.viewer
         }
         public void MarkWithMask(string mask)  
         {
-            Mask.Value = ""; // reset
+            MarkMask.Value = ""; // reset
             if (checkable)
             {
                 foreach (DataRow row in dTable.Rows)
@@ -161,7 +161,7 @@ namespace scripthea.viewer
                     row["on"] = Convert.ToBoolean(bb);
                 }
             }
-            else { if (mask != "") Mask.Value = mask; ForcedViewUpdate(); }
+            else { if (mask != "") MarkMask.Value = mask; ForcedViewUpdate(); }
             dGrid.UpdateLayout();            
         }
         public void Clear(bool inclDepotItems = false)
@@ -349,6 +349,7 @@ namespace scripthea.viewer
                 firstRow.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
             }
             // Assuming your DataGrid is named 'myDataGrid'
+            if (PresentationSource.FromVisual(dGrid) == null) return;
             KeyEventArgs args = new KeyEventArgs(Keyboard.PrimaryDevice,
                                                 PresentationSource.FromVisual(dGrid),
                                                 0,

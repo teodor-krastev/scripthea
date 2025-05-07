@@ -433,6 +433,7 @@ namespace scripthea
             if (tabControl.SelectedItem.Equals(tiDepotMaster))
             {
                 ExplorerPart = queryUC.status.Equals(Status.Scanning) ? 50 : 100;
+                MarkMask.Value = "";
             }
             if (tabControl.SelectedItem.Equals(tiUtils))
             {
@@ -444,6 +445,7 @@ namespace scripthea
                     if (focusControl.ifcName.Equals("export")) 
                         dirTreeUC.CatchAFolder(exportUtilUC?.iPicker?.tbImageDepot.Text);
                 }
+                MarkMask.Value = "";
             }
             if (tabControl.SelectedItem.Equals(tiSMacro))
             {
