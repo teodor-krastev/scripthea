@@ -32,6 +32,7 @@ Scripthea stands out by offering a structured approach to prompt engineering, en
 - Systematically explore various artistic styles and themes
 - Efficiently manage and review large batches of generated images.
 - Gain deeper insights into the relationship between prompts and visual outputs.
+
 Whether you're a seasoned AI artist or a newcomer eager to delve into text-to-image generation, Scripthea provides the tools and structure to elevate your creative process.
 
 #### contact 
