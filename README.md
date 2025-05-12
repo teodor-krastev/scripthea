@@ -11,7 +11,7 @@ Alternatively, you can copy and paste it into your favourite text-to-image gener
 #### Here is the prompt composer tab...
 ![Scripthea-1.png](/docs/Scripthea-1.jpg)
 
-Craft prompts using a combination of cues and modifiers. Operate in two modes: in Single mode, you can use one cue and more than one modifier; in Scan mode, you can select any number of cues and any number of modifiers, but each prompt will combine only one cue with one modifier. Modifiers are divided into categories and to use modifiers from any category, you need to check the category itself. If you wonder about any modifier, hover over it, there will be a hint for some of them. If you right-click on any modifier, you will be asked to confirm a Google search for that modifier. In options, you can specify the image depot folder where the images from your scan (or single query) will go.
+Craft prompts using a combination of cues and modifiers. Operate in two modes: in Single mode, you can use one cue and more than one modifier; in Scan mode, you can select any number of cues and any number of modifiers, but each prompt will combine only one cue with one modifier. Modifiers are divided into categories and to use modifiers from any category, you need to check the category itself. If you wonder about any modifier, hover over it, and there will be a hint for some of them. If you right-click on any modifier, you will be asked to confirm a Google search for that modifier. In options, you can specify the image depot folder where the images from your scan (or single query) will go.
 
 #### ...and here it is the image depot viewer
 ![grid-view.png](/docs/viewer-grid.jpg)
@@ -35,7 +35,7 @@ Scripthea stands out by offering a structured approach to prompt engineering, en
 Whether you're a seasoned AI artist or a newcomer eager to delve into text-to-image generation, Scripthea provides the tools and structure to elevate your creative process.
 
 #### contact 
-Keep in mind that the application is under active development, so let me know about any bug at https://sicyon.com/survey/comment.html and I'll do my best to fix it asap. In the same way, you can communicate any ideas for improvement, experiences with the software or your willingness to help me with the project. I would especially appreciate more prompt collections, preferably organized by subject, see config folder for *.prompts files. If you have concerns about viruses, compile from the sources - I'm using C#, .NET framework 4.8 with WPF and Visual Studio 2019 as IDE.
+Keep in mind that the application is under active development, so let me know about any bug at <scripthea(at)sicyon.com> and I'll do my best to fix it asap. In the same way, you can communicate any ideas for improvement, experiences with the software or your willingness to help me with the project. I would especially appreciate more prompt collections, preferably organized by subject, see config folder for *.prompts files. If you have concerns about viruses, compile from the sources - I'm using C#, .NET framework 4.8 with WPF and Visual Studio 2019 as IDE.
 
 #### legal
 Scripthea software has been written by and is copyrighted to Teodor Krastev. The sources are distributed under MIT's open source license. 
