@@ -13,14 +13,14 @@
             <RowDefinition Height="3*"/>
         </Grid.RowDefinitions>
         <StackPanel Height="30" Margin="0,0,0,0" Grid.Row="1" VerticalAlignment="Top" Orientation="Horizontal" Background="#FFFFFEF4">
-            <Button x:Name="btnAdd" HorizontalAlignment="Left" Background="White" Margin="4,3,3,3" Click="btnAdd_Click">
-                <Image Source="/Scripthea;component/Properties/plus.png" Stretch="UniformToFill" Width="20" ToolTip="Add new mSet"/>
+            <Button x:Name="btnAdd" HorizontalAlignment="Left" Background="White" Margin="4,3,3,3" Click="btnAdd_Click" Width="24" Height="24">
+                <Image Source="/Scripthea;component/Properties/plus.png" Stretch="UniformToFill" Width="16" ToolTip="Add new mSet" Height="16"/>
             </Button>
-            <Button x:Name="btnMinus" HorizontalAlignment="Left" Background="White" Margin="3" Width="24" Click="btnMinus_Click">
-                <Image Source="/Scripthea;component/Properties/minus.png" Width="18" Height="26" Stretch="Fill" Margin="0,-3,0,0" ToolTip="Remove mSet"/>
+            <Button x:Name="btnMinus" HorizontalAlignment="Left" Background="White" Margin="3" Width="24" Click="btnMinus_Click" Height="24">
+                <Image Source="/Scripthea;component/Properties/minus.png" Width="16" Height="16" Stretch="Fill" Margin="0,0,0,0" ToolTip="Remove mSet"/>
             </Button>
-            <Button x:Name="btnUpdate" HorizontalAlignment="Left" Background="White" Margin="3" Click="btnUpdate_Click">
-                <Image Source="/Scripthea;component/Properties/update.png" Stretch="UniformToFill" Width="20" ToolTip="Update mSet"/>
+            <Button x:Name="btnUpdate" HorizontalAlignment="Left" Background="White" Margin="3" Click="btnUpdate_Click" Width="24" Height="24">
+                <Image Source="/Scripthea;component/Properties/update.png" Stretch="UniformToFill" Width="18" ToolTip="Update mSet" Height="18"/>
             </Button>
             <CheckBox x:Name="chkAdd" VerticalAlignment="Center" Content="Append" Margin="3,0,0,0" ToolTip="Accumulating mSets"></CheckBox>
         </StackPanel>

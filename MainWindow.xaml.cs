@@ -54,7 +54,7 @@ namespace scripthea
             viewerUC.tbImageDepot.KeyDown += new KeyEventHandler(MainWindow1_KeyDown);
             importUtilUC.tbImageDepot.KeyDown += new KeyEventHandler(MainWindow1_KeyDown);
 
-            Title = "Scripthea - loading text files...";
+            Title = "  Scripthea - loading text files...";
             viewerUC.Init(ref opts);
             depotMaster.Init(ref opts);
             importUtilUC.Init(ref opts);
@@ -157,7 +157,7 @@ namespace scripthea
             else throw new Exception(penpicFile + " file is missing");
             ExplorerPart = 0;
             gridSplitLeft_MouseDoubleClick(null, null);
-            Title = "Scripthea - text-to-image prompt composer v" + Utils.getAppFileVersion;
+            Title = "  Scripthea - text-to-image prompt composer v" + Utils.getAppFileVersion;
             if (opts.layout.Width < 0)
             {
                 Log("Assuming that you run Scripthea for the first time:", Brushes.Blue);

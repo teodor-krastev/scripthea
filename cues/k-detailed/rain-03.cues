@@ -1,0 +1,197 @@
+## query: {"sjlFlag":true,"SegmentFlag":false,"SegmentFrom":1000,"SegmentTo":2000,"WordsFlag":true,"WordsMin":10,"WordsMax":50,"CatFlag":true,"categories":[2,4],"CatThreshold":33,"Pattern":"(rain|fog|water)","RegExFlag":true,"RandomSampleFlag":true,"RandomSampleSize":300}
+##
+A surreal underwater tableau, reminiscent of Dalí's dreamlike landscapes, features an elegantly drifting tea cup and saucer adorned with lively seashells, coral formations, and tiny fish swirling in unison. This captivating view from above, through the undulating surface, evokes a sense of serene wonder, beckoning the observer to plunge into its mesmerizing abyss and uncover the fantastical realm concealed beneath the waves.
+# {"classical":20,"impressionism":30,"surrealism":50}
+---
+Envision an underwater tableau reminiscent of Max Ernst's surrealistic visions. From above, witness a stately mermaid gracefully drifting through a radiant coral oasis. Her ethereal allure is accentuated by the gentle, diffused light permeating the glassy waters. The scene comprises intricate and dreamlike coral structures that instill a sense of whimsical enchantment, establishing an emotional spectrum that harmonizes serenity with otherworldly fascination.
+# {"classical":20,"abstract_art":30,"surrealism":50}
+---
+A surreal underwater tableau featuring an enchanting unicorn drifting serenely amidst kaleidoscopic coral gardens, accompanied by a shoal of luminescent fish. From a distinctive viewpoint, the creature's ethereal visage peers through glistening bubbles, evoking an emotional spectrum that intertwines bewitchment and wistfulness—a captivating fusion of whimsical fantasy and dreamlike marvel.
+# {"surrealism":60,"fantasy":30,"abstract_art":10}
+---
+A surreal portrait captures a woman with cascading, luminescent hair as if it were made of moonlit silk. She stands on a floating landmass amidst an ocean composed of twinkling stardust waves. The scene is viewed from below the water's surface, revealing her gaze upward in wonder and solitude, her eyes reflecting the celestial tapestry above—an enchanting blend of dreamlike beauty and introspection.
+# {"classical":20,"abstract_art":30,"surrealism":50}
+---
+An underwater ballet unfolds from an insect-like perspective, where graceful marine creatures perform intricate choreography around submerged, distorted coral sculptures reminiscent of melting clocks. This dreamlike scene evokes awe with its harmonious blend of surreal aquatic beauty and Dali-esque distorted perspective, casting an ethereal glow on the dance of life beneath the waves.
+# {"abstract_art":20,"surrealism":60,"realistic":20}
+---
+Craft an image reminiscent of surreal dreamscapes, featuring a tranquil lake reflecting a moonlit sky adorned with floating archipelagos. Each island harbors peculiar creatures in a harmonious balance between reality and fantasy. The scene is captured from an underwater vantage point, utilizing a fisheye lens perspective to emphasize the ethereal atmosphere and invite contemplation on the mysteries of this enigmatic aquatic realm.
+# {"surrealism":60,"fantasy":20,"realistic":20}
+---
+A surrealistic cityscape merges with an otherworldly landscape, towering skyscrapers morphing into colossal mushrooms, reminiscent of Dali's dreamlike visions. This fantastical world, where technology and nature intertwine, evokes a sense of wonder and unease, inviting exploration into the enigmatic depths of this alien terrain covered in iridescent vegetation.
+# {"surrealism":60,"fantasy":20,"abstract_art":20}
+---
+A surreal underwater seascape with an ethereal creature galloping across the water as it transforms into a shimmering pool of liquid gold, viewed from beneath the rippling surface in a dreamlike style reminiscent of melting clocks. The majestic unicorn, with its flowing mane and luminescent horn, casts a soft golden glow that reflects off the undulating waves, creating an atmospheric scene evoking wonder, magic, and contemplation.
+# {"surrealism":60,"abstract_art":20,"fantasy":20}
+---
+Envision an underwater tableau rendered in photorealistic digital art, embodying the impressionist aesthetic through soft, diffused lighting and vibrant color palettes reminiscent of Hermes Monet's brushstrokes. From an unconventional angle akin to a 'bug's-eye view', witness an intricate dance of sea life enveloped by a lush coral reef, exuding tranquility and awe at nature's captivating beauty.
+# {"classical":20,"impressionism":40,"realistic":40}
+---
+A majestic phoenix emerges from smoldering embers in an impressionistic style, reminiscent of Monet's serene water lilies series. The celestial bird, illuminated by soft, ethereal light, reflects vibrant hues on calm waters below and is silhouetted against a dramatic sky gradient. This unique viewpoint offers a mesmerizing blend of hope and reflection, celebrating life's cyclical nature.
+# {"impressionism":60,"classical":20,"fantasy":20}
+---
+An aerial view showcases an idyllic landscape in the impressionistic style, intertwining vivid shades of purple and gold as the sun dips below the horizon over a calm lake. The water's surface gleams with mirrored images from the radiant sky, while verdant vegetation lines the lakeshore. In the background, a solitary individual rests on a bench, deep in thought, evoking a sense of reflection and awe amidst nature's splendor.
+# {"impressionism":80,"classical":20}
+---
+A portrait in the surrealistic style of an iconic artist, featuring a young woman with vibrant red hair and an intricate silver-adorned veil, her enigmatic gaze captivating as she arises from a vortex fusing dreamlike landscapes with underwater marine elements. The scene is captured through an octagonal frame, creating an intriguing perspective that blurs reality and fantasy, evoking mystery, curiosity, and wonder in the viewer.
+# {"surrealism":60,"classical":20,"realistic":20}
+---
+Craft an image that merges the whimsical surrealism with impressionist brushstrokes, portraying a dreamlike landscape where melting timepieces drift on reflective waters. Incorporate soft, pastel reflections of lilies to evoke tranquility and wonder, capturing intricate details from an unconventional perspective often unseen by humans, blending fluidity of impressionist technique with imaginative surrealist elements in a harmonious fusion of style.
+# {"impressionism":40,"surrealism":30,"abstract_art":30}
+---
+An astronaut stands alone in an extraterrestrial terrain, lost in thought amidst swirling chronometers warped by an unseen power. This scene, as if viewed from the vantage of celestial onlookers, masterfully intertwines awe and unease to create a dreamlike ambiance that delves into the enigma of space's effect on our understanding of time. The surreal fusion of elements paints a haunting portrait of the cosmos' influence on human perception.
+# {"classical":20,"abstract_art":30,"surrealism":50}
+---
+An underwater dreamscape, reminiscent of Dali-esque surrealism, features a colossal white whale emerging from beneath an ethereal aurora. This unique 'worm's-eye view' perspective offers a captivating vantage point as if seen through the creature's own eye, blending celestial wonder with marine beauty to evoke profound awe and tranquility in this innovative masterpiece beyond conventional marine art.
+# {"surrealism":60,"classical":20,"realistic":20}
+---
+An autumnal vista bathed in the warm glow of sunset is captured from an unconventional viewpoint - a gently drifting leaf, blending impressionistic brushstrokes with surreal elements reminiscent of Monet's iconic water lilies. This whimsical scene evokes a sense of wistful nostalgia and tranquil wonder as it gracefully floats among a kaleidoscope of vibrant foliage, its elongated shadows dancing across the verdant landscape below.
+# {"impressionism":60,"surrealism":30,"classical":10}
+---
+Envision a surreal seascape inspired by Dali's dreamlike visions, depicting an underwater grand piano with coral reefs adorning its keys, accompanied by a playful dolphin leaping gracefully above the surface. This whimsical scene is illuminated by a fantastical sunset casting elongated shadows across the seafloor, creating a sense of wonder and intrigue as familiar objects are transformed into something extraordinary in this bizarre amalgamation of elements.
+# {"surrealism":60,"fantasy":20,"impressionism":20}
+---
+Craft an image reminiscent of Salvador Dali's surrealist masterpieces, depicting a dreamlike landscape with an antique tower emerging from a placid lake at dusk. The perspective should be from a 'bug's-eye view' above the water's surface, showcasing both the intricate underwater world and the fantastical architecture of the tower. Contrast warm sunset hues with cool blues to evoke timelessness and mystery characteristic of Dali's distinctive style.
+# {"classical":20,"surrealism":60,"fantasy":20}
+---
+Capture the enchanting essence of impressionistic landscapes and whimsical animation, depicting a serene garden pond with floating lily pads transforming into Disney-inspired characters gracefully dancing in an ethereal ballet. Observe this captivating scene from above, showcasing the emotional spectrum between innocence and wonder as light and watercolor tones delicately blend across the dreamlike setting.
+# {"impressionism":60,"cartoon":30,"classical":10}
+---
+A captivating digital artwork portraying an enchanting underwater realm, reminiscent of surrealist visions. An exquisite mermaid gracefully dances amidst vibrant coral formations, her scales shimmering in the ethereal light. The perspective reveals hidden aquatic cities with intricate architecture, evoking a dreamlike ambiance that blends fantastical elements seamlessly, inviting viewers to explore the mysterious depths of this surreal seascape.
+# {"surrealism":60,"fantasy":30,"realistic":10}
+---
+A surreal underwater portrait featuring a young girl with flowing, ethereal hair reminiscent of melting timepieces, rendered in the dreamlike style of Dalí's iconic artwork. The scene captures her submerged amidst a vibrant aquatic environment, her features distorted by the surrounding water as she gracefully floats among luminous coral and graceful sea creatures, evoking an atmosphere of wonder and mystery.
+# {"classical":20,"impressionism":30,"surrealism":50}
+---
+A surreal digital artwork depicting an armored figure standing in a vast desert landscape under a deep purple twilight sky. The metallic form of the figure reflects an enigmatic blend of machinery and clocks that merge with the arid terrain. This haunting futuristic composition invites contemplation on time and space, evoking a mysterious atmosphere amidst the expansive horizon.
+# {"surrealism":60,"fantasy":20,"abstract_art":20}
+---
+Create an aerial view portrait of an enigmatic figure dressed in a worn cloak with elaborate patterns echoing surrealistic elements akin to melting clocks. This cloaked character's face is hidden as they sit amidst floating platforms of vividly colored vegetation within a mystical fog, conveying solitude and contemplation while piquing interest about their true nature.
+# {"classical":20,"abstract_art":30,"surrealism":50}
+---
+Craft an eerie scene combining Dali-esque surrealism with Burtonesque whimsy, depicting a diminutive, playful creature sporting oversized hands perched atop a distorted timepiece amidst a fog-shrouded woodland setting. This peculiar being smirks mischievously as it endeavors to adjust the clock's intricate components from an elevated vantage point, creating an enigmatic fusion of temporal manipulation and lighthearted mischief within an ethereal dreamscape.
+# {"surrealism":60,"fantasy":20,"impressionism":20}
+---
+A delicate dragonfly with shimmering wings dances above a tranquil river in an artistic style evocative of Monet's serene water lilies series. The aerial perspective captures the mesmerizing interplay of light and color on the rippling water as the dragonfly gracefully moves over the lush, leafy lily pads, blending harmonious nature with an air of enchanting intrigue.
+# {"classical":20,"impressionism":60,"realistic":20}
+---
+A tranquil underwater vista from a dragonfly's perspective showcases an enchanting blend of marine fauna and mythical beings. Delicate brushstrokes in luminous blues and greens evoke the dreamlike essence of impressionist masters as graceful mermaids frolic alongside elegant sea horses. Sunken chests emit radiant light rays, bathing the mystical depths in a captivating glow that instills a sense of awe and intrigue.
+# {"impressionism":40,"fantasy":30,"classical":30}
+---
+Create an image of a surreal dreamscape where a grand piano floats above the vast ocean, its keys dancing in rhythm with the undulating waves. Capture this whimsical scene from an aerial perspective, merging land and water in a captivating fusion reminiscent of a fish-eye lens view. This evocative landscape should evoke curiosity and wonderment, immersing the viewer in a realm where reality intertwines with imagination.
+# {"surrealism":60,"impressionism":20,"abstract_art":20}
+---
+An image capturing a surreal underwater world, where graceful jellyfish with tendrils reminiscent of melting timepieces gracefully drift through an eerie, light-filtered realm. The perspective is from within a giant bubble, showcasing the dreamlike atmosphere and challenging our perception of reality while evoking a sense of timelessness in this serene yet haunting scene.
+# {"surrealism":60,"classical":20,"abstract_art":20}
+---
+Craft an image that embodies surrealism, with a tower floating atop ocean waves, each hour marked by distinctive marine creatures. Viewed from beneath the surface, intricate coral gardens and schools of glowing fish encircle this fantastical structure. Sunlight filtering through the water illuminates the entire scene, imbuing it with an otherworldly atmosphere that evokes curiosity, timelessness, and the enigmatic depths of our oceans.
+# {"surrealism":60,"fantasy":20,"realistic":20}
+---
+Imagine an enchanting underwater dreamscape where surrealistic elements meld with marine life in a whimsical coral garden. From a unique perspective akin to that of a small creature, observe the graceful movements of a mouse clad in scuba gear as it swims among fantastical fish and plants. This captivating tableau evokes a spectrum of emotions from wonderment to amusement, as Dali-esque influences create an otherworldly seascape beneath the waves.
+# {"surrealism":60,"abstract_art":20,"fantasy":20}
+---
+Craft an image embodying surrealism with a grand tower arising from a tranquil lake, as if time were flexibly bending under water's influence. Viewed from above, the scene features whimsical floating clocks and melting watch faces in the sky, invoking both astonishment and bewilderment within the observer. The serene atmosphere is accentuated by soft golden light gently bathing the surreal landscape.
+# {"surrealism":80,"classical":10,"realistic":10}
+---
+An underwater scene inspired by dreamlike surrealist paintings captures a diver's exploration of an otherworldly coral reef from an unusual perspective. Viewed through the eyes of a giant sea turtle gracefully gliding over the landscape, the diver encounters vibrant aquatic life bathed in ethereal sunlight beams that illuminate iridescent corals and shimmering fish, creating a sense of wonder reminiscent of a masterful artist's touch.
+# {"surrealism":60,"classical":20,"realistic":20}
+---
+A dreamlike cityscape rises from a tranquil lake's surface in this surreal and impressionistic scene. The water ripples gently, distorting the architectural wonders into an abstract dance of light and color as seen from above. A solitary figure sits on a floating platform, engrossed in meditation while holding a crystal ball aloft, harmonizing the natural world with this fantastical urban haven.
+# {"impressionism":40,"abstract_art":30,"surrealism":30}
+---
+A dreamlike underwater scene showcases a futuristic sports car partially disintegrating as its metallic components dissolve into the surrounding water near a sunken city. The ethereal blue light from deep-sea creatures illuminates the vehicle and its eerie surroundings, evoking feelings of mystery and wonder in this surrealistic image inspired by melting clocks, where reality blurs with fantasy.
+# {"abstract_art":30,"surrealism":40,"fantasy":30}
+---
+Create an image that captures surrealism, featuring a brass robot emerging from a sea of dreamlike waves. The robot's metallic form catches the light, casting elongated shadows on the rippling waters below it. In the background, a cityscape made up of distorted geometric shapes and floating islands adds to the dreamy ambiance, blending science fiction elements with fantastical realms to evoke wonder and curiosity in the viewer.
+# {"surrealism":60,"fantasy":20,"abstract_art":20}
+---
+Envision an impressionistic watercolor landscape evoking a surreal dreamscape, characterized by a blend of futuristic cityscapes and abstract shapes. The horizon is shrouded in mist as skyscrapers morph into clock-like structures, creating a whimsical scene from a 'bug's-eye view'. This enchanting vista invites contemplation, juxtaposing the timelessness of fantasy with the technology of a modern world, while its dreamlike quality captivates and intrigues the viewer.
+# {"impressionism":40,"abstract_art":30,"surrealism":30}
+---
+A tranquil underwater scene reminiscent of an impressionist painting; bioluminescent creatures with translucent bodies softly glow, their delicate tendrils dancing in an unseen rhythm. Captured from a unique perspective, the image invites viewers into a mesmerizing world of luminous beauty, evoking both serenity and wonder at the hidden wonders of the deep ocean.
+# {"classical":20,"impressionism":60,"realistic":20}
+---
+Craft an image depicting a surreal underwater metropolis with buildings resembling bubble domes, inhabited by merfolk and marine life. Capture the scene from an aerial viewpoint, akin to an underwater drone's perspective, emphasizing the distorted geometry of the architecture. Utilize vibrant hues such as deep blues and purples to create an otherworldly ambiance that instills a sense of awe and intrigue while questioning our understanding of reality.
+# {"surrealism":60,"fantasy":20,"realistic":20}
+---
+A surreal oil painting captures an anthropomorphic tree standing in a vast, foggy landscape from a low-angle perspective. The camera focuses on the intricate bark resembling a wise old man's beard, as it observes the world around it. Serenity and introspection are evoked by warm hues filtering through the misty atmosphere, gently illuminating the tree's kind eyes that seem to hold nature's secrets.
+# {"classical":20,"abstract_art":30,"surrealism":50}
+---
+A surreal landscape unfolds with an ancient tower piercing through a foggy forest, its intricate details softened by the misty veil. A majestic stag with glowing antlers stands in reverence at the base of the tower, captivated by its enigmatic presence. Moonlight bathes the scene in a silver glow, casting a mystical ambiance that stirs feelings of wonder and curiosity, enveloping the viewer in an atmosphere of enchantment and awe.
+# {"classical":20,"surrealism":40,"fantasy":40}
+---
+Envision an Impressionistic lakeside panorama where a pristine white swan glides gracefully across the mirror-like water, its feathers glistening like pearls in the soft, pastel light of the sky and surrounding scenery. This aerial perspective captures the ephemeral elegance of nature and the transient essence of time, evoking a serene atmosphere that invites contemplation within the viewer's heart.
+# {"classical":20,"impressionism":80}
+---
+Imagine an enchanting digital artwork inspired by surrealism, depicting a majestic elephant gracefully suspended mid-air above a tranquil landscape shrouded in misty fog. The elephant's silhouette is delicately outlined against the ethereal haze as its face is intricately detailed and exudes expression, sparking curiosity and wonder in viewers who contemplate the mystery behind its levitation within this serene natural setting.
+# {"surrealism":70,"classical":20,"realistic":10}
+---
+A surreal digital artwork portrays an awe-inspiring unicorn elegantly vaulting over a vivid waterfall in a dreamlike Surrealist style. The scene is observed from an aerial perspective, with golden, mystical illumination casting enchanting radiance on the surrounding vegetation, creating a mesmerizing and evocative atmosphere of wonder and serenity amidst the breathtaking splendor of this fantastical landscape.
+# {"surrealism":60,"fantasy":30,"realistic":10}
+---
+Imagine an aerial view over a surreal landscape where timepieces flow like waterfalls through a foggy valley, in the whimsical style reminiscent of Salvador Dali's dreamscapes. A blood-orange sun illuminates this peculiar terrain, stretching elongated shadows across the fantastical scenery that simultaneously conveys serenity and disquiet as it distorts the perception of time.
+# {"surrealism":60,"classical":20,"abstract_art":20}
+---
+A whimsical blend of impressionism and digital art captures a sentient, neon-illuminated fish swimming gracefully through an idyllic underwater environment from the unique vantage point of a bug's perspective. The vivid palette intermingles harmoniously with the soft pastels of the coral gardens, crafting a surreal and mesmerizing ambiance that embodies both enchantment and serenity.
+# {"impressionism":40,"abstract_art":30,"surrealism":30}
+---
+Envision an Impressionistic landscape depicting a serene lake as it mirrors the radiant colors of a sunset sky. The scene transitions to a dragonfly's perspective from above the water's surface, revealing intricate ripples and delicate reflections dancing across the glassy expanse. As day gives way to night, the colors gracefully shift and blend, creating an atmosphere of peaceful tranquility that permeates this captivating natural tableau.
+# {"impressionism":80,"classical":20}
+---
+A tranquil riverside village, reminiscent of impressionist painting, comes to life through a bird's-eye view perspective. The scene showcases the picturesque houses with their vibrant colors reflected in the calm river water below. Dominated by rich hues of blues and greens, this landscape evokes a sense of serenity and harmony as it captures a fleeting moment in time, inviting viewers to immerse themselves in its peaceful atmosphere.
+# {"classical":20,"impressionism":80}
+---
+Capture the mesmerizing watercolor impressionism reminiscent of Monet's landscapes in an ethereal scene depicting a nocturnal garden under a crescent moonlight. From a bird's eye view above the treetops, soft brushstrokes blend together verdant foliage, delicate blooms, and shimmering dewdrops. This enchanting atmosphere embodies serenity as starlight filters through dense canopies, creating a captivating dance of shadows across the tranquil landscape.
+# {"classical":20,"impressionism":80}
+---
+Create an image that fuses surreal dreamscapes with the precision of etchings, portraying a mythical creature arising from a barren terrain. From an elevated perspective, showcase the captivating juxtaposition between its luminous fur tones and the subdued palette of the surrounding desert, invoking wonder, intrigue, and contemplation as viewers explore the divide between reality and imagination.
+# {"surrealism":60,"fantasy":30,"classical":10}
+---
+An impressionistic landscape capturing a serene pond scene from an intimate 'bug's-eye view', showcasing vibrant water lilies in bloom with soft, hazy brushstrokes evoking tranquility and contemplation amidst the everyday chaos. The lush greenery surrounding the pond is blurred, emphasizing the close connection between the viewer and the delicate beauty of nature.
+# {"classical":20,"impressionism":80}
+---
+Imagine an idyllic landscape at twilight, captured in an impressionistic style reminiscent of Monet's Water Lilies series. From an aerial viewpoint floating above lily pads, observe the serene reflections of golden and magenta sunbeams illuminating the water's surface. The scene harmoniously unites peace with dramatic color transitions that instill a sense of quiet contemplation, intertwining nature's charm with the emotional richness of dusk's enchanting ambiance.
+# {"classical":20,"impressionism":80}
+---
+A serene lakeside scene at sunset, reminiscent of impressionist techniques, showcases a swan gracefully gliding across the tranquil water. The golden hues of the sky blend with the gentle ripples on the lake's surface, creating an enchanting atmosphere as seen from a low-angle perspective that emphasizes the bird's reflection in the still waters. This unique view captures the ephemeral beauty of nature, evoking feelings of serenity and wonder.
+# {"impressionism":80,"classical":15,"realistic":5}
+---
+Craft an image depicting a dreamlike surrealist underwater environment, featuring a serene unicorn gliding effortlessly amidst a mesmerizing garden of luminous coral and glowing flora. The perspective should mimic the view from beneath the waves, highlighting the vivid hues and intricate textures to evoke a spectrum of emotions ranging from enchantment to curiosity as it delves into the captivating beauty of this otherworldly aquatic sanctuary.
+# {"abstract_art":20,"surrealism":40,"fantasy":40}
+---
+Craft an image embodying Dali-esque surrealism, depicting an underwater view of a serene lake with lotus flowers gently drifting on its surface. A majestic swan with shimmering plumage elegantly surfaces before taking flight, disrupting the water's mirror-like reflection amidst a dreamlike sky blending fantastical clouds and mountains in a harmonious array of colors that evoke tranquility and awe.
+# {"surrealism":60,"fantasy":20,"classical":20}
+---
+An artistic digital composition featuring a close-up view from below of a woman's face, with an intriguing clock-like mechanism embedded on her chest, creating a surreal and dreamlike atmosphere. The background is shrouded in a mysterious fog, revealing ethereal creatures among the trees, further enhancing the otherworldly mood. This piece blends elements of surrealist art with a unique perspective to evoke a sense of unease and wonder.
+# {"surrealism":60,"fantasy":20,"realistic":20}
+---
+A celestial fairy gracefully emerges from an illuminated aurora, her iridescent wings shimmering against the starlit sky reminiscent of Van Gogh's celestial masterpieces. Hovering on the edge of a craggy cliff, she casts elongated shadows across the rough terrain below as she gazes into the vast cosmic expanse, evoking a sense of both wonder and solitude in this surreal dreamscape observed from an aerial perspective.
+# {"impressionism":40,"surrealism":30,"realistic":30}
+---
+A surreal landscape unfolds with a colossal crystal waterfall cascading from a floating mountain in the sky. The sun sets over this otherworldly scene, casting vibrant hues of purple, pink, and gold across the heavens. From an ethereal perspective, observe iridescent rainbows dancing through the misty crystals, evoking feelings of wonder and enchantment amidst the fantastical beauty of this unique panorama.
+# {"surrealism":60,"fantasy":30,"realistic":10}
+---
+A celestial portrait of a dragonfly with iridescent wings, detailed in the style of scientific illustrations and viewed from an 'underneath' perspective to reveal its delicate anatomy and glistening eyes. The background features a tranquil pond scene at sunset, blending photorealism with impressionistic brushstrokes to capture the interplay of warm hues and shimmering light on rippling water, evoking a serene yet captivating atmosphere.
+# {"classical":30,"impressionism":40,"realistic":30}
+---
+A surreal landscape showcases an idyllic lake reflecting an airborne, timepiece-like object amidst a whimsical sky filled with fantastical creatures. This scene is viewed from above, emphasizing intricate details and a dreamlike ambiance. As the sun sets, warm hues bathe the tranquil waters, creating a sense of serenity within the enchanting chaos.
+# {"surrealism":60,"fantasy":20,"classical":20}
+---
+A dreamlike scene depicting a colossal, melting clock fortress perched on a precipice above a churning sea of molten gold. The perspective is from an underwater vantage point, revealing intricate clockwork mechanisms through the schools of fish swimming gracefully within them. This surreal landscape combines awe-inspiring elements with detailed gradients to create a captivating visual experience reminiscent of Dali's iconic style.
+# {"surrealism":60,"classical":20,"realistic":20}
+---
+A surreal portrait captures a woman seated in an idyllic garden, her visage concealed by a colossal fruit held by a smaller figure mirrored in the still waters at her feet. The oversized produce casts an enigmatic shadow over the pond, blurring the lines between waking and dream states while evoking a sense of serene mystery.
+# {"classical":20,"impressionism":30,"surrealism":50}
+---
+Craft an image embodying surrealism with a majestic unicorn galloping across a fantastical landscape filled with distorted timepieces and floating realms, as seen from above. The unicorn's shimmering horn emanates an ethereal glow that casts elongated shadows over the dreamlike terrain. Employ rich, vibrant colors that appear askew, merging dreamscape and nightmares into one mesmerizing tableau.
+# {"surrealism":60,"fantasy":30,"abstract_art":10}
+---
+A surreal underwater scene depicting a majestic whale adorned with a golden harpoon, gracefully swimming through an enigmatic ocean of shimmering crystals and bioluminescent flora. The whale's eyes reflect the vibrant hues of the surrounding coral reefs and schools of exotic fish, creating a mesmerizing and thought-provoking visual experience that blurs the boundaries between reality and imagination.
+# {"surrealism":60,"fantasy":20,"realistic":20}
+---
+Craft an image embodying surrealism with a landscape featuring melting timepieces scattered across it, divided by a sinuous river of vibrant crimson hues. Capture this scene from an elevated viewpoint to showcase the intriguing interrelation between the flowing water and the distorted shapes of the clocks, forming a thought-provoking visual tale that encourages reflection on our understanding of time and reality.
+# {"surrealism":80,"classical":10,"realistic":10}
+---
+Imagine a surreal landscape where an enigmatic creature with glowing scales emerges from a swirling vortex, casting eerie shadows across the strange terrain. The creature's piercing gaze observes an ancient, crumbling temple in the distance, evoking curiosity and foreboding. This haunting scene blends elements of cosmic horror and surrealism to create an image that resonates with tension and mystery.
+# {"surrealism":60,"fantasy":20,"realistic":20}
+---

@@ -318,7 +318,7 @@ namespace ExtCollMng
                     if (fi.Length == wr.zipSize)
                     {
                         if (!Utils.ConfirmationMessageBox("File <" + wr.zipName + "> is already dowloaded in <"+ tempFolder+">.\n Overwrite (Yes) or Cancel (No)?"))
-                        { Log("User cancelation"); return; }
+                        { Log("Warning: User cancelation request!"); return; }
                     }
                     File.Delete(downFile);
                 }

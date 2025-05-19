@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -293,14 +293,17 @@ namespace scripthea.composer
                 else updateFromCuesFolder(cuesFolder);
                 cueEditor.newCues = false;
             }
-            if (tiPoolMap.Equals(lastTab) && Utils.InRange(idx, 0,poolCount-1)) // out of map tab
+            if (tiPoolMap.Equals(lastTab) && new[] { 0, 1, 3, 4 }.Contains(idx)) // out of map tab
             {
-                UpdatePoolMapFromVisuals();
-                for (int i = 0; i < poolCount; i++)
+                if (idx < 2) // pool A & B
                 {
-                    if (!cueLists[i].isBusy)
-                    {                        
-                        cueLists[i].Init(ref opts, GetLists(i)); cueLists[i].radioMode = radioMode;
+                    UpdatePoolMapFromVisuals();
+                    for (int i = 0; i < poolCount; i++)
+                    {
+                        if (!cueLists[i].isBusy)
+                        {                        
+                            cueLists[i].Init(ref opts, GetLists(i)); cueLists[i].radioMode = radioMode;
+                        }
                     }
                 }
                 OnExtCollOff?.Invoke(this, EventArgs.Empty);
@@ -395,10 +398,10 @@ namespace scripthea.composer
         private void imgRight_MouseDown(object sender, MouseButtonEventArgs e) // from A to B
         {
             if (!ListboxReady(lBoxApool))
-                { Log("Error: No item is selected to be moved."); return; }
+                { Log("Error: No item has been selected to be moved."); return; }
             CheckBox chk = lBoxApool.SelectedItem as CheckBox;
             if (chk == null)
-                { Log("Error: No item is selected to be moved. 2"); return; }
+                { Log("Error: No item has been selected to be moved. 2"); return; }
             CheckBox newChk = new CheckBox()
                 { Content = chk.Content, IsChecked = chk.IsChecked.Value, Margin = new Thickness(3) };
             lBoxApool.Items.Remove(lBoxApool.SelectedItem);
@@ -407,10 +410,10 @@ namespace scripthea.composer
         private void imgLeft_MouseDown(object sender, MouseButtonEventArgs e)  // from B to A
         {
             if (!ListboxReady(lBoxBpool))
-                { Log("Error: No item is selected to be moved."); return; }
+                { Log("Error: No item has been selected to be moved."); return; }
             CheckBox chk = lBoxBpool.SelectedItem as CheckBox;
              if (chk == null)
-                { Log("Error: No item is selected to be moved. 2"); return; }
+                { Log("Error: No item has been selected to be moved. 2"); return; }
             CheckBox newChk = new CheckBox()
                 { Content = chk.Content, IsChecked = chk.IsChecked.Value, Margin = new Thickness(3) };
             lBoxBpool.Items.Remove(lBoxBpool.SelectedItem);
@@ -419,7 +422,7 @@ namespace scripthea.composer
         private void imgUp_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (!ListboxReady(lBoxApool) && !ListboxReady(lBoxBpool))
-                { Log("Error: No item is selected to be reordered."); return; }
+                { Log("Error: No item has been selected to be reordered."); return; }
             int j = sender == imgUp ? -1 : 1;
             if (ListboxReady(lBoxApool))
             {
@@ -445,7 +448,7 @@ namespace scripthea.composer
         private void imgExtractOpts_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (!ListboxReady(lBoxApool) && !ListboxReady(lBoxBpool))
-            { Log("Error: No item is selected to be renamed."); return; }
+                { Log("Error: No item has been selected."); return; }
             CheckBox chk = new CheckBox();
             if (ListboxReady(lBoxApool))
                 chk = lBoxApool.SelectedItem as CheckBox;
@@ -463,7 +466,7 @@ namespace scripthea.composer
         private void imgEdit_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (!ListboxReady(lBoxApool) && !ListboxReady(lBoxBpool))
-                { Log("Error: No item is selected to be renamed."); return; }
+                { Log("Error: No item has been selected to be renamed."); return; }
             CheckBox chk = new CheckBox();
             if (ListboxReady(lBoxApool))
                 chk = lBoxApool.SelectedItem as CheckBox;
@@ -483,7 +486,7 @@ namespace scripthea.composer
         private void imgDelete_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (!ListboxReady(lBoxApool) && !ListboxReady(lBoxBpool))
-                { Log("Error: No item is selected to be deleted."); return; }
+                { Log("Error: No item has been selected to be deleted."); return; }
             CheckBox chk = new CheckBox();
             if (ListboxReady(lBoxApool))
             {

@@ -10,7 +10,7 @@ lr = qry.SelectCues(30, 0)
 st.log(str(lr.Count)+' cues selected')
 
 # select some modifiers
-qry.mSetApply('mSet.1', False)
+qry.mSetApply('mSet.3', False)
 
 # generate prompt from selected cues and modifiers
 ls = qry.GetPreview(False)

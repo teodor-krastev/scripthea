@@ -70,7 +70,7 @@ namespace scripthea.viewer
         private Options opts;
         public void UpdateVisRecord(int idx, ImageInfo ii) // update visual record from ii
         {
-            activeView.UpdateVisRecord(idx, ii);
+            activeView.UpdateVisRecord(idx, ii); checkImageDepot();
         }
         public void Init(ref Options _opts) // ■▬►
         {
@@ -199,7 +199,7 @@ namespace scripthea.viewer
             activeView.selectedIndex = Utils.EnsureRange(idx0, 0, iDepot.items.Count - 1);
             activeView.MarkWithMask(markMask);
             if (anim) animation = true;
-            if (iDepot.isEnabled) lbDepotInfo.Content = iDepot.items.Count.ToString() + " images";
+            checkImageDepot();
             return idx0;
         } 
         public void Clear() 
@@ -237,8 +237,15 @@ namespace scripthea.viewer
         }
         private int checkImageDepot()
         {
+            lbDepotInfo.Foreground = Brushes.Blue;
+            if (iDepot != null)
+            {
+                if (iDepot.isEnabled)
+                    if (iDepot.items.Count > 0)
+                    { lbDepotInfo.Content = iDepot.items.Count.ToString() + " images" + (iDepot.IsChanged ? "*" : ""); return iDepot.items.Count; }
+            }
             int cnt = SctUtils.checkImageDepot(imageFolder);
-            if (cnt > 0) { lbDepotInfo.Content = cnt.ToString() + " images"; lbDepotInfo.Foreground = Brushes.Blue; }
+            if (cnt > -1) { lbDepotInfo.Content = cnt.ToString() + " images";  }
             else { lbDepotInfo.Content = "This is not an image depot."; lbDepotInfo.Foreground = Brushes.Tomato; }
             return cnt;
         }
@@ -275,7 +282,7 @@ namespace scripthea.viewer
                 }
                 iDepot = new ImageDepot(imageFolder);
                 if (!iDepot.isEnabled) { Log("Error[96]: This is not an image depot."); return; }
-                else lbDepotInfo.Content = iDepot.items.Count.ToString() + " images";
+                else checkImageDepot();
                 imageFolderShown = imageFolder;
 
                 List<Tuple<int, string, int, string>> decompImageDepot = iDepot.Export2Viewer();

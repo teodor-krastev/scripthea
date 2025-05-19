@@ -10,7 +10,7 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition x:Name="colListWidth" Width="500" MinWidth="400" MaxWidth="2000"/>
-            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition MinWidth="400" MaxWidth="2000" Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid Margin="0" >
             <Grid.RowDefinitions>
@@ -82,6 +82,7 @@
         </Grid>
         <Grid Grid.Column="1" Margin="0" />
         <GridSplitter x:Name="gridSplitter" HorizontalAlignment="Left" Grid.Column="1" Margin="0" Width="5"/>
+        
         <local:PicViewerUC x:Name="picViewerUC" Grid.Column="1" Margin="0" />
     </Grid>
 </UserControl>

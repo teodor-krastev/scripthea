@@ -9,12 +9,12 @@
     x:Name="MainWindow1" x:Class="scripthea.MainWindow"
         mc:Ignorable="d"
         Title="Scripthea - text-to-image prompt composer" Height="450" Width="1552.967" Loaded="MainWindow1_Loaded" Closing="MainWindow1_Closing" Icon="Properties/penzy4.png" FontSize="13" KeyDown="MainWindow1_KeyDown" PreviewKeyDown="MainWindow1_PreviewKeyDown">
-    <Grid>
+    <Grid Margin="5,7,5,5">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="300" x:Name="pnlLog" MinWidth="100" MaxWidth="1000"/>
-            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="*" MinWidth="300"/>
         </Grid.ColumnDefinitions>
-        <Grid>
+        <Grid Margin="0,-3,0,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="45"/>
                 <RowDefinition x:Name="rowLog" Height="499*"/>
@@ -47,7 +47,7 @@
                     <RowDefinition Height="499*"/>
                     <RowDefinition x:Name="rowLogImage" Height="200*"/>
                 </Grid.RowDefinitions>
-                <RichTextBox x:Name="tbLogger" Grid.Row="0" VerticalScrollBarVisibility="Auto" Margin="1,0,0,0" BorderThickness="0,1,0,1">
+                <RichTextBox x:Name="tbLogger" Grid.Row="0" VerticalScrollBarVisibility="Auto" Margin="1,0,0,0" BorderThickness="0,1,0,0">
                     <FlowDocument>
                         <Paragraph>
                             <Run x:Name="tbLog" Text=""/>

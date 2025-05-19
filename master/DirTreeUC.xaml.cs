@@ -89,9 +89,7 @@ namespace scripthea.master
                 }
             }
             catch { /* Utils.TimedMessageBox("problem with " + idepot); */ return -1; }
-        }
-        /// <summary>
-
+        }        
     }
     /// <summary>
     /// display folders and subfolders in a treeview wpf c#
@@ -198,6 +196,26 @@ namespace scripthea.master
             }
             return allDirectories;
         }
+        private List<string> GetOrdinaryDirectories(string path)
+        {
+            bool IsSpecialDirectory(string dirName)
+            {
+                string systemDrive = Path.GetPathRoot(Environment.SystemDirectory);
+                string[] specialDirs = {  "inetpub", "PerfLogs", "Program Files", "Program Files (x86)" , "Windows" };
+                for (int i = 0; i < specialDirs.Length; i++) specialDirs[i] = Path.Combine(systemDrive, specialDirs[i]);
+                return Array.Exists(specialDirs, special => string.Equals(special, dirName, StringComparison.OrdinalIgnoreCase));
+            }
+            List<string> dirs = new List<string>();
+            foreach (string dir in Directory.GetDirectories(path))
+            {
+                var attributes = File.GetAttributes(dir);
+                bool isSystem = attributes.HasFlag(FileAttributes.System);
+                bool isHidden = attributes.HasFlag(FileAttributes.Hidden);
+            
+                if (!IsSpecialDirectory(dir) && !isSystem && !isHidden) dirs.Add(dir);
+            }
+            return dirs;
+        }
 
         protected TreeViewItem dummyNode = null;
         protected void folder_Expanded(object sender, RoutedEventArgs e)
@@ -209,7 +227,7 @@ namespace scripthea.master
                 try
                 {
                     string path = item.Tag.ToString();
-                    List<string> dirs = new List<string>(Directory.GetDirectories(path));//GetAllDirectories(path); 
+                    List<string> dirs = GetOrdinaryDirectories(path);
 
                     foreach (string s in dirs)
                     {
@@ -234,7 +252,7 @@ namespace scripthea.master
                         bool bc = true; ;
                         try
                         {
-                            bc = Directory.GetDirectories(s).Length > 0;
+                            bc = GetOrdinaryDirectories(s).Count > 0;
                         }
                         catch (Exception ex) { opts.Log("I: "+ex.Message); continue; }                        
                         if (bc) subitem.Items.Add(dummyNode);
@@ -275,8 +293,7 @@ namespace scripthea.master
                 item = prn;
             }
             Select(pth);
-        }
-        
+        }       
         public bool CatchAFolder(string pth)
         {
             bool bb = false;

@@ -475,7 +475,7 @@ namespace scripthea.composer
             }
             else // if button title is Cancel
             {
-                if (status == Status.Scanning) opts.Log("Warning: User cancelation!", Brushes.Tomato);
+                if (status == Status.Scanning) opts.Log("Warning: User cancelation request!", Brushes.Tomato);
                 status = Status.Request2Cancel; btnScan.Content = strScan; btnScan.Background = Brushes.MintCream;
                 btnScanPreview.IsEnabled = true; btnAppend2Preview.IsEnabled = true; return;
             }
@@ -630,7 +630,7 @@ namespace scripthea.composer
                 if (scanPreviewUC.scanning) // cancel request
                 {
                     scanPreviewUC.scanning = false; status = Status.Request2Cancel;
-                    opts.Log("Warning: User cancelation!", Brushes.Tomato); btnScanPreview.IsEnabled = true; btnAppend2Preview.IsEnabled = true;
+                    opts.Log("Warning: User cancelation request!", Brushes.Tomato); btnScanPreview.IsEnabled = true; btnAppend2Preview.IsEnabled = true;
                 }
                 else // scanning request
                 {

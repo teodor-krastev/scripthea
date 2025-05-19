@@ -2,7 +2,7 @@
   "3": {
     "inputs": {
       "seed": 0,
-      "steps": 30,
+      "steps": 31,
       "cfg": 6.6,
       "sampler_name": "euler_ancestral",
       "scheduler": "karras",
@@ -40,7 +40,7 @@
   },
   "5": {
     "inputs": {
-      "width": 1163,
+      "width": 1173,
       "height": 994,
       "batch_size": 1
     },
@@ -51,7 +51,7 @@
   },
   "6": {
     "inputs": {
-      "text": "The leaves are such a jocund company in their green-hue gaiety.; Gustav Klimt",
+      "text": "Imagine a surreal landscape where an enigmatic creature with glowing scales emerges from a swirling vortex, casting eerie shadows across the strange terrain. The creature`s piercing gaze observes an ancient, crumbling temple in the distance, evoking curiosity and foreboding. This haunting scene blends elements of cosmic horror and surrealism to create an image that resonates with tension and mystery. ; Jacek Yerka ; minimalism ; simplicity ; Vladimir Kush",
       "clip": [
         "4",
         1

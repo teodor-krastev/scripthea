@@ -7,7 +7,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800" FontSize="13">
     <Grid>
-        <TreeView x:Name="tvFolders" Margin="0,7,0,25" SelectedItemChanged="tvFolders_SelectedItemChanged" KeyDown="tvFolders_KeyDown" MouseDoubleClick="tvFolders_MouseDoubleClick" ContextMenuOpening="tvFolders_ContextMenuOpening" BorderThickness="0,0,0,1" Background="White" >
+        <TreeView x:Name="tvFolders" Margin="0,7,0,25" SelectedItemChanged="tvFolders_SelectedItemChanged" KeyDown="tvFolders_KeyDown" MouseDoubleClick="tvFolders_MouseDoubleClick" ContextMenuOpening="tvFolders_ContextMenuOpening" BorderThickness="0" Background="White" >
             <TreeView.ContextMenu>
                 <ContextMenu x:Name="cmFolders"/>
             </TreeView.ContextMenu>

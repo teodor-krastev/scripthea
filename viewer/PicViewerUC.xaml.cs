@@ -283,10 +283,8 @@ namespace scripthea.viewer
             ImageInfo ii = SelectedItem(actIdx, iDepot);
             ii.rate = Convert.ToInt16(sldRate.Value);
             UpdateMeta(iDepot.path, ii, IsModified(iDepot.path, ii), false); // local
-
-            iDepot.items[actIdx] = ii; OnUpdateVisRecord?.Invoke(actIdx, ii);
-
-            if (!iDepot.isReadOnly) iDepot.IsChanged = true;
+            if (!iDepot.isReadOnly) iDepot.IsChanged = true; 
+            iDepot.items[actIdx] = ii; OnUpdateVisRecord?.Invoke(actIdx, ii);                      
         }
         private void miNeutral_Click(object sender, RoutedEventArgs e)
         {

@@ -124,6 +124,11 @@ namespace scripthea.master
         {
             Dictionary<string, string> dict = new Dictionary<string, string>();           
             dict.Add("number of images", fileInfos.Count.ToString());
+            DateTime earliestCreated = fileInfos.OrderBy(f => f.CreationTime).First().CreationTime;
+            DateTime latestCreated = fileInfos.OrderBy(f => f.CreationTime).Last().CreationTime;
+            string ss = earliestCreated.ToString("dd-MMM-yy HH:mm:ss") + " to " + latestCreated.ToString("dd-MMM-yyyy HH:mm:ss");
+            if ((int)earliestCreated.ToOADate() == (int)latestCreated.ToOADate()) ss = earliestCreated.ToString("dd-MMM-yy HH:mm:ss") + " to " + latestCreated.ToString("HH:mm:ss");
+            dict.Add("time of generation", ss);
             List<double> sizeInK = new List<double>();
             foreach (FileInfo fileInfo in fileInfos) sizeInK.Add(fileInfo.Length / 1024.0); 
             dict.Add("image size", (sizeInK.Average()).ToString("F0") + "  (" + sizeInK.Min().ToString("F0") + " . . " + sizeInK.Max().ToString("F0") + ") kB");
