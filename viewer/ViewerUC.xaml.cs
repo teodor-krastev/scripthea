@@ -82,6 +82,7 @@ namespace scripthea.viewer
             foreach (iPicList ipl in views)
                 ipl.Init(ref opts, false);
             picViewerUC.Init(ref _opts);
+            iDepotStats.Init(ref opts);
         }
         public void Finish()
         {
@@ -270,6 +271,7 @@ namespace scripthea.viewer
                 {
                     if (iDepotStats.iDepot != null)
                         if (!iDepotStats.iDepot.SameAs(iFolder)) picViewerUC.Clear();
+                    iDepotStats.Clear();
                     iDepotStats.OnChangeDepot(folder);
                     return;
                 }
@@ -339,8 +341,8 @@ namespace scripthea.viewer
                 }
             }
             lastIdx = tabCtrlViews.SelectedIndex;
+            if (tabCtrlViews.SelectedItem.Equals(tiStats)) { btnPlay.IsEnabled = false; iDepotStats.Clear(); }
             if (chkAutoRefresh.IsChecked.Value && showing) btnRefresh_Click(sender, e);
-            btnPlay.IsEnabled = !tabCtrlViews.SelectedItem.Equals(tiStats);
             if (!Utils.isNull(e)) e.Handled = true;
         }        
         public bool animation

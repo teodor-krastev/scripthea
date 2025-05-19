@@ -49,6 +49,7 @@ namespace scripthea.master
             listView.SelectEvent += new TableViewUC.PicViewerHandler(loadPic); listView.OnChangeContent += new RoutedEventHandler(ChangeContent);
             gridView.Init(ref _opts, checkable); 
             gridView.SelectEvent += new GridViewUC.PicViewerHandler(loadPic); gridView.OnChangeContent += new RoutedEventHandler(ChangeContent);
+            iDepotStats.Init(ref opts);
         }
         public Button Configure(char _letter, List<string> cbItems, string checkBox1, string checkBox2, string buttonExecute, bool _IsReadOnly) // configure the extras
         {
@@ -373,14 +374,17 @@ namespace scripthea.master
                     listView.SynchroChecked(gridView.GetItems(true, false));
                     if (lastTab.Equals(tiStats)) { listView.focusFirstRow(); listView.dGrid_SelectionChanged(null, null); }
                 }
-                
-                if (tcMain.SelectedItem.Equals(tiStats) && iDepot != null)
+                if (tcMain.SelectedItem.Equals(tiStats)) 
                 {
-                    string path = iDepot.path;
-                    if (iDepotStats.iDepot != null)
-                        if (!iDepotStats.iDepot.SameAs(path)) 
-                            image.Source = null;
-                    iDepotStats.OnChangeDepot(path);                
+                    iDepotStats.Clear();
+                    if (iDepot != null)
+                    {
+                        string path = iDepot.path;
+                        if (iDepotStats.iDepot != null)
+                            if (!iDepotStats.iDepot.SameAs(path)) 
+                                image.Source = null;
+                        iDepotStats.OnChangeDepot(path);                
+                    }
                 }
                 lastTab = (TabItem)tcMain.SelectedItem;
                 GetChecked();

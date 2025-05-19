@@ -45,9 +45,9 @@ namespace scripthea.master
         protected List<FileInfo> fileInfos;
         public void OnChangeDepot(string ImageDepotPath)
         {
-            iDepot = new ImageDepot(ImageDepotPath);
-            iDepot?.Validate(null);
             Clear();
+            iDepot = new ImageDepot(ImageDepotPath);
+            iDepot?.Validate(null);           
             ReadFileInfos(iDepot.path);
             if (fileInfos.Count == 0) { opts.Log("Error: image folder problem"); return; }
             FolderStats();
@@ -124,10 +124,10 @@ namespace scripthea.master
         {
             Dictionary<string, string> dict = new Dictionary<string, string>();           
             dict.Add("number of images", fileInfos.Count.ToString());
-            DateTime earliestCreated = fileInfos.OrderBy(f => f.CreationTime).First().CreationTime;
-            DateTime latestCreated = fileInfos.OrderBy(f => f.CreationTime).Last().CreationTime;
-            string ss = earliestCreated.ToString("dd-MMM-yy HH:mm:ss") + " to " + latestCreated.ToString("dd-MMM-yyyy HH:mm:ss");
-            if ((int)earliestCreated.ToOADate() == (int)latestCreated.ToOADate()) ss = earliestCreated.ToString("dd-MMM-yy HH:mm:ss") + " to " + latestCreated.ToString("HH:mm:ss");
+            DateTime earliestWritten = fileInfos.OrderBy(f => f.LastWriteTime).First().LastWriteTime;
+            DateTime latestWritten = fileInfos.OrderBy(f => f.LastWriteTime).Last().LastWriteTime;
+            string ss = earliestWritten.ToString("dd-MMM-yy HH:mm") + " to " + latestWritten.ToString("dd-MMM-yyyy HH:mm");
+            if ((int)earliestWritten.ToOADate() == (int)latestWritten.ToOADate()) ss = earliestWritten.ToString("dd-MMM-yy HH:mm") + " to " + latestWritten.ToString("HH:mm");
             dict.Add("time of generation", ss);
             List<double> sizeInK = new List<double>();
             foreach (FileInfo fileInfo in fileInfos) sizeInK.Add(fileInfo.Length / 1024.0); 
