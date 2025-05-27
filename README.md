@@ -2,10 +2,9 @@
 
 #### Intro
 
-Scripthea is my response to the booming development of text-to-image AI domain. It's an attempt to apply a more systematic approach in composing the text prompt (prompt = cue + modifiers). You will be offered collections of short descriptive texts (cues) and collections of modifiers, like a painter, art style, time period, etc. A short introduction video is in https://youtu.be/BSUsCHmuI0Y .
+Scripthea is a free, open-source Windows application designed to streamline the process of crafting prompts for text-to-image AI generators like Stable Diffusion. Developed by Teodor Krastev, Scripthea offers a structured environment for building, testing, and refining prompts, making it an invaluable tool for artists, designers, and AI enthusiasts seeking greater control over their creative outputs. A short introduction video is in https://youtu.be/BSUsCHmuI0Y .
 
-After composing your prompt you can use API access to Stable Diffusion text-to-image generator and here is the strong side of Scripthea. The prompt and the picture become part of your collection (image depot) with a convenient image viewer on the second tab. On top of that, you can "scan". After selecting some texts and some modifiers Scan will combine them as every text will be combined with every modifier. So for example if you would like to see how a particular painter would paint different subjects or how specific topic would be painted by different painters. Scripthea will generate all the combinations for you (scan) and query the active API for you to put them in an image collection.
-Alternatively, you can copy and paste it into your favourite text-to-image generator and see to result in your browser. 
+At its core, Scripthea simplifies prompt engineering by breaking down prompts into two components: cues (descriptive phrases or subjects) and modifiers (attributes like style, lighting, or artist references). This modular approach allows users to experiment with various combinations, facilitating a more systematic exploration of visual styles and themes.
 
 #### Here is the prompt composer tab...
 ![Scripthea-1.png](/docs/Scripthea-1.jpg)
