@@ -228,6 +228,11 @@ namespace scripthea.viewer
             foreach (PicItemUC piUC in picItems)
                 if (checkable) piUC.IsChecked = Utils.InRange(piUC.idx, first, last);                
         }
+        public void CheckRate(double rate)
+        {
+            foreach (PicItemUC piUC in picItems)
+                if (checkable) piUC.IsChecked = piUC.imgInfo.rate > rate;
+        }
         private string _markMask = "";
         public string markMask { get { return _markMask; } }
         public void MarkWithMask(string mask)

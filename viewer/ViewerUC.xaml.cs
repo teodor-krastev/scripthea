@@ -42,6 +42,7 @@ namespace scripthea.viewer
         void SetChecked(bool? check); // if null invert; returns checked
         string markMask { get; }
         void CheckRange(int first, int last);
+        void CheckRate(double rate);
         void MarkWithMask(string mask); // mark some items; if "" unmark all 
         void Clear(bool inclDepotItems = false);
         int selectedIndex { get; set; } // one based index in no-checkable mode

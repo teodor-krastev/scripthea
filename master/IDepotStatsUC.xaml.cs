@@ -98,7 +98,7 @@ namespace scripthea.master
                 dict = new Dictionary<string, string>(iDepot.header);
             double sizeInK = 0;
             foreach (FileInfo fileInfo in fileInfos) sizeInK += fileInfo.Length / 1024.0; 
-            dict.Add("total image space", sizeInK.ToString("F1") +" kB / "+ (sizeInK / 1024.0).ToString("F2")+" Mb");
+            dict.Add("total image space", sizeInK.ToString("F1") +" KB / "+ (sizeInK / 1024.0).ToString("F2")+" MB");
             Utils.dict2ListBox(dict, lbImgFolder);
             return dict;
         }
@@ -131,7 +131,7 @@ namespace scripthea.master
             dict.Add("time of generation", ss);
             List<double> sizeInK = new List<double>();
             foreach (FileInfo fileInfo in fileInfos) sizeInK.Add(fileInfo.Length / 1024.0); 
-            dict.Add("image size", (sizeInK.Average()).ToString("F0") + "  (" + sizeInK.Min().ToString("F0") + " . . " + sizeInK.Max().ToString("F0") + ") kB");
+            dict.Add("image size", (sizeInK.Average()).ToString("F0") + "  (" + sizeInK.Min().ToString("F0") + " . . " + sizeInK.Max().ToString("F0") + ") KB");
             List<double> promptSizeCh = new List<double>(); List<double> promptSizeWr = new List<double>();
             foreach (ImageInfo ii in iDepot.items)
                 { promptSizeCh.Add(ii.prompt.Length); promptSizeWr.Add(WordCount(ii.prompt)); }

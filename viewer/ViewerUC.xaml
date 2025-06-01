@@ -75,8 +75,11 @@
                 </TabItem>
                 <TabItem x:Name="tiStats" Header="Statistics" Height="27" Background="#FFECECEC"  Width="120" Margin="10,0,-30.835,0.911" BorderBrush="DarkGreen" Style="{StaticResource RoundedTopTabItemStyle}">
                     <Grid>
-                        <master:IDepotStatsUC x:Name="iDepotStats" Width="500" Margin="15" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                        <ScrollViewer HorizontalScrollBarVisibility="Auto">
+                            <master:IDepotStatsUC x:Name="iDepotStats" Width="500" Margin="15" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                        </ScrollViewer>
                     </Grid>
+                    
                 </TabItem>
             </TabControl>
         </Grid>

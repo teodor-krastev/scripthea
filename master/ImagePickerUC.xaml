@@ -34,7 +34,7 @@
                     <MenuItem Header="Check All" Click="mi_Click"/>
                     <MenuItem Header="Uncheck All" Click="mi_Click"/>
                     <MenuItem Header="Invert Checking" Click="mi_Click" FontWeight="Bold"/>
-                    <MenuItem Header="Check with Mask or Range" Click="mi_Click"/>
+                    <MenuItem Header="Check by Mask, Range or Rate" Click="mi_Click"/>
                     <Separator/>
                     <MenuItem Header="Refresh" Click="mi_Click"/>
                     <MenuItem Header="Clear" Click="mi_Click"/>
@@ -64,7 +64,9 @@
             </TabItem>
             <TabItem x:Name="tiStats" Header="Stats" Height="27" Background="#FFECECEC"  Width="60" Margin="40,0,-70.835,0.911" BorderBrush="DarkGreen" Style="{StaticResource RoundedTopTabItemStyle}">
                 <Grid>
-                    <local:IDepotStatsUC x:Name="iDepotStats" Width="500" Margin="15" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                    <ScrollViewer HorizontalScrollBarVisibility="Auto">
+                        <local:IDepotStatsUC x:Name="iDepotStats" Width="500" Margin="15" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                    </ScrollViewer>
                 </Grid>
             </TabItem>
 

@@ -292,23 +292,32 @@ namespace scripthea.master
         private void mi_Click(object sender, RoutedEventArgs e)
         {
             if (!isEnabled) { return; }
-            MenuItem mi = sender as MenuItem; string header = Convert.ToString(mi.Header);           
+            MenuItem mi = sender as MenuItem; string header = Convert.ToString(mi.Header);
             switch (header)
             {
                 case "Check All": activeView.SetChecked(true);
                     break;
                 case "Uncheck All": activeView.SetChecked(false);
                     break;
-                case "Check with Mask or Range":
-                    string mask = new InputBox("Check with Mask or Range [#..#] e.g.[3..8] ", activeView.markMask, "").ShowDialog().Trim();
+                case "Check by Mask, Range or Rate":
+                    string mask = new InputBox("Check by Mask, Range [#..#] or Rate {#}", activeView.markMask, "").ShowDialog().Trim();
                     string msk = mask.Trim();
                     if (msk.Equals("")) return;
-                    if (msk.StartsWith("[") && msk.EndsWith("]")) 
-                    {
-                        int i0, i1; (i0, i1) = SctUtils.rangeMask(msk, activeView.Count);
-                        if (i0 == -1 || i1 == -1) { opts.Log("Error[575]: Wrong range syntax, it must be [num..num] ."); return; }
-                        else activeView.CheckRange(i0,i1);
-                    } 
+                    if ((msk.StartsWith("[") && msk.EndsWith("]")) || (msk.StartsWith("{") && msk.EndsWith("}")))
+                    {                    
+                        if (msk.StartsWith("[") && msk.EndsWith("]"))
+                        {
+                            int i0, i1; (i0, i1) = SctUtils.rangeMask(msk, activeView.Count);
+                            if (i0 == -1 || i1 == -1) { opts.Log("Error[575]: Wrong range syntax, it must be [num..num] ."); return; }
+                            else activeView.CheckRange(i0,i1);
+                        }
+                        if (msk.StartsWith("{") && msk.EndsWith("}"))
+                        {
+                            double d = 1;
+                            if (!Double.TryParse(msk.TrimStart('{').TrimEnd('}'), out d)) { opts.Log("Error[576]: Wrong rate threshold syntax, it must be {num} ."); return; }                             
+                            activeView.CheckRate(d);
+                        }
+                    }
                     else activeView.MarkWithMask(msk);
                     break;
                 case "Invert Checking": activeView.SetChecked(null);

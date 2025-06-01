@@ -110,7 +110,7 @@ namespace scripthea.composer
                 RandomSampleSize = numRandomSample.Value
             };
             
-            if (bb) bb = ecdesc.useCategogies;
+            if (bb) bb = ecdesc.useCategories;
             if (sjlFlag && bb)
             {
                 ecq.CatFlag = chkFilterByCat.IsChecked.Value;
@@ -159,7 +159,7 @@ namespace scripthea.composer
             {
                 _sjlFlag = value;
                 bool bb = ecdesc != null;
-                if (bb) bb = ecdesc.useCategogies;
+                if (bb) bb = ecdesc.useCategories;
                 if (value && bb) rowDefCats.Height = new GridLength(77); 
                 else rowDefCats.Height = new GridLength(0);
             } 

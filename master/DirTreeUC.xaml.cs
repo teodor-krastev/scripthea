@@ -54,7 +54,7 @@ namespace scripthea.master
                 if (msk.EndsWith("..")) mb = count.ToString();
                 else mb = msk.Substring(ip + 2);
 
-                if (!(int.TryParse(ma, out i0) && int.TryParse(mb, out i1))) // activeView.CheckRange(i0, i1);
+                if (!(int.TryParse(ma, out i0) && int.TryParse(mb, out i1))) 
                     { Utils.TimedMessageBox("Error[575]: Wrong range syntax, it must be [num..num] ."); return (-1, -1); }
                 if (i0 > i1) (i0, i1) = (i1, i0);
             }

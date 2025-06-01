@@ -21,11 +21,11 @@ namespace ExtCollMng
         public string urlSource; // dataset card at huggingface or elsewhere
         public int rowCount; // must (total if multi-file)
         public bool filtered; // from the original source
-        public bool useCategogies;        
+        public bool useCategories;        
         public string version;
         public string comment; // description of the set
         public string filename; // must; no path; if contains * OR ? multifile
-                                // ext: .STX -> prompt only text file, categogies and separModif - ireleveant;
+                                // ext: .STX -> prompt only text file, categories and separModif - irrelevant;
                                 // .SJL -> jsonl format 
         public bool? sjlFlag()
         {
@@ -91,7 +91,7 @@ namespace ExtCollMng
             dct["urlSource"] = urlSource;
             dct["rowCount"] = rowCount.ToString();
             dct["filtered"] = filtered.ToString();
-            dct["useCategogies"] = useCategogies.ToString();
+            dct["useCategories"] = useCategories.ToString();
             dct["version"] = version;
             dct["comment"] = comment;
             dct["filename"] = filename;

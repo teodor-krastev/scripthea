@@ -61,8 +61,8 @@ namespace scripthea.viewer
                 if (value) status.Add(statusStates.Focused);
                 else status.Remove(statusStates.Focused);
                 if (!selected) return; 
-                if (focused) Background = Brushes.RoyalBlue;  
-                else Background = Brushes.Gray;
+                if (focused) Background = Brushes.Gray;  
+                else Background = Brushes.Silver;
                 tbCue.Foreground = Brushes.White; 
                 lbNumber.Foreground = Brushes.White; tbFile.Foreground = Brushes.White; lbRate.Foreground = Brushes.White;
             }

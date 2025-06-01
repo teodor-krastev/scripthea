@@ -140,6 +140,11 @@ namespace scripthea.viewer
             foreach (DataRow row in dTable.Rows)
                 if (checkable) row["on"] = Utils.InRange(Convert.ToInt32(row["#"]), first,last);
         }
+        public void CheckRate(double rate)
+        {
+            foreach (DataRow row in dTable.Rows)
+                if (checkable) row["on"] = Convert.ToInt32(row["Rt"]) > rate;
+        }
         private void ForcedViewUpdate() // artificial but effective
         {
             foreach (DataRow row in dTable.Rows)

@@ -24,7 +24,7 @@ namespace scripthea.composer
     /// </summary>
     public partial class mSetStackUC : UserControl
     {
-        private const string resetName = "Reset";
+        private const string resetName = " Reset";
         private Options opts;
         private List<mSetUC> mSets;
         private List<ModifListUC> modifLists;
@@ -38,7 +38,7 @@ namespace scripthea.composer
             opts = _opts;
             mSets = new List<mSetUC>();
             mSets.Clear();
-            mSets.Add(new mSetUC(resetName, new List<Tuple<string, string, ModifStatus>>()) { Height = 23, Width = mSetListBox.ActualWidth, ReadOnly = true, BorderBrush = Brushes.Silver, BorderThickness = new Thickness(1) }); ; VisualUpdate();
+            mSets.Add(new mSetUC(resetName, new List<Tuple<string, string, ModifStatus>>()) { Height = 23, Width = mSetListBox.ActualWidth, ReadOnly = true, BorderBrush = Brushes.Silver, BorderThickness = new Thickness(1), Margin = new Thickness(0,0,0,0) }); ; VisualUpdate();
 
             modifLists = _modifLists;
             if (!Directory.Exists(ModifiersFolder)) { Utils.TimedMessageBox("No modifiers directory: "+ ModifiersFolder); return; } 
