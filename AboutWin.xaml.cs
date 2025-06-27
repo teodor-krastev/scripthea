@@ -66,6 +66,26 @@ namespace scripthea
                 }
             }                        
         }
+        private string someStats()
+        {
+            string st = "&g=";
+            switch (opts.composer.API)
+            {
+                case "AddonGen": st += "d";
+                    break;
+                case "SD-A1111/Forge": st += "a";
+                    break;
+                case "SD-ComfyUI": st += "c";
+                    break;
+                case "Craiyon": st += "r";
+                    break;
+                default: st += "n";
+                    break;
+            }
+            st += "&s=" + (int)(opts.composer.SessionSpan / 60.0);
+            st += "&v=" + (int)(opts.composer.TotalImageCount / 100.0);
+            return st;
+        }
         public bool IsUpdateAvalaible(out string msg) // return a message to show
         {
             if (!Utils.CheckFileExists(@"https://scripthea.com/scripthea.xml"))
@@ -73,7 +93,7 @@ namespace scripthea
                 Utils.TimedMessageBox(@"Error[927]: pad file https://scripthea.com/scripthea.xml is not avalable!", "Error", 5000); msg = "";  return false;
             }
             string remVer = ""; string[] sl = Utils.getAppFileVersion.Split('.'); 
-            string plus = "?b=" + ((sl.Length > 3) ? sl[3] : "");
+            string plus = "?b=" + ((sl.Length > 3) ? sl[3] + someStats(): "");
             Dictionary<string, string> pad = readPAD(readXml(@"https://scripthea.com/scripthea.xml"+plus));
             bool ok = true;
             if (pad.ContainsKey("Program_Info.Program_Version")) remVer = pad["Program_Info.Program_Version"];

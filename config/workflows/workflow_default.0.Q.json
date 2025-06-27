@@ -41,7 +41,7 @@
   "5": {
     "inputs": {
       "width": 1173,
-      "height": 1004,
+      "height": 924,
       "batch_size": 1
     },
     "class_type": "EmptyLatentImage",
@@ -51,7 +51,7 @@
   },
   "6": {
     "inputs": {
-      "text": "Imagine an impressionistic forest clearing illuminated by warm morning light, reminiscent of Monet`s enchanting landscapes. This captivating scene is portrayed from the unique perspective of a tiny insect, revealing intricate details of dew-covered petals and delicate foliage in vivid color gradation. The ethereal atmosphere invites viewers to explore the serene beauty of nature with curiosity and wonder.; impressionism ; lyrical abstraction",
+      "text": "a northwestern boreal forest with lush ferns after a rain shower, golden hour, sunlight, huge, boulders, award winning nature photograph ; Jacek Yerka",
       "clip": [
         "4",
         1

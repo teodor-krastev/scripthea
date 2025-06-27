@@ -68,6 +68,8 @@ namespace scripthea.composer
                 switch (tbCheck.Text)
                 {
                     case "□":
+                        gridCheck.Background = Brushes.Transparent; tbCheck.Foreground = Brushes.Black;
+                        break;
                     case "X":
                         gridCheck.Background = Brushes.Transparent; tbCheck.Foreground = Brushes.Black;
                         break;
@@ -80,11 +82,11 @@ namespace scripthea.composer
                 }
                 if (value == ModifStatus.Off)
                 {
-                    tbCheck.FontSize = 20; tbCheck.Margin = new Thickness(0, 0, 0, 3); gridMain.Background = null;
+                    tbCheck.FontSize = 20; tbCheck.Margin = new Thickness(0, -5, 0, 0); gridMain.Background = null;
                 }
                 else
                 {
-                    tbCheck.FontSize = 12; tbCheck.Margin = new Thickness(0); gridMain.Background = Brushes.MintCream;
+                    tbCheck.FontSize = 12; tbCheck.Margin = new Thickness(0, 0, 0, 0); gridMain.Background = Brushes.MintCream;
                 }
                 tbCheck.ToolTip = Convert.ToString(value);
                 Change(this, null);

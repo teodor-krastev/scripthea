@@ -58,7 +58,7 @@
                         </Button>
                     </Grid>
                 </TabItem>
-                <TabItem x:Name="tiScan" Header="Scan" Height="28" Background="#FFECECEC" Margin="5,0,-9.063,0.089" HorizontalAlignment="Left" Width="90" BorderBrush="#FF6C009C" Style="{StaticResource RoundedTopTabItemStyle}">
+                <TabItem x:Name="tiScan" Header="Scan" Height="28" Background="#FFECECEC" Margin="5,0,-9.063,0.089" HorizontalAlignment="Left" Width="90" BorderBrush="#FF053EE9" Style="{StaticResource RoundedTopTabItemStyle}">
                     <Grid x:Name="gridScan" Background="White">
                         <Button x:Name="btnScan" Content="S c a n" Height="30" Width="77" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,15,0,0" FontWeight="Bold" Background="#FFFDFFED" Click="btnScan_Click" FontSize="13" BorderBrush="#FF0233A2" Style="{StaticResource RoundedButtonStyle}" ToolTip="Scan over checked cues and scanned modifiers "/>
                         <TextBox HorizontalAlignment="Right" Text="Combine all checked cues + fixed modifiers + some (by modif. sample number) of scanned modifiers." Width="200" Margin="0,0,-0.667,0" TextWrapping="Wrap" Background="{x:Null}" BorderBrush="{x:Null}" VerticalAlignment="Top" FontSize="12"/>
@@ -84,7 +84,7 @@
                             <Label x:Name="lbAPI" Content="Text-to-image generator" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                             <ComboBox x:Name="cbActiveAPI" HorizontalAlignment="Left" SelectedIndex="0" Width="135" FontSize="13" Background="White" Margin="3,2,0,0" SelectionChanged="cbActiveAPI_SelectionChanged" FontWeight="Bold" FontFamily="Segoe UI Semibold">
                                 <ComboBoxItem x:Name = "cbiAddonGen" Content = "AddonGen"/>
-                                <ComboBoxItem x:Name="cbiSD_Forrge" Content="SD-A1111/Forge"/>
+                                <ComboBoxItem x:Name="cbiSD_Forge" Content="SD-A1111/Forge"/>
                                 <ComboBoxItem x:Name="cbiSD_ComfyUI" Content="SD-ComfyUI"/>
                                 <ComboBoxItem x:Name="cbiCraiyon" Content="Craiyon"/>
                             </ComboBox>
@@ -107,24 +107,24 @@
             </Grid.RowDefinitions>
             <Grid x:Name="gridAPI" Margin="7,0,0,0"/>
             <TabControl Grid.Row="1"  x:Name="tcModScanPre" Margin="5,-3,0,0" BorderBrush="#FF19B995" BorderThickness="0,1,0,0" TabStripPlacement="Bottom" SelectionChanged="tcModScanPre_SelectionChanged"  >
-                <TabItem x:Name="tiModifiers" Header="Modifiers" Background="#FFECECEC"  Height="30" Width="150" Margin="5,-3,-5,0" BorderBrush="#FF13A387" FontFamily="Lucida Sans" FontSize="14" Style="{StaticResource RoundedBottomTabItemStyle}">
+                <TabItem x:Name="tiModifiers" Header="Modifiers" Background="#FFE8F8FC"  Height="30" Width="150" Margin="5,-3,-5,0" BorderBrush="#FF1377A3" FontFamily="Lucida Sans" FontSize="14" Style="{StaticResource RoundedBottomTabItemStyle}">
                     <Grid>
                         <ScrollViewer Margin="0" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto" FontFamily="Segoe UI" FontSize="13">
                             <local:ModifiersUC x:Name="modifiersUC"/>
                         </ScrollViewer>
                     </Grid>
                 </TabItem>
-                <TabItem x:Name="tiScanPreview" Header="Scan Preview" Background="#FFECECEC" Height="30" Width="150" Margin="10,-3,-10,0" BorderBrush="#FF993109" FontFamily="Lucida Sans" FontSize="14" Style="{StaticResource RoundedBottomTabItemStyle}">
+                <TabItem x:Name="tiScanPreview" Header="Scan Preview" Background="#FFE8FCF5" Height="30" Width="150" Margin="10,-3,-10,0" BorderBrush="#FF099941" FontFamily="Lucida Sans" FontSize="14" Style="{StaticResource RoundedBottomTabItemStyle}">
                     <Grid>
                         <local:ScanPreviewUC x:Name="scanPreviewUC" Margin="0" FontFamily="Segoe UI" FontSize="13"/>
                     </Grid>
                 </TabItem>
-                <TabItem x:Name="tiSD_API" Header="SD Parameters" Background="#FFECECEC" Height="30" Width="150" Margin="20,-3,-20,0" BorderBrush="#FF144397" FontFamily="Lucida Sans" FontSize="14" Style="{StaticResource RoundedBottomTabItemStyle}">
+                <TabItem x:Name="tiSD_API" Header="SD Parameters" Background="#FFFEFCF3" Height="30" Width="150" Margin="20,-3,-20,0" BorderBrush="#FF973C14" FontFamily="Lucida Sans" FontSize="14" Style="{StaticResource RoundedBottomTabItemStyle}">
                     <Grid>
                         <external:SD_params_UC x:Name="sd_params_UC" Margin="0" FontFamily="Segoe UI" FontSize="13"/>
                     </Grid>
                 </TabItem>
-                <TabItem x:Name="tiExtCollMng" Header="External collections" Background="#FFECECEC" Height="30" Width="150" Margin="20,-3,-20,0" BorderBrush="#FF144397" Style="{StaticResource RoundedBottomTabItemStyle}">
+                <TabItem x:Name="tiExtCollMng" Header="External collections" Background="#FFECECEC" Height="30" Width="150" Margin="20,-3,-20,0" BorderBrush="#FF14972F" Style="{StaticResource RoundedBottomTabItemStyle}">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="500"/>

@@ -10,9 +10,9 @@
 
     <Grid>
         <TabControl x:Name="tabControl" Margin="0,0,0,4" TabStripPlacement="Bottom" SelectionChanged="tabControl_SelectionChanged" FontSize="14" Padding="2" >
-            <TabItem x:Name="tiA_pool" Header="A-pool" Height="30" Width="70" Margin="3,-2,-9,0" Background="#FFEEEDED" BorderBrush="#FF0331BE" Style="{StaticResource RoundedBottomTabItemStyle}" />
-            <TabItem x:Name="tiB_pool" Header="B-pool" Height="30" Width="70"  Margin="5,-2,-9,0" Background="#FFEEEDED" BorderBrush="#FF022AA3" Style="{StaticResource RoundedBottomTabItemStyle}"/>
-            <TabItem x:Name="tiPoolMap" Header="Pool Map" Width="100"  Margin="8,-2,-9,0" Background="#FFEEEDED" BorderBrush="#FF0441F8" Style="{StaticResource RoundedBottomTabItemStyle}" Height="30">
+            <TabItem x:Name="tiA_pool" Header="A-pool" Height="30" Width="70" Margin="3,-2,-9,0" Background="#FFE8F8FC" BorderBrush="#FF0331BE" Style="{StaticResource RoundedBottomTabItemStyle}" />
+            <TabItem x:Name="tiB_pool" Header="B-pool" Height="30" Width="70"  Margin="5,-2,-9,0" Background="#FFE8F8FC" BorderBrush="#FF022AA3" Style="{StaticResource RoundedBottomTabItemStyle}"/>
+            <TabItem x:Name="tiPoolMap" Header="Pool Map" Width="100"  Margin="8,-2,-9,0" Background="#FFDBEFF3" BorderBrush="#FF0441F8" Style="{StaticResource RoundedBottomTabItemStyle}" Height="30">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="36"/>
@@ -67,10 +67,10 @@
                     </Grid>
                 </Grid>
             </TabItem>
-            <TabItem x:Name="tiImageDepot" Header="Image Depot" Height="30" Width="110" Background="#FFEEEDED" Margin="15,-2,-18,0" BorderBrush="DarkGreen" Style="{StaticResource RoundedBottomTabItemStyle}">
+            <TabItem x:Name="tiImageDepot" Header="Image Depot" Height="30" Width="110" Background="#FFFFFFEA" Margin="15,-2,-18,0" BorderBrush="#FFB79200" Style="{StaticResource RoundedBottomTabItemStyle}">
                 <master:ImagePickerUC x:Name="iPickerX" FontSize="13" />
             </TabItem>
-            <TabItem x:Name="tiEditor" Header="Editor" Height="30" Width="70" Background="#FFEEEDED" Margin="25,-2,-25,0" BorderBrush="Maroon"  Style="{StaticResource RoundedBottomTabItemStyle}">
+            <TabItem x:Name="tiEditor" Header="Editor" Height="30" Width="70" Background="#FFF1FFEB" Margin="25,-2,-25,0" BorderBrush="#FF058000"  Style="{StaticResource RoundedBottomTabItemStyle}">
                 <local:CueEditorUC x:Name="cueEditor"/>
             </TabItem>
         </TabControl>

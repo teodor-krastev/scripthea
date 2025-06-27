@@ -1,41 +1,41 @@
 [Media and techniques]                                                                           
-8bit=pixel art   
-acrylic art 
-airbrush art    
-ambient occlusion=shading in 3D computer graphics, modeling, and animation    
-brocade=class of richly decorative shuttle-woven fabrics   
-cel-shaded    
-chalk art
-charcoal drawing   
-collage    
-digital art 
-digital illustration 
-dye-transfer   
-faience=fine tin-glazed pottery   
-filigree=intricate metalwork used in jewellery
-fractal gouache       
-impasto=describes areas of the surface of a painting which are heavily built up with paint layers  
-ink drawing     
-kintsugi=Japanese art of repairing broken pottery by mending the areas of breakage with lacquer mixed with powdered gold or silver  
-majolica=tin-glazed pottery decorated in colours on a white background  
-mandelbrot     
-mandelbulb
-mixed media    
-mosaic     
-needlepoint   
-oil on canvas   
-pastels    
-pencil sketch  
-photoillustration
-pixel art 
-quilling    
-resin cast   
-retroism  
-stipple=Stippling is the creation of a pattern simulating varying degrees of solidity or shading by using small dots.   
-tesselation  
-thermal imaging
-volumetric lighting   
-watercolor   
-wet brush    
-wet wash    
-woodcut
+8bit=Low-resolution digital art, resembling early video game graphics.
+acrylic art=Artwork created using fast-drying, versatile acrylic paints.
+airbrush art=Smooth, blended artwork created by spraying paint with an airbrush.
+ambient occlusion=Shading technique simulating soft shadows where light is blocked.
+brocade=Rich, intricately woven fabric with raised patterns.
+cel-shaded=Animation/rendering technique giving a flat, cartoon-like appearance.
+chalk art=Artwork created using chalk on surfaces like sidewalks or blackboards.
+charcoal drawing=Expressive, often monochrome art using charcoal sticks.
+collage=Art created by assembling different forms, creating a new whole.
+digital art=Art created using digital technology, software, or computer.
+digital illustration=Illustration created using digital tools and software.
+dye-transfer=Photographic printing process known for rich, stable colors.
+faience=Glazed ceramic ware, typically tin-glazed earthenware.
+filigree=Delicate, intricate ornamental work made from fine wire.
+fractal gouache=Gouache painting with fractal patterns, often intricate and self-repeating.
+impasto=Thick application of paint, creating texture and visible brushstrokes.
+ink drawing=Artwork created using ink, often with strong lines and contrasts.
+kintsugi=Japanese art of repairing broken pottery with gold, embracing flaws.
+majolica=Tin-glazed pottery, often brightly colored and decorated.
+mandelbrot=Fractal image generated from a complex mathematical set.
+mandelbulb=Three-dimensional fractal, complex and infinitely detailed.
+mixed media=Art combining multiple artistic mediums in a single work.
+mosaic=Art created by assembling small pieces of colored glass or stone.
+needlepoint=Form of counted thread embroidery, worked on a canvas.
+oil on canvas=Painting created using oil paints on a stretched canvas surface.
+pastels=Art using colored dry pigments, applied as sticks or crayons.
+pencil sketch=Rough or preliminary drawing made with a pencil.
+photoillustration=Combination of photographic elements with illustrative techniques.
+pixel art=Digital art created by placing individual pixels to form an image.
+quilling=Art form using rolled, shaped paper strips to create designs.
+resin cast=Sculpture or object created by pouring liquid resin into a mold.
+retroism=A style that consciously derives from or imitates past forms.
+stipple=Creating patterns or images using small dots.
+tesselation=Pattern of shapes that fit perfectly together without gaps or overlaps.
+thermal imaging=Visualizing heat distribution as an image.
+volumetric lighting=Light scattering effects, simulating rays or fog.
+watercolor=Painting method using pigments suspended in a water-based solution.
+wet brush=Watercolor technique with a brush heavily loaded with paint/water.
+wet wash=Watercolor technique applying a broad, even layer of dilute paint.
+woodcut=Relief printmaking technique where an image is carved into wood.

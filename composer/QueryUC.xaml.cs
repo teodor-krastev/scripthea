@@ -95,7 +95,7 @@ namespace scripthea.composer
         {
             sd_params_UC.Finish();
             UpdateToOptions(null, null);
-            opts.composer.SessionsSpan += Convert.ToInt32((DateTime.Now - sessionStart).TotalMinutes);
+            opts.composer.SessionSpan += Convert.ToInt32((DateTime.Now - sessionStart).TotalMinutes);
             cuePoolUC.Finish(); modifiersUC.Finish();
             if (!Utils.isNull(API))
             {
@@ -343,6 +343,7 @@ namespace scripthea.composer
             if (status.Equals(Status.Scanning) && scanPreviewUC.scanning) // move selection
                 scanPreviewUC.selectByIndex(scanPromptIdx); //scanPreviewUC.selectByPropmt(prompt);
             API.Query(prompt, opts.composer.ImageDepotFolder); opts.Log("-=-=-", Brushes.DarkOrange);
+            opts.composer.TotalImageCount++;
         }
         private string lastSingleImage = "";
         protected void QueryComplete(string imageFilePath, bool success)

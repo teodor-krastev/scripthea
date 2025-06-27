@@ -63,17 +63,17 @@
                 <Label x:Name="lbDepotInfo" Content="" VerticalAlignment="Top" Margin="0,0,5,0" HorizontalAlignment="Left" />
             </StackPanel>
             <TabControl x:Name="tabCtrlViews" Grid.Row="1" SelectedIndex="0" BorderBrush="{x:Null}" Panel.ZIndex="10" SelectionChanged="tabCtrlViews_SelectionChanged">
-                <TabItem x:Name="tiTable" Header="List view"  Height="27" Background="#FFECECEC" Width="120" BorderBrush="Navy" Style="{StaticResource RoundedTopTabItemStyle}">
+                <TabItem x:Name="tiTable" Header="List view"  Height="30" Background="#FFECECEC" Width="120" BorderBrush="Navy" Style="{StaticResource RoundedTopTabItemStyle}">
                     <Grid>
                         <local:TableViewUC x:Name="tableViewUC"/>
                     </Grid>
                 </TabItem>
-                <TabItem x:Name="tiGrid" Header="Grid view" Height="27" Background="#FFECECEC"  Width="120" Margin="2.38,0,-10.835,0.911" BorderBrush="DarkGreen" Style="{StaticResource RoundedTopTabItemStyle}">
+                <TabItem x:Name="tiGrid" Header="Grid view" Height="30" Background="#FFECECEC"  Width="120" Margin="2.38,0,-10.835,0.911" BorderBrush="DarkGreen" Style="{StaticResource RoundedTopTabItemStyle}">
                     <Grid>
                         <local:GridViewUC x:Name="gridViewUC"/>
                     </Grid>
                 </TabItem>
-                <TabItem x:Name="tiStats" Header="Statistics" Height="27" Background="#FFECECEC"  Width="120" Margin="10,0,-30.835,0.911" BorderBrush="DarkGreen" Style="{StaticResource RoundedTopTabItemStyle}">
+                <TabItem x:Name="tiStats" Header="Statistics" Height="30" Background="#FFECECEC"  Width="120" Margin="10,0,-30.835,0.911" BorderBrush="DarkGreen" Style="{StaticResource RoundedTopTabItemStyle}">
                     <Grid>
                         <ScrollViewer HorizontalScrollBarVisibility="Auto">
                             <master:IDepotStatsUC x:Name="iDepotStats" Width="500" Margin="15" HorizontalAlignment="Left" VerticalAlignment="Top"/>

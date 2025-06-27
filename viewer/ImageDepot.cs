@@ -441,15 +441,13 @@ namespace scripthea.viewer
             bool bb = JsonConvert.SerializeObject(header).Equals(JsonConvert.SerializeObject(imageDepot?.header));
             if ((items.Count != imageDepot.items.Count) || !bb) return false;
             for (int i = 0; i < items.Count; i++)
-            {
                 bb &= items[i].SameAs(imageDepot.items[i]);
-            }
             return bb;
         }
         public bool SameAs(string imageFolder) // compare DESCRIPTION.idf and location
         {
             bool bb = Directory.Exists(imageFolder) && Utils.comparePaths(imageFolder, path);
-            if (!bb) return false;
+            if (!bb || descText == null) return false;
             bb = descText == File.ReadAllText(Path.Combine(imageFolder, SctUtils.descriptionFile));
             return bb;
         }
@@ -457,10 +455,10 @@ namespace scripthea.viewer
         {
             List<string> pngs = new List<string>(Directory.GetFiles(path, "*.png"));
             List<string> jpgs = new List<string>(Directory.GetFiles(path, "*.jpg"));
-            pngs.AddRange(jpgs);
+            pngs.AddRange(jpgs); List<string> rslt = new List<string>();
             for (int i = 0; i < pngs.Count; i++)
-                pngs[i] = Path.GetFileName(pngs[i]);
-            return new List<string>(pngs);
+                rslt.Add(Path.GetFileName(pngs[i]));
+            return rslt;
         }
         public bool fileMatch(List<string> imgs, out int idxFile, out int idxII) // found match within imgs and items[*].filename
         {

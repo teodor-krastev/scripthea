@@ -64,8 +64,7 @@ namespace scripthea.options
         {
             public int QueryRowHeight;
             public int QueryColWidth;
-            public int ViewColWidth;
-            public double SessionsSpan;
+            public int ViewColWidth;            
             public bool ShowCueMeta;
             [JsonIgnore]
             public Status QueryStatus; 
@@ -79,7 +78,11 @@ namespace scripthea.options
             // API
             public string API; // from combo-box items
             [JsonIgnore]
-            public bool A1111 { get { return !API.Equals("SD-ComfyUI"); } }           
+            public bool A1111 { get { return API.StartsWith("SD-A1111"); } }
+            [JsonIgnore]
+            public bool Comfy { get { return API.Equals("SD-Comfy"); } }
+            public int SessionSpan; // in min
+            public int TotalImageCount;
             // modifiers
             public string ModifPrefix;
             public bool AddEmptyModif;
