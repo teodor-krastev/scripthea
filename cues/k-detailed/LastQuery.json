@@ -1,1 +1,0 @@
-{"sjlFlag":true,"SegmentFlag":false,"SegmentFrom":1000,"SegmentTo":2000,"WordsFlag":true,"WordsMin":10,"WordsMax":50,"CatFlag":true,"categories":[2,4],"CatThreshold":33,"Pattern":"(rain|fog|water)","RegExFlag":true,"RandomSampleFlag":true,"RandomSampleSize":300}

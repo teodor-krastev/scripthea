@@ -46,6 +46,7 @@ namespace scripthea.composer
                 CheckBox chk = new CheckBox() { Content = cat.Replace("_", "-").PadRight(18, ' '), FontSize = 13,  Margin = new Thickness(3) };//Courier New FontFamily = new FontFamily("Lucida Console"),
                 catChecks.Add(chk); wpCats.Children.Add(chk);
             }
+            cbWay2Match_SelectionChanged(null, null);
         }
         public void Finish()
         {
@@ -104,7 +105,8 @@ namespace scripthea.composer
                 WordsMax = numWordsMax.Value,
 
                 Pattern = tbPatternMatching.Text,
-                RegExFlag = chkRegEx.IsChecked.Value,
+                Way2Match = cbWay2Match.SelectedIndex,
+                SemanticBest = numSemanticBest.Value,
 
                 RandomSampleFlag = Convert.ToBoolean(chkRandomSample.IsChecked.Value),
                 RandomSampleSize = numRandomSample.Value
@@ -143,7 +145,8 @@ namespace scripthea.composer
             numWordsMax.Value = qry.WordsMax;
 
             tbPatternMatching.Text = qry.Pattern;
-            chkRegEx.IsChecked = qry.RegExFlag;
+            cbWay2Match.SelectedIndex = qry.Way2Match;
+            numSemanticBest.Value = qry.SemanticBest;
 
             chkRandomSample.IsChecked = qry.RandomSampleFlag;
             numRandomSample.Value = qry.RandomSampleSize;
@@ -248,6 +251,12 @@ namespace scripthea.composer
         private void sliderThreshold_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             lbThreshold.Content = "Cat.threshold (" + (int)sliderThreshold.Value + "%)";
-        }        
+        }
+        private void cbWay2Match_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (lbBest == null) return;
+            if (cbWay2Match.SelectedIndex == 2 && cbiSemantic.IsEnabled) { lbBest.Visibility = Visibility.Visible; numSemanticBest.Visibility = Visibility.Visible; }
+            else { lbBest.Visibility = Visibility.Hidden; numSemanticBest.Visibility = Visibility.Hidden; }
+        }
     }
 }

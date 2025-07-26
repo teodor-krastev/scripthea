@@ -106,6 +106,8 @@ namespace scripthea.viewer
         public string job_timestamp { get; set; }
         // its own
         public int rate { get; set; }
+        [JsonIgnore]
+        public bool IsChanged { get; set; } = false;
         public object tags { get; set; } // open stucture for future use: set of labels to be selected and/or define position in a image structure within a Scripthea project
         public string history { get; set; } // stages of variations, '|' separated -> for future use
         public string MD5Checksum { get; set; }
@@ -393,8 +395,14 @@ namespace scripthea.viewer
         }
         public int appBuilt { get; private set; }
         public bool isReadOnly { get; private set; }
-        public bool IsChanged { get; set; } = false;
-        public void OnClose() { if (IsChanged) Save(true); }
+        public bool IsChanged()
+        {
+            if (items.Count == 0) return false;
+            bool bb = false;
+            foreach (ImageInfo ii in items) bb |= ii.IsChanged;
+            return bb;
+        }
+        public void OnClose() { if (IsChanged()) Save(true); }
         public string descText { get; private set; }
         public Dictionary<string, string> header;
         public List<ImageInfo> items { get; set; }

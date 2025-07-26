@@ -271,6 +271,7 @@ namespace ExtCollMng
         {
             using (HttpClient client = new HttpClient())
             {
+                client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0");
                 using (HttpResponseMessage response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead))
                 {
                     response.EnsureSuccessStatusCode();
@@ -296,10 +297,164 @@ namespace ExtCollMng
                                     //Console.WriteLine($"Download progress: {progressPercentage}%");
                                 }
                             }
+                            await fileStream.FlushAsync();
                         }
                     }
                 }
             }
+        }
+        public async Task DownloadZipFileAsync(string url, string destinationPath, int expectedSize,
+                                       ProgressBar progressBar, TextBlock statusText, int maxRetries = 3)
+        {
+            int attempt = 0;
+            Exception lastException = null;
+
+            while (attempt < maxRetries)
+            {
+                attempt++;
+                try
+                {
+                    using (HttpClient client = new HttpClient())
+                    {
+                        client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0");
+
+                        using (HttpResponseMessage response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead))
+                        {
+                            response.EnsureSuccessStatusCode();
+
+                            long? totalBytes = response.Content.Headers.ContentLength ?? expectedSize;
+
+                            using (Stream inputStream = await response.Content.ReadAsStreamAsync())
+                            using (FileStream outputStream = new FileStream(destinationPath, FileMode.Create, FileAccess.Write, FileShare.None))
+                            {
+                                byte[] buffer = new byte[8192];
+                                long totalRead = 0;
+                                int read;
+
+                                while ((read = await inputStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+                                {
+                                    await outputStream.WriteAsync(buffer, 0, read);
+                                    totalRead += read;
+
+                                    if (totalBytes.HasValue)
+                                    {
+                                        int percent = (int)((double)totalRead / totalBytes.Value * 100);
+
+                                        // WPF-safe UI update
+                                        Application.Current.Dispatcher.Invoke(() =>
+                                        {
+                                            progressBar.Value = percent;
+                                            statusText.Text = $"Downloading... {percent}%";
+                                        });
+                                    }
+                                }
+                                await outputStream.FlushAsync();
+                                // Final check
+                                if (totalBytes.HasValue && totalRead < totalBytes.Value)
+                                    throw new IOException($"Incomplete download: expected {totalBytes.Value} bytes, got {totalRead} bytes.");
+                            }
+                        }
+                    }
+
+                    // If everything went well, exit the loop
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    lastException = ex;
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        statusText.Text = $"Attempt {attempt} failed: {ex.Message}";
+                    });
+
+                    await Task.Delay(1000); // wait before retry
+                }
+            }
+            throw new IOException($"Download failed after {maxRetries} attempts.", lastException);
+        }
+        public async Task PartialDouwnloadTest(string url)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                var response = await client.SendAsync(new HttpRequestMessage(HttpMethod.Head, url));
+
+                if (response.Headers.AcceptRanges.Contains("bytes"))
+                {
+                    Console.WriteLine("Server supports byte-range requests.");
+                }
+                else
+                {
+                    Console.WriteLine("Server does NOT support byte-range requests.");
+                }
+            }
+        }
+        public async Task DownloadZipFileWithResumeAsync(string url, string destinationPath, int expectedSize,
+                                                 ProgressBar progressBar, TextBlock statusText, int maxRetries = 3)
+        {
+            int attempt = 0; Exception lastException = null;
+
+            while (attempt < maxRetries)
+            {
+                attempt++;
+                try
+                {
+                    long existingLength = File.Exists(destinationPath) ? new FileInfo(destinationPath).Length : 0;
+
+                    using (HttpClient client = new HttpClient())
+                    {
+                        client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0");
+                        // Add range header if resuming
+                        if (existingLength > 0)
+                        {
+                            client.DefaultRequestHeaders.Range = new System.Net.Http.Headers.RangeHeaderValue(existingLength, null);
+                        }
+                        using (HttpResponseMessage response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead))
+                        {
+                            response.EnsureSuccessStatusCode();
+
+                            long? totalBytes = response.Content.Headers.ContentLength + existingLength;
+
+                            using (Stream inputStream = await response.Content.ReadAsStreamAsync())
+                            using (FileStream outputStream = new FileStream(destinationPath, FileMode.Append, FileAccess.Write, FileShare.None))
+                            {
+                                byte[] buffer = new byte[8192];
+                                long totalRead = existingLength;
+                                int read;
+                                while ((read = await inputStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+                                {
+                                    await outputStream.WriteAsync(buffer, 0, read);
+                                    totalRead += read;
+                                    if (totalBytes.HasValue)
+                                    {
+                                        int percent = (int)((double)totalRead / totalBytes.Value * 100);
+                                        // WPF-safe UI update
+                                        Application.Current.Dispatcher.Invoke(() =>
+                                        {
+                                            progressBar.Value = percent;
+                                            statusText.Text = $"Downloading... {percent}%";
+                                        });
+                                    }
+                                }
+                                await outputStream.FlushAsync();
+                                if (totalBytes.HasValue && totalRead < totalBytes.Value)
+                                    throw new IOException($"Incomplete download: expected {totalBytes.Value} bytes, got {totalRead} bytes.");
+                            }
+                        }
+                    }
+                    // All good
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    lastException = ex;
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        statusText.Text = $"Attempt {attempt} failed: {ex.Message}";
+                    });
+                    await Task.Delay(1000); // retry delay
+                }
+            }
+            throw new IOException($"Download failed after {maxRetries} attempts.", lastException);
         }
         private async void btnDownload_Click(object sender, RoutedEventArgs e)
         {
@@ -324,16 +479,17 @@ namespace ExtCollMng
                 }
                 Log("Downloading " + wr.zipName + "...");
                 progressDownload.Visibility = Visibility.Visible;
-                await DownloadZipFileAsync(urlColl + wr.zipName, downFile, wr.zipSize); // downloading itself
+                //await DownloadZipFileAsync(urlColl + wr.zipName, downFile, wr.zipSize); // downloading itself
+                await DownloadZipFileWithResumeAsync(urlColl + wr.zipName, downFile, wr.zipSize, progressDownload, tbStatus);
                 if (File.Exists(downFile))
                 {
                     FileInfo fi = new FileInfo(downFile); 
                     if (fi.Length != wr.zipSize) { Log("Error: Download unsuccessful! (missmaching size)"); return; }
                     if (!String.IsNullOrEmpty(wr.zipMD5))
                     {
-                        if (!Utils.GetMD5Checksum(downFile).Equals(wr.zipMD5)) { Log("Error: Download unsuccessful! (MD5 checksum wrong)"); return; }
+                        if (!Utils.GetMD5Checksum(downFile).Equals(wr.zipMD5)) { Log("Error: Download unsuccessful! (MD5 checksum wrong)"); tbStatus.Text = "Download unsuccessful!"; return; }
                     }
-                    Log("Download successful!");
+                    Log("Download successful!"); tbStatus.Text = "Download successful!";
                 }
                 else { Log("Error: Download unsuccessful! (file not found)"); return; }
                 progressDownload.Visibility = Visibility.Hidden;

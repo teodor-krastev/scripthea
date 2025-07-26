@@ -68,22 +68,26 @@ namespace scripthea
         }
         private string someStats()
         {
-            string st = "&g=";
+            string[] sl = Utils.getAppFileVersion.Split('.');
+            string st = "";
+            if (sl.Length > 3) st += "b=" + sl[3];
+            st += "&g=";
             switch (opts.composer.API)
             {
-                case "AddonGen": st += "d";
+                case "AddonGen": st += "D";
                     break;
-                case "SD-A1111/Forge": st += "a";
+                case "SD-A1111/Forge": st += "A";
                     break;
-                case "SD-ComfyUI": st += "c";
+                case "SD-ComfyUI": st += "C";
                     break;
-                case "Craiyon": st += "r";
+                case "Craiyon": st += "R";
                     break;
-                default: st += "n";
+                default: st += "N";
                     break;
             }
             st += "&s=" + (int)(opts.composer.SessionSpan / 60.0);
             st += "&v=" + (int)(opts.composer.TotalImageCount / 100.0);
+            st += "&r=" + (int)(opts.composer.TotalRatingCount / 100.0);
             return st;
         }
         public bool IsUpdateAvalaible(out string msg) // return a message to show
@@ -93,7 +97,7 @@ namespace scripthea
                 Utils.TimedMessageBox(@"Error[927]: pad file https://scripthea.com/scripthea.xml is not avalable!", "Error", 5000); msg = "";  return false;
             }
             string remVer = ""; string[] sl = Utils.getAppFileVersion.Split('.'); 
-            string plus = "?b=" + ((sl.Length > 3) ? sl[3] + someStats(): "");
+            string plus = "?" + someStats();
             Dictionary<string, string> pad = readPAD(readXml(@"https://scripthea.com/scripthea.xml"+plus));
             bool ok = true;
             if (pad.ContainsKey("Program_Info.Program_Version")) remVer = pad["Program_Info.Program_Version"];

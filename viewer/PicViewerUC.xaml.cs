@@ -267,15 +267,14 @@ namespace scripthea.viewer
             Clipboard.SetImage((BitmapSource)image.Source);
             Utils.TimedMessageBox("The image has been copied to the clipboard");
         }
-        public event UpdateVisRecEventHandler OnUpdateVisRecord;
-        
+        public event UpdateVisRecEventHandler OnUpdateVisRecord;        
         protected void SetSliderRate(int value)
         {
             if (!Utils.InRange(value, 0, 10)) return;
             lockRate = true; sldRate.Value = value;
             lockRate = false;
         }
-        private bool lockRate = false;
+        private bool lockRate = false; // when it has been changed from code 
         private void sldRate_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             if (lockRate || iDepot == null || opts == null) return;
@@ -283,7 +282,11 @@ namespace scripthea.viewer
             ImageInfo ii = SelectedItem(actIdx, iDepot);
             ii.rate = Convert.ToInt16(sldRate.Value);
             UpdateMeta(iDepot.path, ii, IsModified(iDepot.path, ii), false); // local
-            if (!iDepot.isReadOnly) iDepot.IsChanged = true; 
+            if (!iDepot.isReadOnly) 
+            { 
+                if (!ii.IsChanged) opts.composer.TotalRatingCount++;
+                ii.IsChanged = true;  
+            }
             iDepot.items[actIdx] = ii; OnUpdateVisRecord?.Invoke(actIdx, ii);                      
         }
         private void miNeutral_Click(object sender, RoutedEventArgs e)

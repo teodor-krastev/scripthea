@@ -122,7 +122,6 @@ namespace scripthea
                 if (opts.composer.ImageDepotFolder.Equals("<default.image.depot>")) opts.composer.ImageDepotFolder = SctUtils.defaultImageDepot;
             }
             else opts = new Options();
-            opts.composer.ShowCueMeta = true; // !!!
             opts.composer.QueryStatus = Status.Idle; 
             aboutWin.Init(ref opts);
             if (opts.general.UpdateCheck) Check4Update(null,null);

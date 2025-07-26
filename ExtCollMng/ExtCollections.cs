@@ -152,7 +152,8 @@ namespace ExtCollMng
         public int CatThreshold;
 
         public string Pattern;
-        public bool RegExFlag;
+        public int Way2Match; // 0 - text; 1 - RegEx; 2 - semantic
+        public int SemanticBest;
 
         public bool RandomSampleFlag;
         public int RandomSampleSize;
@@ -179,7 +180,7 @@ namespace ExtCollMng
         }
         public ECdesc ecd { get; private set; }
         public bool textPrompts { get; private set; } = true; // for now this type only
-        public string folderPath { get; private set; }
+        public string folderPath { get; private set; }         
         private StreamReader streamReader;
         protected Dictionary<string, int> eCnt = new Dictionary<string, int>(); // etape prompt count 
         public List<int> wordsCount = new List<int>();
@@ -226,14 +227,76 @@ namespace ExtCollMng
                 if (!bb) return false;
                 eCnt["cat"] += 1;
             }
-            // regex filter
-            if (!ecq.Pattern.Trim().Equals(string.Empty))
+            // simple/regex/semantic filter
+            /*if (!ecq.Pattern.Trim().Equals(string.Empty))
             {
-                if (ecq.RegExFlag) { if (!Utils.RegexIsMatch(aprt, ecq.Pattern)) return false; }
-                else { if (!Utils.IsWildCardMatch(aprt, ecq.Pattern)) return false; }
+                switch (ecq.Way2Match)
+                {
+                    case 0: if (!Utils.IsWildCardMatch(aprt, ecq.Pattern)) return false;
+                        break;
+                    case 1: if (!Utils.RegexIsMatch(aprt, ecq.Pattern)) return false;
+                        break;
+                    case 2: if (!ecq.sjlFlag) return false;
+                        
+                        break;
+                }               
                 eCnt["regex"] += 1;
-            }
+            }*/
             return true;
+        }
+        private float[] TextEmbeds(string prompt)
+        {
+            return new float[512];
+        }
+        Random rand = new Random();
+        private double CosineSimilarityNormalized(float[] refText, float[] prt)
+        {
+            return rand.NextDouble() * 100;
+        }
+        public List<ECprompt> TextMatching(ECquery ecq, List<ECprompt> lECp) // reduces lECp to the matching cues
+        {
+            if (ecq.Pattern.Trim().Equals(string.Empty)) return lECp;
+            Dictionary<string, double> seman = new Dictionary<string, double>();
+            if (ecq.Way2Match == 2) // semantic
+            {
+                if (!ecq.sjlFlag) return null; // error!!!
+                float[] refEmbed = TextEmbeds(ecq.Pattern.Trim());
+                Dictionary<string, double> unsorted = new Dictionary<string, double>();
+                foreach (ECprompt ecp in lECp)
+                {
+                    float[] cueEmbed = TextEmbeds(ecp.prompt);
+                    double dist = CosineSimilarityNormalized(refEmbed, cueEmbed);
+                    unsorted.Add(ecp.ID, dist);
+                }
+                foreach(var kvp in seman.OrderByDescending(kv => kv.Value))
+                {
+                    if (seman.Count > ecq.SemanticBest) break; // cut to size
+                    seman.Add(kvp.Key, kvp.Value);
+                }
+                if (seman.Count == 0) return lECp;
+            }
+            List<ECprompt> rslt = new List<ECprompt>();
+            foreach (ECprompt ecp in lECp)
+            {
+                // simple/regex/semantic filter                                
+                switch (ecq.Way2Match)
+                {
+                    case 0:
+                        if (Utils.IsWildCardMatch(ecp.prompt, ecq.Pattern)) rslt.Add(ecp);
+                        else continue;
+                        break;
+                    case 1:
+                        if (Utils.RegexIsMatch(ecp.prompt, ecq.Pattern)) rslt.Add(ecp);
+                        else continue;
+                        break;
+                    case 2:
+                        if (seman.ContainsKey(ecp.ID)) rslt.Add(ecp);
+                        else continue;
+                        break;
+                }
+                eCnt["regex"] += 1;               
+            }
+            return rslt;
         }
         public int WordCount(string txt)
         {
@@ -270,9 +333,10 @@ namespace ExtCollMng
         }
         public List<ECprompt> ExtractCueList(string _folderPath, ECquery ecq) // one text file of prompts
         {
-            if (!OpenEColl(_folderPath)) return null; Log("Extraction from " + Path.GetFileName(folderPath) + "; total lines: " + ecd.rowCount);
+            if (!OpenEColl(_folderPath)) return null; Log("Extraction from " + Path.GetFileName(folderPath) + "; total lines: " + ecd.rowCount + "; ");
             List<ECprompt> lst = new List<ECprompt>(); DateTime dt = DateTime.Now;
             ECprompt prt; int lineCount = 0;
+            // the extracion
             bool? bb = iteration(ecq, out prt);
             while (bb != null) // 
             {
@@ -282,34 +346,35 @@ namespace ExtCollMng
             // report 
             if (ecq.SegmentFlag)
             {
-                Log("Segment from: " + ecq.SegmentFrom + " .. " + ecq.SegmentTo + "; lenght: " + eCnt["seg"]);
+                Log("Segment from: " + ecq.SegmentFrom + " .. " + ecq.SegmentTo + "; lenght: " + eCnt["seg"] + "; ");
             }
             string ss1 = ""; string ss2 = "";
             if (ecq.WordsFlag)
             {
-                ss1 = "word size cut: " + eCnt["size"];
+                ss1 = "word size cut: " + eCnt["size"] + "; ";
             }
             if (ecq.sjlFlag && ecq.CatFlag)
             {
-                ss1 += "; categories cut: " + eCnt["cat"];
-            }
+                ss1 += "; categories cut: " + eCnt["cat"] + "; ";
+            }            
             if (!ecq.Pattern.Trim().Equals(string.Empty))
             {
-                ss2 = "key word cut: " + eCnt["regex"];
-            }
-            if (ss1 + ss2 != "") Log(ss1 + "  " + ss2);
+                lst = TextMatching(ecq, lst);
+                ss2 = "matching: " + eCnt["regex"] + "; ";
+            }            
+            if (ss1 + ss2 != "") Log(ss1 + " " + ss2);
 
             TimeSpan ts = DateTime.Now - dt;
             ss1 = ts.TotalSeconds.ToString("G3");
-
+            
             Random random = new Random();
             if (ecq.RandomSampleFlag && lst.Count > ecq.RandomSampleSize)
             {
                 int k = lst.Count;
                 while (lst.Count > ecq.RandomSampleSize) lst.RemoveAt(random.Next(0, lst.Count - 1));
-                Log("sampling " + k + " lines to extract " + lst.Count + " cues; " + ss1 + " sec.");
+                Log("sampling " + k + " lines to extract " + lst.Count + " cues; duration: " + ss1 + " sec.");
             }
-            else Log("number of cues extracted: " + lst.Count + "  " + ss1 + " sec.");
+            else Log("number of cues extracted: " + lst.Count + "; duration: " + ss1 + " sec.");
             if (!localDebug)
             {
                 if (Utils.InRange(lst.Count, 501, 1000))

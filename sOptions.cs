@@ -83,6 +83,7 @@ namespace scripthea.options
             public bool Comfy { get { return API.Equals("SD-Comfy"); } }
             public int SessionSpan; // in min
             public int TotalImageCount;
+            public int TotalRatingCount;
             // modifiers
             public string ModifPrefix;
             public bool AddEmptyModif;

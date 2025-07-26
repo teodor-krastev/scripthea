@@ -13,7 +13,7 @@
             <RowDefinition Height="40"/>
             <RowDefinition x:Name="rowDefCats" Height="75"/>
             <RowDefinition Height="40"/>
-            <RowDefinition Height="40"/>
+            <RowDefinition Height="33"/>
             <RowDefinition Height="5"/>
         </Grid.RowDefinitions>
         <Grid Margin="0" VerticalAlignment="Center" HorizontalAlignment="Left" >
@@ -48,21 +48,31 @@
                 <CheckBox x:Name="chkFilterByCat" Content="Filter by category" VerticalAlignment="Center" FontSize="12" FontFamily="Segoe UI Semibold"></CheckBox>
             </StackPanel>
         </StackPanel>
-        <StackPanel HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" Orientation="Horizontal" Grid.Row="4">
+        <StackPanel Margin="0,0,0,0" VerticalAlignment="Center" Orientation="Horizontal" Grid.Row="4" Background="#FFF0FEF9">
             <StackPanel Margin="0,-5,0,0">
-                <Label FontSize="13" Content="Pattern" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,0,0" Height="24" Width="61" Panel.ZIndex="1"/>
+                <Label FontSize="13" Content="Text" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,0,0" Height="24" Width="61" Panel.ZIndex="1"/>
                 <Label FontSize="13" Content="matching" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,-7,0,0" Height="28" Panel.ZIndex="2"/>
             </StackPanel>
-            
-            <TextBox x:Name="tbPatternMatching" Text="" Width="359" VerticalAlignment="Center" Margin="0,5" ToolTip="Look for a particular word or a phrase" Height="24"/>
-            <CheckBox x:Name="chkRegEx" Content="Reg.Ex." VerticalAlignment="Center" Margin="7,0,0,0" ToolTip="Randomly sample the extracted prompts"/>
-        </StackPanel>
+            <TextBox x:Name="tbPatternMatching" Text="" Width="428" VerticalAlignment="Center" Margin="0,5" ToolTip="Look for a particular word or a phrase" Height="24"/>
+         </StackPanel>
+        
         <StackPanel HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" Orientation="Horizontal" Grid.Row="5">
             <CheckBox x:Name="chkRandomSample" Content="Random sample" VerticalAlignment="Center" Margin="7,0,0,0" IsChecked="True" ToolTip="Randomly sample the extracted prompts"/>
             <external:IntegerBox x:Name="numRandomSample" Value="30" Width="60" VerticalAlignment="Center" Margin="3,2,0,2" Height="26"/>
             <Rectangle Fill="#FFBABABA" Width="2" HorizontalAlignment="Left" Margin="7,0,0,0" Height="30" VerticalAlignment="Center"></Rectangle>
         </StackPanel>
         <Rectangle Height="4" Fill="#FFE9F6F2" Grid.Row="6"></Rectangle>
-        <Rectangle x:Name="rectCover" Grid.RowSpan="5" Fill="#7FF5F5F5" Visibility="Collapsed"></Rectangle>
+        <StackPanel HorizontalAlignment="Right" Margin="10,0,0,0" VerticalAlignment="Top" Orientation="Horizontal"  Grid.Row="5" Background="#FFF0FEF9">
+            <Label Content="Method:" Margin="0,1,0,0">
+            </Label>
+            <ComboBox x:Name="cbWay2Match"  VerticalAlignment="Center" Margin="0,0,0,0" ToolTip="Matching method" SelectedIndex="0" Width="80" SelectionChanged="cbWay2Match_SelectionChanged">
+                <ComboBoxItem Content="Simple"/>
+                <ComboBoxItem Content="RegEx"/>
+                <ComboBoxItem x:Name="cbiSemantic" Content="Semantic" IsEnabled="False"/>
+            </ComboBox>
+            <Label x:Name="lbBest" Content="The best:" Margin="0,1,0,0"></Label>
+            <external:IntegerBox x:Name="numSemanticBest" Value="100" Width="60" VerticalAlignment="Center" Margin="0,2,5,2" Height="26"/>
+        </StackPanel>
+        <Rectangle x:Name="rectCover" Grid.RowSpan="6" Fill="#7FF5F5F5" Visibility="Collapsed"></Rectangle>
     </Grid>
 </UserControl>

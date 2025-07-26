@@ -244,7 +244,7 @@ namespace scripthea.viewer
             {
                 if (iDepot.isEnabled)
                     if (iDepot.items.Count > 0)
-                    { lbDepotInfo.Content = iDepot.items.Count.ToString() + " images" + (iDepot.IsChanged ? "*" : ""); return iDepot.items.Count; }
+                    { lbDepotInfo.Content = iDepot.items.Count.ToString() + " images" + (iDepot.IsChanged() ? "*" : ""); return iDepot.items.Count; }
             }
             int cnt = SctUtils.checkImageDepot(imageFolder);
             if (cnt > -1) { lbDepotInfo.Content = cnt.ToString() + " images";  }

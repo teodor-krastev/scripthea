@@ -221,13 +221,13 @@ namespace scripthea.composer
             }
         }
         public bool newCues = false; 
-        private void SaveAs(bool flat) // flat is one line cue
+        private void SaveAs(bool oneline = true) // flat is one line cue
         {
             var ls = new List<string>();
             for (int i = 0; i < cues.Count; i++)
             {
                 if (cues[i].cueText.Trim().Equals("")) continue;
-                if (flat) ls.Add(cues[i].cueTextAsString(false));
+                if (oneline) ls.Add(cues[i].cueTextAsString(false));
                 else ls.AddRange(cues[i].cueTextAsList(false));
                 ls.Add("---");
             }
@@ -237,7 +237,25 @@ namespace scripthea.composer
             string folder = Directory.Exists(opts.composer.WorkCuesFolder) ? opts.composer.WorkCuesFolder : Path.Combine(Utils.basePath, "cues");
             filename = Path.Combine(folder, filename);
             Utils.writeList(Path.ChangeExtension(filename, ".cues"), ls);
-            opts.Log("Saved in " + filename, Brushes.Tomato); newCues = true;
+            opts.Log("Saved cues in " + filename, Brushes.Tomato); newCues = true;
+        }
+        private void SaveFlatAs(bool oneline = true) // flat is one line cue
+        {
+            var ls = new List<string>();
+            for (int i = 0; i < cues.Count; i++)
+            {
+                if (cues[i].cueText.Trim().Equals("")) continue;
+                if (oneline) ls.Add(cues[i].cueTextAsString(false));
+                else ls.AddRange(cues[i].cueTextAsList(false));               
+            }
+            CommonOpenFileDialog dialog = new CommonOpenFileDialog(); dialog.Multiselect = false;            
+            dialog.DefaultExtension = ".txt";
+            dialog.Filters.Add(new CommonFileDialogFilter("Text file", "txt"));
+            dialog.InitialDirectory = Path.Combine(Utils.basePath, "cues");
+            if (dialog.ShowDialog() != CommonFileDialogResult.Ok) return;
+            string filename = Path.ChangeExtension(dialog.FileName, ".txt");
+            Utils.writeList(filename, ls);
+            opts.Log("Saved flat text in " + filename, Brushes.Tomato);  
         }
         private void btnAddCue_Click(object sender, RoutedEventArgs e)
         {
@@ -268,15 +286,15 @@ namespace scripthea.composer
                     break;
                 case Mode.remove: Remove(); selected = 0;
                     break;
-                case Mode.save: SaveAs(false);
+                case Mode.save: SaveAs();
                     break;
-                case Mode.saveFlat: SaveAs(true);
+                case Mode.saveFlat: SaveFlatAs();
                     break;
             }
         }
         private void cbCommand_DropDownOpened(object sender, EventArgs e)
         {
-            if (!opts.general.debug) cbiSaveFlat.Visibility = Visibility.Collapsed;
+            //if (!opts.general.debug) cbiSaveFlat.Visibility = Visibility.Collapsed;
         }
     }
 }
