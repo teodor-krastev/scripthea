@@ -47,8 +47,9 @@ namespace scripthea.composer
             status = Status.Undefined;            
             opts = _opts; sessionStart = DateTime.Now;
             UpdateFromOptions();
-            status = Status.Idle; 
+            status = Status.Idle;
 
+            opts.composer.OnSemantic += new Options.SemanticHandler(extCollMng.SemanticActive);
             opts.Log("@_Header=loading cues files (*.cues)");              
             cuePoolUC.ExternalSelectionChanged += new SelectionChangedEventHandler(CuePoolSelectionChanged);
             Courier.CueSelectionHandler ChageCueRef = new Courier.CueSelectionHandler(ChangeCue);
@@ -86,6 +87,7 @@ namespace scripthea.composer
             
             extCollMng.Init(new Utils.LogHandler(opts.Log), Path.Combine(Utils.basePath,"cues"));
             extCollMng.OnChangeColls += new Action(cuePoolUC.UpdateCueMapFromDisk);
+            
             cuePoolUC.btnExtColl.Click += new RoutedEventHandler(btnExtColl_Click);
             /*if (Utils.TheosComputer()) tiExtCollMng.Visibility = Visibility.Visible;
             else */ tiExtCollMng.Visibility = Visibility.Hidden;

@@ -2,15 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Newtonsoft.Json;
 using scripthea.master;
@@ -85,8 +80,7 @@ namespace scripthea.composer
             btnSDparams.Click += new RoutedEventHandler(btnSDparams_Click); 
             iPickerX.stPnl2.Children.Add(btnSDparams); iPickerX.tiStats.Visibility = Visibility.Collapsed;                       
 
-            updateFromCuesFolder(cuesFolder);
-            
+            updateFromCuesFolder(cuesFolder);           
             // editor tab
             cueEditor.Init(ref opts);
         }
@@ -385,7 +379,7 @@ namespace scripthea.composer
         }
         public void MapUpdateFromVisuals()
         {
-            //cbCuesFolders_SelectionChanged(null, null); workCuesIndex();
+            cbCuesFolders_SelectionChanged(null, null); workCuesIndex();
         }
         private bool ListboxReady(ListBox listBox)
         {
@@ -504,7 +498,6 @@ namespace scripthea.composer
             }
             ReopenCuesFolder();
         }
-
         protected void ExtCuesAdded(object sender, EventArgs e)
         {
             ReopenCuesFolder();

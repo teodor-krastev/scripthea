@@ -417,3 +417,4 @@ FodyWeavers.xsd
 /cues/t-vision
 /cues/pi-wave
 /cues/variety/variety.SJL
+/config/clip-text-vit-32-float32-int32.onnx

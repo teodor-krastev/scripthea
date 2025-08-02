@@ -66,14 +66,25 @@ namespace ExtCollMng
         public bool Mute = false;
         
         protected string cuesFolder;
-        public string tempFolder { get { return Path.Combine(cuesFolder, "_temp"); } }
+        public string tempFolder 
+        { 
+            get 
+            {
+                if (!Directory.Exists(cuesFolder)) return "";
+                string _tempPath = Path.Combine(cuesFolder, "_temp");
+                if (!Directory.Exists(_tempPath)) Directory.CreateDirectory(_tempPath);
+                if (!Directory.Exists(_tempPath)) return "";
+                return _tempPath; 
+            } 
+        }
         public void Init(Utils.LogHandler _OnLog, string rootCuesFolder) //string activeColl
         {
             try
             {
                 OnLog += _OnLog;
                 if (Directory.Exists(rootCuesFolder)) cuesFolder = rootCuesFolder;
-                else { Utils.TimedMessageBox("Error: The cue folder <" + rootCuesFolder + "> not found"); return; }               
+                else { Utils.TimedMessageBox("Error: The cue folder <" + rootCuesFolder + "> not found"); return; }
+                CheckSemanticExn();
             }
             finally
             {
@@ -463,8 +474,8 @@ namespace ExtCollMng
             if (progressDownload.Visibility == Visibility.Visible) { Log("Warning: ongoing download."); return; }
             try
             {
-                ECwebRecord wr = selectedItem.webRecord;               
-                if (!Directory.Exists(tempFolder)) Directory.CreateDirectory(tempFolder);
+                ECwebRecord wr = selectedItem.webRecord;
+                if (!Directory.Exists(tempFolder)) { Log("Error: no <_temp> folder found"); return; }
                 // dowloading
                 string downFile = Path.Combine(tempFolder, wr.zipName); 
                 if (File.Exists(downFile))
@@ -493,7 +504,7 @@ namespace ExtCollMng
                 }
                 else { Log("Error: Download unsuccessful! (file not found)"); return; }
                 progressDownload.Visibility = Visibility.Hidden;
-                UnpackColl(downFile, wr.fldName);
+                UnpackColl(downFile, wr.fldName, true);
             }
             catch (IOException ex) { Log("Error: Download unsuccessful! " + ex.Message);  Log("If the error persists you may try <Download coll. zip via browser>.", Brushes.Maroon); }
             finally
@@ -501,14 +512,14 @@ namespace ExtCollMng
                 progressDownload.Visibility = Visibility.Hidden; 
             }
         }
-        private void UnpackColl(string downFile, string fldName, bool clearAfter = true)
+        private void UnpackColl(string downFile, string fldName, bool clearAfter)
         {
             string fldLocal = "";
             try
-            {           
-                if (!Directory.Exists(tempFolder)) Directory.CreateDirectory(tempFolder);
+            {
+                if (!Directory.Exists(tempFolder)) { Log("Error: no <_temp> folder found"); return; }
                 string fldRemote = Path.Combine(tempFolder, fldName);
-                if ((Directory.Exists(fldRemote))) Directory.Delete(fldRemote, true);
+                if (Directory.Exists(fldRemote)) Directory.Delete(fldRemote, true);
 
                 Utils.UnzipFile(downFile, tempFolder); Log("Unziping to " + fldRemote);
                 if (!Directory.Exists(fldRemote)) { Log("Error:  Download unsuccessful! Folder <" + fldRemote + "> not found)."); return; }
@@ -583,5 +594,134 @@ namespace ExtCollMng
             if (rb == null) return;
             rb.IsChecked = true;
         }
+        #region semantic
+        protected void CheckSemanticExn()
+        {
+            if (semanticActive)
+            {
+                tbSemanticStatus.Text = "Status: semantic extension v" + semanticVer + " is active"; tbSemanticStatus.Foreground = Brushes.DarkGreen;
+            }
+            else
+            {
+                tbSemanticStatus.Text = "Status: semantic extension is missing or defective"; tbSemanticStatus.Foreground = Brushes.Maroon;
+            }
+        }
+
+        public readonly string SemanticConfig = "semantic-exn.cfg"; // in config
+        private string semanticVer;
+        private bool? _semanticActive = null; // null when hasn't been checked yet
+        public bool SemanticActive()
+        {
+            return semanticActive;
+        }
+        public bool semanticActive
+        {
+            get
+            {
+                if (_semanticActive != null) return (bool)_semanticActive;
+                
+                string cfgPath = Path.Combine(Utils.configPath + SemanticConfig);
+                if (!File.Exists(cfgPath)) { _semanticActive = false; return false; }
+                Dictionary<string, string> cfgd = Utils.readDict(cfgPath);
+                if (!cfgd.ContainsKey("version")) { _semanticActive = false; return false; }
+                semanticVer = cfgd["version"]; cfgd.Remove("version");
+                foreach (var pair in cfgd)
+                {
+                    string fnPath = Path.Combine(Utils.configPath + pair.Key);
+                    if (!File.Exists(fnPath)) { _semanticActive = false; return false; }
+                    if (!Utils.GetMD5Checksum(fnPath).Equals(pair.Value,StringComparison.InvariantCultureIgnoreCase))
+                        { _semanticActive = false; return false; }
+                }
+                _semanticActive = true; return true;
+            }
+        }
+        private readonly string SemanticUrl = "https://scripthea.com/ext-collections/text-onnx.zip";
+        private readonly int SemanticZipSize = 184_335_285;
+        private async void btnDownloaUnzipSemantic_Click(object sender, RoutedEventArgs e)
+        {
+            if (semanticActive) 
+            { if (!Utils.ConfirmationMessageBox("Semantic extension is already downloaded and active. \nWould you like to overwrite it?")) return; }           
+            if (progressSemanticDownload.Visibility == Visibility.Visible) { Log("Warning: ongoing download."); return; }
+            try
+            {
+                if (!Directory.Exists(tempFolder)) { Log("Error: no <_temp> folder found"); return; }
+                Directory.Delete(tempFolder, true); Utils.Sleep(200);
+                if (!Directory.Exists(tempFolder)) Directory.CreateDirectory(tempFolder);
+                // dowloading
+                string exnZip = Path.GetFileName(SemanticUrl);
+                string downFile = Path.Combine(tempFolder, exnZip);
+                if (File.Exists(downFile))
+                {                    
+                    {
+                        if (!Utils.ConfirmationMessageBox("File <" + exnZip + "> is already dowloaded in <" + tempFolder + ">.\n Overwrite (Yes) or Cancel (No)?"))
+                        { Log("Warning: User cancelation request!"); return; }
+                    }
+                    File.Delete(downFile);
+                }
+                Log("Downloading " + exnZip + "...");
+                progressSemanticDownload.Visibility = Visibility.Visible;
+                await DownloadZipFileWithResumeAsync(SemanticUrl, downFile, SemanticZipSize, progressSemanticDownload, tbSemanticStatus);
+                if (!File.Exists(downFile)) { Log("Error: Download unsuccessful! (file not found)"); return; }
+
+                progressSemanticDownload.Visibility = Visibility.Collapsed;
+                UnpackExn(downFile, Utils.configPath, true);                
+            }
+            catch (IOException ex) { Log("Error: Download unsuccessful! " + ex.Message); Log("If the error persists you may try <Download coll. zip via browser>.", Brushes.Maroon); }
+            finally
+            {
+                progressSemanticDownload.Visibility = Visibility.Collapsed;
+            }
+        }
+        private void btnDownloadSemantic_Click(object sender, RoutedEventArgs e)
+        {
+            string exnZip = Path.GetFileName(SemanticUrl);
+            if (Utils.CallTheWeb(SemanticUrl)) Log("Downloading using your browser: " + exnZip);
+            else Log("Error: downloading using your browser: " + exnZip);
+        }
+        private void UnpackExn(string downFile, string fldName, bool clearAfter)
+        {
+            try
+            {  
+                if (!File.Exists(downFile)) { Log("Error: File <" + downFile + "> not found)."); return; }
+                if (!Directory.Exists(fldName)) { Log("Error: Folder <" + fldName + "> not found)."); return; }
+                if (!Directory.Exists(tempFolder)) { Log("Error: no <_temp> folder found"); return; }
+                if (!clearAfter)
+                {
+                    Directory.Delete(tempFolder, true); Utils.Sleep(200);
+                    if (!Directory.Exists(tempFolder)) { Log("Error: no <_temp> folder found"); return; }
+                }
+                Log("Unziping "+ Path.GetFileName(downFile) + " to "  + fldName); Utils.UnzipFile(downFile, tempFolder);
+                if (clearAfter) { File.Delete(downFile); Log("clear up: " + downFile); }
+
+                string[] files = Directory.GetFiles(tempFolder);
+                foreach (string file in files)
+                {
+                    string fileName = Path.GetFileName(file);
+                    string destFile = Path.Combine(fldName, fileName);
+                    if (File.Exists(destFile)) File.Delete(destFile);
+                    // Move file to destination (overwrites if exists)
+                    File.Move(file, destFile);
+                }
+                Log("Installation successful!");
+            }
+            finally
+            {
+                _semanticActive = null; CheckSemanticExn();
+            }
+        }
+        private void btnUnpackSemantic_Click(object sender, RoutedEventArgs e)
+        {
+            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
+            dlg.FileName = ""; // Default file name
+            dlg.DefaultExt = ".zip"; // Default file extension
+            dlg.Filter = "zip files (.zip)|*.zip"; // Filter files by extension
+
+            // Show open file dialog box
+            bool? result = dlg.ShowDialog();
+            if (!(bool)result) return;
+            string fld = Path.ChangeExtension(Path.GetFileName(dlg.FileName), "").Trim('.');
+            UnpackExn(dlg.FileName, Utils.configPath, false);            
+        }
+        #endregion
     }
 }

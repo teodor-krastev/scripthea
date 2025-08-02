@@ -9,6 +9,9 @@ using Path = System.IO.Path;
 using UtilsNS;
 using System.IO;
 using System.Windows.Media;
+using System.Windows.Controls;
+using System.Windows;
+using System.Windows.Threading;
 
 namespace ExtCollMng
 {
@@ -157,6 +160,8 @@ namespace ExtCollMng
 
         public bool RandomSampleFlag;
         public int RandomSampleSize;
+        [JsonIgnore]
+        public TextBlock SemanticProgress;
         public static ECquery ReadECquery(string json)
         {
             return JsonConvert.DeserializeObject<ECquery>(json);
@@ -168,10 +173,11 @@ namespace ExtCollMng
     }
     public class ECollection
     {
-        private bool localDebug = Utils.TheosComputer();
+        private bool localDebug = Utils.TheosComputer(); CLIP clip = null;
+        public bool semanticActive = false;
         public ECollection(Utils.LogHandler _OnLog)
         {
-            OnLog += _OnLog;
+            OnLog += _OnLog; clip = new CLIP(); 
         }
         public event Utils.LogHandler OnLog;       
         protected void Log(string txt, SolidColorBrush clr = null)
@@ -196,13 +202,11 @@ namespace ExtCollMng
             if (streamReader.EndOfStream) return null; eCnt["total"] += 1;
             string prt = streamReader.ReadLine().Trim('\"').Trim(); // read next line
             if (ecq.sjlFlag) prompt = ECprompt.ReadECprompt(prt);
-            else { prompt = new ECprompt(); prompt.prompt = prt; }
+            else { prompt = new ECprompt(); prompt.ID = Guid.NewGuid().ToString(); prompt.prompt = prt; }
             string aprt = prompt.prompt; //actual prompt
-
-            int wc = WordCount(aprt); wordsCount.Add(wc);
             if (aprt == string.Empty) return false;
-            if (!char.IsLetterOrDigit(aprt[0])) return false;
             if (ecq == null) { prompt = null; return true; }
+
             // actual filter
             if (ecq.SegmentFlag)
             {
@@ -210,6 +214,8 @@ namespace ExtCollMng
                 if (eCnt["total"] > ecq.SegmentTo) return null;
                 eCnt["seg"] += 1;
             }
+            int wc = WordCount(aprt); wordsCount.Add(wc);
+            if (!char.IsLetterOrDigit(aprt[0])) return false;
             // words size
             if (ecq.WordsFlag)
             {
@@ -226,51 +232,39 @@ namespace ExtCollMng
                 }
                 if (!bb) return false;
                 eCnt["cat"] += 1;
-            }
-            // simple/regex/semantic filter
-            /*if (!ecq.Pattern.Trim().Equals(string.Empty))
-            {
-                switch (ecq.Way2Match)
-                {
-                    case 0: if (!Utils.IsWildCardMatch(aprt, ecq.Pattern)) return false;
-                        break;
-                    case 1: if (!Utils.RegexIsMatch(aprt, ecq.Pattern)) return false;
-                        break;
-                    case 2: if (!ecq.sjlFlag) return false;
-                        
-                        break;
-                }               
-                eCnt["regex"] += 1;
-            }*/
+            }           
             return true;
         }
-        private float[] TextEmbeds(string prompt)
-        {
-            return new float[512];
-        }
-        Random rand = new Random();
-        private double CosineSimilarityNormalized(float[] refText, float[] prt)
-        {
-            return rand.NextDouble() * 100;
-        }
+        public MessageBoxResult cancelRequest = MessageBoxResult.None;
         public List<ECprompt> TextMatching(ECquery ecq, List<ECprompt> lECp) // reduces lECp to the matching cues
         {
             if (ecq.Pattern.Trim().Equals(string.Empty)) return lECp;
             Dictionary<string, double> seman = new Dictionary<string, double>();
             if (ecq.Way2Match == 2) // semantic
             {
-                if (!ecq.sjlFlag) return null; // error!!!
-                float[] refEmbed = TextEmbeds(ecq.Pattern.Trim());
+                if (ecq.SemanticBest == 0) return lECp;
+                if (!ecq.sjlFlag || !semanticActive || clip == null) { Log("Error: semantic search is not available"); return null; }
+                float[] refEmbed = clip.TextEmbeds(ecq.Pattern.Trim());
                 Dictionary<string, double> unsorted = new Dictionary<string, double>();
                 foreach (ECprompt ecp in lECp)
                 {
-                    float[] cueEmbed = TextEmbeds(ecp.prompt);
-                    double dist = CosineSimilarityNormalized(refEmbed, cueEmbed);
-                    unsorted.Add(ecp.ID, dist);
+                    Application.Current.Dispatcher.Invoke(DispatcherPriority.Background, 
+                        new Action(() => { 
+                            float[] cueEmbed = clip.TextEmbeds(ecp.prompt);
+                            double dist = clip.CosineSimilarityNormalized(refEmbed, cueEmbed);
+                            unsorted.Add(ecp.ID, dist);                        
+                        }));
+                    if (ecq.SemanticProgress != null)
+                    {
+                        int prog = (int)(100.0 * unsorted.Count / (double)lECp.Count);
+                        if (prog % 2 == 0) { ecq.SemanticProgress.Text = prog + "%"; } // Utils.DoEvents(); }
+                    }
+                    if (cancelRequest == MessageBoxResult.Yes || cancelRequest == MessageBoxResult.Cancel) break;
                 }
-                foreach(var kvp in seman.OrderByDescending(kv => kv.Value))
+                if (cancelRequest == MessageBoxResult.Cancel) return null; 
+                foreach(var kvp in unsorted.OrderByDescending(kv => kv.Value))
                 {
-                    if (seman.Count > ecq.SemanticBest) break; // cut to size
+                    if (seman.Count >= ecq.SemanticBest) break; // cut to size
                     seman.Add(kvp.Key, kvp.Value);
                 }
                 if (seman.Count == 0) return lECp;
@@ -356,10 +350,12 @@ namespace ExtCollMng
             if (ecq.sjlFlag && ecq.CatFlag)
             {
                 ss1 += "; categories cut: " + eCnt["cat"] + "; ";
-            }            
+            }
+            Utils.DoEvents();
             if (!ecq.Pattern.Trim().Equals(string.Empty))
             {
                 lst = TextMatching(ecq, lst);
+                if (lst == null) { Log("Warning: the extraction has been canceled by user request"); return null; }
                 ss2 = "matching: " + eCnt["regex"] + "; ";
             }            
             if (ss1 + ss2 != "") Log(ss1 + " " + ss2);

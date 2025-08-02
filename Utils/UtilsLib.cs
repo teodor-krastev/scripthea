@@ -2183,7 +2183,6 @@ namespace UtilsNS
         public WaitCursor()
         {
             _previousCursor = Mouse.OverrideCursor;
-
             Mouse.OverrideCursor = Cursors.Wait;
         }
 

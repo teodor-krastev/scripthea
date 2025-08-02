@@ -21,7 +21,6 @@ using Newtonsoft.Json.Linq;
 
 namespace scripthea.composer
 {
-
     /// <summary>
     /// Interaction logic for ExtCollectionsUC.xaml
     /// </summary>
@@ -31,22 +30,27 @@ namespace scripthea.composer
         {
             InitializeComponent();
         }
-        private Options opts; private List<CheckBox> catChecks = new List<CheckBox>();
+        private Options opts; private List<CheckBox> catChecks = new List<CheckBox>(); 
         public void Init(ref Options _opts)
         {
-            opts = _opts; // extCollMng = new ExtCollMng();
+            opts = _opts; 
             // invariant limits
             numSegmentFrom.Minimum = 1; numSegmentTo.Minimum = 1; 
             numWordsMin.Minimum = 1; numWordsMax.Minimum = 2;
             numRandomSample.Minimum = 2; numRandomSample.Maximum = 1000;
+            numSemanticBest.Minimum = 0; numSemanticBest.Maximum = 1000;
 
             catChecks.Clear(); wpCats.Children.Clear();
             foreach (string cat in Enum.GetNames(typeof(Categories)))
             {
-                CheckBox chk = new CheckBox() { Content = cat.Replace("_", "-").PadRight(18, ' '), FontSize = 13,  Margin = new Thickness(3) };//Courier New FontFamily = new FontFamily("Lucida Console"),
+                CheckBox chk = new CheckBox() { Content = cat.Replace("_", "-").PadRight(18, ' '), FontSize = 13,  Margin = new Thickness(3) };
                 catChecks.Add(chk); wpCats.Children.Add(chk);
             }
+            cbiSemantic.IsEnabled = opts.composer.SemanticActive();
+            if (!cbiSemantic.IsEnabled && cbWay2Match.SelectedIndex == 2) cbWay2Match.SelectedIndex = 0;
             cbWay2Match_SelectionChanged(null, null);
+            eCollection = new ECollection(new Utils.LogHandler(opts.Log));
+            eCollection.semanticActive = cbiSemantic.IsEnabled;
         }
         public void Finish()
         {
@@ -215,18 +219,20 @@ namespace scripthea.composer
             }
             return "";
         }
-        public event EventHandler NewCuesEvent;       
+        public event EventHandler NewCuesEvent; public ECollection eCollection = null;
         private void btnExtract_Click(object sender, RoutedEventArgs e)
         {
             if (folderPath == "") { opts.Log("Error[911]: no valid folder"); return; }
             tbInfo.Text = "info"; 
             try
             {
-                Mouse.OverrideCursor = Cursors.Wait;               
-                ECollection ec = new ECollection(new Utils.LogHandler(opts.Log));
-                ec.OpenEColl(folderPath); ECquery ecq = GetQueryFromVisuals();
+                Mouse.OverrideCursor = Cursors.Wait; eCollection.cancelRequest = MessageBoxResult.No; semanticMatching = true;
 
-                List<ECprompt> cues = ec.ExtractCueList(folderPath, ecq);
+                eCollection.OpenEColl(folderPath); 
+                ECquery ecq = GetQueryFromVisuals(); ecq.SemanticProgress = tbSemProgress;
+
+                List<ECprompt> cues = eCollection.ExtractCueList(folderPath, ecq);
+                if (cues == null) return; // user cancelation
                 if (cues.Count == 0) { opts.Log("Warnning: No cues have been extracted."); return; }
 
                 string fn = NextIdxFilePath();
@@ -246,7 +252,7 @@ namespace scripthea.composer
                 }
                 NewCuesEvent?.Invoke(this, EventArgs.Empty);
                 //tbInfo.Text = ec.wordsCount.Count.ToString() + " processed lines; " + ec.AverWordsCount().ToString() + " average words count; " + cues.Count.ToString() + " prompts produced.";
-            } finally { Mouse.OverrideCursor = null; }
+            } finally { Mouse.OverrideCursor = null; semanticMatching = false; }
         }       
         private void sliderThreshold_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
@@ -255,8 +261,40 @@ namespace scripthea.composer
         private void cbWay2Match_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (lbBest == null) return;
-            if (cbWay2Match.SelectedIndex == 2 && cbiSemantic.IsEnabled) { lbBest.Visibility = Visibility.Visible; numSemanticBest.Visibility = Visibility.Visible; }
-            else { lbBest.Visibility = Visibility.Hidden; numSemanticBest.Visibility = Visibility.Hidden; }
+            if (cbWay2Match.SelectedIndex == 2 && cbiSemantic.IsEnabled) spSemantic.Visibility = Visibility.Visible;  
+            else spSemantic.Visibility = Visibility.Hidden;
+            semanticMatching = cbWay2Match.SelectedIndex == 2 && cbiSemantic.IsEnabled;
+        }
+        private bool _semanticMatching = false;
+        public bool semanticMatching // ongoing semantic matching
+        {
+            get { return _semanticMatching; }
+            set
+            {
+                tbSemProgress.Visibility = Visibility.Hidden; btnSemStop.Visibility = Visibility.Hidden; // default state
+                if (cbWay2Match.SelectedIndex != 2 && !cbiSemantic.IsEnabled) return;
+                if (value) // going ON
+                {
+                    tbSemProgress.Visibility = Visibility.Visible; btnSemStop.Visibility = Visibility.Visible;
+                    eCollection.cancelRequest = MessageBoxResult.No; tbSemProgress.Text = "0%";
+                }
+                _semanticMatching = value;
+            }
+        }       
+        private void btnSemStop_Click(object sender, RoutedEventArgs e)
+        {
+            if (!semanticMatching) return;
+            eCollection.cancelRequest = MessageBox.Show(
+                "Would you like to:\n- stop semantic matching at this stage (YES)\n- continue with the rest of the prompts (NO), or\n- CANCEL the extraction?",       
+                "Semantic Matching Confirmation",                       
+                MessageBoxButton.YesNoCancel,   // Three buttons
+                MessageBoxImage.Question        // Icon
+            );            
+        }
+        private void cbWay2Match_DropDownOpened(object sender, EventArgs e)
+        {
+            cbiSemantic.IsEnabled = opts.composer.SemanticActive();
+            eCollection.semanticActive = cbiSemantic.IsEnabled;            
         }
     }
 }

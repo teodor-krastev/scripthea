@@ -16,7 +16,8 @@ namespace scripthea.options
 {
     public enum TripleReply { yes, ask, no }
     public class Options
-    {        
+    {
+        public delegate bool SemanticHandler();
         public event Utils.LogHandler OnLog;
         public void Log(string txt, SolidColorBrush clr = null)
         {
@@ -89,7 +90,15 @@ namespace scripthea.options
             public bool AddEmptyModif;
             public bool ConfirmGoogling;
             public int ModifSample;
-            public bool mSetsEnabled;            
+            public bool mSetsEnabled;
+            // semantic
+            
+            public event SemanticHandler OnSemantic;           
+            public bool SemanticActive()
+            {
+                if (OnSemantic != null) return OnSemantic();
+                else return false;
+            }
         }
         public Viewer viewer;
         public class Viewer
