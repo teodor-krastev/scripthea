@@ -418,3 +418,10 @@ FodyWeavers.xsd
 /cues/pi-wave
 /cues/variety/variety.SJL
 /config/clip-text-vit-32-float32-int32.onnx
+/config/workflows/chroma_api.H.json
+/config/workflows/chroma_api.Q.json
+/config/workflows/qwen_api.H.json
+/config/workflows/qwen_api.Q.json
+/config/chroma_api.cftm
+/images/25-08-14_21-44-07.png
+/images/DESCRIPTION.idf

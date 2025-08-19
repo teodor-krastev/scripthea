@@ -44,8 +44,8 @@
                 <StackPanel Grid.Column="1" Orientation="Horizontal">
                     <Image x:Name="btnFindUp"  Width="25" Source="/Scripthea;component/Properties/find_up.png" Margin="0,0,0,0" Cursor="Hand" ToolTip="Find Up" MouseDown="btnFindUp_MouseDown" Height="25"/>
                     <Image x:Name="btnFindDown"  Width="25" Source="/Scripthea;component/Properties/find_down.png" Margin="0,0,0,0" Cursor="Hand" ToolTip="Find Down" MouseDown="btnFindUp_MouseDown" Height="25"/>
-                    <Button x:Name="btnMark" FontWeight="Bold" Content=" Mark " Background="MintCream" Margin="5,0,5,0" Foreground="#FF058402" Click="btnMark_Click" FontSize="13" FontFamily="Segoe UI Semibold" />
-                    <Button x:Name="btnClearMark" FontWeight="Bold" Content="Rst" Background="White" Margin="0,0,0,0" Foreground="#FFA80303"   Click="btnMark_Click" Width="28" />
+                    <Button x:Name="btnMark" FontWeight="Bold" Content=" Mark " Background="MintCream" Margin="5,0,5,0" Foreground="#FF058402" Click="btnMark_Click" FontSize="13" FontFamily="Segoe UI Semibold" ToolTip="Mark all prompts containing the find text" />
+                    <Button x:Name="btnClearMark" FontWeight="Bold" Content="Rst" Background="White" Margin="0,0,0,0" Foreground="#FFA80303"   Click="btnMark_Click" Width="28" ToolTip="Clear (reset) the marking" />
                 </StackPanel>
             </Grid>
             <StackPanel Grid.Row="1" Orientation="Horizontal" Height="27" HorizontalAlignment="Right" VerticalAlignment="Top" Panel.ZIndex="20" Margin="0">

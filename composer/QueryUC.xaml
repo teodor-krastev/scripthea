@@ -119,7 +119,7 @@
                         <local:ScanPreviewUC x:Name="scanPreviewUC" Margin="0" FontFamily="Segoe UI" FontSize="13"/>
                     </Grid>
                 </TabItem>
-                <TabItem x:Name="tiSD_API" Header="SD Parameters" Background="#FFFEFCF3" Height="30" Width="150" Margin="20,-3,-20,0" BorderBrush="#FF973C14" FontFamily="Lucida Sans" FontSize="14" Style="{StaticResource RoundedBottomTabItemStyle}">
+                <TabItem x:Name="tiSD_API" Header="SD Parameters" Background="#FFFFFFEA" Height="30" Width="150" Margin="20,-3,-20,0" BorderBrush="#FF973C14" FontFamily="Lucida Sans" FontSize="14" Style="{StaticResource RoundedBottomTabItemStyle}">
                     <Grid>
                         <external:SD_params_UC x:Name="sd_params_UC" Margin="0" FontFamily="Segoe UI" FontSize="13"/>
                     </Grid>

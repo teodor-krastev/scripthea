@@ -246,7 +246,6 @@ namespace scripthea.external
 
         }
     }
-
     public class ServerMonitor
     {
         private readonly HttpClient _client;
@@ -261,7 +260,6 @@ namespace scripthea.external
             _url = url;
             isServerAwake = null;
         }
-
         public void StartMonitoring()
         {
             Task.Run(async () =>
@@ -376,7 +374,6 @@ namespace scripthea.external
             }
             catch (System.NullReferenceException e) { return "Error[3642]: wrong parameter(s)"; }
         }
-
         public static List<string> actualWorkflowList(List<string> workflow, Dictionary<string, object> fcts)
         {
             List<string> ls = new List<string>();

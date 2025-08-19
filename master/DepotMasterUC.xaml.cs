@@ -56,7 +56,7 @@ namespace scripthea.master
                 if (normal) btn.Cursor = Cursors.Hand;
                 else btn.Cursor = Cursors.No;
             }
-            bool bb = iPickerA.isValid && iPickerB.isValid;
+            bool bb = (iPickerA.isValid || Directory.Exists(iPickerA.iDepot?.path)) && (iPickerB.isValid || Directory.Exists(iPickerB.iDepot?.path));
             if (bb) bb &= !Utils.comparePaths(iPickerA.imageDepot,iPickerB.imageDepot);
             btnCopyA2B.IsEnabled = bb; SetCursor(btnCopyA2B, bb);
             btnCopyB2A.IsEnabled = bb; SetCursor(btnCopyB2A, bb);

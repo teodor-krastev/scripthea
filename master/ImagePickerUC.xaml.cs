@@ -222,7 +222,7 @@ namespace scripthea.master
                 iDepotStats.OnChangeDepot(path); 
                 return;
             }
-            activeView.SetChecked(true);
+            if (e != null) activeView.SetChecked(true);
             tbImageDepot.Foreground = Brushes.Black;
         }
         protected void ChangeContent(object sender, RoutedEventArgs e)
@@ -246,7 +246,7 @@ namespace scripthea.master
         public bool converting = false; public ImageDepot iDepot = null;
         private void tbImageDepot_TextChanged(object sender, TextChangedEventArgs e)
         {            
-            if (tbImageDepot.Text.Trim().Equals("")) { Clear(); ChangeDepot(null, null); return; }            
+            if (tbImageDepot.Text.Trim().Equals("")) { Clear(); ChangeDepot(null, e); return; }            
             if (opts != null)
                 if (opts.composer.ImageDepotFolder.Equals(tbImageDepot.Text, StringComparison.InvariantCultureIgnoreCase) && opts.composer.QueryStatus == Status.Scanning)
                 { opts.Log("Error[1279]: the working image folder is in process of updating.", Brushes.Red); tbImageDepot.Text = ""; return; }
