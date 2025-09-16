@@ -8,7 +8,7 @@
              d:DesignHeight="450" d:DesignWidth="613.671">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="55"/>
+            <RowDefinition Height="58"/>
             <RowDefinition Height="30"/>
             <RowDefinition Height="300*"/>
             <RowDefinition Height="200*"/>
@@ -21,9 +21,9 @@
                 </Grid.ColumnDefinitions>
                 <TextBox x:Name="tbImageDepot" Background="{x:Null}" Margin="0,2,2.962,-2" IsReadOnly="True" BorderThickness="0" TextChanged="tbImageDepot_TextChanged" >
                 </TextBox>
-                <Button x:Name="btnNewFolder" Grid.Column="1" Content="Browse" Click="btnNewFolder_Click" HorizontalAlignment="Left" Margin="5.038,0,0,-0.051" Width="60" Foreground="#FF0F8001" FontWeight="Bold" Background="White" Visibility="Collapsed">
+                <Button x:Name="btnNewFolder" Grid.Column="1" Content="Browse" Click="btnNewFolder_Click" HorizontalAlignment="Left" Margin="0" Width="60" Foreground="#FF0F8001" FontWeight="Bold" Background="White" Style="{StaticResource RoundedButtonStyle}" Visibility="Collapsed" VerticalAlignment="Center" Height="26">
                 </Button>
-                <Button x:Name="btnConvertFolder" Grid.Column="1" Content="Import" Click="btnConvertFolder_Click" HorizontalAlignment="Center" Margin="0" Width="90" Foreground="#FF0049BB"  Background="White" IsEnabled="False" FontSize="13" FontFamily="Segoe UI Semibold" Style="{StaticResource RoundedButtonStyle}" ToolTip="Import images in a folder to an image depot"/>
+                <Button x:Name="btnConvertFolder" Grid.Column="1" Content="Import" Click="btnConvertFolder_Click" HorizontalAlignment="Center" Margin="0" Width="90" Foreground="#FF0049BB"  Background="White" IsEnabled="False" FontSize="13" FontFamily="Segoe UI Semibold" Style="{StaticResource RoundedButtonStyle}" ToolTip="Import images in a folder to an image depot" Height="26" VerticalAlignment="Center"/>
             </Grid>
         </GroupBox>
         <Grid Grid.Row="1">
@@ -32,9 +32,9 @@
                 <ColumnDefinition Width="100"/>
             </Grid.ColumnDefinitions>
             <StackPanel Orientation="Horizontal" Grid.ColumnSpan="2" Margin="0,0,-0.329,-0.228">
-                <Button x:Name="btnMenu" Width="30" Margin="3,0,0,0" ToolTip="Local menu" Background="{x:Null}" Height="30" >
+                <Button x:Name="btnMenu" Width="30" Margin="3,0,0,0" ToolTip="Local menu" Background="{x:Null}" Height="30" Style="{StaticResource RoundedButtonStyle}">
                     <ContentControl>
-                        <Image x:Name="imgMenu" Margin="1,2,0,0" VerticalAlignment="Center" Width="28" Source="/Scripthea;component/Properties/TripleBarTeal.png" ToolTip="Single click - menu; Double left - invert" Cursor="Hand" HorizontalAlignment="Center" Height="28" MouseDown="imgMenu_MouseDown" >
+                        <Image x:Name="imgMenu" Margin="1,1,0,0" VerticalAlignment="Center" Width="28" Source="/Scripthea;component/Properties/TripleBarTeal.png" ToolTip="Single click - menu; Double left - invert" Cursor="Hand" HorizontalAlignment="Center" Height="28" MouseDown="imgMenu_MouseDown" >
                         </Image>
                     </ContentControl>
                     <Button.ContextMenu>

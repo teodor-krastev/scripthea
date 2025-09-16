@@ -161,7 +161,7 @@ namespace scripthea
             {
                 Log("Assuming that you run Scripthea for the first time:", Brushes.Blue);
                 Log("1. Check and modify (if needed) the default preferences (three bar button above).", Brushes.Blue);
-                Log("2. If you have Stable Diffusion (A1111 or Forge) installed go to SD panel (here top/right), open Options and on the second tab point the Stable Diffusion installation locaton", Brushes.Blue);
+                Log("2. If you have Stable Diffusion (ComfyUI, A1111 or Forge) installed go to SD panel (top/right), open Options and set your Stable Diffusion installation locaton", Brushes.Blue);
                 Log(""); Log("Press F1 for Scripthea online help.", Brushes.Green);
                 Log(""); Log("Enjoy Scripthea, now with access to more than a milion and a half selected and unique prompts!", Brushes.Maroon);
             }           

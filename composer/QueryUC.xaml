@@ -51,7 +51,7 @@
                             </StackPanel>
                         </GroupBox>
                         <CheckBox x:Name="chkOneLineCue" Content="One line cue" Width="95" Margin="314,46,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Checked="UpdateToOptions" Unchecked="UpdateToOptions" IsChecked="True" Visibility="Collapsed"  />
-                        <Button x:Name="btnCopy" Margin="0,0,3,3" VerticalAlignment="Bottom" HorizontalAlignment="Right" Background="{x:Null}" ToolTip="Copy current prompt to clipboard" Cursor="Hand" Width="30" Height="28" BorderBrush="#FFCECECE" Click="btnCopy_Click">
+                        <Button x:Name="btnCopy" Margin="0,0,3,3" VerticalAlignment="Bottom" HorizontalAlignment="Right" Background="{x:Null}" ToolTip="Copy current prompt to clipboard" Cursor="Hand" Width="30" Height="28" BorderBrush="#FFCECECE" Click="btnCopy_Click" Style="{StaticResource RoundedButtonStyle}">
                             <ContentControl>
                                 <Image x:Name="imgCopy" Margin="0,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" Height="20" Width="25" ToolTip="Copy to clipboard" Cursor="Hand" Source="/Scripthea;component/Properties/copy1a.png"/>
                             </ContentControl>
@@ -68,7 +68,7 @@
                         </StackPanel>
                     </Grid>
                 </TabItem>
-                <TabItem x:Name="tiOptions" Header="Options" Height="28" Background="#FFECECEC" Margin="10,0,-11,0.089" HorizontalAlignment="Left" Width="90" Style="{StaticResource RoundedTopTabItemStyle}">
+                <TabItem x:Name="tiOptions" Header="Options" Height="28" Background="#FFECECEC" BorderBrush="#FF787878" Margin="10,0,-11,0.089" HorizontalAlignment="Left" Width="90" Style="{StaticResource RoundedTopTabItemStyle}">
                     <Grid >
                         <GroupBox x:Name="gbFolder" VerticalAlignment="Bottom" Header=" Depot folder for generated images"  Height="50" Background="#FFFBFBF4" Foreground="#FF0C17D3" Margin="5">
                             <Grid>

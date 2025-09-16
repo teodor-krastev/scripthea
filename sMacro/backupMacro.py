@@ -3,6 +3,11 @@ import sys
 # Image generation sMacro
 
 # single image generation
+a = 7
+if a==7:
+	st.log("test")
+sys.exit(2)
+
 st.log("out: "+qry.Text2Image('Desert sunrise by Turner'))
 
 # select some cues, 10% of the whole pool
@@ -16,10 +21,11 @@ qry.mSetApply('mSet.3', False)
 ls = qry.GetPreview(False)
 st.log(str(ls.Count)+' promts generated in preview')
 
-if (st.IsCancellationRequested):
+if st.IsCancellationRequested:
 	sys.exit(1)
 
 # generate images from list of prompts
 lt = qry.PromptList2Image(ls)
 st.log(str(lt.Count)+' images generated')
+
 

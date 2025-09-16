@@ -86,7 +86,7 @@ namespace scripthea.composer
                 }
                 else
                 {
-                    tbCheck.FontSize = 12; tbCheck.Margin = new Thickness(0, 0, 0, 0); gridMain.Background = Brushes.MintCream;
+                    tbCheck.FontSize = 12; tbCheck.Margin = new Thickness(0, 0, 0, 0); gridMain.Background = Utils.ToSolidColorBrush("#FFE6FFF2"); //#FFF0FFF7
                 }
                 tbCheck.ToolTip = Convert.ToString(value);
                 Change(this, null);
@@ -96,7 +96,7 @@ namespace scripthea.composer
         public bool marked 
         { 
             get { return _marked; }
-            set { _marked = value; tbContent.Background = value ? Brushes.LemonChiffon : null; } 
+            set { _marked = value; Background = value ? Brushes.LemonChiffon : null; } 
         }
         public string Text
         {
@@ -132,7 +132,7 @@ namespace scripthea.composer
         {
             string input = opts.composer.ConfirmGoogling ? new InputBox("Ask Google about", tbContent.Text, "").ShowDialog() : tbContent.Text;
             if (input.Equals("")) return;
-            Utils.AskTheWeb(input, true);
+            Utils.AskTheWeb(input, true);           
         }
     }
 }

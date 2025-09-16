@@ -67,7 +67,7 @@
                     </Grid>
                 </Grid>
             </TabItem>
-            <TabItem x:Name="tiImageDepot" Header="Image Depot" Height="30" Width="110" Background="#FFFFFFEA" Margin="15,-2,-18,0" BorderBrush="#FFB79200" Style="{StaticResource RoundedBottomTabItemStyle}">
+            <TabItem x:Name="tiImageDepot" Header="Image Depot" Height="30" Width="110" Background="#FFFFFFEA" Margin="15,-2,-18,0" BorderBrush="#FF973C14" Style="{StaticResource RoundedBottomTabItemStyle}">
                 <master:ImagePickerUC x:Name="iPickerX" FontSize="13" />
             </TabItem>
             <TabItem x:Name="tiEditor" Header="Editor" Height="30" Width="70" Background="#FFF1FFEB" Margin="25,-2,-25,0" BorderBrush="#FF058000"  Style="{StaticResource RoundedBottomTabItemStyle}">

@@ -37,24 +37,24 @@
             <Grid Grid.Row="2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="135"/>
+                    <ColumnDefinition Width="140"/>
                 </Grid.ColumnDefinitions>
                 <Label Content="Find" HorizontalAlignment="Left" FontFamily="Segoe UI Semibold" VerticalAlignment="Center"/>
                 <TextBox x:Name="tbFind" Margin="34,3,5,3"/>
                 <StackPanel Grid.Column="1" Orientation="Horizontal">
                     <Image x:Name="btnFindUp"  Width="25" Source="/Scripthea;component/Properties/find_up.png" Margin="0,0,0,0" Cursor="Hand" ToolTip="Find Up" MouseDown="btnFindUp_MouseDown" Height="25"/>
                     <Image x:Name="btnFindDown"  Width="25" Source="/Scripthea;component/Properties/find_down.png" Margin="0,0,0,0" Cursor="Hand" ToolTip="Find Down" MouseDown="btnFindUp_MouseDown" Height="25"/>
-                    <Button x:Name="btnMark" FontWeight="Bold" Content=" Mark " Background="MintCream" Margin="5,0,5,0" Foreground="#FF058402" Click="btnMark_Click" FontSize="13" FontFamily="Segoe UI Semibold" ToolTip="Mark all prompts containing the find text" />
-                    <Button x:Name="btnClearMark" FontWeight="Bold" Content="Rst" Background="White" Margin="0,0,0,0" Foreground="#FFA80303"   Click="btnMark_Click" Width="28" ToolTip="Clear (reset) the marking" />
+                    <Button x:Name="btnMark" FontWeight="Bold" Content=" Mark " Background="MintCream" Margin="5,0,5,0" Foreground="#FF058402" Click="btnMark_Click" FontSize="13" FontFamily="Segoe UI Semibold" ToolTip="Mark all prompts containing the find text" Width="45" Style="{StaticResource RoundedButtonStyle}"/>
+                    <Button x:Name="btnClearMark" FontWeight="Bold" Content="Rst" Background="White" Margin="0,0,0,0" Foreground="#FFA80303" Click="btnMark_Click" Width="32" ToolTip="Clear (reset) the marking" Style="{StaticResource RoundedButtonStyle}"/>
                 </StackPanel>
             </Grid>
             <StackPanel Grid.Row="1" Orientation="Horizontal" Height="27" HorizontalAlignment="Right" VerticalAlignment="Top" Panel.ZIndex="20" Margin="0">
-                <Button x:Name="btnPlay" Width="35" Margin="0,0,4,0" Background="White" HorizontalAlignment="Left" VerticalAlignment="Center" Click="btnPlay_Click" IsEnabled="False" ToolTip="Start slide show" Cursor="Hand" Height="27">
+                <Button x:Name="btnPlay" Width="35" Margin="0,0,4,0" Background="White" HorizontalAlignment="Left" VerticalAlignment="Center" Click="btnPlay_Click" IsEnabled="False" ToolTip="Start slide show" Cursor="Hand" Height="27" Style="{StaticResource RoundedButtonStyle}">
                     <ContentControl>
                         <Image Source="/Scripthea;component/Properties/play.png"  Cursor="Hand" Width="22"/>
                     </ContentControl>
                 </Button>
-                <Button x:Name="btnStop" Width="35" Margin="0,0,4,0" Background="White" HorizontalAlignment="Left" VerticalAlignment="Center" Click="btnPlay_Click" Visibility="Collapsed" ToolTip="Stop slide show" Cursor="Hand" Height="27">
+                <Button x:Name="btnStop" Width="35" Margin="0,0,4,0" Background="White" HorizontalAlignment="Left" VerticalAlignment="Center" Click="btnPlay_Click" Visibility="Collapsed" ToolTip="Stop slide show" Cursor="Hand" Height="27" Style="{StaticResource RoundedButtonStyle}">
                     <ContentControl>
                         <Image Source="/Scripthea;component/Properties/stop.png"  Cursor="Hand"/>
                     </ContentControl>

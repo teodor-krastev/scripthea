@@ -106,7 +106,7 @@ namespace scripthea.composer
                         s0 = sa[0].Trim(); s1 = sa[1].Trim();
                         break;
                 }
-                ModifItemUC mi = new ModifItemUC(ref opts) { Height = 16, Text = s0, FontSize = 13 };
+                ModifItemUC mi = new ModifItemUC(ref opts) { Height = 16, Text = s0, FontSize = 13, HorizontalAlignment = HorizontalAlignment.Stretch };
                 if (mi.Text.Length > 46) mi.ToolTip = s0;
                 mi.Margin = new Thickness(0, 0, 0, 0); mi.tbContent.MouseRightButtonDown += new System.Windows.Input.MouseButtonEventHandler(chkCategory_MouseRightButtonDown);
                 if (!s1.Equals("")) mi.tbContent.ToolTip = s1; 

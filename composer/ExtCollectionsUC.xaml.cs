@@ -55,7 +55,8 @@ namespace scripthea.composer
         public void Finish()
         {
             if (!Directory.Exists(folderPath)) return;
-            File.WriteAllText(Path.Combine(folderPath, lastQuery), JsonConvert.SerializeObject(GetQueryFromVisuals()));
+            ECquery ecq = GetQueryFromVisuals(); if (ecq == null) return;
+            File.WriteAllText(Path.Combine(folderPath, lastQuery), JsonConvert.SerializeObject(ecq));
         }
         public bool CoverOn 
         { 
@@ -83,7 +84,7 @@ namespace scripthea.composer
         }
         public ECquery GetQueryFromVisuals()
         {
-            bool bb = ecdesc != null;
+            bool bb = ecdesc != null; // SJL file
             bool sf = _sjlFlag;
             if (bb)
             {
@@ -91,7 +92,7 @@ namespace scripthea.composer
                 if (bc != null)
                 { 
                     sf = (bool)bc;
-                    if (sf != _sjlFlag) opts.Log("Error: internal error #587");
+                    if (sf != _sjlFlag) { opts.Log("Error: internal error #587"); return null; }
                 }
             }
             ECquery ecq = new ECquery()
@@ -115,16 +116,19 @@ namespace scripthea.composer
                 RandomSampleFlag = Convert.ToBoolean(chkRandomSample.IsChecked.Value),
                 RandomSampleSize = numRandomSample.Value
             };
-            
+            if (ecq.SegmentFlag)
+                if (ecq.SegmentFrom > ecq.SegmentTo) { opts.Log("Error: segment limits."); return null; }
+            if (ecq.WordsFlag)
+                if (ecq.WordsMin > ecq.WordsMax) { opts.Log("Error: words size limits."); return null; }
+
             if (bb) bb = ecdesc.useCategories;
             if (sjlFlag && bb)
             {
                 ecq.CatFlag = chkFilterByCat.IsChecked.Value;
                 ecq.CatThreshold = (int)sliderThreshold.Value;
                 ecq.categories = GetCategories();
+                if (ecq.CatFlag && ecq.categories.Count == 0) { opts.Log("Error: no selected categories."); return null; }
             }
-            if (ecq.SegmentFrom > ecq.SegmentTo) opts.Log("Error: segment bondaries.");
-            if (ecq.WordsMin > ecq.WordsMax) opts.Log("Error: words size limits.");
             return ecq;
         }
         public void SetQuery2Visuals(ECquery qry)
@@ -229,7 +233,10 @@ namespace scripthea.composer
                 Mouse.OverrideCursor = Cursors.Wait; eCollection.cancelRequest = MessageBoxResult.No; semanticMatching = true;
 
                 eCollection.OpenEColl(folderPath); 
-                ECquery ecq = GetQueryFromVisuals(); ecq.SemanticProgress = tbSemProgress;
+                ECquery ecq = GetQueryFromVisuals();
+                if (ecq == null) return;
+                
+                ecq.SemanticProgress = tbSemProgress;
 
                 List<ECprompt> cues = eCollection.ExtractCueList(folderPath, ecq);
                 if (cues == null) return; // user cancelation
