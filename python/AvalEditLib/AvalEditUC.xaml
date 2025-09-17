@@ -61,7 +61,7 @@
 				Margin="0" Width="60" Visibility="Collapsed"/>
 
                 <CheckBox x:Name="chkOptions" Margin="0,0,0,0" BorderBrush="#FFC8C8C8" Checked="chkOptions_Checked" Unchecked="chkOptions_Checked" HorizontalAlignment="Right">
-                    <Image Source="Properties/TripleBarGrey.png" Height="19" Margin="0,0,0,0"/>
+                    <Image Source="Properties/TripleBarGrey.png" Height="21" Margin="0,0,0,0"/>
                 </CheckBox>
                 <TextBlock x:Name="tbFilename" VerticalAlignment="Center" Margin="5,0,0,0"></TextBlock>
             </ToolBar>

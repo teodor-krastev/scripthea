@@ -19,7 +19,7 @@
                     <ColumnDefinition/>
                     <ColumnDefinition Width="100"/>
                 </Grid.ColumnDefinitions>
-                <TextBox x:Name="tbImageDepot" Background="{x:Null}" Margin="0,2,2.962,-2" IsReadOnly="True" BorderThickness="0" TextChanged="tbImageDepot_TextChanged" >
+                <TextBox x:Name="tbImageDepot" Background="{x:Null}" Margin="3,3,2.962,-2" IsReadOnly="True" BorderThickness="0" TextChanged="tbImageDepot_TextChanged" FontSize="14" >
                 </TextBox>
                 <Button x:Name="btnNewFolder" Grid.Column="1" Content="Browse" Click="btnNewFolder_Click" HorizontalAlignment="Left" Margin="0" Width="60" Foreground="#FF0F8001" FontWeight="Bold" Background="White" Style="{StaticResource RoundedButtonStyle}" Visibility="Collapsed" VerticalAlignment="Center" Height="26">
                 </Button>
@@ -32,7 +32,7 @@
                 <ColumnDefinition Width="100"/>
             </Grid.ColumnDefinitions>
             <StackPanel Orientation="Horizontal" Grid.ColumnSpan="2" Margin="0,0,-0.329,-0.228">
-                <Button x:Name="btnMenu" Width="30" Margin="3,0,0,0" ToolTip="Local menu" Background="{x:Null}" Height="30" Style="{StaticResource RoundedButtonStyle}">
+                <Button x:Name="btnMenu" Width="30" Margin="3,0,0,0" ToolTip="Local menu" Background="{x:Null}" Height="30" Style="{StaticResource RoundedSmallButtonStyle}">
                     <ContentControl>
                         <Image x:Name="imgMenu" Margin="1,1,0,0" VerticalAlignment="Center" Width="28" Source="/Scripthea;component/Properties/TripleBarTeal.png" ToolTip="Single click - menu; Double left - invert" Cursor="Hand" HorizontalAlignment="Center" Height="28" MouseDown="imgMenu_MouseDown" >
                         </Image>

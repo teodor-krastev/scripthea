@@ -25,8 +25,8 @@
                         <ColumnDefinition x:Name="colRefresh"  Width="40"/>
                         <ColumnDefinition Width="100"/>
                     </Grid.ColumnDefinitions>
-                    <TextBox x:Name="tbImageDepot" Background="{x:Null}" TextChanged="tbImageDepot_TextChanged" Margin="0,2,2.962,-2" BorderThickness="0"/>
-                    <Button x:Name="btnRefresh" Grid.Column="1" Foreground="#FF0F8001" HorizontalAlignment="Center" Width="36" FontWeight="Bold"  Click="btnRefresh_Click" Background="{x:Null}" ToolTip="Refresh from image depot">
+                    <TextBox x:Name="tbImageDepot" Background="{x:Null}" TextChanged="tbImageDepot_TextChanged" Margin="3,1,2.962,-2" BorderThickness="0" FontSize="14"/>
+                    <Button x:Name="btnRefresh" Grid.Column="1" Foreground="#FF0F8001" HorizontalAlignment="Center" Width="36" FontWeight="Bold"  Click="btnRefresh_Click" Background="{x:Null}" ToolTip="Refresh from image depot" Style="{StaticResource RoundedSmallButtonStyle}">
                         <ContentControl>
                             <Image Source="/Scripthea;component/Properties/refresh.png"  Cursor="Hand"/>
                         </ContentControl>
@@ -44,12 +44,12 @@
                 <StackPanel Grid.Column="1" Orientation="Horizontal">
                     <Image x:Name="btnFindUp"  Width="25" Source="/Scripthea;component/Properties/find_up.png" Margin="0,0,0,0" Cursor="Hand" ToolTip="Find Up" MouseDown="btnFindUp_MouseDown" Height="25"/>
                     <Image x:Name="btnFindDown"  Width="25" Source="/Scripthea;component/Properties/find_down.png" Margin="0,0,0,0" Cursor="Hand" ToolTip="Find Down" MouseDown="btnFindUp_MouseDown" Height="25"/>
-                    <Button x:Name="btnMark" FontWeight="Bold" Content=" Mark " Background="MintCream" Margin="5,0,5,0" Foreground="#FF058402" Click="btnMark_Click" FontSize="13" FontFamily="Segoe UI Semibold" ToolTip="Mark all prompts containing the find text" Width="45" Style="{StaticResource RoundedButtonStyle}"/>
-                    <Button x:Name="btnClearMark" FontWeight="Bold" Content="Rst" Background="White" Margin="0,0,0,0" Foreground="#FFA80303" Click="btnMark_Click" Width="32" ToolTip="Clear (reset) the marking" Style="{StaticResource RoundedButtonStyle}"/>
+                    <Button x:Name="btnMark" FontWeight="Bold" Content=" Mark " Background="MintCream" Margin="5,0,5,0" Foreground="#FF058402" Click="btnMark_Click" FontSize="13" FontFamily="Segoe UI Semibold" ToolTip="Mark all prompts containing the find text" Width="45" Style="{StaticResource RoundedSmallButtonStyle}"/>
+                    <Button x:Name="btnClearMark" FontWeight="Bold" Content="Rst" Background="White" Margin="0,0,0,0" Foreground="#FFA80303" Click="btnMark_Click" Width="32" ToolTip="Clear (reset) the marking" Style="{StaticResource RoundedSmallButtonStyle}"/>
                 </StackPanel>
             </Grid>
             <StackPanel Grid.Row="1" Orientation="Horizontal" Height="27" HorizontalAlignment="Right" VerticalAlignment="Top" Panel.ZIndex="20" Margin="0">
-                <Button x:Name="btnPlay" Width="35" Margin="0,0,4,0" Background="White" HorizontalAlignment="Left" VerticalAlignment="Center" Click="btnPlay_Click" IsEnabled="False" ToolTip="Start slide show" Cursor="Hand" Height="27" Style="{StaticResource RoundedButtonStyle}">
+                <Button x:Name="btnPlay" Width="35" Margin="0,0,4,0" Background="White" HorizontalAlignment="Left" VerticalAlignment="Center" Click="btnPlay_Click" IsEnabled="False" ToolTip="Start slide show" Cursor="Hand" Height="27" Style="{StaticResource RoundedSmallButtonStyle}">
                     <ContentControl>
                         <Image Source="/Scripthea;component/Properties/play.png"  Cursor="Hand" Width="22"/>
                     </ContentControl>

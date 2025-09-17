@@ -51,7 +51,7 @@
                             </StackPanel>
                         </GroupBox>
                         <CheckBox x:Name="chkOneLineCue" Content="One line cue" Width="95" Margin="314,46,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Checked="UpdateToOptions" Unchecked="UpdateToOptions" IsChecked="True" Visibility="Collapsed"  />
-                        <Button x:Name="btnCopy" Margin="0,0,3,3" VerticalAlignment="Bottom" HorizontalAlignment="Right" Background="{x:Null}" ToolTip="Copy current prompt to clipboard" Cursor="Hand" Width="30" Height="28" BorderBrush="#FFCECECE" Click="btnCopy_Click" Style="{StaticResource RoundedButtonStyle}">
+                        <Button x:Name="btnCopy" Margin="0,0,3,3" VerticalAlignment="Bottom" HorizontalAlignment="Right" Background="{x:Null}" ToolTip="Copy current prompt to clipboard" Cursor="Hand" Width="30" Height="28" BorderBrush="#FFCECECE" Click="btnCopy_Click" Style="{StaticResource RoundedSmallButtonStyle}">
                             <ContentControl>
                                 <Image x:Name="imgCopy" Margin="0,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" Height="20" Width="25" ToolTip="Copy to clipboard" Cursor="Hand" Source="/Scripthea;component/Properties/copy1a.png"/>
                             </ContentControl>
@@ -76,7 +76,7 @@
                                     <ColumnDefinition Width="1*"/>
                                     <ColumnDefinition Width="1"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBox x:Name="tbImageDepot"  Margin="5,5,2,0" BorderThickness="0" TextChanged="tbImageDepot_TextChanged" Background="{x:Null}"/>
+                                <TextBox x:Name="tbImageDepot"  Margin="5,3,2,0" BorderThickness="0" TextChanged="tbImageDepot_TextChanged" Background="{x:Null}" FontSize="14" Height="22"/>
                                 <Button x:Name="btnNewFolder" Grid.Column="1" Content=" Browse " Click="btnNewFolder_Click" Foreground="#FF0F8001" FontWeight="Bold" Background="#FFF4F4F4" Margin="3,0,0,0" Visibility="Hidden"/>
                             </Grid>
                         </GroupBox>

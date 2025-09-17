@@ -9,7 +9,7 @@
     <Grid>
         <Label x:Name="lbStatus" Height="28" Content="COMM:" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,0,0,3" FontSize="13" FontWeight="Bold"/>
         <Button x:Name="btnReset" Content="Reset" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="26" Width="49"  Margin="0,0,5,3" Background="#FFFDD07E" Visibility="Collapsed"/>
-        <Button x:Name="btnSDoptions" HorizontalAlignment="Left" VerticalAlignment="Bottom" Background="{x:Null}" Width="28" Height="28" Margin="2,0,0,2" Style="{StaticResource RoundedButtonStyle}">
+        <Button x:Name="btnSDoptions" HorizontalAlignment="Left" VerticalAlignment="Bottom" Background="{x:Null}" Width="28" Height="28" Margin="2,0,0,2" Style="{StaticResource RoundedSmallButtonStyle}">
             <ContentControl>
                 <Image x:Name="ibtnOpts" Source="/Scripthea;component/Properties/TripleBarGrey.png" Margin="1,1,0,0" Width="28" Height="28"  
                        Cursor="Hand" HorizontalAlignment="Center" VerticalAlignment="Center"></Image>
