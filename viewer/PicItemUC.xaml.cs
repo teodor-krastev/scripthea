@@ -29,6 +29,8 @@ namespace scripthea.viewer
         public HashSet<statusStates> status;
         public PicItemUC(ref Options _opts, bool __checkable)
         {
+            if (_opts == null) return;
+            if (_opts.general.AppTerminating) return;
             InitializeComponent();
             opts = _opts; checkable = __checkable;
             status = new HashSet<statusStates>();

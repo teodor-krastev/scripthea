@@ -66,7 +66,7 @@
                 <Label x:Name="lbBest" Content="Top" Margin="0,1,0,0"></Label>
                 <external:IntegerBox x:Name="numSemanticBest" Value="100" Width="55" VerticalAlignment="Center" Margin="0,2,5,2" Height="26"/>
                 <TextBlock x:Name="tbSemProgress" Text="0%" Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" FontFamily="Segoe UI Semibold" Foreground="Navy" Visibility="Hidden"></TextBlock>
-                <Button x:Name="btnSemStop" Width="30" Margin="3,0,0,0" Background="White" HorizontalAlignment="Left" VerticalAlignment="Center" ToolTip="Stop semantic filter" Cursor="Hand" Height="27" Click="btnSemStop_Click" Visibility="Hidden">
+                <Button x:Name="btnSemStop" Width="30" Margin="3,0,0,0" Background="White" HorizontalAlignment="Left" VerticalAlignment="Center" ToolTip="Stop semantic filter" Cursor="Hand" Height="27" Click="btnSemStop_Click" Visibility="Hidden"  Style="{StaticResource RoundedSmallButtonStyle}" IsEnabled="False">
                     <ContentControl>
                         <Image Source="/Scripthea;component/Properties/exclamation.png"  Cursor="Hand" Width="22"/>
                     </ContentControl>

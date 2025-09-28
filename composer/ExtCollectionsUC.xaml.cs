@@ -230,12 +230,11 @@ namespace scripthea.composer
             tbInfo.Text = "info"; 
             try
             {
-                Mouse.OverrideCursor = Cursors.Wait; eCollection.cancelRequest = MessageBoxResult.No; semanticMatching = true;
+                Mouse.OverrideCursor = Cursors.Wait; eCollection.cancelRequest = MessageBoxResult.No; 
 
                 eCollection.OpenEColl(folderPath); 
-                ECquery ecq = GetQueryFromVisuals();
-                if (ecq == null) return;
-                
+                ECquery ecq = GetQueryFromVisuals(); if (ecq == null) return;
+                semanticMatching = ecq.Way2Match.Equals(2);  btnSemStop.IsEnabled = semanticMatching;
                 ecq.SemanticProgress = tbSemProgress;
 
                 List<ECprompt> cues = eCollection.ExtractCueList(folderPath, ecq);
@@ -259,7 +258,7 @@ namespace scripthea.composer
                 }
                 NewCuesEvent?.Invoke(this, EventArgs.Empty);
                 //tbInfo.Text = ec.wordsCount.Count.ToString() + " processed lines; " + ec.AverWordsCount().ToString() + " average words count; " + cues.Count.ToString() + " prompts produced.";
-            } finally { Mouse.OverrideCursor = null; semanticMatching = false; }
+            } finally { Mouse.OverrideCursor = null; semanticMatching = false; btnSemStop.IsEnabled = false; }
         }       
         private void sliderThreshold_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
@@ -282,7 +281,7 @@ namespace scripthea.composer
                 if (cbWay2Match.SelectedIndex != 2 && !cbiSemantic.IsEnabled) return;
                 if (value) // going ON
                 {
-                    tbSemProgress.Visibility = Visibility.Visible; btnSemStop.Visibility = Visibility.Visible;
+                    tbSemProgress.Visibility = Visibility.Visible; btnSemStop.Visibility = Visibility.Visible; 
                     eCollection.cancelRequest = MessageBoxResult.No; tbSemProgress.Text = "0%";
                 }
                 _semanticMatching = value;

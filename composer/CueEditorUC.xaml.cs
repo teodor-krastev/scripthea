@@ -225,10 +225,12 @@ namespace scripthea.composer
         {
             var ls = new List<string>();
             for (int i = 0; i < cues.Count; i++)
-            {
+            {               
                 if (cues[i].cueText.Trim().Equals("")) continue;
+                if (!cues[i].headerText.Equals("")) ls.Add("# {"+cues[i].headerText+"}");
                 if (oneline) ls.Add(cues[i].cueTextAsString(false));
                 else ls.AddRange(cues[i].cueTextAsList(false));
+                if (!cues[i].footerText.Equals("")) ls.Add("# {" + cues[i].footerText + "}");
                 ls.Add("---");
             }
             string fn = Path.GetFileName(Path.ChangeExtension(filename, null)); 
@@ -237,7 +239,7 @@ namespace scripthea.composer
             string folder = Directory.Exists(opts.composer.WorkCuesFolder) ? opts.composer.WorkCuesFolder : Path.Combine(Utils.basePath, "cues");
             filename = Path.Combine(folder, filename);
             Utils.writeList(Path.ChangeExtension(filename, ".cues"), ls);
-            opts.Log("Saved cues in " + filename, Brushes.Tomato); newCues = true;
+            opts.Log("Saved cue file as <" + filename+">", Brushes.Tomato); newCues = true;
         }
         private void SaveFlatAs(bool oneline = true) // flat is one line cue
         {

@@ -13,7 +13,7 @@
             <RowDefinition x:Name="rowBottom" Height="100" MinHeight="8"/>
         </Grid.RowDefinitions>
         <StackPanel Margin="0" Orientation="Horizontal" HorizontalAlignment="Left">
-            <Button x:Name="btnCopy" Margin="7,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Right" Background="{x:Null}" ToolTip="Edit preferences" Cursor="Hand" Width="30" Height="28" BorderBrush="#FFCECECE" Click="btnCopy_Click" >
+            <Button x:Name="btnCopy" Margin="7,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Right" Background="{x:Null}" ToolTip="Edit preferences" Cursor="Hand" Width="30" Height="28" BorderBrush="#FFCECECE" Click="btnCopy_Click" BorderThickness="0.7" Style="{StaticResource RoundedSmallButtonStyle}">
                 <ContentControl>
                     <Image x:Name="imgCopy" Margin="0,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" Height="20" Width="25" ToolTip="Copy to clipboard" Cursor="Hand" Source="/Scripthea;component/Properties/copy1a.png"/>
                 </ContentControl>

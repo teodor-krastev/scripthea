@@ -3,11 +3,6 @@ import sys
 # Image generation sMacro
 
 # single image generation
-a = 7
-if a==7:
-	st.log("test")
-sys.exit(2)
-
 st.log("out: "+qry.Text2Image('Desert sunrise by Turner'))
 
 # select some cues, 10% of the whole pool

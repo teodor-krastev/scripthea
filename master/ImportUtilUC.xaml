@@ -32,7 +32,7 @@
                 <ColumnDefinition Width="100"/>
             </Grid.ColumnDefinitions>
             <StackPanel Orientation="Horizontal" Grid.ColumnSpan="2" Margin="0,0,-0.329,-0.228">
-                <Button x:Name="btnMenu" Width="30" Margin="3,0,0,0" ToolTip="Local menu" Background="{x:Null}" Height="30" Style="{StaticResource RoundedSmallButtonStyle}">
+                <Button x:Name="btnMenu" Width="30" Margin="3,0,0,0" ToolTip="Local menu" Background="{x:Null}" Height="30" BorderThickness="0.7" Style="{StaticResource RoundedSmallButtonStyle}">
                     <ContentControl>
                         <Image x:Name="imgMenu" Margin="1,1,0,0" VerticalAlignment="Center" Width="28" Source="/Scripthea;component/Properties/TripleBarTeal.png" ToolTip="Single click - menu; Double left - invert" Cursor="Hand" HorizontalAlignment="Center" Height="28" MouseDown="imgMenu_MouseDown" >
                         </Image>
