@@ -7,8 +7,13 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
+        <Button x:Name="btnCopy" Margin="7,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Right" Background="{x:Null}" ToolTip="Copy stats to clipboard" Cursor="Hand" Width="30" Height="28" BorderBrush="#FFCECECE" Click="btnCopy_Click" BorderThickness="0.7" Style="{StaticResource RoundedSmallButtonStyle}">
+            <ContentControl>
+                <Image x:Name="imgCopy" Margin="0,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" Height="20" Width="25" ToolTip="Copy stats to clipboard" Cursor="Hand" Source="/Scripthea;component/Properties/copy1a.png"/>
+            </ContentControl>
+        </Button>
         <StackPanel>
-            <TextBlock x:Name="tbTitle" Text=" Image depot statistics" FontSize="14" FontFamily="Segoe UI Semibold"></TextBlock>
+            <TextBlock x:Name="tbTitle" Text="Statistics of image depot:" FontSize="14" FontFamily="Segoe UI Semibold" Margin="0,0,0,0" Foreground="Navy" HorizontalAlignment="Left"></TextBlock>
             <GroupBox Header="Image folder" Margin="0,10,0,0" FontFamily="Segoe UI Semibold" BorderBrush="#FFBBD0DD">
                 <Grid>
                     <ListBox x:Name="lbImgFolder" BorderBrush="{x:Null}" FontFamily="Segoe UI"></ListBox>

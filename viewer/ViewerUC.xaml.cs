@@ -280,7 +280,7 @@ namespace scripthea.viewer
                 {
                     bool bb = sender == tabCtrlViews;
                     bool bc = activeView == gridViewUC;
-                    if (bc) bc = iDepot.SameAs(activeView.loadedDepot);
+                    if (bc) bc = iDepot.SameAs(activeView.loadedDepot) && !gridViewUC.unfinishedLot;
                     if (iDepot.SameAs(folder) && bb && bc) return;
                 }
                 iDepot = new ImageDepot(imageFolder);
@@ -333,16 +333,13 @@ namespace scripthea.viewer
         private void tabCtrlViews_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             animation = false;
-            if ((lastIdx == 1) && (tabCtrlViews.SelectedIndex == 0))
+            if ((lastIdx == 1) && (tabCtrlViews.SelectedIndex == 0 || tabCtrlViews.SelectedIndex == 2))
             {
                 if (gridViewUC.OutOfResources) gridViewUC.Clear();
-                else
-                {
-                    if (gridViewUC.Loading) gridViewUC.CancelRequest = true;
-                }
+                else gridViewUC.CancelLoading();               
             }
             lastIdx = tabCtrlViews.SelectedIndex;
-            if (tabCtrlViews.SelectedItem.Equals(tiStats)) { btnPlay.IsEnabled = false; iDepotStats.Clear(); }
+            if (tabCtrlViews.SelectedItem.Equals(tiStats)) { btnPlay.IsEnabled = false; iDepotStats.OnChangeDepot(imageFolder); }
             if (chkAutoRefresh.IsChecked.Value && showing) btnRefresh_Click(sender, e);
             if (!Utils.isNull(e)) e.Handled = true;
         }        

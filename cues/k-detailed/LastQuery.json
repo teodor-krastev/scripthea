@@ -1,1 +1,1 @@
-{"sjlFlag":true,"SegmentFlag":false,"SegmentFrom":6,"SegmentTo":200,"WordsFlag":false,"WordsMin":10,"WordsMax":9,"CatFlag":false,"categories":[],"CatThreshold":31,"Pattern":"","Way2Match":0,"SemanticBest":0,"RandomSampleFlag":true,"RandomSampleSize":30}
+{"sjlFlag":true,"SegmentFlag":false,"SegmentFrom":6,"SegmentTo":200,"WordsFlag":false,"WordsMin":10,"WordsMax":20,"CatFlag":true,"categories":[2,3],"CatThreshold":31,"Pattern":"","Way2Match":2,"SemanticBest":100,"RandomSampleFlag":true,"RandomSampleSize":300}

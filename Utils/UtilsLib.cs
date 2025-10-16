@@ -1548,6 +1548,7 @@ namespace UtilsNS
         }
         public static bool comparePaths(string path1, string path2)
         {
+            if (path1 == null || path2 == null) return false;
             if (path1.Equals("") || path2.Equals("")) return false;
             return Path.GetFullPath(path1).TrimEnd('\\').Equals(Path.GetFullPath(path2).TrimEnd('\\'), StringComparison.InvariantCultureIgnoreCase);
         }

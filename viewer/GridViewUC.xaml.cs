@@ -38,7 +38,12 @@ namespace scripthea.viewer
             lbZoom.Content = opts.viewer.ThumbZoom.ToString() + "%";
             chkShowCue.IsChecked = opts.viewer.ThumbCue; chkShowFilename.IsChecked = opts.viewer.ThumbFilename;            
         }
-        public bool CancelRequest = false;
+        private bool CancelRequest = false;
+        public void CancelLoading()
+        {
+            if (!Loading) return; CancelRequest = true;
+            //Task.Run(() => );             
+        }
         private bool ShuttingDown = false;
         public void Finish()
         {
@@ -93,6 +98,8 @@ namespace scripthea.viewer
                 Utils.DoEvents();
             }
         }
+        private bool _unfinishedLot = true;
+        public bool unfinishedLot { get => _unfinishedLot; }
         public void UpdateVis()
         {
             try
@@ -103,7 +110,7 @@ namespace scripthea.viewer
                 foreach (var itm in iDepot.Export2Viewer())
                 {
                     if (ShuttingDown) return;
-                    if (CancelRequest) { CancelRequest = false; return; }
+                    if (CancelRequest) return; 
                     PicItemUC piUC = new PicItemUC(ref opts, checkable); piUC.IsChecked = true;
                     picItems.Add(piUC); labelNum.Content = (int)(100.0 * picItems.Count / cnt) + "%";
                     int k = Utils.InRange(thumbsPerRow, 2,20) ? thumbsPerRow : 4;
@@ -131,7 +138,7 @@ namespace scripthea.viewer
                 ChangeContent(this, null); 
             }
             finally 
-            { Loading = false; labelNum.Content = ""; selectedIndex = 0; scrollToIdx(); }
+            { labelNum.Content = ""; selectedIndex = 0; Loading = false; scrollToIdx(); _unfinishedLot = CancelRequest; CancelRequest = false; }
         }
         public void UpdateVisRecord(int idx, ImageInfo ii) // update visual record from ii
         {
@@ -172,7 +179,6 @@ namespace scripthea.viewer
             }
         } 
         UndoRec undoRec;
-
         public void RemoveAt(bool inclFile, int idx = -1) // default selected
         {
             if (undoRec.full)
@@ -262,8 +268,9 @@ namespace scripthea.viewer
         {
             if (_iDepot == null) return false;
             if (!Directory.Exists(_iDepot.path)) { opts.Log("Error[785]: no such folder -> " + _iDepot.path); return false; }
+            bool bb = !Utils.comparePaths(loadedDepot, _iDepot.path); // new path
             iDepot = _iDepot; loadedDepot = iDepot.path;
-            UpdateVis();
+            if (unfinishedLot || bb) UpdateVis();
             return true;
         }
         public int selectedIndex // 0 based index

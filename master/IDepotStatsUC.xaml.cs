@@ -36,6 +36,7 @@ namespace scripthea.master
         }
         public void Clear()
         {
+            tbTitle.Text = "Statistics of image depot:";
             lbImgFolder.Items.Clear();
             lbImages.Items.Clear();
             lbRatings.Items.Clear();
@@ -43,17 +44,22 @@ namespace scripthea.master
         }
         public ImageDepot iDepot { get; private set; } = null;
         protected List<FileInfo> fileInfos;
+        private List<string> ReportList;
         public void OnChangeDepot(string ImageDepotPath)
         {
             Clear();
+            if (ImageDepotPath == null || ImageDepotPath == "") return;
             iDepot = new ImageDepot(ImageDepotPath);
             iDepot?.Validate(null);           
             ReadFileInfos(iDepot.path);
             if (fileInfos.Count == 0) { opts.Log("Error: image folder problem"); return; }
-            FolderStats();
-            ImagesStats();
-            RatingsHisto();
-            CommonParams();
+            tbTitle.Text = "Statistics of image depot: "+ ImageDepotPath;
+            ReportList = new List<string>();
+            ReportList.Add(tbTitle.Text); ReportList.Add("============");
+            ReportList.AddRange(SectionToList("Image folder",FolderStats()));
+            ReportList.AddRange(SectionToList("Images    size: mean (min . . max)", ImagesStats()));
+            ReportList.AddRange(SectionToList("Ratings", RatingsHisto()));
+            ReportList.AddRange(SectionToList("Common image-generation parameters", CommonParams()));
         }
         public List<FileInfo> ReadFileInfos(string iDepotPath)
         {
@@ -89,6 +95,17 @@ namespace scripthea.master
                 }
             }
             return fileInfos; 
+        }
+        private List<string> SectionToList(string Title, Dictionary<string, string> Items)
+        {
+            List<string> ls = new List<string>();
+            ls.Add(Title);
+            foreach(var pair in Items)
+            {
+                ls.Add(pair.Key + ": " + pair.Value);
+            }
+            ls.Add("------------");
+            return ls;
         }
         private Dictionary<string, string> FolderStats()
         {
@@ -194,6 +211,12 @@ namespace scripthea.master
             }
             Utils.dict2ListBox(dict, lbCommonParams);
             return dict;
+        }
+        private void btnCopy_Click(object sender, RoutedEventArgs e)
+        {
+            if (ReportList == null) return;
+            if (ReportList.Count == 0) return;
+            Clipboard.SetText(string.Join("\n", ReportList));
         }
     }
 }
