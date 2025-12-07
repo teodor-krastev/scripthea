@@ -1,0 +1,11 @@
+﻿<UserControl x:Class="scripthea.preview.ScanPreviewUC"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:scripthea.preview"
+             mc:Ignorable="d" FontSize="13"  >
+    <Grid>
+        <DataGrid x:Name="dGrid" Margin="0" AutoGeneratingColumn="dGrid_AutoGeneratingColumn" SelectionMode="Single" MaxColumnWidth="1300" CanUserReorderColumns="False" SelectionChanged="dGrid_SelectionChanged" CanUserAddRows="False" VerticalScrollBarVisibility="Visible" BorderBrush="{x:Null}" />
+    </Grid>
+</UserControl>

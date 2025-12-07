@@ -217,6 +217,7 @@ namespace scripthea.master
             if (ReportList == null) return;
             if (ReportList.Count == 0) return;
             Clipboard.SetText(string.Join("\n", ReportList));
+            _ = new PopupText(btnCopy, "Stats copied");
         }
     }
 }

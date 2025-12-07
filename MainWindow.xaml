@@ -37,9 +37,9 @@
             <StackPanel HorizontalAlignment="Right" VerticalAlignment="Center" Orientation="Horizontal" Height="35" Margin="0" Width="110">
                 <Image x:Name="imgAbout" Margin="0,3,0,0" Source="Properties/penpic1.ico" Cursor="Help" MouseDown="imgAbout_MouseDown" VerticalAlignment="Center" Width="30" Height="30" HorizontalAlignment="Left"/>
                 <Label x:Name="lbProcessing" FontSize="14" FontWeight="Bold" Background="{x:Null}" Margin="3,10,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="40"/>
-                <Button x:Name="btnPreferences" Margin="0,0,3,0" VerticalAlignment="Center" Background="{x:Null}" ToolTip="Edit preferences" Cursor="Hand" Click="btnPreferences_Click" Width="28" Height="28" BorderThickness="0.7" Style="{StaticResource RoundedSmallButtonStyle}">
+                <Button x:Name="btnPreferences" Margin="0,0,3,0" VerticalAlignment="Center" Background="{x:Null}" ToolTip="Edit configuration" Cursor="Hand" Click="btnPreferences_Click" Width="28" Height="28" BorderThickness="0.7" Style="{StaticResource RoundedSmallButtonStyle}">
                     <ContentControl>
-                        <Image Source="Properties/TripleBarBlack.png" HorizontalAlignment="Center" VerticalAlignment="Center" Width="28" Height="28" Margin="1,1,0,0"/>
+                        <Image Source="Properties/gear-2.png" HorizontalAlignment="Center" VerticalAlignment="Center" Width="24" Height="24" Margin="1,1,0,0"/>
                     </ContentControl>
                 </Button>
             </StackPanel>

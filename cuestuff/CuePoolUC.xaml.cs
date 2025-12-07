@@ -14,7 +14,7 @@ using scripthea.options;
 using ExtCollMng;
 using UtilsNS;
 
-namespace scripthea.composer
+namespace scripthea.cuestuff
 {
     /// <summary>
     /// Interaction logic for CuePoolUC.xaml
@@ -200,7 +200,7 @@ namespace scripthea.composer
             dialog.Title = "Select an image depot folder ";
             dialog.IsFolderPicker = true; iPickerX.lbChecked.Content = "loading...";
             if (dialog.ShowDialog() != CommonFileDialogResult.Ok) { iPickerX.lbChecked.Content = "---"; return; }
-            iPickerX.tbImageDepot.Text = dialog.FileName; btnSDparams.IsEnabled = Directory.Exists(dialog.FileName);
+            iPickerX.tbImageDepot.Text = dialog.FileName; VisualHelper.SetButtonEnabled(btnSDparams, Directory.Exists(dialog.FileName));
         }
         public event Utils.LogHandler OnSDparams;
         protected void btnSDparams_Click(object sender, RoutedEventArgs e) 
@@ -362,8 +362,7 @@ namespace scripthea.composer
         {
             if (cbCuesFolders.SelectedItem == null) return;
             cbCuesFolders.ToolTip = cuesFolderPathByName(Convert.ToString(((ComboBoxItem)cbCuesFolders.SelectedItem).Content));
-            btnLoad.IsEnabled = !Utils.comparePaths(Convert.ToString(cbCuesFolders.ToolTip), cuesFolder);
-            btnLoad.Foreground = btnLoad.IsEnabled ? Brushes.Black : Brushes.Silver;
+            VisualHelper.SetButtonEnabled(btnLoad, !Utils.comparePaths(Convert.ToString(cbCuesFolders.ToolTip), cuesFolder));           
         }
         private void btnLoad_Click(object sender, RoutedEventArgs e)
         {

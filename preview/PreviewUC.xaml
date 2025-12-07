@@ -1,0 +1,76 @@
+﻿<UserControl
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:scripthea.preview"             
+             xmlns:external="clr-namespace:scripthea.external" x:Class="scripthea.preview.PreviewUC"             
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="34"/>
+            <RowDefinition x:Name="rowFashion" Height="130"/>
+            <RowDefinition Height="5*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal" Background="#FFF6FFF7">
+            <Button x:Name="btnMenu" Width="25" Height="25" Margin="5,0,0,0" ToolTip="Local menu" Background="White" HorizontalAlignment="Left" VerticalAlignment="Center" Style="{StaticResource RoundedSmallButtonStyle}">
+                <Button.ContextMenu>
+                    <ContextMenu x:Name="cmImgMenu">
+                        <MenuItem Header="Check All" Click="mi_Click"/>
+                        <MenuItem Header="Uncheck All" Click="mi_Click"/>
+                        <MenuItem x:Name="miInvertChecking" Header="Invert Checking" Click="mi_Click" FontWeight="Bold"/>
+                        <MenuItem Header="Check with Mask or Range" Click="mi_Click"/>
+                        <Separator/>
+                        <MenuItem x:Name="miRemoveChecked" Header="Remove Checked" Click="mi_Click"/>
+                        <Separator/>
+                        <MenuItem x:Name="miReadOnly" Header="Read Only" Click="mi_Click" IsCheckable="True" IsChecked="True"/>
+                    </ContextMenu>
+                </Button.ContextMenu>
+                <ContentControl>
+                    <Image x:Name="imgMenu" Margin="0,1,0,0" VerticalAlignment="Center" Width="25" Height="25" Source="/Scripthea;component/Properties/TripleBarTeal.png" ToolTip="Single click - menu; Double left - invert" Cursor="Hand" HorizontalAlignment="Center" MouseDown="imgMenu_MouseDown" />
+                </ContentControl>
+            </Button>
+            <Button x:Name="btnScanChecked" Content="Scan All Checked" HorizontalAlignment="Left" Margin="10,0,0,0" Width="137" FontSize="13" Background="#FFFEFEEE" Height="25" BorderBrush="#FF001E80" Style="{StaticResource RoundedButtonStyle}" ToolTip="Scan over all checked prompts"/>
+            <Button x:Name="btnQuerySelected" Content="Query Selected One" HorizontalAlignment="Left" Margin="5,0,0,0" Width="140" FontSize="13" Background="#FFFEFEEE" IsEnabled="True" Height="25" BorderBrush="#FF098302" Style="{StaticResource RoundedButtonStyle}" ToolTip="Quesry the selected prompt"/>
+            <Label x:Name="lbCheckCount" Content="Checked: " VerticalAlignment="Center" Margin="10,0,0,0" FontSize="14" MouseDoubleClick="lbCheckCount_MouseDoubleClick"/>
+            <Button x:Name="btnCopy" Content="Copy" HorizontalAlignment="Left" Margin="10,0,0,0" Width="91" FontSize="13" Background="#FFE9FBFF" Click="btnCopy_Click" Height="25" Style="{StaticResource RoundedButtonStyle}" ToolTip="Copy the prompt list to the clipboard"/>
+            <Button x:Name="btnSaveAs" Content="Save As..." HorizontalAlignment="Left" Margin="5,0,0,0" Width="91" FontSize="13" Background="#FFE5F5F8" Click="btnSaveAs_Click" Height="25" Style="{StaticResource RoundedButtonStyle}" ToolTip="Save the prompt list to a file"/>
+            <Button x:Name="btnClose" Content="Close" HorizontalAlignment="Left" Margin="10,0,0,0" Width="91" FontSize="13" Background="#FFFAFAEB" Height="25" Visibility="Collapsed" Style="{StaticResource RoundedButtonStyle}"/>
+        </StackPanel>
+        <local:FashioningUC x:Name="fashionUC" Margin="0" Grid.Row="1" HorizontalAlignment="Left"/>
+        <TabControl x:Name="tcPreviews"  Margin="0" Grid.Row="2">
+            <TabItem x:Name="tiTable" Header="Table List" Visibility="Collapsed">
+                <Grid Background="#FFE5E5E5">
+                    <local:ScanPreviewUC x:Name="scanPreviewUC" Margin="0"/>
+                </Grid>
+            </TabItem>
+            <TabItem x:Name="tiList" Header="List of Items" Visibility="Collapsed">
+                <Grid >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="72"/>
+                        <RowDefinition Height="2*"/>
+                    </Grid.RowDefinitions>
+                    <Border BorderThickness="0,0,0,1" BorderBrush="#FF19B995" Margin="0" Height="71">
+                        <StackPanel>
+                            <StackPanel Background="White" Orientation="Horizontal" Margin="0,-2,0,0" Height="32">
+                                <CheckBox x:Name="chkAutoAsk"  Content="Auto Ask" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Checked="chkAutoAsk_Checked" Unchecked="chkAutoAsk_Checked" FontFamily="Segoe UI Semibold" />
+                                <Button x:Name="btnAskLLM" Content="Ask LLM about selected one" Width="180" Background="#FFF2FCDD" Margin="10,0,0,0" Style="{StaticResource RoundedButtonStyle}" Click="btnAskLLM_Click" FontSize="12.5" Height="25"/>
+                                <Button x:Name="btnRunLLMServer" Content="Run LLM server" HorizontalAlignment="Center" Margin="20,0,0,0" VerticalAlignment="Center" FontSize="14" Height="25" Cursor="Hand" Foreground="DarkRed" ToolTip="Open local LLM server"  Width="134" Background="{x:Null}" BorderBrush="DarkRed"  Style="{StaticResource RoundedButtonStyle}" Click="btnRunLLMServer_Click"/>
+                            </StackPanel>
+                            <StackPanel Background="White" Orientation="Horizontal" Margin="0" Height="32">
+                                <CheckBox x:Name="chkShowBoth"  Content="Show Both" Margin="10,2,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Checked="chkShowBoth_Checked" Unchecked="chkShowBoth_Checked"/>
+                                <Label Content="Temper:" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="#FF860202" Margin="5,0,0,0"/>
+                                <external:DoubleBox x:Name="dblTemperature" Height="26" Width="50" Margin="0,3,0,0" OnValueChanged="dblTemperature_OnValueChanged" Foreground="Black" Background="Tomato"/>
+                                <Label Content="Max Tokens:" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="DarkGreen" Margin="5,0,0,0"/>
+                                <external:IntegerBox x:Name="intMaxTokens" Height="26" Width="50" Margin="0,3,0,0" OnValueChanged="dblTemperature_OnValueChanged" Foreground="Black"/>
+                                <TextBlock x:Name="tbLLMcounter" Foreground="Navy" VerticalAlignment="Center" HorizontalAlignment="Left" FontFamily="Segoe UI Semibold" Margin="10,0,0,0" Text="LLM processed:"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                    <local:PreviewListUC x:Name="previewListUC"  Margin="0" Grid.Row="1"/>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</UserControl>

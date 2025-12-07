@@ -10,6 +10,7 @@
     <RootNamespace>scripthea</RootNamespace>
     <AssemblyName>Scripthea</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <LangVersion>8.0</LangVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
@@ -164,13 +165,13 @@
     <Compile Include="AboutWin.xaml.cs">
       <DependentUpon>AboutWin.xaml</DependentUpon>
     </Compile>
-    <Compile Include="composer\CueEditorUC.xaml.cs">
+    <Compile Include="cuestuff\CueEditorUC.xaml.cs">
       <DependentUpon>CueEditorUC.xaml</DependentUpon>
     </Compile>
-    <Compile Include="composer\CuePoolUC.xaml.cs">
+    <Compile Include="cuestuff\CuePoolUC.xaml.cs">
       <DependentUpon>CuePoolUC.xaml</DependentUpon>
     </Compile>
-    <Compile Include="composer\ExtCollectionsUC.xaml.cs">
+    <Compile Include="cuestuff\ExtCollectionsUC.xaml.cs">
       <DependentUpon>ExtCollectionsUC.xaml</DependentUpon>
     </Compile>
     <Compile Include="composer\ModifListUC.xaml.cs">
@@ -191,13 +192,28 @@
     <Compile Include="composer\QueryUC.xaml.cs">
       <DependentUpon>QueryUC.xaml</DependentUpon>
     </Compile>
-    <Compile Include="composer\CueItemUC.xaml.cs">
+    <Compile Include="cuestuff\CueItemUC.xaml.cs">
       <DependentUpon>CueItemUC.xaml</DependentUpon>
     </Compile>
-    <Compile Include="composer\CueListUC.xaml.cs">
+    <Compile Include="cuestuff\CueListUC.xaml.cs">
       <DependentUpon>CueListUC.xaml</DependentUpon>
     </Compile>
-    <Compile Include="composer\ScanPreviewUC.xaml.cs">
+    <Compile Include="preview\FashioningUC.xaml.cs">
+      <DependentUpon>FashioningUC.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="preview\LMstudioUC.xaml.cs">
+      <DependentUpon>LMstudioUC.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="preview\PreviewItemUC.xaml.cs">
+      <DependentUpon>PreviewItemUC.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="preview\PreviewListUC.xaml.cs">
+      <DependentUpon>PreviewListUC.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="preview\PreviewUC.xaml.cs">
+      <DependentUpon>PreviewUC.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="preview\ScanPreviewUC.xaml.cs">
       <DependentUpon>ScanPreviewUC.xaml</DependentUpon>
     </Compile>
     <Compile Include="external\ComfyUI.cs" />
@@ -296,15 +312,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="composer\CueEditorUC.xaml">
+    <Page Include="cuestuff\CueEditorUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="composer\CuePoolUC.xaml">
+    <Page Include="cuestuff\CuePoolUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="composer\ExtCollectionsUC.xaml">
+    <Page Include="cuestuff\ExtCollectionsUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -332,15 +348,35 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="composer\CueItemUC.xaml">
+    <Page Include="cuestuff\CueItemUC.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="composer\CueListUC.xaml">
+    <Page Include="cuestuff\CueListUC.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="composer\ScanPreviewUC.xaml">
+    <Page Include="preview\FashioningUC.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="preview\LMstudioUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="preview\PreviewItemUC.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="preview\PreviewListUC.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="preview\PreviewUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="preview\ScanPreviewUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -665,6 +701,10 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Properties\TripleBarBlue.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Properties\gear-1.png" />
+    <Resource Include="Properties\gear-2.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="packages\Microsoft.ML.OnnxRuntime.Managed.1.22.1\build\netstandard2.0\Microsoft.ML.OnnxRuntime.Managed.targets" Condition="Exists('packages\Microsoft.ML.OnnxRuntime.Managed.1.22.1\build\netstandard2.0\Microsoft.ML.OnnxRuntime.Managed.targets')" />

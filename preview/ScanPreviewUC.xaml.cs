@@ -18,43 +18,47 @@ using scripthea.master;
 using scripthea.options;
 using UtilsNS;
 
-namespace scripthea.composer
+namespace scripthea.preview
 {
     /// <summary>
     /// Interaction logic for ScanPreviewUC.xaml
     /// </summary>
-    public partial class ScanPreviewUC : UserControl
+    public partial class ScanPreviewUC : UserControl, iPreview
     {
         public ScanPreviewUC()
         {
             InitializeComponent();
-            allPrompts = new List<string>();
+            allPrompts = new List<Tuple<string, string>>();
         }
         protected Options opts;
+        public bool scanningFlag { get; set; }
         public void Init(ref Options _opts) // ■▬►
         {
             opts = _opts;
         }
+        public void Finish()
+        {
 
+        }
         protected DataTable dTable; protected List<CheckBox> checks;
-        public int LoadPrompts(List<string> prompts)
+        public int LoadPrompts(List<Tuple<string, string>> prompts)
         {
             if (prompts.Count == 0)
             {
                 opts.Log("Error[742]: no prompts in the list"); return -1;
             }
-            allPrompts = new List<string>(prompts);
+            allPrompts = new List<Tuple<string, string>>(prompts);
             dTable = new DataTable(); checks = new List<CheckBox>(); 
             dTable.Columns.Add(new DataColumn("#", typeof(int)));
             dTable.Columns.Add(new DataColumn("On", typeof(bool)));
             dTable.Columns.Add(new DataColumn("Prompt", typeof(string)));
             dTable.BeginLoadData();
             for (int i = 0; i < prompts.Count; i++)
-                dTable.Rows.Add(i + 1, true, prompts[i]);
+                dTable.Rows.Add(i + 1, true, prompts[i].Item1+ " " + prompts[i].Item2);
             dTable.EndLoadData();
             dGrid.ItemsSource = dTable.DefaultView;                      
             
-            if (!this.IsVisible) return -1; Utils.DoEvents();
+            if (!this.IsVisible) return -1; //Utils.DoEvents();
 
             for (int i = 0; i < prompts.Count; i++)
             {
@@ -69,14 +73,33 @@ namespace scripthea.composer
             Utils.DelayExec(1000, () => { chkTable_Checked(null, null); });
             return dTable.Rows.Count;
         }
-        public List<string> GetPrompts(bool onlyChecked)
+        public int AppendPrompts(List<Tuple<string, string>> prompts)
+        {
+            List<Tuple<string, string>> lst = new List<Tuple<string, string>>(allPrompts);
+            lst.AddRange(prompts);
+            Clear();
+            return LoadPrompts(lst);
+        }
+        public void Clear()
+        {
+            allPrompts.Clear();
+            dTable = new DataTable(); checks = new List<CheckBox>();
+        }
+        public Tuple<string, string> decompPrompt(string prompt)
+        {
+            int k = prompt.IndexOf(opts.composer.ModifPrefix); string prm = ""; string mdf = "";
+            if (k < 2) prm = prompt;
+            else { prm = prompt.Substring(0, k - 1); mdf = prompt.Substring(k); }
+            return new Tuple<string, string>(prm, mdf);
+        }
+        public List<Tuple<string, string>> GetPrompts(bool onlyChecked)
         {
             if (onlyChecked) return checkedPrompts();
-            List<string> ls = new List<string>();
+            List<Tuple<string, string>> ls = new List<Tuple<string, string>>();
             if (dTable == null) return ls;
             if (dTable.Rows == null) return ls;
             foreach (DataRow row in dTable.Rows)
-                ls.Add(Convert.ToString(row["Prompt"]));
+                ls.Add(decompPrompt(Convert.ToString(row["Prompt"])));
             return ls;
         }
         public void BindData()
@@ -87,12 +110,10 @@ namespace scripthea.composer
             binding.Source = dTable;
             dGrid.SetBinding(DataGrid.ItemsSourceProperty, binding);
         }
-
         string bufMask = "";
-        private void mi_Click(object sender, RoutedEventArgs e)
+        public void MenuCommand(string cmd)
         {
-            MenuItem mi = sender as MenuItem; string header = Convert.ToString(mi.Header);
-            if (header.Equals("Check with Mask or Range"))
+            if (cmd.Equals("Check with Mask or Range"))
             { 
                 bufMask = new InputBox("Check with Mask or Range [#..#] e.g.[3..8]", bufMask, "").ShowDialog(); string msk = bufMask.Trim();
                 if (bufMask.Equals("")) return;
@@ -108,7 +129,7 @@ namespace scripthea.composer
                     return;
                 }
             }
-            if (header.Equals("Remove Checked"))
+            if (cmd.Equals("Remove Checked"))
             {
                 for (int i = dTable.Rows.Count - 1; i >=0; i--)
                 {
@@ -121,7 +142,7 @@ namespace scripthea.composer
                 foreach (DataRow row in dTable.Rows)
                 {
                     bool? turn2 = null;
-                    switch (header)
+                    switch (cmd)
                     {
                         case "Check All":
                             turn2 = true;
@@ -136,60 +157,22 @@ namespace scripthea.composer
                         case "Invert Checking":
                             turn2 = !Convert.ToBoolean(row["On"]);
                             break;
-                        case "Read Only":
-                            col.IsReadOnly = miReadOnly.IsChecked;// to be dealt with later...
-                            break;  
                     }
                     if (turn2 != null) row["On"] = (bool)turn2;       
                 }
             }
             chkTable_Checked(null, null);
         }
-        bool inverting = false;
-        private void imgMenu_MouseDown(object sender, MouseButtonEventArgs e)
+        public bool IsReadOnly 
         {
-            inverting = false;
-            if (e.ChangedButton == MouseButton.Left)
-            {
-                if (e.ClickCount == 1)
-                {
-                    Utils.DelayExec(300, () => { btnMenu.ContextMenu.IsOpen = !inverting; });
-                }
-                if (e.ClickCount == 2)
-                {
-                    mi_Click(miInvertChecking, null);
-                }
-            }
-        }
-        private bool _scanning = false;
-        public bool scanning
-        {
-            get
-            {
-                return _scanning;
-            }
-            set
-            {
-                if (value)
-                {
-                    btnScanChecked.Content = "Cancel Scan";
-                    btnQuerySelected.IsEnabled = false; btnClose.IsEnabled = false;
-                    btnScanChecked.Background = Utils.ToSolidColorBrush("#FFFED17F"); 
-                }
-                else
-                {
-                    btnScanChecked.IsEnabled = true; btnScanChecked.Content = "Scan All Checked";
-                    btnQuerySelected.IsEnabled = true; btnClose.IsEnabled = true;
-                    btnScanChecked.Background = Brushes.MintCream;
-                }
-                _scanning = value;
-            }
+            get => promptCol.IsReadOnly;
+            set => promptCol.IsReadOnly = value; 
         }
         private void chkTable_Checked(object sender, RoutedEventArgs e)
         {
-            lbCheckCount.Content = checkedPrompts().Count.ToString() + " out of " + dTable.Rows.Count.ToString(); lbCheckCount.Foreground = Brushes.Navy;
+            OnItemChanged?.Invoke(sender, e);
         }
-        private DataGridTextColumn col; 
+        private DataGridTextColumn promptCol; 
         private void dGrid_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
         {
             switch (e.Column.Header.ToString())
@@ -200,21 +183,26 @@ namespace scripthea.composer
                     cl.Width = new DataGridLength(1, DataGridLengthUnitType.Auto);
                     break;
                 case ("Prompt"):
-                    col = e.Column as DataGridTextColumn; if (Utils.isNull(col)) return;
+                    promptCol = e.Column as DataGridTextColumn; if (Utils.isNull(promptCol)) return;
                     var style = new Style(typeof(TextBlock));
                     style.Setters.Add(new Setter(TextBlock.TextWrappingProperty, TextWrapping.Wrap));
                     style.Setters.Add(new Setter(TextBlock.VerticalAlignmentProperty, VerticalAlignment.Center));
-                    col.ElementStyle = style; col.IsReadOnly = miReadOnly.IsChecked;
-                    col.Width = new DataGridLength(1, DataGridLengthUnitType.Star);
+                    promptCol.ElementStyle = style; 
+                    promptCol.Width = new DataGridLength(1, DataGridLengthUnitType.Star);
                     break;
             }
         }
-        private string _selectedPrompt = "";
-        public string selectedPrompt
+        private string _selectedPromptAsStr = "";
+        public string selectedPromptAsStr { get => _selectedPromptAsStr; set => _selectedPromptAsStr = value; }
+        public Tuple<string, string> selectedPrompt
         {
-            get { return _selectedPrompt; }
-            set { _selectedPrompt = value; btnQuerySelected.IsEnabled = !value.Equals(""); }
+            get { return decompPrompt(selectedPromptAsStr); }
+            //set { _selectedPrompt = value.Item1 + " " + value.Item2; }
         }
+        public event RoutedEventHandler OnSelectionChanged;
+        
+        public event RoutedEventHandler OnItemChanged;
+        
         private void dGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             //if (converting) return;
@@ -223,73 +211,66 @@ namespace scripthea.composer
             {
                dataRow = (DataRowView)dGrid.SelectedItem;
             }
-            catch(System.InvalidCastException ex) { selectedPrompt = ""; }
+            catch(System.InvalidCastException ex) { selectedPromptAsStr = ""; }
             if (Utils.isNull(dataRow)) return;
-            selectedPrompt = Convert.ToString(dataRow.Row.ItemArray[2]);
+            selectedPromptAsStr = Convert.ToString(dataRow.Row.ItemArray[2]);
             if (!Utils.isNull(e)) e.Handled = true;
             lastSelectedRow = dGrid.SelectedIndex;
+            OnSelectionChanged?.Invoke(sender, e);
         }
-        public List<string> allPrompts { get; private set; }
+        public List<Tuple<string, string>> allPrompts { get; private set; }
         int lastSelectedRow = -1;
-        public List<string> checkedPrompts()
-        {
+        public List<Tuple<string, string>> checkedPrompts()
+        {            
+            List<Tuple<string, string>> ls = new List<Tuple<string, string>>();
+            if (dTable == null) return ls;
+            if (dTable.Rows.Count == 0) return ls;
             int sr = lastSelectedRow;
             if (Utils.InRange(sr, 0, dTable.Rows.Count - 1))
             {
                 CheckBox chk = DataGridHelper.GetCellByIndices(dGrid, sr, 1).FindVisualChild<CheckBox>();
                 if (chk != null) dTable.Rows[sr]["on"] = chk.IsChecked.Value;
-            }
-            List<string> ls = new List<string>();                
+            }                         
             foreach (DataRow row in dTable.Rows)
             {
                 if (Convert.ToBoolean(row["On"]))
-                    ls.Add(Convert.ToString(row["Prompt"]));
+                    ls.Add(decompPrompt(Convert.ToString(row["Prompt"])));
             }
             return ls;
         }
-        public void selectByIndex(int idx) // 0-based
-        {
-            if (DataGridHelper.SetFocusOnRow(dGrid, Utils.EnsureRange(idx, 0, dTable.Rows.Count - 1)) == null) return;
-            if (!dGrid.IsFocused) dGrid.Focus();
-            if (dGrid.SelectedItem != null) dGrid.ScrollIntoView(dGrid.SelectedItem);
-        }
-        public void selectByPropmt(string pr)
-        {
-            for (int i = 0; i < dTable.Rows.Count; i++)
-            {
-                TextBlock tb = DataGridHelper.GetCellByIndices(dGrid, i, 2).FindVisualChild<TextBlock>();
-                if (Utils.isNull(tb)) continue; 
-                if (tb.Text.Equals(pr))
-                {
-                    dGrid.SelectedIndex = i; dGrid.Focus();
-                    btnQuerySelected.IsEnabled = !scanning; return;
-                }
-            }
-        }
-        private void btnCopy_Click(object sender, RoutedEventArgs e)
-        {
-            List<string> ls = checkedPrompts(); string ss = "";
-            foreach (var s in ls) ss += s + Environment.NewLine;
-            Clipboard.SetText(ss);
-        }
-        private void btnSaveAs_Click(object sender, RoutedEventArgs e)
-        {                    
-            Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
-            dlg.FileName = ""; // Default file name
-            dlg.DefaultExt = ".txt"; // Default file extension
-            dlg.Filter = "Prompts (.txt)|*.txt"; // Filter files by extension
-            //dlg.InitialDirectory = Controller.scriptListPath;
-            // Show open file dialog box
-            bool? result = dlg.ShowDialog();
 
-            // Process open file dialog box results
-            if (result != true) return;
-            Utils.writeList(dlg.FileName, checkedPrompts());
-        }
-        private void lbCheckCount_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        public bool IsValid(int idx)
         {
-            chkTable_Checked(null, null);
+            if (dTable == null) return false;
+            if (dTable.Rows == null) return false;
+            if (!Utils.InRange(idx, 0, dTable.Rows.Count-1)) return false;
+            DataRow row = dTable.Rows[idx];
+            return Convert.ToBoolean(row["On"]);
         }
+        public List<int> GetValidList() // 0 based
+        {
+            var ls = new List<int>();
+            foreach (DataRow row in dTable.Rows)
+            {
+                if (Convert.ToBoolean(row["On"]))
+                    ls.Add(Convert.ToInt32(row["#"])-1);
+            }
+            return ls;
+        }
+        public int selectedIdx { get => dGrid.SelectedIndex; }
+        public int selectByIndex(int idx) // 0-based / idx -1 -> next checked to selected one
+        {
+            int k = idx;
+            if (idx == -1)
+            {
+                k = dGrid.SelectedIndex + 1;
+                if (!IsValid(k)) selectByIndex(-1);
+            }
+            if (DataGridHelper.SetFocusOnRow(dGrid, Utils.EnsureRange(k, 0, dTable.Rows.Count - 1)) == null) return -1;
+            if (!dGrid.IsFocused) dGrid.Focus();
+            if (dGrid.SelectedItem != null) dGrid.ScrollIntoView(dGrid.SelectedItem); 
+            return k;            
+        }                
     }
 }
 /*

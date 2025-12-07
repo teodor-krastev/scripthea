@@ -56,7 +56,7 @@ namespace scripthea.master
         }
         private void OnChangeDepot(object sender, RoutedEventArgs e)
         {
-            iPicker.btnCustom.IsEnabled = iPicker.isEnabled; 
+            VisualHelper.SetButtonEnabled(iPicker.btnCustom, iPicker.isEnabled); 
             ImageDepot df = sender as ImageDepot;
             df?.Validate(null); 
         }

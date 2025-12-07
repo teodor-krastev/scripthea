@@ -146,7 +146,7 @@ namespace scripthea.master
                         CheckBox chk = new CheckBox(); chk.Content = System.IO.Path.GetFileName(ss); chk.IsChecked = true;
                         lstFiles.Items.Add(chk);
                     }
-                    btnConvertFolder.IsEnabled = lstFiles.Items.Count > 0;
+                    VisualHelper.SetButtonEnabled(btnConvertFolder, lstFiles.Items.Count > 0);
                     break;
                 case 1: //tiGrid
                     dTable?.Rows?.Clear();
@@ -155,7 +155,7 @@ namespace scripthea.master
                     BindData();
                     //dGrid.ItemsSource = dTable.DefaultView;
                     if (dTable.Rows.Count > 0) dGrid.SelectedIndex = 0;
-                    btnConvertFolder.IsEnabled = dTable.Rows.Count > 0;
+                    VisualHelper.SetButtonEnabled(btnConvertFolder, dTable.Rows.Count > 0);
                     break;
                 default:
                     opts.Log("Error[23]: intrernal error");

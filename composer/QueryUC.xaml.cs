@@ -20,6 +20,8 @@ using Newtonsoft.Json.Converters;
 using scripthea.external;
 using scripthea.master;
 using scripthea.options;
+using scripthea.cuestuff;
+using scripthea.preview;
 using ExtCollMng;
 using UtilsNS;
 using Path = System.IO.Path;
@@ -59,10 +61,10 @@ namespace scripthea.composer
             modifiersUC.Init(ref opts);
             modifiersUC.OnChange += new RoutedEventHandler(ChangeModif);
 
-            scanPreviewUC.Init(ref opts);
-            scanPreviewUC.btnClose.Click += new RoutedEventHandler(btnScanPreviewProcs_Click);
-            scanPreviewUC.btnScanChecked.Click += new RoutedEventHandler(btnScanPreviewProcs_Click);
-            scanPreviewUC.btnQuerySelected.Click += new RoutedEventHandler(btnScanPreviewProcs_Click);
+            previewUC.Init(ref opts);
+            previewUC.btnClose.Click += new RoutedEventHandler(btnScanPreviewProcs_Click);
+            previewUC.btnScanChecked.Click += new RoutedEventHandler(btnScanPreviewProcs_Click);
+            previewUC.btnQuerySelected.Click += new RoutedEventHandler(btnScanPreviewProcs_Click);
 
             //tiMiodifiers.Visibility = Visibility.Collapsed; tiScanPreview.Visibility = Visibility.Collapsed;
 
@@ -103,11 +105,13 @@ namespace scripthea.composer
             {
                API.eCancel = false; API.Close();
             }
+            previewUC.Finish();
         }
         public UserControl parrent { get { return this; } }
         public GroupBox groupFolder { get { return gbFolder; } }
         public TextBox textFolder { get { return tbImageDepot; } }
 
+        public bool previewScanning { get => previewUC.scanningFlag; }
         private Status _status;
         public Status status
         {
@@ -266,13 +270,12 @@ namespace scripthea.composer
                 tbImageDepot.Text = dialog.FileName;
             }
         }
-        public string prompt
+        public Tuple<string,string> prompt
         {
-            get { return Utils.stringFlatTextBox(tbCue, true) + Utils.stringFlatTextBox(tbModifier,true); }
+            get => new Tuple<string, string>(Utils.stringFlatTextBox(tbCue, true), Utils.stringFlatTextBox(tbModifier, true));
         }
-        public string PreviewCompose(List<string> selectedCue, string modifiers) 
+        public Tuple<string, string> PreviewCompose(List<string> selectedCue, string modifiers) 
         {
-            string prt = "";
             string ComposeCue(List<string> selCue)
             {
                 string rslt = "";
@@ -285,10 +288,9 @@ namespace scripthea.composer
                 }
                 return rslt;
             }
-            prt = ComposeCue(selectedCue) + modifiers;
-            return prt;
+            return new Tuple<string, string>(ComposeCue(selectedCue), modifiers);
         }
-        public string Compose(object sender, List<string> selectedCue, string modifiers, bool forced)  // !forced - soft compose by SingleAuto mode; forced - disregard opts.SingleAuto
+        public Tuple<string,string> Compose(object sender, List<string> selectedCue, string modifiers, bool forced)  // !forced - soft compose by SingleAuto mode; forced - disregard opts.SingleAuto
         { 
             void ComposeCue(List<string> selCue)
             {
@@ -303,6 +305,7 @@ namespace scripthea.composer
             }
             bool common = sender == rbBoth || sender == rbCue || sender == rbModif || sender == rbNone;
             common |= sender == null || sender == btnCompose || sender == tcQuery; 
+
             if (Utils.isNull(selectedCue)) return prompt; // ?? manual
             
             if (sender == cuePoolUC || common)
@@ -325,10 +328,10 @@ namespace scripthea.composer
             }
             return prompt;
         }
-        public string Compose(object sender, bool forced)
+        public Tuple<string,string> Compose(object sender, bool forced)
         {
-            if (Utils.isNull(cuePoolUC) || Utils.isNull(modifiersUC)) return "";
-            if (Utils.isNull(cuePoolUC.activeCourier)) return "";
+            if (Utils.isNull(cuePoolUC) || Utils.isNull(modifiersUC)) return null;
+            if (Utils.isNull(cuePoolUC.activeCourier)) return null;
             return Compose(sender, cuePoolUC.activeCourier.SelectedCue(), modifiersUC.Composite(), forced);
         }
         public void btnCompose_Click(object sender, RoutedEventArgs e)
@@ -340,14 +343,20 @@ namespace scripthea.composer
         private void QueryAPI(string prompt) // generated image path
         {   
             opts.Log("query -> "+ prompt, Brushes.DarkGreen);
-            if (status.Equals(Status.Scanning)) opts.Log("@StartGeneration (" + (scanPromptIdx+1).ToString() + " / " + scanPrompts.Count.ToString() + ")");
+            int t = scanPrompts.Count; int tt;
+            if (previewScanning)
+            {
+                (t, tt) = previewUC.UpdateCounter();
+                if (previewUC.fashionUC.fashionMode == FashioningUC.FashionModeTypes.ask_llm) t = previewUC.ValidLLMcount(); 
+            } 
+            if (status.Equals(Status.Scanning)) opts.Log("@StartGeneration (" + (scanPromptIdx+1).ToString() + " / " + t.ToString() + ")");
             else opts.Log("@StartGeneration (single)");
-            if (status.Equals(Status.Scanning) && scanPreviewUC.scanning) // move selection
-                scanPreviewUC.selectByIndex(scanPromptIdx); //scanPreviewUC.selectByPropmt(prompt);
+            //if (status.Equals(Status.Scanning) && previewScanning) // move selection
+            //    previewUC.active.selectByIndex(scanPromptIdx); //scanPreviewUC.selectByPropmt(prompt);
             API.Query(prompt, opts.composer.ImageDepotFolder); opts.Log("-=-=-", Brushes.DarkOrange);
             opts.composer.TotalImageCount++;
         }
-        private string lastSingleImage = "";
+        private string lastSingleImage = ""; private List<int> PreviewValidList; private int PreviewValidIndex = -1; private int PreviewValidCount = -1;
         protected void QueryComplete(string imageFilePath, bool success)
         {
             if (!success)
@@ -366,31 +375,59 @@ namespace scripthea.composer
                     status = Status.Idle; opts.Log("@EndGeneration: " + imageFilePath); 
                     break;
                 case Status.Scanning:                   
-                    opts.Log("@EndGeneration: " + imageFilePath);                    
-                    if (scanPromptIdx == (scanPrompts.Count-1)) // the end of it, back to init state
+                    opts.Log("@EndGeneration: " + imageFilePath);                                       
+                    if (previewScanning) 
                     {
-                        status = Status.Idle; 
-                        opts.Log("This Scan resulted in " + scanPrompts.Count.ToString()+" images.", Brushes.DarkMagenta);
-                        API.activeAPI.Broadcast("end.scan");
-                    }                        
-                    else // next image gen
-                    {
-                        scanPromptIdx++; QueryAPI(scanPrompts[scanPromptIdx]); 
+                        if (PreviewValidIndex < PreviewValidList.Count - 1) // regular
+                        {
+                            PreviewValidIndex++; previewUC.selectByIndex(PreviewValidList[PreviewValidIndex]);
+                            scanPromptIdx++; QueryAPI(previewUC.selectedStringPrompt);
+                        }
+                        else // end of scan
+                        {
+                            status = Status.Idle;
+                            (int c, int t) = previewUC.UpdateCounter();
+                            opts.Log("This Scan resulted in " + c + " images.", Brushes.DarkMagenta);
+                            API.activeAPI.Broadcast("end.scan");
+                        }
+                    }
+                    else
+                    {                    
+                        if (scanPromptIdx == (scanPrompts.Count-1)) // the end of it, back to init state
+                        {
+                            status = Status.Idle; 
+                            opts.Log("This Scan resulted in " + scanPrompts.Count.ToString()+" images.", Brushes.DarkMagenta);
+                            API.activeAPI.Broadcast("end.scan");
+                        }                        
+                        else // next image gen
+                        {
+                            scanPromptIdx++; QueryAPI(scanPromptStr(scanPrompts[scanPromptIdx])); 
+                        }
                     }
                     break;
             }
             if (status == Status.Idle) // back
             {
                 //if (!scanEnd) opts.Log("@EndGeneration");
-                btnScan.Content = strScan; btnScan.Background = Brushes.MintCream;                        
-                btnScanPreview.IsEnabled = true; scanPreviewUC.scanning = false; btnScanPreview.IsEnabled = true; btnAppend2Preview.IsEnabled = true;
+                btnScan.Content = strScan; btnScan.Background = Brushes.MintCream;
+                VisualHelper.SetButtonEnabled(btnScanPreview, true); previewUC.scanningFlag = false; VisualHelper.SetButtonEnabled(btnScanPreview, true); VisualHelper.SetButtonEnabled(btnAppend2Preview, true);
             }
         }
-        private List<string> scanPrompts = new List<string>();
+        private List<Tuple<string, string>> scanPrompts = new List<Tuple<string, string>>();
         private int scanPromptIdx;
-        private List<string> GetScanPrompts(bool PreviewScan = false)
+        private string scanPromptStr(Tuple<string, string> prompt)
+        {
+            return prompt.Item1 + " " + prompt.Item2;
+        }
+        private string scanPromptStr(int idx, bool PreviewScan = false)
+        {
+            if (scanPrompts == null) GetScanPrompts(PreviewScan);
+            if (!Utils.InRange(idx, 0, scanPrompts.Count - 1)) return null;
+            return scanPromptStr(scanPrompts[idx]);
+        }
+        private List<Tuple<string, string>> GetScanPrompts(bool PreviewScan = false)
         {        
-            scanPrompts = new List<string>();
+            scanPrompts = new List<Tuple<string, string>>();
             if (cuePoolUC.activeCourier == null) { opts.Log("Error[145]: no cue is selected"); return scanPrompts; }
             List<List<string>> lls = cuePoolUC.activeCourier.GetCues();
             if (lls.Count.Equals(0)) { opts.Log("Error[96]: no cue is selected"); return scanPrompts; }
@@ -451,8 +488,7 @@ namespace scripthea.composer
                                     from i in Enumerable.Range(0, indexes.Length)
                                     where (subset & (1 << i)) != 0
                                     select indexes[i];
-         }
-     
+        }
         public void Request2Cancel() 
         {
             if (Convert.ToString(btnScan.Content).Equals("Cancel") && status == Status.Scanning) // only if scanning
@@ -474,17 +510,17 @@ namespace scripthea.composer
                         opts.Log("Error[45]: internal error"); return;
                 }
                 status = Status.Scanning; btnScan.Content = "Cancel"; btnScan.Background = Brushes.Orange;
-                btnScanPreview.IsEnabled = false; btnAppend2Preview.IsEnabled = false;
+                VisualHelper.SetButtonEnabled(btnScanPreview, false); VisualHelper.SetButtonEnabled(btnAppend2Preview, false);
             }
             else // if button title is Cancel
             {
                 if (status == Status.Scanning) opts.Log("Warning: User cancelation request!", Brushes.Tomato);
                 status = Status.Request2Cancel; btnScan.Content = strScan; btnScan.Background = Brushes.MintCream;
-                btnScanPreview.IsEnabled = true; btnAppend2Preview.IsEnabled = true; return;
+                VisualHelper.SetButtonEnabled(btnScanPreview, true); VisualHelper.SetButtonEnabled(btnAppend2Preview, true); return;
             }
             GetScanPrompts();
             if (scanPrompts.Count == 0) { opts.Log("Error[141]: no prompt generated"); return; }
-            scanPromptIdx = 0; QueryAPI(scanPrompts[0]);
+            scanPromptIdx = 0; QueryAPI(scanPromptStr(scanPrompts[0]));
         }
         private void chkAutoSingle_Checked(object sender, RoutedEventArgs e)
         {
@@ -511,7 +547,6 @@ namespace scripthea.composer
             if (!Utils.isNull(e)) e.Handled = true;
             OnAPIparams(API.activeAPIname.Equals("SDiffusion") || API.activeAPIname.Equals("AddonGen"));
         }
-
         private void imgAPIdialog_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (Utils.isNull(API)) { opts.Log("Error[55]: no API is selected."); return; }
@@ -532,16 +567,16 @@ namespace scripthea.composer
         {
             if (!CheckAPIready()) return;
             if (opts.composer.SingleAuto != Options.SingleAutoSet.none) Compose(null, false); status = Status.SingeQuery;
-            string pro = Compose(sender, cuePoolUC.ActiveCueList?.selectedCues()[0].cueTextAsList(true), modifiersUC.Composite(), false); // TO BE CLEARED !!! selection from image depot problem
-            if (pro.Trim().Equals(""))
+            Tuple<string,string> pro = Compose(sender, cuePoolUC.ActiveCueList?.selectedCues()[0].cueTextAsList(true), modifiersUC.Composite(), false); // TO BE CLEARED !!! selection from image depot problem
+            if (pro.Item1.Trim().Equals(""))
             {
                 if (!Utils.ConfirmationMessageBox("The prompt is empty! Continue anyway... ?")) { status = Status.Idle; return; }
             }
-            QueryAPI(pro); 
+            QueryAPI(scanPromptStr(pro)); 
         }
         private void tbCue_TextChanged(object sender, TextChangedEventArgs e)
         {
-            btnQuery.IsEnabled = !tbCue.Text.Trim().Equals("");
+            VisualHelper.SetButtonEnabled(btnQuery, !tbCue.Text.Trim().Equals(""));
         }
         private void tcQuery_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -615,39 +650,52 @@ namespace scripthea.composer
         }
         private void btnScanPreview_Click(object sender, RoutedEventArgs e)
         {
-            scanPreviewUC.lbCheckCount.Content = "processing..."; scanPreviewUC.lbCheckCount.Foreground = Brushes.Tomato;
+            previewUC.lbCheckCount.Content = "processing..."; previewUC.lbCheckCount.Foreground = Brushes.Tomato;
             tcModScanPre.SelectedIndex = 1; tcModScanPre.UpdateLayout(); Utils.DoEvents(); //DateTime t0 = DateTime.Now;
-            List<string> ls = (sender == btnAppend2Preview) ? new List<string>(scanPreviewUC.allPrompts) : new List<string>();
+            List<Tuple<string, string>> lst = GetScanPrompts(true);
+            if (lst.Count == 0) { opts.Log("Warning: No prompts checked."); previewUC.lbCheckCount.Content = ""; return; }
+            previewUC.lbCheckCount.Content = "loading...";  
             
-            GetScanPrompts(true); 
-            if (scanPrompts.Count == 0) { opts.Log("Warning: No prompts generated"); scanPreviewUC.lbCheckCount.Content = ""; return; }
-            ls.AddRange(scanPrompts); //opts.Log("time 2: " + ((DateTime.Now - t0).TotalSeconds).ToString("G3") + " [sec]");
+            int k = sender == btnAppend2Preview ? previewUC.AppendPrompts(lst) : previewUC.LoadPrompts(lst);
+            if (k < 1) { opts.Log("Warning: No prompts checked."); previewUC.lbCheckCount.Content = ""; return; }
             tiModifiers.Visibility = Visibility.Visible; tiScanPreview.Visibility = Visibility.Visible;
-            scanPreviewUC.lbCheckCount.Content = "loading...";
-            scanPreviewUC.LoadPrompts(ls); //opts.Log("time 1: " + ((DateTime.Now - t0).TotalSeconds).ToString("G3") + " [sec]"); 
+            previewUC.UpdateCounter();
         }
         private void btnScanPreviewProcs_Click(object sender, RoutedEventArgs e)
         {
-            if (scanPreviewUC.btnScanChecked.Equals(sender)) 
+            if (previewUC.btnScanChecked.Equals(sender)) 
             {
-                if (scanPreviewUC.scanning) // cancel request
+                if (previewUC.scanningFlag) // cancel request
                 {
-                    scanPreviewUC.scanning = false; status = Status.Request2Cancel;
-                    opts.Log("Warning: User cancelation request!", Brushes.Tomato); btnScanPreview.IsEnabled = true; btnAppend2Preview.IsEnabled = true;
+                    previewUC.scanningFlag = false; status = Status.Request2Cancel;
+                    opts.Log("Warning: User cancelation request!", Brushes.Tomato); VisualHelper.SetButtonEnabled(btnScanPreview, true); VisualHelper.SetButtonEnabled(btnAppend2Preview, true);
                 }
                 else // scanning request
                 {
-                    scanPrompts = scanPreviewUC.checkedPrompts();
-                    if (scanPrompts.Count == 0) { opts.Log("Error[285]: no prompts checked"); return; }
-                    status = Status.Scanning; scanPreviewUC.scanning = true; btnScanPreview.IsEnabled = false; btnAppend2Preview.IsEnabled = false;
-                    scanPromptIdx = 0; QueryAPI(scanPrompts[0]);
+                    PreviewValidList = previewUC.GetValidList();
+                    if (PreviewValidList.Count == 0) { opts.Log("Error[285]: no prompts checked"); return; }
+                    if (previewUC.fashionUC.fashionMode == FashioningUC.FashionModeTypes.ask_llm)
+                    {
+                        (int p, int c) = previewUC.UpdateLLMcounter();
+                        if (p == 0) { opts.Log("Error[285]: no prompts have been processed by LLM"); return; }
+                    }                    
+                    status = Status.Scanning; previewUC.scanningFlag = true; VisualHelper.SetButtonEnabled(btnScanPreview, false); VisualHelper.SetButtonEnabled(btnAppend2Preview, false);
+                    scanPromptIdx = 0;
+                    previewUC.selectByIndex(PreviewValidList[0]); PreviewValidIndex = 0;
+                    QueryAPI(previewUC.selectedStringPrompt); 
                 }
             }
-            if (scanPreviewUC.btnQuerySelected.Equals(sender))
+            if (previewUC.btnQuerySelected.Equals(sender))
             {               
-                if (scanPreviewUC.selectedPrompt == "") { opts.Log("Error[74]: no prompt selected"); return; }
+                if (previewUC.fashionUC.fashionMode == FashioningUC.FashionModeTypes.ask_llm)
+                {
+                    if (previewUC.previewListUC.selectedItem == null) { opts.Log("Error[74a]: no prompt selected or empty."); return; }
+                    if (previewUC.previewListUC.selectedItem.IsCueLLMEmpty) { opts.Log("Error[74b]: selected prompt has not been processed."); return; }
+                }                    
+                if (previewUC.selectedStringPrompt.Trim() == "") { opts.Log("Error[74]: no prompt selected or empty."); return; }
                 status = Status.SingeQuery;
-                QueryAPI(scanPreviewUC.selectedPrompt);
+                QueryAPI(previewUC.selectedStringPrompt);
+                //opts.Log(">> " + previewUC.checkedStringPrompt);
             }
         }
         public void CuePoolSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -660,7 +708,8 @@ namespace scripthea.composer
         }
         private void btnCopy_Click(object sender, RoutedEventArgs e)
         {
-            Clipboard.SetText(prompt); 
+            Clipboard.SetText(scanPromptStr(prompt));
+            _ = new PopupText(btnCopy, "Prompt copied");
         }
         //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         #region sMacro
@@ -708,11 +757,18 @@ namespace scripthea.composer
         {            
             if (append) btnScanPreview_Click(btnAppend2Preview, null);
             else btnScanPreview_Click(btnScanPreview, null);
-            return scanPreviewUC.GetPrompts(false);
+            List<string> ls = new List<string>();
+            foreach(Tuple<string,string> ti in previewUC.active.GetPrompts(false))
+                ls.Add(scanPromptStr(ti));
+            return ls;
         }
         public int SetPreview(List<string> prompts, bool append)
         {
-            return scanPreviewUC.LoadPrompts(prompts);
+            List<Tuple<string, string>> lst = append ? new List<Tuple<string, string>>(previewUC.active.GetPrompts(true)) : new List<Tuple<string, string>>();
+            foreach (string prm in prompts)
+                lst.Add(previewUC.scanPreviewUC.decompPrompt(prm));
+            previewUC.LoadPrompts(lst);
+            return lst.Count;
         }
         public List<Tuple<string,string>> ScanImages(bool fromPreview)
         {
@@ -726,7 +782,7 @@ namespace scripthea.composer
         }
         public async void asyncScanImages(bool fromPreview)
         {
-            if (fromPreview) btnScanPreviewProcs_Click(scanPreviewUC.btnScanChecked, null);
+            if (fromPreview) btnScanPreviewProcs_Click(previewUC.btnScanChecked, null);
             else btnScan_Click(btnScan, null);
             while (await GetBusyStatusAsync(Status.Scanning)) { Utils.Sleep(300); } //Utils.DoEvents();           
         }        

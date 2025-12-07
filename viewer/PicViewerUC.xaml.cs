@@ -265,7 +265,7 @@ namespace scripthea.viewer
         private void btnCopy_Click(object sender, RoutedEventArgs e)
         {
             Clipboard.SetImage((BitmapSource)image.Source);
-            Utils.TimedMessageBox("The image has been copied to the clipboard");
+            _ = new PopupText(btnCopy, "Image copied");
         }
         public event UpdateVisRecEventHandler OnUpdateVisRecord;        
         protected void SetSliderRate(int value)

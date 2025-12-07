@@ -141,6 +141,7 @@ namespace scripthea.composer
             string newItem = new InputBox("New mSet name", "", "Text input").ShowDialog();
             if (newItem == "") return;
             if (mSetByName(newItem) != null) { Utils.TimedMessageBox("Error[156]: <"+newItem+"> already exits."); return; }
+            _ = new PopupText(btnAdd, "< " + newItem + " > mSet added.");
             mSets.Add(new mSetUC(newItem, mSet)); VisualUpdate();
         }
         private void btnMinus_Click(object sender, RoutedEventArgs e)
@@ -154,8 +155,7 @@ namespace scripthea.composer
             {
                 Utils.TimedMessageBox("Error[245]: <" +  mSets[k].title + "> mSet is read-only."); return;
             }
-            if (!Utils.ConfirmationMessageBox("Do you want to remove <" + mSets[k].title + "> mSet ?")) return;
-            //Utils.TimedMessageBox(mSets[k].title+" mSet has been removed.");
+            if (!Utils.ConfirmationMessageBox("Do you want to remove <" + mSets[k].title + "> mSet ?")) return;            
             mSets.RemoveAt(k); VisualUpdate();
             mSetListBox.SelectedIndex = Utils.EnsureRange(k, 0, mSets.Count - 1);                      
         }
@@ -176,7 +176,7 @@ namespace scripthea.composer
                 Utils.TimedMessageBox("Error[45]: No modifiers checked."); return;
             }
             mSets[k].mSet = mSet;
-            Utils.TimedMessageBox("<"+mSets[k].title + "> mSet has been updated.");
+            _ = new PopupText(btnUpdate,"<" +mSets[k].title + "> mSet has been updated.");
         }
         private void mSetListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {

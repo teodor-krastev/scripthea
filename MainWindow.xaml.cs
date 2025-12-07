@@ -160,11 +160,13 @@ namespace scripthea
             if (opts.layout.Width < 0)
             {
                 Log("Assuming that you run Scripthea for the first time:", Brushes.Blue);
-                Log("1. Check and modify (if needed) the default preferences (three bar button above).", Brushes.Blue);
+                Log("1. Check and modify (if needed) the default preferences (a gear button above).", Brushes.Blue);
                 Log("2. If you have Stable Diffusion (ComfyUI, A1111 or Forge) installed go to SD panel (top/right), open Options and set your Stable Diffusion installation locaton", Brushes.Blue);
                 Log(""); Log("Press F1 for Scripthea online help.", Brushes.Green);
                 Log(""); Log("Enjoy Scripthea, now with access to more than a milion and a half selected and unique prompts!", Brushes.Maroon);
-            }           
+            }    
+            if (opts.general.debug && false) preferencesWindow.ShowWindow(-1, dirTreeUC.history);
+            queryUC.previewUC.previewListUC.LMstudio = preferencesWindow.LMstudio; // crossing a lot !
         }
         public void Check4Update(object sender, RoutedEventArgs e)
         {

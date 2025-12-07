@@ -17,6 +17,7 @@ using Newtonsoft.Json.Linq;
 using System.Diagnostics;
 using Path = System.IO.Path;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using scripthea.preview;
 using scripthea.viewer;
 using scripthea.options;
 using UtilsNS;
@@ -40,7 +41,8 @@ namespace scripthea
         Options opts;
         public void Init(ref Options _opts)
         {
-            opts = _opts; tabControl.SelectedIndex = 0;
+            opts = _opts; 
+            LMstudio.Init(ref opts);
         }
         public string configFilename = Path.Combine(Utils.configPath, "Scripthea.cfg");
 
@@ -64,7 +66,9 @@ namespace scripthea
             tbCuesFolder.Text = opts.composer.WorkCuesFolder;
             chkClearEntriesImageDepot.IsChecked = opts.iDutilities.MasterClearEntries; ;
             chkValidationAsk.IsChecked = opts.iDutilities.MasterValidationAsk;
-            //python
+            //LM studio
+            LMstudio.UpdateVisuals();
+             //python
             if (!opts.sMacro.pythonOn) { tiPython.Visibility = Visibility.Collapsed; return; }
             if (opts.sMacro.pythonIntegrated) rbIntegrated.IsChecked = true;
             else rbCustom.IsChecked = true;
@@ -84,6 +88,10 @@ namespace scripthea
             opts.viewer.RemoveImagesInIDF = chkViewerRemoveImages.IsChecked.Value;
             opts.iDutilities.MasterClearEntries = chkClearEntriesImageDepot.IsChecked.Value; ImageDepotConvertor.ClearEntriesImageDepot = opts.iDutilities.MasterClearEntries;
             opts.iDutilities.MasterValidationAsk = chkValidationAsk.IsChecked.Value;
+            //LM studio
+            opts.llm.LMSlocation = LMstudio.tbLMSlocation.Text;
+            opts.llm.LMSmodel = LMstudio.cbLMSmodels.Text;
+            opts.llm.LMScontext = LMstudio.tbLMScontext.Text;
             //python
             opts.sMacro.pythonEnabled = chkPythonEnabled.IsChecked.Value && chkPythonEnabled.IsEnabled;
             opts.sMacro.pythonIntegrated = rbIntegrated.IsChecked.Value;
@@ -93,6 +101,7 @@ namespace scripthea
         {            
             history = new List<string>(_history);
             opts2visuals();
+            if (tabIdx < 0) Utils.DelayExec(2000, () => { tabControl.TabIndex = -tabIdx; });
             try { ShowDialog(); }
             catch (Exception ex) 
                 { Utils.TimedMessageBox(@"Error[927]: pad file https://scripthea.com/scripthea.xml is not avalable. RESTART !", "Error", 5000); opts.general.UpdateCheck = false; keepOpen = false; this.Close(); }           

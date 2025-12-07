@@ -89,11 +89,11 @@ namespace scripthea.external
             {
                 if (genOpts.composer.A1111)
                 {
-                    btnRunServer.IsEnabled = SDopts.IsSDloc1111(SDopts.opts.SDloc1111, false);
+                    VisualHelper.SetButtonEnabled(btnRunServer, SDopts.IsSDloc1111(SDopts.opts.SDloc1111, false));
                 }
                 else 
                 {
-                    btnRunServer.IsEnabled = SDopts.IsSDlocComfy(SDopts.opts.SDlocComfy, false); 
+                    VisualHelper.SetButtonEnabled(btnRunServer, SDopts.IsSDlocComfy(SDopts.opts.SDlocComfy, false)); 
                 }
             }
             else btnRunServer.IsEnabled = false; // the server is running

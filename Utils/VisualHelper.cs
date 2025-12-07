@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.IO;
 using System.ComponentModel;
 using System.Windows.Input;
+using System.Windows.Threading;
 
 namespace UtilsNS
 {   
@@ -114,6 +115,12 @@ namespace UtilsNS
                 }
             }
             return null;
+        }
+        public static void SetButtonEnabled(Button btn, bool enabled)
+        {
+            if (btn == null) return;
+            btn.IsEnabled = enabled;
+            btn.Foreground = enabled ? Brushes.Black : Brushes.Gray;
         }
         public static bool SelectItemInCombo(ComboBox cb, string txt)
         {
@@ -539,7 +546,7 @@ namespace UtilsNS
     }
     //MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
     // TO BE FINISHED
-    public class MiniTimedMessage
+    /*public class MiniTimedMessage
     {
         Window Box = new Window();//window for the inputbox
         FontFamily font = new FontFamily("Segoe UI");//font for the whole inputbox
@@ -725,5 +732,58 @@ namespace UtilsNS
             Box.ShowDialog();
             return input.Text;
         }
-    }
+    }*/
+    public class PopupText
+    {    
+        private readonly Popup _successPopup;
+        private readonly DispatcherTimer _popupTimer;
+        public PopupText(Button btn, string msg, int duration = 2)
+        {
+            // Create the popup in code
+            _successPopup = new Popup
+            {
+                PlacementTarget = btn,
+                Placement = PlacementMode.Bottom,
+                VerticalOffset = 5,
+                AllowsTransparency = true,
+                StaysOpen = false
+            };
+            // Create the visual content of the popup
+            var border = new Border
+            {
+                Background = Brushes.MintCream, //new SolidColorBrush(Color.FromArgb(204, 76, 175, 80)), // #CC4CAF50
+                Padding = new Thickness(8, 4, 8, 4),
+                CornerRadius = new CornerRadius(4),
+                BorderBrush = Brushes.DarkOliveGreen,
+                BorderThickness = new Thickness(1)
+            };
+            var textBlock = new TextBlock
+            {
+                Text = msg,
+                Foreground = Brushes.DarkGreen
+            };
+            border.Child = textBlock;
+            _successPopup.Child = border;
+
+            // Timer to auto-close the popup
+            _popupTimer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromSeconds(duration) // TIME
+            }; 
+            _popupTimer.Tick += PopupTimer_Tick;
+
+            _successPopup.IsOpen = true;
+
+            // 3. (Re)start timer
+            _popupTimer.Stop();
+            _popupTimer.Start();
+        }
+        private void PopupTimer_Tick(object sender, EventArgs e)
+        {
+            _popupTimer.Stop();
+            _successPopup.IsOpen = false;
+        }
+    }        
 }
+
+

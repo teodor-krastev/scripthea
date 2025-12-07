@@ -1,10 +1,12 @@
-﻿<UserControl
+﻿<UserControl x:Class="scripthea.composer.QueryUC"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:scripthea.composer"
-             xmlns:external="clr-namespace:scripthea.external" x:Class="scripthea.composer.QueryUC"
+             xmlns:cuestuff ="clr-namespace:scripthea.cuestuff"
+             xmlns:external="clr-namespace:scripthea.external" 
+             xmlns:preview="clr-namespace:scripthea.preview"
              xmlns:extcoll="clr-namespace:ExtCollMng;assembly=ExtCollMng" 
              mc:Ignorable="d" d:DesignHeight="850" FontSize="13" d:DesignWidth="1698.667">
     <Grid>
@@ -96,7 +98,7 @@
             </TabControl>
 
             <GridSplitter x:Name="gridSplitCue" HorizontalAlignment="Stretch" Height="5" Margin="0" Grid.Row="2" VerticalAlignment="Top"/>
-            <local:CuePoolUC x:Name="cuePoolUC"  Margin="0,6,0,0" Grid.Row="3"/>
+            <cuestuff:CuePoolUC x:Name="cuePoolUC"  Margin="0,6,0,0" Grid.Row="3"/>
         </Grid>
 
         <GridSplitter x:Name="gridSplitRight" Grid.Column="1" HorizontalAlignment="Left" Margin="0" Width="5" />
@@ -116,7 +118,7 @@
                 </TabItem>
                 <TabItem x:Name="tiScanPreview" Header="Scan Preview" Background="#FFE8FCF5" Height="30" Width="150" Margin="10,-3,-10,0" BorderBrush="#FF099941" FontFamily="Lucida Sans" FontSize="14" Style="{StaticResource RoundedBottomTabItemStyle}">
                     <Grid>
-                        <local:ScanPreviewUC x:Name="scanPreviewUC" Margin="0" FontFamily="Segoe UI" FontSize="13"/>
+                        <preview:PreviewUC x:Name="previewUC" Margin="0" FontFamily="Segoe UI" FontSize="13"/>
                     </Grid>
                 </TabItem>
                 <TabItem x:Name="tiSD_API" Header="SD Parameters" Background="#FFFFFFEA" Height="30" Width="150" Margin="20,-3,-20,0" BorderBrush="#FF973C14" FontFamily="Lucida Sans" FontSize="14" Style="{StaticResource RoundedBottomTabItemStyle}">

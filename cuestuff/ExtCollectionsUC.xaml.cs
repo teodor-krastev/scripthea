@@ -19,7 +19,7 @@ using scripthea.options;
 using ExtCollMng;
 using Newtonsoft.Json.Linq;
 
-namespace scripthea.composer
+namespace scripthea.cuestuff
 {
     /// <summary>
     /// Interaction logic for ExtCollectionsUC.xaml
@@ -234,7 +234,7 @@ namespace scripthea.composer
 
                 eCollection.OpenEColl(folderPath); 
                 ECquery ecq = GetQueryFromVisuals(); if (ecq == null) return;
-                semanticMatching = ecq.Way2Match.Equals(2);  btnSemStop.IsEnabled = semanticMatching;
+                semanticMatching = ecq.Way2Match.Equals(2); VisualHelper.SetButtonEnabled(btnSemStop, semanticMatching);
                 ecq.SemanticProgress = tbSemProgress;
 
                 List<ECprompt> cues = eCollection.ExtractCueList(folderPath, ecq);
@@ -258,7 +258,7 @@ namespace scripthea.composer
                 }
                 NewCuesEvent?.Invoke(this, EventArgs.Empty);
                 //tbInfo.Text = ec.wordsCount.Count.ToString() + " processed lines; " + ec.AverWordsCount().ToString() + " average words count; " + cues.Count.ToString() + " prompts produced.";
-            } finally { Mouse.OverrideCursor = null; semanticMatching = false; btnSemStop.IsEnabled = false; }
+            } finally { Mouse.OverrideCursor = null; semanticMatching = false; VisualHelper.SetButtonEnabled(btnSemStop, false); }
         }       
         private void sliderThreshold_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {

@@ -22,7 +22,7 @@ using scripthea.options;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 
-namespace scripthea.composer
+namespace scripthea.cuestuff
 {
     /// <summary>
     /// Interaction logic for cueEditorUC.xaml

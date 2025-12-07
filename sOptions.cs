@@ -29,6 +29,7 @@ namespace scripthea.options
             if (general == null) general = new General();
             if (layout == null) layout = new Layout();
             if (composer == null) composer = new Composer();
+            if (llm == null) llm = new LLM();
             if (viewer == null) viewer = new Viewer();
             if (iDutilities == null) iDutilities = new IDutilities();
             if (sMacro == null) sMacro = new SMacro();
@@ -76,6 +77,8 @@ namespace scripthea.options
             public string WorkCuesFolder; // the last active one
             public string ImageDepotFolder;
             public string StartupImageDepotFolder;
+            // Fashioning
+            public int FashionMode;
             // API
             public string API; // from combo-box items
             [JsonIgnore]
@@ -91,14 +94,26 @@ namespace scripthea.options
             public bool ConfirmGoogling;
             public int ModifSample;
             public bool mSetsEnabled;
-            // semantic
-            
+            // semantic            
             public event SemanticHandler OnSemantic;           
             public bool SemanticActive()
             {
                 if (OnSemantic != null) return OnSemantic();
                 else return false;
             }
+        }
+        public LLM llm;
+        public class LLM
+        {
+            public bool ShowBoth; 
+            public bool AutoAsk;
+            public bool AllowAskingWhileGeneration;
+
+            public string LMSlocation;
+            public string LMSmodel;
+            public string LMScontext;
+            public double LMStemperature;
+            public int LMSmax_tokens;
         }
         public Viewer viewer;
         public class Viewer

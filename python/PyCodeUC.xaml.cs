@@ -222,7 +222,7 @@ namespace scripthea.python
                 if (opts != null)
                     if (!opts.composer.QueryStatus.Equals(Status.Idle)) { inLog("Error[5784]: the composer is busy.", Brushes.Red); return; }
             }
-            btnPressed = true;
+            btnPressed = true; _ = new PopupText(btnRun, "Macro started");
             PyObject po = Execute(Code); 
             btnRun.IsEnabled = true; btnPressed = false; inLog("-=-=-=- end of macro -=-=-=-", Brushes.Green);
         }

@@ -140,7 +140,7 @@ namespace scripthea.external
                   new Action(() =>
                   {
                       lbStatus.Content = "COMM: " + current.ToString(); lbStatus.UpdateLayout();
-                      btnReset.IsEnabled = current == SDServer.Status.promptExpect;
+                      VisualHelper.SetButtonEnabled(btnReset, current == SDServer.Status.promptExpect);
 
                       switch (current)
                       {

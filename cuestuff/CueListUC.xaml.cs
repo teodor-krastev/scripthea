@@ -17,7 +17,7 @@ using scripthea.options;
 using Path = System.IO.Path;
 using UtilsNS;
 
-namespace scripthea.composer
+namespace scripthea.cuestuff
 {
     public class CueListHeader
     {

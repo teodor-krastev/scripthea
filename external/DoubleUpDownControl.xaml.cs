@@ -47,7 +47,6 @@ namespace scripthea.external
         public DoubleBox()
         {
             InitializeComponent();
-
             TextBoxValue.Text = "0";
         }
 

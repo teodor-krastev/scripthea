@@ -14,7 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using UtilsNS;
 
-namespace scripthea.composer
+namespace scripthea.cuestuff
 {
     /// <summary>
     /// Interaction logic for OneSeedUC.xaml

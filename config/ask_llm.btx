@@ -1,0 +1,25 @@
+# Simple expanded
+Take the following image generation prompt and expand it into a more detailed, vivid description focusing only on what is visible in the image.
+---
+# Visual detail expander
+Extend this text-to-image prompt by adding specific visual details: colors, lighting, background, textures, and composition. Avoid story, just visible elements.
+---
+# Style injector 1
+Rewrite and extend the following prompt, in Photorealistic style, mood, and lighting (shot on 35mm lens, 8k, hyper-detailed).
+---
+# Style injector 2
+Rewrite and extend the following prompt, in Digital Illustration style, mood, and lighting (vibrant colors, cel-shaded, ArtStation style).
+---
+# Style injector 3
+Rewrite and extend the following prompt, in Dark Fantasy style, and lighting (Moody, grimdark, oil painting style)
+---
+# Safe and friendly
+Expand this into a detailed prompt suitable for a general-audience text-to-image model. Emphasize visual clarity, avoid graphic or unsafe content.
+---
+# Composition / camera focused
+Extend this prompt by specifying camera angle, framing, depth of field, and focal points. Describe what's near, mid, and far in the scene.
+---
+# Scenario builder
+I want to generate an image of $prompt$. Don't just describe the character; describe a dynamic scene involving them. 
+What are they doing? What is in the background? What time of day is it? Give me a prompt that tells a mini-story in a frozen moment.
+---
