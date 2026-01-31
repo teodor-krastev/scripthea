@@ -48,7 +48,7 @@ namespace ExtCollMng
         }
         private void chkLog_Checked(object sender, RoutedEventArgs e)
         {
-            if (ecmUC == null) return;
+            if (ecmUC is null) return;
             ecmUC.Mute = !chkLog.IsChecked.Value;
         }
     }

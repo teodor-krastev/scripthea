@@ -27,7 +27,7 @@ namespace scripthea.external
         public static readonly Dictionary<string, string> possParams = new Dictionary<string, string> // Value is obj.GetType().Name
         {   {"prompt", "String" }, {"negative_prompt", "String" }, {"seed", "Int64" }, {"width", "Int64" }, {"height", "Int64" },
             {"sampler_name", "String" }, {"cfg_scale", "Double" }, {"steps", "Int64" }, {"batch_size", "Int64" }, {"restore_faces", "Boolean" },
-            {"model", "String" }, {"sd_model_hash", "String" }, {"denoising_strength", "Double" }, {"job_timestamp", "String" }
+            {"model", "String" }, {"sd_model_hash", "String" }, {"denoising_strength", "Double" }, {"job_timestamp", "String" }, {"comment", "String" }
         };
 
         public static readonly List<string> a1111Samplers = new List<string>
@@ -144,11 +144,12 @@ namespace scripthea.external
             if (Utils.isNull(inDict)) return; 
             foreach (var pair in inDict) // validation
                 if (SDside.possParams.ContainsKey(pair.Key) && (pair.Key != "prompt")) this[pair.Key] = pair.Value;
+            if (!ContainsKey("comment")) Add("comment", "");
         }
         public void GetFromImageInfo(ImageInfo ii)
         {
             if (Utils.isNull(ii)) return;
-            this["negative_prompt"] = ii.negative_prompt;
+            this["negative_prompt"] = ii.negative_prompt; this["comment"] = ii.history;
             this["width"] = ii.width; this["height"] = ii.height;
             this["sampler_name"] = ii.sampler_name; this["restore_faces"] = ii.restore_faces; this["seed"] = ii.seed;
             this["steps"] = ii.steps; this["cfg_scale"] = ii.cfg_scale; this["model"] = ii.model; this["denoising_strength"] = ii.denoising_strength;
@@ -201,7 +202,7 @@ namespace scripthea.external
         public void Save()
         {
             List<string> ls = new List<string>();
-            string webui = opts == null ? "SD-ComfyUI" : opts.composer.API; 
+            string webui = opts is null ? "SD-ComfyUI" : opts.composer.API; 
             ls.Add("#{\"ImageGenerator\":\"StableDiffusion\",\"webui\":\""+webui+"\",\"application\":\"Scripthea "+Utils.getAppFileVersion+"\"}");
             foreach (var pair in this)
                 ls.Add(pair.Key + "=" + JsonConvert.SerializeObject(pair.Value));
@@ -231,7 +232,7 @@ namespace scripthea.external
                     chkRestoreFaces.Visibility = Visibility.Visible; //stpModel.Visibility = Visibility.Collapsed;
                     gbComfyTemplates.Visibility = Visibility.Collapsed;
                 }
-                else
+                else // comfyUI
                 {
                     chkRestoreFaces.Visibility = Visibility.Collapsed; stpModel.Visibility = Visibility.Visible;
                     gbComfyTemplates.Visibility = Visibility.Visible;
@@ -253,7 +254,7 @@ namespace scripthea.external
             }
 
             //if (locked) { locked = false; return; }              
-            if (sdList == null) // only the first time
+            if (sdList is null) // only the first time
             {
                 // template
                 cbTemplates.Items.Clear(); int idx = -1;
@@ -299,8 +300,9 @@ namespace scripthea.external
             }
             set // prms2visualOn
             {
-                if (value == null) return;
+                if (value is null) return;
                 if (value.ContainsKey("negative_prompt")) tbNegativePrompt.Text = Convert.ToString(value["negative_prompt"]);
+                if (value.ContainsKey("comment")) tbComment.Text = Convert.ToString(value["comment"]);
                 if (value.ContainsKey("width")) nsWidth.Value = Convert.ToInt32(value["width"]);
                 if (value.ContainsKey("height")) nsHeight.Value = Convert.ToInt32(value["height"]);
                 if (value.ContainsKey("sampler_name"))
@@ -343,7 +345,7 @@ namespace scripthea.external
         }
         public void ImportImageInfo(string json, SolidColorBrush clr = null)
         {
-            if (ActiveSetting == null) return;
+            if (ActiveSetting is null) return;
             ActiveSetting.GetFromImageInfo(new ImageInfo(json)); 
             vPrms = ActiveSetting;
         }
@@ -351,7 +353,7 @@ namespace scripthea.external
         { 
             get 
             {
-                if (cbSettings == null) return null;
+                if (cbSettings is null) return null;
                 string selText = (cbSettings.SelectedItem as ComboBoxItem).Content as string;
                 if (sdList.ContainsKey(selText)) return sdList[selText];
                 else { opts.Log("Unknown setting: " + selText); return null; }
@@ -384,8 +386,9 @@ namespace scripthea.external
         }
         protected void visual2prms(object sender, RoutedEventArgs e) // live update
         {
-            if (locked || cbSampler == null || _vPrms == null) return;            
-            _vPrms["negative_prompt"] = tbNegativePrompt.Text; _vPrms["width"] = (long)nsWidth.Value; _vPrms["height"] = (long)nsHeight.Value;
+            if (locked || cbSampler is null || _vPrms is null) return;            
+            _vPrms["negative_prompt"] = tbNegativePrompt.Text; _vPrms["comment"] = tbComment.Text;
+            _vPrms["width"] = (long)nsWidth.Value; _vPrms["height"] = (long)nsHeight.Value;
             if (cbSampler.Items.Count > 0)
             {
                 if (cbSampler.SelectedIndex == -1) cbSampler.SelectedIndex = 0;
@@ -499,7 +502,7 @@ namespace scripthea.external
         }
         private void chkDefaultModel_Checked(object sender, RoutedEventArgs e) // later maybe
         {
-            /*if (tbModel == null) return;
+            /*if (tbModel is null) return;
             if (chkDefaultModel.IsChecked.Value) tbModel.Text = "<default>";
             else tbModel.Text = "";
             tbModel.IsReadOnly = chkDefaultModel.IsChecked.Value;*/
@@ -517,7 +520,7 @@ namespace scripthea.external
         }
         private void cbTemplates_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (opts == null) return;
+            if (opts is null) return;
             opts.general.ComfyTemplate = cbTemplates.SelectedItem as string; //as ComboBoxItem
         }
     }

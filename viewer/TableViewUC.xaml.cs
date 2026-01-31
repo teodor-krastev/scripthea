@@ -83,50 +83,114 @@ namespace scripthea.viewer
             dGrid.SetBinding(DataGrid.ItemsSourceProperty, binding);
         }
         public ImageDepot iDepot { get; set; }
+        private class Undo // now - only for table view; later - maybe unify with grid view
+        {
+            private ImageDepot imageDepot; private int idx; private bool inclFile; private BitmapImage bitmapImage;
+            private ImageInfo ii;
+            public Undo(ImageDepot _imageDepot, int idx0, bool _inclFile) // buffer the entry when created
+            {
+                imageDepot = _imageDepot; idx = idx0; inclFile = _inclFile;
+                if (Utils.InRange(idx, 0, imageDepot.items.Count - 1))
+                    ii = imageDepot.items[idx]; // by ref ?                
+            }
+            public event Utils.LogHandler OnLog;
+            protected void Log(string txt, SolidColorBrush clr = null)
+            {
+                if (OnLog != null) OnLog(txt, clr);
+            }
+            public void ClearState()
+            {
+                ii = null; idx = -1; bitmapImage = null;
+            }
+            private bool checkOut()
+            {
+                if (imageDepot is null) return false;
+                if (!imageDepot.isEnabled) return false;
+                if (ii is null) return false;
+                if (!Utils.InRange(idx, 0, imageDepot.items.Count - 1)) return false;
+                return true;
+            }
+            public bool recover2ImageDepot() // get it back
+            {
+                if (!checkOut()) return false;
+                imageDepot.items.Insert(idx, ii); imageDepot.Save();
+                if (inclFile && bitmapImage != null) ImgUtils.SaveBitmapImageToDisk(bitmapImage, Path.Combine(imageDepot.path, ii.filename));
+                ClearState();
+                return true;
+            }
+            public void realRemove() // get it back
+            {
+                if (inclFile && checkOut())
+                {
+                    string fn = Path.Combine(imageDepot.path, ii.filename);
+                    if (File.Exists(fn)) { bitmapImage = inclFile ? ImgUtils.UnhookedImageLoad(Path.Combine(fn)) : null; File.Delete(fn); }
+                    else Log("Error: File <" + fn + "> does not exist");
+                }
+            }
+        }
+        private Undo undo = null;
+
+        public void RemoveAt(bool inclFile, int idx = -1)
+        {
+            undo = new Undo(iDepot, idx, inclFile); //undo.OnLog += new Utils.LogHandler(Log);
+            undo.realRemove(); // 
+        }
+        public bool Recover()
+        {
+            if (undo is null) return false;
+            return undo.recover2ImageDepot();
+        }
         public string loadedDepot { get; set; }
+        private bool updating = false;
         public void UpdateVis()
         {
-            if (dTable == null) return;
-            dTable.Rows.Clear(); 
-            if (!IsAvailable) return;
-            if (iDepot.items.Count > 0)
+            if (dTable is null) return;
+            try
             {
-                foreach (var itm in iDepot.Export2Viewer())
+                updating = true;
+                dTable.Rows.Clear(); 
+                if (!IsAvailable) return;
+                if (iDepot.items.Count > 0)
                 {
-                    if (checkable) dTable.Rows.Add(itm.Item1 + 1, true, itm.Item2, itm.Item3, itm.Item4);
-                    else dTable.Rows.Add(itm.Item1 + 1, itm.Item2, itm.Item3, itm.Item4);
+                    foreach (var itm in iDepot.Export2Viewer())
+                    {
+                        if (checkable) dTable.Rows.Add(itm.Item1 + 1, true, itm.Item2, itm.Item3, itm.Item4);
+                        else dTable.Rows.Add(itm.Item1 + 1, itm.Item2, itm.Item3, itm.Item4);
+                    }
+                    BindData();
+                    selectedIndex = 0;
                 }
-                BindData();
-                selectedIndex = 0;
+                else dGrid.ItemsSource = null;  
             }
-            else dGrid.ItemsSource = null;            
+            finally { updating = false; }
         }        
         public void UpdateVisRecord(int idx, ImageInfo ii) // update visual record from ii
         {
-            if (iDepot == null) return;
-            if (!Utils.InRange(idx, 0, iDepot.items.Count - 1) || ii == null) return;
+            if (iDepot is null) return;
+            if (!Utils.InRange(idx, 0, iDepot.items.Count - 1) || ii is null) return;
             iDepot.items[idx] = ii; dTable.Rows[idx]["Rt"] = ii.rate;
         }
+        private bool synchronizing = false;
         public void SynchroChecked(List<Tuple<int, string, int, string>> chks)
         {
             if (!checkable) return;
-            SetChecked(false);
             try
             {
+                synchronizing = true; SetChecked(false);
                 foreach (Tuple<int, string, int, string> chk in chks)
                 {               
                     int idx = chk.Item1;
                     if (Utils.InRange(idx, 0, dTable.Rows.Count - 1)) dTable.Rows[idx]["on"] = true;
                 }               
             }
-            catch { }
+            finally { synchronizing = false; chkCheckedColumn(null, null); }
         }
         public void SetChecked(bool? check) // null -> invert
         {
             if (!checkable) return;
             foreach (DataRow row in dTable.Rows)
             {                
-                if (check == null) row["on"] = !Convert.ToBoolean(row["on"]);
+                if (check is null) row["on"] = !Convert.ToBoolean(row["on"]);
                 else row["on"] = Convert.ToBoolean(check);
             }
             //BindData(); dGrid.UpdateLayout();
@@ -154,41 +218,52 @@ namespace scripthea.viewer
                 else row["Prompt"] = prompt + " ";
             }
         }
-        public void MarkWithMask(string mask)  
+        public int MarkWithMask(string mask)  
         {
-            MarkMask.Value = ""; // reset
+            MarkMask.Value = ""; int k = 0; // reset
             if (checkable)
             {
                 foreach (DataRow row in dTable.Rows)
                 {
                     string prompt = Convert.ToString(row["Prompt"]);
                     bool bb = mask.Equals("") ? false : Utils.IsWildCardMatch(prompt, mask);
-                    row["on"] = Convert.ToBoolean(bb);
+                    row["on"] = Convert.ToBoolean(bb); if (bb) k++;
                 }
             }
-            else { if (mask != "") MarkMask.Value = mask; ForcedViewUpdate(); }
-            dGrid.UpdateLayout();            
+            else 
+            {
+                foreach (DataRow row in dTable.Rows)
+                {
+                    string prompt = Convert.ToString(row["Prompt"]);
+                    bool bb = mask.Equals("") ? false : Utils.IsWildCardMatch(prompt, mask);
+                    if (bb) k++;
+                }
+                if (mask != "") MarkMask.Value = mask; ForcedViewUpdate(); 
+            }
+            dGrid.UpdateLayout();
+            return k;
         }
         public void Clear(bool inclDepotItems = false)
         {
             dTable?.Rows?.Clear();  
-            if (inclDepotItems) iDepot?.items.Clear();                      
+            if (inclDepotItems) iDepot?.items.Clear();
+            undo?.ClearState();
         }
-        public bool FeedList(string imageDepot)
+        public bool FeedList(string imageDepot, bool force)
         {
-            if (dTable == null) return false;
+            if (dTable is null) return false;
             Clear();
             if (!Directory.Exists(imageDepot)) { opts.Log("Error[651]: no such folder -> " + imageDepot); return false; }
             //if (ImgUtils.checkImageDepot(imageDepot) == 0) { Log("Error[]: not image depot folder -> " + imageDepot); return false; }
             ImageDepot _iDepot = new ImageDepot(imageDepot, ImageInfo.ImageGenerator.FromDescFile);
-            return FeedList(ref _iDepot);        
+            return FeedList(ref _iDepot, force);        
         }
-        public bool FeedList(ref ImageDepot _iDepot) // update from existitng iDepot
+        public bool FeedList(ref ImageDepot _iDepot, bool force) // update from existitng iDepot
         {
-            if ((dTable == null) || (_iDepot == null)) return false;
+            if ((dTable is null) || (_iDepot is null)) return false;
             if (!Directory.Exists(_iDepot.path)) { opts.Log("Error[486]: no such folder -> " + _iDepot.path); return false; }
             iDepot = _iDepot; loadedDepot = iDepot.path; 
-            UpdateVis();
+            UpdateVis(); 
             if (dTable.Rows.Count > 0) dGrid.SelectedIndex = 0;
             if (checkable)
                 for (int i = 0; i < dTable.Rows.Count; i++)
@@ -203,7 +278,7 @@ namespace scripthea.viewer
         }
         private void chkCheckedColumn(object sender, RoutedEventArgs e)
         {
-            ChangeContent(this, null);
+            if (!synchronizing) ChangeContent(this, null);
         }
         public int selectedIndex // 0 based
         {
@@ -214,19 +289,35 @@ namespace scripthea.viewer
             }
             set 
             {
-                if (dTable == null) return;
+                if (dTable is null) return;
                 if (!Utils.InRange(value, 0, dTable.Rows.Count - 1)) return;
                 dGrid.Focus(); DataGridHelper.SetFocusOnRow(dGrid, value);
                 //dGrid.SelectedIndex = value - 1; DataRowView drv = (DataRowView)dGrid.SelectedItem; 
             }
         }
-        public int Count { get { return dTable.Rows.Count; } }
+        public int Count { get { if (dTable is null) return 0; return dTable.Rows.Count; } }
+        public int CountChecked
+        {
+            get
+            {
+                int cnt = 0;
+                if (!checkable) return 0;
+                int sr = lastSelectedRow;
+                if (Utils.InRange(sr, 0, dTable.Rows.Count - 1))
+                {
+                    CheckBox chk = DataGridHelper.GetCellByIndices(dGrid, sr, 1).FindVisualChild<CheckBox>();
+                    if (chk != null) dTable.Rows[sr]["on"] = chk.IsChecked.Value;
+                }
+                foreach (DataRow row in dTable.Rows)
+                    if (Convert.ToBoolean(row.ItemArray[1])) cnt++;
+                return cnt;
+            }
+        }
         public List<Tuple<int, string, int, string>> GetItems(bool check, bool uncheck) 
         {
-            if (!checkable && iDepot.isEnabled) { return iDepot.Export2Viewer(); }
             List<Tuple<int, string, int, string>> itms = new List<Tuple<int, string, int, string>>();
+            if (iDepot is null || dTable.Rows.Count == 0) return itms;
             if (dTable.Rows.Count == 0) return itms;
-
             int sr = lastSelectedRow; 
             if (Utils.InRange(sr, 0, dTable.Rows.Count - 1))
             {
@@ -235,16 +326,20 @@ namespace scripthea.viewer
             }           
             foreach (DataRow row in dTable.Rows)
             {
-                bool bb = false;
-                if (Convert.ToBoolean(row.ItemArray[1]))
+                if (checkable)
                 {
-                    bb = check; 
+                    bool bb = false;
+                    if (Convert.ToBoolean(row.ItemArray[1]))
+                    {
+                        bb = check; 
+                    }
+                    else
+                    {
+                        bb = uncheck;
+                    }
+                    if (bb) itms.Add(new Tuple<int, string, int, string>(Convert.ToInt32(row.ItemArray[0])-1, Convert.ToString(row.ItemArray[2]), Convert.ToInt32(row.ItemArray[3]), Convert.ToString(row.ItemArray[4])));
                 }
-                else
-                {
-                    bb = uncheck;
-                }
-                if (bb) itms.Add(new Tuple<int, string, int, string>(Convert.ToInt32(row.ItemArray[0])-1, Convert.ToString(row.ItemArray[2]), Convert.ToInt32(row.ItemArray[3]), Convert.ToString(row.ItemArray[4])));
+                else itms.Add(new Tuple<int, string, int, string>(Convert.ToInt32(row.ItemArray[0]) - 1, Convert.ToString(row.ItemArray[1]), Convert.ToInt32(row.ItemArray[2]), Convert.ToString(row.ItemArray[3])));
             }
             return itms;
         }
@@ -261,7 +356,7 @@ namespace scripthea.viewer
         }
         private void DataGrid_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
         {   
-            var col = e.Column as DataGridTextColumn; if (col == null) return;
+            var col = e.Column as DataGridTextColumn; if (col is null) return;
             col.IsReadOnly = !e.Column.Header.ToString().Equals("on");
             switch (e.Column.Header.ToString())
             {                
@@ -294,21 +389,26 @@ namespace scripthea.viewer
         }
         int lastSelectedRow = -1;
         public void dGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {           
-            DataRowView dataRow = (DataRowView)dGrid.SelectedItem; 
-            if (Utils.isNull(dataRow)) return;
-            dGrid.Dispatcher.InvokeAsync(() =>
+        {  
+            try
             {
-                dGrid.UpdateLayout();
-                dGrid.ScrollIntoView(dGrid.SelectedItem, null);
-            });
-            int iRow = Convert.ToInt32(dataRow.Row.ItemArray[0]) - 1; // shift 0 based
-            ImageInfo ii = SelectedItem(iRow);
-            if (ii == null) { Utils.TimedMessageBox("Unknown image"); return; }
-            if (checkable) OnSelect(iRow, iDepot);
-            else OnSelect(iRow, iDepot);
-            if (!Utils.isNull(e)) e.Handled = true;
-            lastSelectedRow = dGrid.SelectedIndex;
+                if (Utils.isNull(dGrid.SelectedItem) || updating) return;
+                DataRowView dataRow = (DataRowView)dGrid.SelectedItem; 
+            
+                dGrid.Dispatcher.InvokeAsync(() =>
+                {
+                    dGrid.UpdateLayout();
+                    dGrid.ScrollIntoView(dGrid.SelectedItem, null);
+                });
+                int iRow = Convert.ToInt32(dataRow.Row.ItemArray[0]) - 1; // shift 0 based
+                ImageInfo ii = SelectedItem(iRow);
+                if (ii is null) { Utils.TimedMessageBox("Unknown image"); return; }
+                if (checkable) OnSelect(iRow, iDepot);
+                else OnSelect(iRow, iDepot);
+                if (!Utils.isNull(e)) e.Handled = true;
+                lastSelectedRow = dGrid.SelectedIndex;
+            }
+            finally { if (!Utils.isNull(e)) e.Handled = true; }
         }
         private void dGrid_KeyDown(object sender, KeyEventArgs e)
         {
@@ -339,14 +439,15 @@ namespace scripthea.viewer
         public void SortTableByIndex()
         {
             if (dGrid.Columns.Count == 0) return;
-            if (dGrid.Columns[0].SortDirection == null) DataGridHelper.SortDataGrid(dGrid);
+            if (dGrid.Columns[0].SortDirection is null) DataGridHelper.SortDataGrid(dGrid); 
         }
         public void focusFirstRow() // for some reason it is more complicated than it should be
         {
-            if (dTable == null) return;
+            if (dTable is null) return;
             if (dTable.Rows.Count == 0) return;
-            dGrid.UpdateLayout(); // Ensure the DataGrid layout is updated
+            dGrid.UpdateLayout(); // Ensure the DataGrid layout is updated            
             dGrid.SelectedIndex = 0; // Select the first row
+            dGrid_SelectionChanged(dGrid, null);
             dGrid.ScrollIntoView(dGrid.Items[0]);
             DataGridRow firstRow = (DataGridRow)dGrid.ItemContainerGenerator.ContainerFromIndex(0);
             if (firstRow != null)
@@ -354,13 +455,14 @@ namespace scripthea.viewer
                 firstRow.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
             }
             // Assuming your DataGrid is named 'myDataGrid'
-            if (PresentationSource.FromVisual(dGrid) == null) return;
+            if (PresentationSource.FromVisual(dGrid) is null) return;
             KeyEventArgs args = new KeyEventArgs(Keyboard.PrimaryDevice,
                                                 PresentationSource.FromVisual(dGrid),
                                                 0,
-                                                Key.Right); // Or any other key you want
+                                                Key.Home); // Or any other key you want
             args.RoutedEvent = Keyboard.KeyDownEvent;
             dGrid.RaiseEvent(args);
+
         }
         private void tableViewUC_GotFocus(object sender, RoutedEventArgs e)
         {

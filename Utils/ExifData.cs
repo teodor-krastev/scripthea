@@ -126,7 +126,7 @@ namespace CompactExifLib
       {
         DestFileNameWithPath = Path.GetFullPath(DestFileNameWithPath);
       }
-      if ((DestFileNameWithPath == null) ||
+      if ((DestFileNameWithPath is null) ||
           (String.Compare(SourceFileNameWithPath, DestFileNameWithPath, StringComparison.OrdinalIgnoreCase) == 0))
       {
         int BackslashPosition = SourceFileNameWithPath.LastIndexOf('\\');
@@ -2404,7 +2404,7 @@ namespace CompactExifLib
       int InteroperabilityTagCount = InteroperabilityIfdTable.Count;
       if (InteroperabilityTagCount > 0)
       {
-        if (InteroperabilityPointerTag == null)
+        if (InteroperabilityPointerTag is null)
         {
           InteroperabilityPointerTag = new TagItem(ExifTag.InteroperabilityIfdPointer, ExifTagType.ULong, 1);
           PrivateDataIfdTable.Add(ExifTagId.InteroperabilityIfdPointer, InteroperabilityPointerTag);
@@ -2424,7 +2424,7 @@ namespace CompactExifLib
       int GpsInfoDataTagCount = GpsInfoDataIfdTable.Count;
       if (GpsInfoDataTagCount > 0)
       {
-        if (GpsInfoDataPointerTag == null)
+        if (GpsInfoDataPointerTag is null)
         {
           GpsInfoDataPointerTag = new TagItem(ExifTag.GpsInfoIfdPointer, ExifTagType.ULong, 1);
           PrimaryDataIfdTable.Add(ExifTagId.GpsInfoIfdPointer, GpsInfoDataPointerTag);
@@ -2441,7 +2441,7 @@ namespace CompactExifLib
       PrimaryDataIfdTable.TryGetValue(ExifTagId.ExifIfdPointer, out PrivateDataPointerTag);
       if (PrivateDataIfdTable.Count > 0)
       {
-        if (PrivateDataPointerTag == null)
+        if (PrivateDataPointerTag is null)
         {
           PrivateDataPointerTag = new TagItem(ExifTag.ExifIfdPointer, ExifTagType.ULong, 1);
           PrimaryDataIfdTable.Add(ExifTagId.ExifIfdPointer, PrivateDataPointerTag);
@@ -3507,7 +3507,7 @@ namespace CompactExifLib
     // Only for TIFF images
     private static bool IsInternalTiffTag(ExifTagId TagId)
     {
-      if (InternalTiffTagsBitArray == null)
+      if (InternalTiffTagsBitArray is null)
       {
         InitInternalTiffTags();
       }

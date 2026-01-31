@@ -12,7 +12,8 @@ namespace scripthea.master
     {        
         UserControl parrent { get; }
         GroupBox groupFolder { get; }
-        TextBox textFolder { get; }        
+        TextBox textFolder { get; }   
+        bool HasTheFocus { get; set; }
     }
     public class FocusControl
     {
@@ -23,15 +24,16 @@ namespace scripthea.master
         private Dictionary<string, iFocusControl> iFoci; 
         public void Register(string name, iFocusControl iFocus)
         {
-            if (iFocus == null) throw new Exception("null focusable component");
+            if (iFocus is null) throw new Exception("null focusable component");
             iFoci.Add(name,iFocus);
             iFocus.parrent.GotFocus += new RoutedEventHandler(GotTheFocus);
         }
-        private void Refocus(iFocusControl ifc, bool focus)
+        public void Refocus(iFocusControl ifc, bool focus)
         {
             if (focus) ifc.groupFolder.BorderBrush = Utils.ToSolidColorBrush("#FF0A16E9");
             else ifc.groupFolder.BorderBrush = Utils.ToSolidColorBrush("#FFD5DFE5");
             ifc.groupFolder.BorderThickness = new Thickness(1.5);
+            ifc.HasTheFocus = focus;
         }
         public iFocusControl ifc; // the one with the focus
         public string ifcName 
@@ -44,6 +46,13 @@ namespace scripthea.master
                     if (ifc.Equals(pair.Value)) { nm = pair.Key; break; }
                 }
                 return nm;
+            }
+        }
+        public void SetFocusByName(string fn)
+        {
+            foreach (var pair in iFoci)
+            {
+                Refocus(pair.Value, pair.Key == fn);
             }
         }
         public void GotTheFocus(object sender, EventArgs e)

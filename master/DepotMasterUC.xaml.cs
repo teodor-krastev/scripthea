@@ -36,6 +36,24 @@ namespace scripthea.master
             iPickerA.OnSelectEvent += new TableViewUC.PicViewerHandler(PicSelectA);
             ChangeDepot(null,null);
         }
+        public ImagePickerUC iPickerByName(char letter)
+        {
+            switch (letter)
+            {
+                case 'A': return iPickerA;
+                case 'B': return iPickerB;
+                default: return null;
+            }
+        }
+        public ImagePickerUC activePicker
+        {
+            get
+            {
+                if (iPickerA.HasTheFocus) return iPickerA;
+                if (iPickerB.HasTheFocus) return iPickerB;
+                return null;
+            }
+        }
         MenuItem mi1; MenuItem mi2;  MenuItem mi3;
         private void SetIPicker(ref ImagePickerUC iPicker, char letter)
         {
@@ -57,7 +75,7 @@ namespace scripthea.master
                 else btn.Cursor = Cursors.No;
             }
             bool bb = (iPickerA.isValid || Directory.Exists(iPickerA.iDepot?.path)) && (iPickerB.isValid || Directory.Exists(iPickerB.iDepot?.path));
-            if (bb) bb &= !Utils.comparePaths(iPickerA.imageDepot,iPickerB.imageDepot);
+            if (bb) bb &= !Utils.comparePaths(iPickerA.imageFolder,iPickerB.imageFolder);
             btnCopyA2B.IsEnabled = bb; SetCursor(btnCopyA2B, bb);
             btnCopyB2A.IsEnabled = bb; SetCursor(btnCopyB2A, bb);
             btnMoveA2B.IsEnabled = bb; SetCursor(btnMoveA2B, bb);
@@ -102,13 +120,13 @@ namespace scripthea.master
             if (k == -1) Utils.TimedMessageBox("Error[112]: Issue during deleting", "Error", 3000);
             else Utils.TimedMessageBox(k +  " images have been deleted", "Information", 3000);
         }
-        public int Copy1to2(ImagePickerUC iPicker1, ImagePickerUC iPicker2, out List<string> copied)
+        public int Copy1to2(ImagePickerUC iPicker1, ImagePickerUC iPicker2, out List<string> copied) 
         {
             copied = new List<string>(); 
-            if (SctUtils.checkImageDepot(iPicker2.imageDepot, true) == -1)
+            if (SctUtils.checkImageDepot(iPicker2.imageFolder, true) == -1)
             {
                 if (!iPicker1.isEnabled) return -1;
-                List<string> ls = new List<string>(File.ReadAllLines(Path.Combine(iPicker1.imageDepot, SctUtils.descriptionFile)));
+                List<string> ls = new List<string>(File.ReadAllLines(Path.Combine(iPicker1.imageFolder, SctUtils.descriptionFile)));
                 File.WriteAllText(Path.Combine(iPicker2.tbImageDepot.Text, SctUtils.descriptionFile), ls[0]);
                 iPicker2.ReloadDepot();
             }
@@ -120,8 +138,8 @@ namespace scripthea.master
             List<ImageInfo> lii = iPicker1.imageInfos(true, false);
             foreach (ImageInfo ii in lii)
             {
-                string source_path = Path.Combine(iPicker1.imageDepot, ii.filename);
-                string target_path = Path.Combine(iPicker2.imageDepot, ii.filename);
+                string source_path = Path.Combine(iPicker1.imageFolder, ii.filename);
+                string target_path = Path.Combine(iPicker2.imageFolder, ii.filename);
                 if (File.Exists(target_path))
                 {
                     //Configure the message box
@@ -153,14 +171,14 @@ namespace scripthea.master
                 File.Copy(source_path, target_path); k++; copied.Add(Path.GetFileName(source_path));
                 if (!iPicker2.iDepot.Append(ii)) { Utils.TimedMessageBox("Error[115]: image depot problem"); break; }
             }
-            iPicker2.isChanging = false;
+            iPicker2.isChanging = false; iPicker2.iDepot.Save(); iPicker2.ReloadDepot();
             return k;
         }        
         public int Move1to2(ImagePickerUC iPicker1, ImagePickerUC iPicker2)
         {
             List<string> copied;
             int k = Copy1to2(iPicker1, iPicker2, out copied); int cnt1 = iPicker1.iDepot.items.Count;
-            if (!k.Equals(copied.Count)) Utils.TimedMessageBox("Error[778]: index of image depot problem (485)");
+            if (!k.Equals(copied.Count)) Utils.TimedMessageBox("Error[778]: index of image depot problem");
             if (k < 0) return k;
             foreach (string fn in copied)
             {
@@ -193,32 +211,22 @@ namespace scripthea.master
                 }
                 k--; j++;
             }
-            if (j > 0)
+            if (j > 0) // number of deleted
             {
-                iPicker1.iDepot.Save(); iPicker1.ReloadDepot();
+                iPicker1.iDepot.Save(); iPicker1.ReloadDepot(); 
             }
-            iPicker1.isChanging = false;
+            iPicker1.isChanging = false; 
             return j;
-        }
-        ImagePickerUC iPickerByName(char letter) 
-        { 
-            switch (letter) 
-            {
-                case 'A': return iPickerA;
-                case 'B': return iPickerB;
-                default: return null;
-            }
         }
         private void miSynchronize_Click(object sender, RoutedEventArgs e)
         {
-            bool bb = true;
+            bool bb = true; ImagePickerUC iPicker = iPickerByName(Convert.ToChar((sender as MenuItem).Tag));
             try
             {            
                 if (!(sender is MenuItem)) return;
                 string mis = Convert.ToString((sender as MenuItem).Header);
-                ImagePickerUC iPicker = iPickerByName(Convert.ToChar((sender as MenuItem).Tag));
                 ImageDepot df = iPicker?.iDepot;
-                if (df == null) { opts.Log("Error[336]: Invalid image depot!", Brushes.Red); return; }
+                if (df is null) { opts.Log("Error[336]: Invalid image depot!", Brushes.Red); return; }
                 if (!df.isEnabled) { opts.Log("Error[12]: Invalid image depot!", Brushes.Red); return; }
                 iPicker.ReloadDepot();
                 iPicker.isChanging = true;
@@ -248,6 +256,7 @@ namespace scripthea.master
             {
                 if (bb) opts.Log("The image depot is synchronized");
                 else opts.Log("Error[364]: Problem with the image depot synchronization.");
+                iPicker.isChanging = false;
             }
         }
         protected void PicSelectA(int idx, ImageDepot iDepot)
@@ -255,7 +264,7 @@ namespace scripthea.master
             //ImageInfo ii = SelectedItem(idx, iDepot);
             if (!chkSynch.IsChecked.Value) return;
             List<ImageInfo> lii = iPickerB.imageInfos(true, true);
-            if (lii == null) return;
+            if (lii is null) return;
             if (lii.Count == 0) return;
             iPickerB.SelectItem(Utils.EnsureRange(idx, 0,lii.Count-1)); //iPickerA.Focus();
         }

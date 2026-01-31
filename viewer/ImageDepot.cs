@@ -84,7 +84,8 @@ namespace scripthea.viewer
         public ImageInfo(Dictionary<string, object> dict)
         {
             FromDictionary(dict);
-            if (!dict.ContainsKey("job_timestamp")) job_timestamp = DateTime.Now.ToString("G");
+            if (!(dict is null))
+                if (!dict.ContainsKey("job_timestamp")) job_timestamp = DateTime.Now.ToString("G");
         }
         /*{"prompt", "String" }, {"negative_prompt", "String" }, { "seed", "Int64" }, { "width", "Int64" }, { "height", "Int64" },
             { "sampler_name", "String" }, { "cfg_scale", "Double" }, { "steps", "Int64" }, { "batch_size", "Int64" }, { "restore_faces", "Boolean" },
@@ -188,10 +189,10 @@ namespace scripthea.viewer
         public string To_String()
         {
             return JsonConvert.SerializeObject(this);
-        }
+        }        
         public void FromDictionary(Dictionary<string, object> dict)
         {
-            if (dict == null) return;
+            if (dict is null) return;
             if (dict.ContainsKey("prompt")) prompt = Convert.ToString(dict["prompt"]);
             negative_prompt = dict.ContainsKey("negative_prompt") ? Convert.ToString(dict["negative_prompt"]) : "";
             rate = dict.ContainsKey("rate") ? Convert.ToInt32(dict["rate"]) : 0;
@@ -214,7 +215,7 @@ namespace scripthea.viewer
         }
         public void FromMeta1111Dict(Dictionary<string, string> dict)
         {
-            if (dict == null) return;
+            if (dict is null) return;
             if (dict.ContainsKey("prompt")) prompt = dict["prompt"]; negative_prompt = ""; denoising_strength = 0; batch_size = 1; restore_faces = false;
             rate = dict.ContainsKey("rate") ? Convert.ToInt32(dict["rate"]) : 0;
             if (dict.ContainsKey("steps")) steps = Convert.ToInt32(dict["steps"]);
@@ -235,7 +236,7 @@ namespace scripthea.viewer
         // public enum prmKind { positive, negative, width, height, seed, steps, cfg, sampler_name, scheduler, model, denoise }
         public void FromMetaComfyDict(Dictionary<string, string> dict)
         {
-            if (dict == null) return;
+            if (dict is null) return;
             if (dict.ContainsKey("positive")) prompt = dict["positive"];
             if (dict.ContainsKey("negative")) negative_prompt = dict["negative"];
             if (dict.ContainsKey("width")) width = Convert.ToInt64(dict["width"]);
@@ -341,7 +342,7 @@ namespace scripthea.viewer
                 if (!isReadOnly)
                 {
                     bool? bb = ImageDepotConvertor.CheckFileVersion(_folder);
-                    if (bb == null) { Utils.TimedMessageBox("Error[482]: Corrupted Scripthea image depot!", "Error", 4000); return; }
+                    if (bb is null) { Utils.TimedMessageBox("Error[482]: Corrupted Scripthea image depot!", "Error", 4000); return; }
                     if (!(bool)bb) // old version
                     {
                         if (ImageDepotConvertor.AutoConvert) ImageDepotConvertor.Old2New(_folder); // convert 
@@ -395,10 +396,11 @@ namespace scripthea.viewer
         }
         public int appBuilt { get; private set; }
         public bool isReadOnly { get; private set; }
+        private bool _IsChanged = false;
         public bool IsChanged()
         {
             if (items.Count == 0) return false;
-            bool bb = false;
+            bool bb = _IsChanged;
             foreach (ImageInfo ii in items) bb |= ii.IsChanged;
             return bb;
         }
@@ -423,10 +425,12 @@ namespace scripthea.viewer
                 string fn = Path.Combine(path, items[idx].filename);
                 if (File.Exists(fn)) File.Delete(fn);
             }
-            items.RemoveAt(idx);
+            items.RemoveAt(idx); _IsChanged = true;
             return true;
         }
-        public ImageDepot VirtualClone(string targetPath, List<Tuple<int, string, int, string>> filter = null) // int -> index; string -> filename (may differ); string -> prompt (for consistency)
+        public ImageDepot VirtualClone(string targetPath, List<Tuple<int, string, int, string>> filter = null) 
+            // int -> index; string -> filename (may differ); string -> prompt (for consistency)
+            // specifically for Export
         {
             if (!Directory.Exists(targetPath)) return null;
             ImageDepot dp = new ImageDepot(targetPath, imageGenerator, sd_WebUI, isReadOnly);
@@ -444,20 +448,29 @@ namespace scripthea.viewer
             }
             return dp;
         }
-        public bool SameAs(ImageDepot imageDepot) // compare data, location-agnostic
+        public bool IsSameAs(ImageDepot imageDepot) // compare data, location-agnostic
         {
-            bool bb = JsonConvert.SerializeObject(header).Equals(JsonConvert.SerializeObject(imageDepot?.header));
+            if (imageDepot is null) return false;
+            bool bb = JsonConvert.SerializeObject(header).Equals(JsonConvert.SerializeObject(imageDepot.header));
             if ((items.Count != imageDepot.items.Count) || !bb) return false;
             for (int i = 0; i < items.Count; i++)
                 bb &= items[i].SameAs(imageDepot.items[i]);
             return bb;
         }
-        public bool SameAs(string imageFolder) // compare DESCRIPTION.idf and location
+        public bool IsSameAs(string imageFolder) // compare DESCRIPTION.idf and location
         {
             bool bb = Directory.Exists(imageFolder) && Utils.comparePaths(imageFolder, path);
-            if (!bb || descText == null) return false;
+            if (!bb || descText is null) return false;
             bb = descText == File.ReadAllText(Path.Combine(imageFolder, SctUtils.descriptionFile));
             return bb;
+        }
+        public bool IsSameAs(List<Tuple<int, string, int, string>> items) // compare exported to viewer items 
+        {
+            List<Tuple<int, string, int, string>> lst = Export2Viewer();
+            if (items.Count != lst.Count) return false;
+            for (int i = 0; i < items.Count; i++)
+                if (lst[i].Item1 != items[i].Item1 || lst[i].Item2 != items[i].Item2 || lst[i].Item3 != items[i].Item3 || lst[i].Item4 != items[i].Item4) return false;
+            return true;
         }
         public List<string> allImages() // in this folder 
         {
@@ -514,7 +527,7 @@ namespace scripthea.viewer
                 }
                 if (!found)
                 {
-                    if (correctEntry == null)
+                    if (correctEntry is null)
                     {
                         //Configure the message box
                         var messageBoxText =
@@ -552,7 +565,8 @@ namespace scripthea.viewer
             {
                 w.WriteLine(ii.To_String());
             }
-            items.Add(ii); return true;
+            items.Add(ii); _IsChanged = true;
+            return true;
         }
         public void Save(bool forced = false)
         {
@@ -560,11 +574,10 @@ namespace scripthea.viewer
                 if (isReadOnly) return;
             List<string> ls = new List<string>();
             if (!header.ContainsKey("application")) header["application"] = "Scripthea " + Utils.getAppFileVersion;
-            ls.Add("#" + JsonConvert.SerializeObject(header));
+            ls.Add("#" + JsonConvert.SerializeObject(header)); _IsChanged = false; 
             foreach (ImageInfo ii in items)
-                ls.Add(ii.To_String());
-            //Utils.DelayExec(20, new Action(() => {  }));       
-            Utils.writeList(Path.Combine(path, SctUtils.descriptionFile), ls);
+                { ii.IsChanged = false; ls.Add(ii.To_String());}                
+            Utils.writeList(Path.Combine(path, SctUtils.descriptionFile), ls);            
             Utils.Sleep(200);
         }
         public List<Tuple<int, string, int, string>> Export2Viewer() // idx 0 based; prompt, rate, filename
@@ -573,6 +586,15 @@ namespace scripthea.viewer
             for (int i = 0; i < items.Count; i++)
                 lst.Add(new Tuple<int, string, int, string>(i, items[i].prompt, items[i].rate, items[i].filename ));
             return lst;
+        }
+        public ImageDepot Clone() // local to List and Grid 
+        {
+            ImageDepot id = new ImageDepot(path, imageGenerator, sd_WebUI, isReadOnly); // only Header from here
+            if (id is null) return null;
+            id.items.Clear();
+            foreach (ImageInfo ii in items)
+                id.items.Add(ii.Clone());            
+            return id;
         }
     }
 }

@@ -149,8 +149,8 @@ namespace ExtCollMng
             {
                 get
                 {
-                    if (cdesc != null && webRecord == null) return CollLocation.local;
-                    if (cdesc == null && webRecord != null) return CollLocation.remote;
+                    if (cdesc != null && webRecord is null) return CollLocation.local;
+                    if (cdesc is null && webRecord != null) return CollLocation.remote;
                     if (cdesc != null && webRecord != null)
                     {
                         double lclVer = Convert.ToDouble(cdesc.version);double wrVer = Convert.ToDouble(webRecord.version); 
@@ -226,7 +226,7 @@ namespace ExtCollMng
         {
             RadioButton rb = sender as RadioButton; rb.FontFamily = new FontFamily("Segoe UI Semibold");
             string header = rb.Content as string; selectedColl = header.Split('(')[0].Trim();
-            selectedItem = rb.Tag as ExtCollItem; if (selectedItem == null) { Log("Error: internal 187"); return; }
+            selectedItem = rb.Tag as ExtCollItem; if (selectedItem is null) { Log("Error: internal 187"); return; }
             switch (selectedItem.collLoc)
             {
                 case CollLocation.local: tbStatus.Text = "That collection exists only locally";
@@ -271,8 +271,8 @@ namespace ExtCollMng
         }        
         private void btnVisitSource_Click(object sender, RoutedEventArgs e)
         {
-            if (selectedItem == null) return;
-            if (selectedItem.cdesc == null) return;
+            if (selectedItem is null) return;
+            if (selectedItem.cdesc is null) return;
             if (selectedItem.cdesc.urlSource != "")
             {
                 if (!Utils.CallTheWeb(selectedItem.cdesc.urlSource)) Log("Error: i-net communication problem");
@@ -469,8 +469,8 @@ namespace ExtCollMng
         }
         private async void btnDownload_Click(object sender, RoutedEventArgs e)
         {
-            if (selectedItem == null) { Log("Error: no selected item"); return; }
-            if (selectedItem.webRecord == null) { Log("Error: no web-record"); return; }
+            if (selectedItem is null) { Log("Error: no selected item"); return; }
+            if (selectedItem.webRecord is null) { Log("Error: no web-record"); return; }
             if (progressDownload.Visibility == Visibility.Visible) { Log("Warning: ongoing download."); return; }
             try
             {
@@ -571,7 +571,7 @@ namespace ExtCollMng
         private void btnDownloadZip_Click(object sender, RoutedEventArgs e)
         {        
             ECwebRecord wr = selectedItem.webRecord; 
-            if (wr == null) { Log("Error: no remote collection is selected"); return; }
+            if (wr is null) { Log("Error: no remote collection is selected"); return; }
             if (Utils.CallTheWeb(urlColl + wr.zipName)) Log("Downloading using your browser: " + wr.zipName);
             else Log("Error: downloading using your browser: " + wr.zipName);
         }
@@ -591,7 +591,7 @@ namespace ExtCollMng
         private void lbCollections_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             RadioButton rb = lbCollections.SelectedItem as RadioButton;
-            if (rb == null) return;
+            if (rb is null) return;
             rb.IsChecked = true;
         }
         #region semantic

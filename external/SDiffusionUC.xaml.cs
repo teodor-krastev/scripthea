@@ -50,7 +50,7 @@ namespace scripthea.external
             sd_api_uc.ActiveEvent -= OnActiveEvent; sd_api_uc.ActiveEvent += OnActiveEvent;
             sdScriptUC.btnSDoptions.Click -= btnSDoptions_Click; sdScriptUC.btnSDoptions.Click += btnSDoptions_Click;
 
-            if (SDopts == null) SDopts = new SDoptionsWindow(genOpts.composer.A1111);
+            if (SDopts is null) SDopts = new SDoptionsWindow(genOpts.composer.A1111);
             tempRegulator.Init(ref SDopts.opts); SDopts.nVidiaHwAvailable = tempRegulator.nVidiaHWAvailable;
             opts2Visual(true);
         }
@@ -61,10 +61,10 @@ namespace scripthea.external
         private bool lastAPIcom1111 = false; //A1111 -> api or py
         private void opts2Visual(bool first)  // to add comfyUI
         {
-            bool changeAPIcom1111 = lastAPIcom1111 != SDopts.opts.APIcomm1111;
+            bool changeAPIcom1111 = lastAPIcom1111 != SDopts.opts.APIcommSD;
             if (first || changeAPIcom1111)
             {
-                if (SDopts.opts.APIcomm1111) // 
+                if (SDopts.opts.APIcommSD) // 
                 {
                     if (changeAPIcom1111)
                         if (sdScriptUC.IsConnected) sdScriptUC.reStartServers(true);
@@ -77,8 +77,8 @@ namespace scripthea.external
                     sdScriptUC.Visibility = Visibility.Visible; sd_api_uc.Visibility = Visibility.Collapsed;                    
                     sdScriptUC.Init(ref SDopts); 
                 }
-                lastAPIcom1111 = SDopts.opts.APIcomm1111;
-                var ap = OnAPIparams(SDopts.opts.APIcomm1111);
+                lastAPIcom1111 = SDopts.opts.APIcommSD;
+                var ap = OnAPIparams(SDopts.opts.APIcommSD);
             }
             tempRegulator.opts2Visual();
             PossibleRunServer();
@@ -105,13 +105,13 @@ namespace scripthea.external
         {
             tempRegulator.Finish();
             sd_api_uc.Finish(); sdScriptUC.Finish();
-            if (SDopts == null) return;
+            if (SDopts is null) return;
             if (SDopts.opts.autoCloseCmd && genOpts.general.AppTerminating) closeProcess();
             SDopts.keepOpen = false; SDopts.Close(); SDopts = null;
         }
         public void Broadcast(string msg)
         {
-            if (SDopts.opts.APIcomm1111) return;
+            if (SDopts.opts.APIcommSD) return;
             if (msg.Equals("end.scan", StringComparison.OrdinalIgnoreCase) && SDopts.opts.closeAtEndOfScan)
             {
                 sdScriptUC.reStartServers(true); Log("SD comm. has been reset.", Brushes.Tomato);
@@ -133,7 +133,7 @@ namespace scripthea.external
         {
             get
             {
-                if (SDopts.opts.APIcomm1111) return sd_api_uc.active;
+                if (SDopts.opts.APIcommSD) return sd_api_uc.active;
                 else return sdScriptUC.IsConnected;
             }  
         }
@@ -145,7 +145,7 @@ namespace scripthea.external
         {
             if (!isEnabled) { ii = null; return false; } 
             tempRegulator.tempRegulate(); bool rslt = false; 
-            if (SDopts.opts.APIcomm1111) // API
+            if (SDopts.opts.APIcommSD) // API
             {
                 string filename = Utils.timeName(); // target image 
                 string folder = imageDepotFolder.EndsWith("\\") ? imageDepotFolder : imageDepotFolder + "\\"; opts["IDfolder"] = folder;
@@ -177,9 +177,9 @@ namespace scripthea.external
         }        
         private void btnSDoptions_Click(object sender, RoutedEventArgs e)
         {
-            bool bb = SDopts.opts.APIcomm1111;
+            bool bb = SDopts.opts.APIcommSD;
             SDopts.opts2Visual(); SDopts.ShowDialog();
-            opts2Visual(bb != SDopts.opts.APIcomm1111);
+            opts2Visual(bb != SDopts.opts.APIcommSD);
         }
         private void closeProcess()
         {

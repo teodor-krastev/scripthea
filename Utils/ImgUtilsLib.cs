@@ -281,9 +281,9 @@ namespace UtilsNS
                 {
                     var decoder = BitmapDecoder.Create(fileStream, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.None);
                     BitmapMetadata bitmapMetadata = decoder.Frames[0].Metadata as BitmapMetadata;
-                    if (bitmapMetadata == null) return false;
+                    if (bitmapMetadata is null) return false;
                     var metadata = bitmapMetadata.GetQuery(query);
-                    string md = metadata?.ToString(); if (md == null) { return false; }
+                    string md = metadata?.ToString(); if (md is null) { return false; }
                     var mda = md.Split((char)10); string[] mdb; string prompt = "";
                     if (mda.Length < 2) return false;
                     if (mda.Length > 2)
@@ -330,9 +330,9 @@ namespace UtilsNS
                 {
                     var decoder = BitmapDecoder.Create(fileStream, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.None);
                     BitmapMetadata bitmapMetadata = decoder.Frames[0].Metadata as BitmapMetadata;
-                    if (bitmapMetadata == null) return false;
+                    if (bitmapMetadata is null) return false;
                     var metadata = bitmapMetadata.GetQuery(query);
-                    meta = metadata?.ToString(); if (meta == null) { return false; }                    
+                    meta = metadata?.ToString(); if (meta is null) { return false; }                    
                 }
             }
             catch (Exception e) { Utils.TimedMessageBox("Error (I/O): " + e.Message, "Error message", 3000); return false; }
@@ -403,7 +403,7 @@ namespace UtilsNS
                     encoder = new TiffBitmapEncoder();
                     break;
             }
-            if (encoder == null) { Utils.TimedMessageBox("Unknown image type of file: " + filePath); return false; }
+            if (encoder is null) { Utils.TimedMessageBox("Unknown image type of file: " + filePath); return false; }
 
             // Create a BitmapFrame object from the BitmapImage
             BitmapFrame frame = BitmapFrame.Create(bitmapImage);

@@ -26,14 +26,15 @@ namespace scripthea.options
         }
         public Options()
         {
-            if (general == null) general = new General();
-            if (layout == null) layout = new Layout();
-            if (composer == null) composer = new Composer();
-            if (llm == null) llm = new LLM();
-            if (viewer == null) viewer = new Viewer();
-            if (iDutilities == null) iDutilities = new IDutilities();
-            if (sMacro == null) sMacro = new SMacro();
-            if (common == null) common = new Common();
+            if (general is null) general = new General();
+            if (layout is null) layout = new Layout();
+            if (composer is null) composer = new Composer();
+            if (llm is null) llm = new LLM();
+            if (style is null) style= new StyleCreator();
+            if (viewer is null) viewer = new Viewer();
+            if (iDutilities is null) iDutilities = new IDutilities();
+            if (sMacro is null) sMacro = new SMacro();
+            if (common is null) common = new Common();
         }
         public General general;
         public class General
@@ -105,6 +106,9 @@ namespace scripthea.options
         public LLM llm;
         public class LLM
         {
+            public int SelectedPretext;
+            public int SelectedQuestion;
+
             public bool ShowBoth; 
             public bool AutoAsk;
             public bool AllowAskingWhileGeneration;
@@ -114,6 +118,21 @@ namespace scripthea.options
             public string LMScontext;
             public double LMStemperature;
             public int LMSmax_tokens;
+            [JsonIgnore]
+            public scripthea.preview.LMstudioUC LMstudio;
+        }
+        public StyleCreator style;
+        public class StyleCreator
+        {
+            public string StyleQuery;
+            public string StyleMQuery;
+            public double LMStemperature;
+            public int LMSmax_tokens;
+
+            public double col_0;
+            public double col_1;
+            public double row_1;
+            public double row_2;
         }
         public Viewer viewer;
         public class Viewer
@@ -126,6 +145,8 @@ namespace scripthea.options
             public int PicViewPromptH;
             public int PicViewMetaW;
             public bool BnWrate;
+            [JsonIgnore]
+            public string emptyText { get => "<empty>"; }
         }
         public IDutilities iDutilities; // Image Depot utilities
         public class IDutilities

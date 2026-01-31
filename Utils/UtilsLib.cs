@@ -729,7 +729,7 @@ namespace UtilsNS
         /// <param name="clr">color</param>
         public static void log(RichTextBox richText, string txt, SolidColorBrush clr = null)
         {
-            if (isNull(System.Windows.Application.Current) || richText == null) return;
+            if (isNull(System.Windows.Application.Current) || richText is null) return;
             Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, 
               new Action(() =>
               {
@@ -1013,12 +1013,12 @@ namespace UtilsNS
         {
             var ls = new List<string>();
             foreach (string ss in text)
-                ls.Add(skimRem(ss));
+                ls.Add(skimRem(ss.Trim()));
             return ls;
         }
         public static List<string> listFlatTextBox(TextBox textBox, bool noComment)
         {
-            string[] sa = textBox.Text.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+            string[] sa = textBox.Text.Split(new[] { '\n' }, StringSplitOptions.None); //Environment.NewLine
             List<string> ls = new List<string>(sa); List<string> lt;
             if (noComment) lt = skimRem(ls);
             else lt = new List<string>(ls);
@@ -1548,9 +1548,14 @@ namespace UtilsNS
         }
         public static bool comparePaths(string path1, string path2)
         {
-            if (path1 == null || path2 == null) return false;
+            if (path1 is null || path2 is null) return false;
             if (path1.Equals("") || path2.Equals("")) return false;
-            return Path.GetFullPath(path1).TrimEnd('\\').Equals(Path.GetFullPath(path2).TrimEnd('\\'), StringComparison.InvariantCultureIgnoreCase);
+            var p1 = Path.GetFullPath(path1)
+                                 .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            var p2 = Path.GetFullPath(path2)
+                         .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+
+            return string.Equals(p1, p2, StringComparison.OrdinalIgnoreCase);
         }
         public static bool newerVersion(string ver1, string ver2) // check if ver2 is later than ver1
         {

@@ -44,8 +44,8 @@ namespace scripthea.external
         {
             opts = _opts;  SDopts = _SDopts;
             lbServer.Content = opts.composer.A1111 ? "A1111" : "ComfyUI";
-            if (_SDopts == null) _SDopts = new SDoptionsWindow(opts.composer.A1111); 
-            if (serverMonitor == null)
+            if (_SDopts is null) _SDopts = new SDoptionsWindow(opts.composer.A1111); 
+            if (serverMonitor is null)
             {
                 serverMonitor = new ServerMonitor(url); 
                 serverMonitor.ChangeAwakeness -= serverAwakeness; serverMonitor.ChangeAwakeness += serverAwakeness;
@@ -224,7 +224,7 @@ namespace scripthea.external
             foreach (var pair in dop)
             {
                 object obj = pair.Value;
-                if (obj == null) continue;
+                if (obj is null) continue;
                 if ((obj is int) || (obj is long) || (obj is double) || (obj is string) || (obj is bool))
                     sod.Add(pair.Key, obj.ToString()); // obj.GetType().Name
             }
@@ -234,6 +234,7 @@ namespace scripthea.external
         {
             foreach (var pair in dop)
             {
+                if (pair.Key == "comment") continue;
                 if (!possibles.ContainsKey(pair.Key)) { return false; }
                 string tp = pair.Value.GetType().Name;
                 if (tp != possibles[pair.Key]) 
@@ -368,7 +369,7 @@ namespace scripthea.external
                 if (!File.Exists(tmpl)) { Console.WriteLine("Error: no file <" + tmpl + ">"); return ""; }
 
                 List<string> wf = actualWorkflowList(new List<string>(File.ReadAllLines(tmpl)), cParams);
-                if (wf == null) { Console.WriteLine("Error: in workflow template"); return ""; }
+                if (wf is null) { Console.WriteLine("Error: in workflow template"); return ""; }
                 //Utils.writeList(Path.ChangeExtension(tmpl, ".json"), wf);
                 return Convert.ToString(String.Join("\n", wf.ToArray())); //File.ReadAllText(Path.Combine(Utils.configPath,Path.ChangeExtension(template, ".json"))); 
             }
@@ -406,9 +407,9 @@ namespace scripthea.external
                 {
                     var decoder = BitmapDecoder.Create(fileStream, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.None);
                     BitmapMetadata bitmapMetadata = decoder.Frames[0].Metadata as BitmapMetadata;
-                    if (bitmapMetadata == null) return false;
+                    if (bitmapMetadata is null) return false;
                     var metadata = bitmapMetadata.GetQuery(query);
-                    string md = metadata?.ToString(); if (md == null) { return false; }
+                    string md = metadata?.ToString(); if (md is null) { return false; }
                     Dictionary<string, object> dct = ExtractParams(md);
                     itemMap = Utils.dictObject2String(dct);
                 }
@@ -460,26 +461,26 @@ namespace scripthea.external
         {
             try // assuming certain historyOut structure !!!
             {
-                if (historyOut == null) throw new Exception();
+                if (historyOut is null) throw new Exception();
                 if (historyOut.Count == 0) throw new Exception();
                 string promptId = historyOut.Properties().First().Name;
                 if (!historyOut.ContainsKey(promptId)) throw new Exception("Base {"+ promptId +"} is missing");
 
                 JToken pip = historyOut[promptId];
-                if (pip == null) throw new Exception();
+                if (pip is null) throw new Exception();
 
                 JToken pis = pip["status"];
                 bool success = (string)pis["status_str"] == "success" && (bool)pis["completed"];
-                if (pip["outputs"] == null) throw new Exception();
+                if (pip["outputs"] is null) throw new Exception();
 
                 JToken piseed = null;
-                try { piseed = pip["prompt"][2]["3"]["inputs"]["seed"]; }
+                try { piseed = pip["prompt"][2]["3"]["inputs"]["seed"]; } // mask that
                 catch(Exception ex) { }
                 long seed = piseed != null ? (long)piseed: 0;
 
                 JToken pid = pip["outputs"];
                 pid = pid.First.First;
-                if (pid["images"] == null) throw new Exception();
+                if (pid["images"] is null) throw new Exception();
                 JToken pif = pid["images"][0];
 
                 string filename = (string)pif["filename"];

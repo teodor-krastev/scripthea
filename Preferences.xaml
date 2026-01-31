@@ -38,7 +38,7 @@
                     <GroupBox Header="Image Depot Master" Height="80" Margin="0,10,0,0">
                         <StackPanel>
                             <CheckBox x:Name="chkValidationAsk" Content="Ask before removing images in image depot synchronization." HorizontalAlignment="Left" Margin="7,8,0,0" VerticalAlignment="Top"/>
-                            <CheckBox x:Name="chkViewerRemoveImages" Content="Remove image files along with removed img.depot entries." HorizontalAlignment="Left" VerticalAlignment="Top" Margin="7,8,0,0" IsChecked="True"/>
+                            <CheckBox x:Name="chkViewerRemoveImages" Content="Remove image files along with img.depot entries. (IDM 'n Viewer)" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="7,8,0,0" IsChecked="True"/>
                         </StackPanel>
                     </GroupBox>
                 </StackPanel>

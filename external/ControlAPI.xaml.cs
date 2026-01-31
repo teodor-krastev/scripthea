@@ -59,9 +59,7 @@ namespace scripthea.external
             backgroundWorker1.DoWork += backgroundWorker1_DoWork;
             backgroundWorker1.RunWorkerCompleted += backgroundWorker1_RunWorkerCompleted;
             backgroundWorker1.WorkerReportsProgress = true;
-        }
-        
-
+        }      
         protected BackgroundWorker backgroundWorker1;
         public bool IsBusy { get { return backgroundWorker1.IsBusy; } }
 
@@ -120,8 +118,8 @@ namespace scripthea.external
                     if (success)
                     {
                         if (!Directory.Exists(imageFolder)) { opts.Log("Error[348]: folder not found"); return; }
-                        if (iInfo == null) { opts.Log("Error[349]: no object/filename"); return; }
-                        if (iInfo.filename == null) { opts.Log("Error[349]: no filename"); return; }
+                        if (iInfo is null) { opts.Log("Error[349]: no object/filename"); return; }
+                        if (iInfo.filename is null) { opts.Log("Error[349]: no filename"); return; }
                         if (File.Exists(Path.Combine(imageFolder, iInfo.filename)))
                         {
                             string desc = Path.Combine(imageFolder, SctUtils.descriptionFile);
@@ -183,7 +181,6 @@ namespace scripthea.external
         {
             Hide();
         }
-
         private void btnOK_Click(object sender, RoutedEventArgs e)
         {
             Hide();

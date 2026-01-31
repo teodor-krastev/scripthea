@@ -39,6 +39,7 @@ namespace scripthea.composer
     {
         const string strScan = "S c a n"; protected DateTime sessionStart;
         protected Options opts;
+        public bool HasTheFocus { get; set; }
         public ControlAPI API;
         public QueryUC()
         {
@@ -178,13 +179,13 @@ namespace scripthea.composer
         }*/
         protected void ChangeCue(List<string> selCues)
         {
-            if (opts == null) return;
+            if (opts is null) return;
             if ((opts.composer.SingleAuto == Options.SingleAutoSet.cue || opts.composer.SingleAuto == Options.SingleAutoSet.both) && cuePoolUC.radioMode) 
                 Compose(null, selCues, modifiersUC.Composite(), false);
         }
         protected void ChangeModif(object sender, RoutedEventArgs e)
         {
-            if (opts == null) return;           
+            if (opts is null) return;           
             if ((opts.composer.SingleAuto == Options.SingleAutoSet.modif || opts.composer.SingleAuto == Options.SingleAutoSet.both) && tcQuery.SelectedItem.Equals(tiSingle)) 
                 Compose(sender,false);
         }
@@ -304,7 +305,7 @@ namespace scripthea.composer
                 }
             }
             bool common = sender == rbBoth || sender == rbCue || sender == rbModif || sender == rbNone;
-            common |= sender == null || sender == btnCompose || sender == tcQuery; 
+            common |= sender is null || sender == btnCompose || sender == tcQuery; 
 
             if (Utils.isNull(selectedCue)) return prompt; // ?? manual
             
@@ -347,7 +348,7 @@ namespace scripthea.composer
             if (previewScanning)
             {
                 (t, tt) = previewUC.UpdateCounter();
-                if (previewUC.fashionUC.fashionMode == FashioningUC.FashionModeTypes.ask_llm) t = previewUC.ValidLLMcount(); 
+                if (previewUC.fashionUC.fashionMode == FashioningUC.FashionModeTypes.ask_llm) t = PreviewValidList.Count; 
             } 
             if (status.Equals(Status.Scanning)) opts.Log("@StartGeneration (" + (scanPromptIdx+1).ToString() + " / " + t.ToString() + ")");
             else opts.Log("@StartGeneration (single)");
@@ -356,7 +357,7 @@ namespace scripthea.composer
             API.Query(prompt, opts.composer.ImageDepotFolder); opts.Log("-=-=-", Brushes.DarkOrange);
             opts.composer.TotalImageCount++;
         }
-        private string lastSingleImage = ""; private List<int> PreviewValidList; private int PreviewValidIndex = -1; private int PreviewValidCount = -1;
+        private string lastSingleImage = ""; private List<int> PreviewValidList; private int PreviewValidIndex = -1; 
         protected void QueryComplete(string imageFilePath, bool success)
         {
             if (!success)
@@ -387,7 +388,7 @@ namespace scripthea.composer
                         {
                             status = Status.Idle;
                             (int c, int t) = previewUC.UpdateCounter();
-                            opts.Log("This Scan resulted in " + c + " images.", Brushes.DarkMagenta);
+                            opts.Log("This Scan resulted in " + PreviewValidList.Count + " images.", Brushes.Blue);
                             API.activeAPI.Broadcast("end.scan");
                         }
                     }
@@ -396,7 +397,7 @@ namespace scripthea.composer
                         if (scanPromptIdx == (scanPrompts.Count-1)) // the end of it, back to init state
                         {
                             status = Status.Idle; 
-                            opts.Log("This Scan resulted in " + scanPrompts.Count.ToString()+" images.", Brushes.DarkMagenta);
+                            opts.Log("This Scan resulted in " + scanPrompts.Count.ToString()+" images.", Brushes.Blue);
                             API.activeAPI.Broadcast("end.scan");
                         }                        
                         else // next image gen
@@ -421,30 +422,31 @@ namespace scripthea.composer
         }
         private string scanPromptStr(int idx, bool PreviewScan = false)
         {
-            if (scanPrompts == null) GetScanPrompts(PreviewScan);
+            if (scanPrompts is null) GetScanPrompts(PreviewScan);
             if (!Utils.InRange(idx, 0, scanPrompts.Count - 1)) return null;
             return scanPromptStr(scanPrompts[idx]);
         }
         private List<Tuple<string, string>> GetScanPrompts(bool PreviewScan = false)
         {        
             scanPrompts = new List<Tuple<string, string>>();
-            if (cuePoolUC.activeCourier == null) { opts.Log("Error[145]: no cue is selected"); return scanPrompts; }
-            List<List<string>> lls = cuePoolUC.activeCourier.GetCues();
+            if (cuePoolUC.activeCourier is null) { opts.Log("Error[145]: no cue is selected"); return scanPrompts; }
+            List<Tuple<List<string>, string>> lls = cuePoolUC.activeCourier.GetCues(opts.composer.ModifPrefix);
             if (lls.Count.Equals(0)) { opts.Log("Error[96]: no cue is selected"); return scanPrompts; }
             List<string> ScanModifs = CombiModifs(modifiersUC.ModifItemsByType(ModifStatus.Scannable), opts.composer.ModifPrefix, Utils.EnsureRange(opts.composer.ModifSample, 1, 9));
             string fis = modifiersUC.FixItemsAsString(); 
-            foreach (List<string> ls in lls)
+            foreach (Tuple<List<string>, string> tls in lls)
             {
+                string fit = tls.Item2 + fis;
                 if (ScanModifs.Count.Equals(0))
                 {
-                    scanPrompts.Add(Compose(null, ls, fis, true));                    
+                    scanPrompts.Add(Compose(null, tls.Item1, fit, true));                    
                 }
                 else
                 {                
                     foreach (string sc in ScanModifs)
                     {
-                        if (PreviewScan) scanPrompts.Add(PreviewCompose(ls, fis + (sc.Equals("") ? "" : opts.composer.ModifPrefix) + sc));
-                        else scanPrompts.Add(Compose(null, ls, fis + (sc.Equals("") ? "" : opts.composer.ModifPrefix) + sc, true));
+                        if (PreviewScan) scanPrompts.Add(PreviewCompose(tls.Item1, fit + (sc.Equals("") ? "" : opts.composer.ModifPrefix) + sc));
+                        else scanPrompts.Add(Compose(null, tls.Item1, fit + (sc.Equals("") ? "" : opts.composer.ModifPrefix) + sc, true));
                     }
                 }
             }
@@ -689,7 +691,7 @@ namespace scripthea.composer
             {               
                 if (previewUC.fashionUC.fashionMode == FashioningUC.FashionModeTypes.ask_llm)
                 {
-                    if (previewUC.previewListUC.selectedItem == null) { opts.Log("Error[74a]: no prompt selected or empty."); return; }
+                    if (previewUC.previewListUC.selectedItem is null) { opts.Log("Error[74a]: no prompt selected or empty."); return; }
                     if (previewUC.previewListUC.selectedItem.IsCueLLMEmpty) { opts.Log("Error[74b]: selected prompt has not been processed."); return; }
                 }                    
                 if (previewUC.selectedStringPrompt.Trim() == "") { opts.Log("Error[74]: no prompt selected or empty."); return; }
@@ -702,7 +704,7 @@ namespace scripthea.composer
         {
             if (sender != cuePoolUC.tabControl) { Utils.TimedMessageBox("wrong sender"); return; }
             TabItem ti = cuePoolUC.tabControl.SelectedItem as TabItem;
-            if (ti == null) return;
+            if (ti is null) return;
             gridSingle.IsEnabled = ti.Equals(cuePoolUC.tiA_pool) || ti.Equals(cuePoolUC.tiB_pool) || ti.Equals(cuePoolUC.tiImageDepot);
             gridPrompt.IsEnabled = gridSingle.IsEnabled; gridScan.IsEnabled = gridSingle.IsEnabled;
         }
@@ -858,7 +860,8 @@ namespace scripthea.composer
 
         private void tcModScanPre_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            //opts?.Log(ExtCollMngVisibility.ToString()+ " / " + tcModScanPre.SelectedItem.ToString());  
+            //opts?.Log(ExtCollMngVisibility.ToString()+ " / " + tcModScanPre.SelectedItem.ToString());
+            if (tcModScanPre.SelectedItem == tiScanPreview) previewUC.UpdateLLMVisuals();
         }
 
         public List<Tuple<string, string>> HelpList()

@@ -23,6 +23,7 @@
             <ComboBox x:Name="cbCommand" Background="White" SelectedIndex="0" SelectionChanged="cbCommand_SelectionChanged" DropDownOpened="cbCommand_DropDownOpened">
                 <ComboBoxItem Content="Open"/>
                 <ComboBoxItem Content="Append"/>
+                <ComboBoxItem Content="Remove Dupl"/>
                 <ComboBoxItem Content="Remove Chk"/>                
                 <ComboBoxItem Content="Clear"/>
                 <ComboBoxItem Content="Save As"/>

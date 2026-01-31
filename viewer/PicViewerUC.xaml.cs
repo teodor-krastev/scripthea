@@ -67,7 +67,7 @@ namespace scripthea.viewer
         }
         public void loadPic(int idx, ImageDepot _iDepot) // 0 based
         {
-            ImageInfo ii = SelectedItem(idx, _iDepot); actIdx = -1; if (ii == null) return;
+            ImageInfo ii = SelectedItem(idx, _iDepot); actIdx = -1; if (ii is null) return;
             string filePath = Path.Combine(_iDepot.path, ii.filename);             
             UpdateMeta(_iDepot.path, ii, null); // clear
             actIdx = idx;
@@ -84,14 +84,14 @@ namespace scripthea.viewer
             if (File.Exists(filePath))
             {
                 image.Source = ImgUtils.UnhookedImageLoad(filePath, ImgUtils.ImageType.Png);
-                if (image.Source == null)
+                if (image.Source is null)
                     { opts.Log("Exhausted resources - use table view instead", Brushes.Red); return; }
             }
             //var uri = new Uri(filePath); var bitmap = new BitmapImage(uri);  image.Source = bitmap.Clone(); image.UpdateLayout(); bitmap = null;
             tbCue.Text = ii.prompt; 
             // iDepot compare
             //if (chkExtra.IsChecked.Value) return; ?
-            if (_iDepot == null) return;
+            if (_iDepot is null) return;
             if (!_iDepot.isEnabled) return;
             if (!Utils.InRange(idx, 0, _iDepot.items.Count-1, true)) return;
             if (!ii.prompt.Equals(ii.prompt, StringComparison.InvariantCultureIgnoreCase)) return;
@@ -109,8 +109,8 @@ namespace scripthea.viewer
         {
             get 
             {
-                if (image == null) return -1;
-                if (image.Source == null) return -1; 
+                if (image is null) return -1;
+                if (image.Source is null) return -1; 
                 ImageSource imageSource = image.Source; Point wh = ImgUtils.GetActualSizeInPixels(image);
                 double xScale = wh.X / imageSource.Width; double yScale = wh.Y / imageSource.Height; 
                 int scale = Convert.ToInt32(100.0 * (xScale + yScale) / 2); // aver
@@ -121,16 +121,16 @@ namespace scripthea.viewer
         private void UpdateMeta(int idx, ImageDepot _iDepot, bool? modified, bool tryFileMeta = false)
         {
             ImageInfo ii = SelectedItem(idx, iDepot); 
-            if (ii == null) return;
+            if (ii is null) return;
             UpdateMeta(_iDepot.path, ii, modified);
         }        
         private bool UpdateMeta(string imageDir, ImageInfo ii, bool? modified, bool tryFileMeta = false) // update to visuals, null -> clear
         {
-            if (modified == null) // get it here (later)
+            if (modified is null) // get it here (later)
             {
                 lboxMetadata.Items.Clear(); return true;
             }            
-            if (ii == null) return false;
+            if (ii is null) return false;
             string filePath = Path.Combine(imageDir, ii.filename);
             if (!File.Exists(filePath)) return false;
             Dictionary<string, string> meta;
@@ -201,7 +201,7 @@ namespace scripthea.viewer
             }
             foreach (object obj in lboxMetadata.Items)
             {
-                ListBoxItem lbit = obj as ListBoxItem; if (lbit == null) continue;
+                ListBoxItem lbit = obj as ListBoxItem; if (lbit is null) continue;
                 lbit.Selected += new RoutedEventHandler(OnItemSelected);
             }
             return true;
@@ -277,7 +277,7 @@ namespace scripthea.viewer
         private bool lockRate = false; // when it has been changed from code 
         private void sldRate_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if (lockRate || iDepot == null || opts == null) return;
+            if (lockRate || iDepot is null || opts is null) return;
             if (opts.composer.QueryStatus == Status.Scanning) { Utils.TimedMessageBox("Error[886]: the IDF is updating."); return; }
             ImageInfo ii = SelectedItem(actIdx, iDepot);
             ii.rate = Convert.ToInt16(sldRate.Value);
@@ -291,7 +291,7 @@ namespace scripthea.viewer
         }
         private void miNeutral_Click(object sender, RoutedEventArgs e)
         {
-            if (opts == null) return;
+            if (opts is null) return;
             if (sender != null) opts.viewer.BnWrate = sender.Equals(miNeutral);
             miNeutral.IsChecked = opts.viewer.BnWrate; miBlueRed.IsChecked = !miNeutral.IsChecked;
             if (opts.viewer.BnWrate) { topGradient.Color = Brushes.White.Color; bottomGradient.Color = Brushes.Black.Color; }
@@ -301,6 +301,15 @@ namespace scripthea.viewer
         {
             if (e.Delta > 0) sldRate.Value += 1;
             if (e.Delta < 0) sldRate.Value -= 1; 
+        }
+        private void image_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (e.Delta > 0) zoomControl(1);
+            if (e.Delta < 0) zoomControl(-1);
+        }
+        private void image_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ClickCount == 2) zoomControl(0);
         }
     }
 }

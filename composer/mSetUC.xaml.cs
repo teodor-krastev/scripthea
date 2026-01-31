@@ -62,7 +62,7 @@ namespace scripthea.composer
         {
             get
             {
-                if (title == null) return _ReadOnly;
+                if (title is null) return _ReadOnly;
                 else return _ReadOnly || isReset();
             }
             set

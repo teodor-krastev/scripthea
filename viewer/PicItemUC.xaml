@@ -14,7 +14,7 @@
         </Grid.RowDefinitions>
         <Grid>
             <CheckBox x:Name="chkChecked" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0"></CheckBox>
-            <TextBlock x:Name="tbCue" TextWrapping="Wrap" Background="{x:Null}" Margin="0,0,0,0.253" />
+            <TextBlock x:Name="tbCue" TextWrapping="Wrap" Margin="0,0,0,0.253" />
         </Grid>
         <Image x:Name="imgPic"  Margin="0" Grid.Row="1" MouseDown="imgPic_MouseDown_1"/>
         <Grid Grid.Row="2" >

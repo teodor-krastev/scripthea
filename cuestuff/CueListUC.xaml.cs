@@ -103,7 +103,11 @@ namespace scripthea.cuestuff
                 if (selectedCues(i).Count > 0 && !radioMode) ((TabItem)tcLists.Items[i]).Background = Utils.ToSolidColorBrush("#FFFFF3DE");
                 else ((TabItem)tcLists.Items[i]).Background = Utils.ToSolidColorBrush("#FFFFFFF0");
             }
-        }        
+        }
+        private string TrimSeparator(string cueText)
+        {
+            return cueText.Replace(opts.composer.ModifPrefix.Trim(), ",").Trim(); // weak point -> ","
+        }
         protected void AddCues(StackPanel sp, ref List<CueItemUC> ocl, string fn)
         {
             if (!File.Exists(fn)) { opts.Log("Error[22]: no <" + fn + "> file found"); return; }
@@ -111,17 +115,16 @@ namespace scripthea.cuestuff
             List<string> cueList = new List<string>();
             foreach (string ss in cueText)
             {
-                if (ss.Length > 1)
-                    if (ss.Substring(0, 2).Equals("##")) continue;
+                if (ss.StartsWith("##")) continue;
                 if (ss.Trim().Equals("")) continue;
-                cueList.Add(ss.Trim());
+                cueList.Add(TrimSeparator(ss));
             }             
             List<string> ls = new List<string>();
             foreach (string ss in cueList)
             {               
                 if (ss.Equals("---"))
                 {
-                    string cs = String.Join("|",ls.ToArray()); // fight duplicates
+                    string cs = String.Join("|",ls.ToArray()); // fight duplicates 
                     bool found = false;
                     foreach (CueItemUC ci in ocl)
                     {
@@ -149,11 +152,11 @@ namespace scripthea.cuestuff
         }
         protected void PoolChecking(bool? bl)
         {
-            if (allCues == null) return;
+            if (allCues is null) return;
             if (radioMode) return;
             foreach (CueItemUC ci in allCues)
             {
-                if (bl == null) ci.boxChecked = !ci.boxChecked;
+                if (bl is null) ci.boxChecked = !ci.boxChecked;
                 else ci.boxChecked = (bool)bl;
             }
         }

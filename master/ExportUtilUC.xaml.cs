@@ -70,7 +70,7 @@ namespace scripthea.master
             if (!File.Exists(imagePng)) { Utils.TimedMessageBox("Error: file <" + imagePng + "> not found"); return false; }
             if (ImgUtils.GetImageType(imagePng) != ImgUtils.ImageType.Png) { Utils.TimedMessageBox("Error: file <" + imagePng + "> is not of png type"); return false; }
             if (ImgUtils.GetImageType(imageJpg) != ImgUtils.ImageType.Jpg) { Utils.TimedMessageBox("Error: file <" + imageJpg + "> is not of jpeg type"); return false; }
-            string meta = ""; ImgUtils.GetMetadataStringComfy(imagePng, out meta); if (meta == null) meta = "";  meta = meta.Trim(); string ext = ".json";
+            string meta = ""; ImgUtils.GetMetadataStringComfy(imagePng, out meta); if (meta is null) meta = "";  meta = meta.Trim(); string ext = ".json";
             if (meta == "" && ii != null) { meta = ii.To_String(); ext = ".dict"; }
             if (meta != "") File.WriteAllText(Path.ChangeExtension(imageJpg, ext), meta);
 
@@ -82,7 +82,7 @@ namespace scripthea.master
         private void ConvertPNG2JPG(object sender, RoutedEventArgs e)
         {
             CommonOpenFileDialog dialog = new CommonOpenFileDialog();
-            dialog.InitialDirectory = iPicker.imageDepot == "" ? SctUtils.defaultImageDepot : iPicker.imageDepot;
+            dialog.InitialDirectory = iPicker.imageFolder == "" ? SctUtils.defaultImageDepot : iPicker.imageFolder;
             dialog.Title = "Select a PNG File";
             dialog.Multiselect = true; 
             dialog.DefaultExtension = ".png"; dialog.Filters.Add(new CommonFileDialogFilter("PNG images", "png"));
@@ -134,7 +134,7 @@ namespace scripthea.master
                     tfn = iPicker.chkCustom1.IsChecked.Value ? itm.Item2.Substring(0, Math.Min(150, itm.Item2.Length)) : itm.Item4;
                     tfn = Utils.correctFileName(tfn);
                     if (!Utils.validFileName(tfn)) tfn = itm.Item4; // prompt text not suitable for filename
-                    string sffn = Path.Combine(iPicker.imageDepot, itm.Item4); // src full path
+                    string sffn = Path.Combine(iPicker.imageFolder, itm.Item4); // src full path
                     string tffn = Path.Combine(targetFolder, tfn);
                     ImgUtils.ImageType iFormat = ImgUtils.ImageType.Unknown; // intended (target) format
                     switch (iPicker.comboCustom.SelectedIndex)
@@ -198,7 +198,7 @@ namespace scripthea.master
         }
         private void Wopts2Visuals() 
         {
-            if (wopts == null) return;
+            if (wopts is null) return;
             if (wopts.ContainsKey("showPrompt")) chkShowPrompt.IsChecked = wopts["showPrompt"] == "1";
             if (wopts.ContainsKey("showFilename")) chkShowFilename.IsChecked = wopts["showFilename"] == "1";
             if (wopts.ContainsKey("createWebpage")) chkCreateWebpage.IsChecked = wopts["createWebpage"] == "1";
@@ -221,7 +221,7 @@ namespace scripthea.master
             {
                 if (errorMsg) Utils.TimedMessageBox(msg, "Error", 3000);
             }
-            if (wopts == null) wopts = new Dictionary<string, string>();
+            if (wopts is null) wopts = new Dictionary<string, string>();
             wopts["showPrompt"] = chkShowPrompt.IsChecked.Value ? "1" : "0";
             wopts["showFilename"] = chkShowFilename.IsChecked.Value ? "1" : "0";
             wopts["createWebpage"] = chkCreateWebpage.IsChecked.Value ? "1" : "0";

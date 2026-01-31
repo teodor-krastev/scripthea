@@ -19,9 +19,9 @@
         </Grid>
         <StackPanel Grid.Column="1" Margin="2,3" >
             <TextBox x:Name="tbHeader" TextWrapping="Wrap" IsReadOnly="True" Background="White" Text="" FontSize="13" FontStyle="Normal" AcceptsReturn="True" BorderThickness="0.5" BorderBrush="#FFD9DADB" Visibility="Collapsed" Foreground="#FF7C7C7C" TextChanged="tbCue_TextChanged"/>
-            <TextBox x:Name="tbCue" TextWrapping="Wrap" IsReadOnly="True" Background="White" Text="" FontSize="13" FontStyle="Normal" AcceptsReturn="True" BorderThickness="1" BorderBrush="#FFD9DADB" TextChanged="tbCue_TextChanged" />
+            <TextBox x:Name="tbCue" TextWrapping="Wrap" IsReadOnly="True" Background="White" Text="" FontSize="13" FontStyle="Normal" AcceptsReturn="True" BorderThickness="1.5,1.2,1,0.5" BorderBrush="#FF838383" TextChanged="tbCue_TextChanged" />
             <TextBox x:Name="tbLLMCue" TextWrapping="Wrap" IsReadOnly="True" Background="White" Text="" FontSize="13" FontStyle="Normal" AcceptsReturn="True" BorderThickness="0.5" BorderBrush="#FF0166CB"   Foreground="Navy" Visibility="Collapsed" TextChanged="tbCue_TextChanged"/>
-            <TextBox x:Name="tbModifs" TextWrapping="Wrap" IsReadOnly="True" Background="White" Text="" FontSize="13" FontStyle="Normal" AcceptsReturn="True" BorderThickness="0.5" BorderBrush="#FFD9DADB" Foreground="Navy" TextChanged="tbCue_TextChanged"/>
+            <TextBox x:Name="tbModifs" TextWrapping="Wrap" IsReadOnly="True" Background="White" Text="" FontSize="13" FontStyle="Normal" AcceptsReturn="True" BorderThickness="1,0.5,0.5,1" BorderBrush="DarkGreen" Foreground="#FF003E00" TextChanged="tbCue_TextChanged"/>
         </StackPanel>
     </Grid>
 </UserControl>

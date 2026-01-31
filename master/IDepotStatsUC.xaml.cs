@@ -48,7 +48,7 @@ namespace scripthea.master
         public void OnChangeDepot(string ImageDepotPath)
         {
             Clear();
-            if (ImageDepotPath == null || ImageDepotPath == "") return;
+            if (ImageDepotPath is null || ImageDepotPath == "") return;
             iDepot = new ImageDepot(ImageDepotPath);
             iDepot?.Validate(null);           
             ReadFileInfos(iDepot.path);
@@ -64,7 +64,7 @@ namespace scripthea.master
         public List<FileInfo> ReadFileInfos(string iDepotPath)
         {
             fileInfos = new List<FileInfo>();
-            if (!Directory.Exists(iDepotPath) || iDepot == null) return fileInfos;
+            if (!Directory.Exists(iDepotPath) || iDepot is null) return fileInfos;
             foreach (ImageInfo ii in iDepot.items)
             {
                 string filePath = Path.Combine(iDepotPath, ii.filename);              
@@ -110,7 +110,7 @@ namespace scripthea.master
         private Dictionary<string, string> FolderStats()
         {
             Dictionary<string, string> dict = new Dictionary<string, string>();
-            if (iDepot == null) return dict;
+            if (iDepot is null) return dict;
             if (iDepot.header != null)
                 dict = new Dictionary<string, string>(iDepot.header);
             double sizeInK = 0;
@@ -143,9 +143,9 @@ namespace scripthea.master
             dict.Add("number of images", fileInfos.Count.ToString());
             DateTime earliestWritten = fileInfos.OrderBy(f => f.LastWriteTime).First().LastWriteTime;
             DateTime latestWritten = fileInfos.OrderBy(f => f.LastWriteTime).Last().LastWriteTime;
-            string ss = earliestWritten.ToString("dd-MMM-yy HH:mm") + " to " + latestWritten.ToString("dd-MMM-yyyy HH:mm");
-            if ((int)earliestWritten.ToOADate() == (int)latestWritten.ToOADate()) ss = earliestWritten.ToString("dd-MMM-yy HH:mm") + " to " + latestWritten.ToString("HH:mm");
-            dict.Add("time of generation", ss);
+            string ss = earliestWritten.ToString("dd-MMM-yyyy HH:mm") + " . . " + latestWritten.ToString("dd-MMM-yyyy HH:mm");
+            if ((int)earliestWritten.ToOADate() == (int)latestWritten.ToOADate()) ss = earliestWritten.ToString("dd-MMM-yyyy HH:mm") + " . . " + latestWritten.ToString("HH:mm");
+            dict.Add("times of generation", ss);
             List<double> sizeInK = new List<double>();
             foreach (FileInfo fileInfo in fileInfos) sizeInK.Add(fileInfo.Length / 1024.0); 
             dict.Add("image size", (sizeInK.Average()).ToString("F0") + "  (" + sizeInK.Min().ToString("F0") + " . . " + sizeInK.Max().ToString("F0") + ") KB");
@@ -194,7 +194,7 @@ namespace scripthea.master
         public Dictionary<string, string> CommonParams()
         {          
             Dictionary<string, string> dict = new Dictionary<string, string>();
-            if (iDepot == null) return dict;
+            if (iDepot is null) return dict;
             if (!iDepot.isEnabled) return dict;
             if (iDepot.items.Count == 0) return dict;
             dict = Utils.dictObject2String(iDepot.items[0].ToDictionary(true));
@@ -214,7 +214,7 @@ namespace scripthea.master
         }
         private void btnCopy_Click(object sender, RoutedEventArgs e)
         {
-            if (ReportList == null) return;
+            if (ReportList is null) return;
             if (ReportList.Count == 0) return;
             Clipboard.SetText(string.Join("\n", ReportList));
             _ = new PopupText(btnCopy, "Stats copied");

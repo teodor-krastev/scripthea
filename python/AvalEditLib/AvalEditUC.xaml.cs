@@ -38,7 +38,7 @@ namespace AvalEditLib
 
 			/*using (Stream s = assembly.GetManifestResourceStream("AvalEditLib.CustomHighlighting.xshd")) //
 			{
-				if (s == null) throw new InvalidOperationException("Could not find embedded resource");
+				if (s is null) throw new InvalidOperationException("Could not find embedded resource");
 				using (XmlReader reader = new XmlTextReader(s))
 				{
 					customHighlighting = ICSharpCode.AvalonEdit.Highlighting.Xshd.
@@ -150,7 +150,7 @@ namespace AvalEditLib
 
 		void propertyGridComboBoxSelectionChanged(object sender, RoutedEventArgs e)
 		{
-			if (propertyGrid == null)
+			if (propertyGrid is null)
 				return;
 			switch (propertyGridComboBox.SelectedIndex)
 			{
@@ -207,7 +207,7 @@ namespace AvalEditLib
 
 		void HighlightingComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			if (textEditor.SyntaxHighlighting == null) {
+			if (textEditor.SyntaxHighlighting is null) {
 				foldingStrategy = null;
 			} else {
 				switch (textEditor.SyntaxHighlighting.Name) {
@@ -229,7 +229,7 @@ namespace AvalEditLib
 				}
 			}
 			if (foldingStrategy != null) {
-				if (foldingManager == null)
+				if (foldingManager is null)
 					foldingManager = FoldingManager.Install(textEditor.TextArea);
 				foldingStrategy.UpdateFoldings(foldingManager, textEditor.Document);
 			} else {

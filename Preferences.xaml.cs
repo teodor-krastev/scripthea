@@ -42,7 +42,7 @@ namespace scripthea
         public void Init(ref Options _opts)
         {
             opts = _opts; 
-            LMstudio.Init(ref opts);
+            LMstudio.Init(ref opts); opts.llm.LMstudio = LMstudio;
         }
         public string configFilename = Path.Combine(Utils.configPath, "Scripthea.cfg");
 
@@ -53,7 +53,7 @@ namespace scripthea
             if (Utils.newerVersion(Utils.getAppFileVersion, opts.general.NewVersion))
                 { lbNewVer.Content = "New release: " + opts.general.NewVersion; lbNewVer.Foreground = Brushes.Firebrick; }
             chkUpdates.IsChecked = opts.general.UpdateCheck;
-            cbStartupImageDepotFolder.Text = opts.composer.StartupImageDepotFolder == null ? "": opts.composer.StartupImageDepotFolder;
+            cbStartupImageDepotFolder.Text = opts.composer.StartupImageDepotFolder is null ? "": opts.composer.StartupImageDepotFolder;
             if (history != null)
             {
                 foreach(string ss in history)

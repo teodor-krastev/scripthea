@@ -29,14 +29,14 @@ namespace scripthea.master
         {
             if (ImgUtils.GetMetadata1111(imagePath, out meta))
             {
-                if (ii == null) return true;
+                if (ii is null) return true;
                 ii.filename = Path.GetFileName(imagePath);
                 ii.FromMeta1111Dict(meta);
                 return true;
             }
             if (cUtils.GetMetadataComfy(imagePath, out meta))
             {
-                if (ii == null) return true;
+                if (ii is null) return true;
                 ii.filename = Path.GetFileName(imagePath);
                 ii.FromMetaComfyDict(meta);
                 return true;
@@ -49,6 +49,7 @@ namespace scripthea.master
     /// </summary>
     public partial class ImportUtilUC : UserControl, iFocusControl
     {
+        public bool HasTheFocus { get; set; }
         protected Options opts;
         protected DataTable dTable; 
         public ImportUtilUC()
@@ -120,22 +121,22 @@ namespace scripthea.master
             {
                 opts.Log("Error[998]: Directory <" + path + "> does not exist. "); return;
             }            
-            if (!Utils.isNull(depotFolder)) // if image-depot is already there
+            if (!Utils.isNull(iDepot)) // if image-depot is already there
             {
-                if (!Utils.comparePaths(depotFolder.path, path)) depotFolder = null; // treat it as new depot
+                if (!Utils.comparePaths(iDepot.path, path)) iDepot = null; // treat it as new depot
                 else lbAdd2Depot.Content = "Add to depot";
             }                               
             else imageFolder = path;
             List<string> orgFiles = new List<string>();          
-            if (Utils.isNull(depotFolder))
+            if (Utils.isNull(iDepot))
             {
                 if (SctUtils.checkImageDepot(path, true) > -1)
                 {
-                    depotFolder = new ImageDepot(path, ImageInfo.ImageGenerator.FromDescFile); lbAdd2Depot.Content = "Add to depot";
+                    iDepot = new ImageDepot(path, ImageInfo.ImageGenerator.FromDescFile); lbAdd2Depot.Content = "Add to depot";
                 }
                 else orgFiles = new List<string>(Directory.GetFiles(imageFolder, "*.png"));
             }
-            if (!Utils.isNull(depotFolder)) orgFiles = depotFolder.Extras();     
+            if (!Utils.isNull(iDepot)) orgFiles = iDepot.Extras();     
             if (orgFiles.Count.Equals(0) && warning) { opts.Log("No image files to consider in " + path); return; }
             switch (tcMain.SelectedIndex)
             {
@@ -165,7 +166,7 @@ namespace scripthea.master
             for (int i = 0; i < dTable.Rows.Count; i++)
             {
                 CheckBox chk = DataGridHelper.GetCellByIndices(dGrid, i, 0).FindVisualChild<CheckBox>();
-                if (chk == null) continue;
+                if (chk is null) continue;
                 chk.Name = "chkList" + i.ToString();
                 chk.Tag = i;
                 chk.Checked += new RoutedEventHandler(chkCheckedColumn); chk.Unchecked += new RoutedEventHandler(chkCheckedColumn);
@@ -233,22 +234,21 @@ namespace scripthea.master
             }
             return true;
         }
-        public bool converting = false; ImageDepot depotFolder =null;
+        public bool converting = false; public ImageDepot iDepot = null; // last converted
         private void btnConvertFolder_Click(object sender, RoutedEventArgs e)
         {
             ImageInfo.ImageGenerator imageGenType = (ImageInfo.ImageGenerator)cbSource.SelectedIndex;          
 
             int rc = dTable.Rows.Count;
-            if (rc == 0) return; int k = 0; int nok = 0; converting = true;
+            if (rc == 0) return; int k = 0; int nok = 0; converting = true; lbChecked.Content = "processing...";
             image.Source = null; lastLoadedPic = "";// ImgUtils.file_not_found; 
             image.UpdateLayout();
             
-            if (Utils.isNull(depotFolder))
-                depotFolder = new ImageDepot(imageFolder, imageGenType);
+            if (iDepot is null)
+                iDepot = new ImageDepot(imageFolder, imageGenType);
             try
-            {
-                GetChecked();
-                List<string> unchk = new List<string>();                 
+            {                
+                List<string> unchk = new List<string>(); Mouse.OverrideCursor = Cursors.Wait;                
                 foreach (DataRow row in dTable.Rows)
                 {
                     string efn = Convert.ToString(row["file"]);
@@ -259,10 +259,10 @@ namespace scripthea.master
                     ImageInfo ii = new ImageInfo();
                     ii.ImageImport(Path.Combine(imageFolder, efn), imageGenType, chkKeepNames.IsChecked.Value);
                     if (!ii.IsEnabled()) { nok++; continue; }
-                    depotFolder.items.Add(ii);                   
+                    iDepot.items.Add(ii);                   
                     k++;
                 }
-                depotFolder.Save();
+                iDepot.Save();
                 //if (nok > 0) -> unclear
                 if (chkDeleteUnchecked.IsChecked.Value)
                 {
@@ -282,7 +282,7 @@ namespace scripthea.master
                 string sk = (nok > 0) ? "\r\r" + nok.ToString() + " images have malformatted or missing metadata!" : "";
                 ClearlbMetadata();
                 opts.Log("Done! Image depot of " + k.ToString() + " images was created." + sk , Brushes.DarkGreen);               
-                converting = false;
+                converting = false; Mouse.OverrideCursor = null;
             }            
         }
         private void dGrid_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
@@ -365,14 +365,12 @@ namespace scripthea.master
                 e.Handled = true;
             }                
         }  
-
         private void tbImageDepot_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (SctUtils.checkImageDepot(tbImageDepot.Text,false) > 0) tbImageDepot.Foreground = Brushes.Black;
             else tbImageDepot.Foreground = Brushes.Red;
             LoadImages(tbImageDepot.Text);
         }
-
         private void chkDeleteUnchecked_Checked(object sender, RoutedEventArgs e)
         {
             chkDeleteUnchecked.Foreground = Brushes.Red;

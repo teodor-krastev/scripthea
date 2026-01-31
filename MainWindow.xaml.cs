@@ -31,7 +31,7 @@ namespace scripthea
     /// </summary>
     public partial class MainWindow : Window
     {
-        public AboutWin aboutWin;       
+        public AboutWin aboutWin;
         public MainWindow()
         {
             aboutWin = new AboutWin();
@@ -44,7 +44,71 @@ namespace scripthea
         public Dictionary<string, string> clSwitches;
         private BitmapImage penpic;
 
-        public FocusControl focusControl;
+        private void MainWindow1_Loaded(object sender, RoutedEventArgs e)
+        {
+            optionsFile = Path.Combine(Utils.configPath, "Scripthea.cfg");
+            if (!Directory.Exists(Utils.configPath))
+            {
+                string msg = "Fatal error: Directory <" + Utils.configPath + "> does not exist.";
+                Title = msg; Utils.Sleep(3000);
+                throw new Exception(msg);
+            }
+            if (File.Exists(optionsFile))
+            {
+                string json = System.IO.File.ReadAllText(optionsFile);
+                opts = JsonConvert.DeserializeObject<Options>(json);
+                opts.OnLog += new Utils.LogHandler(Log);
+                if (opts.composer.StartupImageDepotFolder != "") opts.composer.ImageDepotFolder = opts.composer.StartupImageDepotFolder;
+                if (opts.composer.ImageDepotFolder is null) opts.composer.ImageDepotFolder = "";
+                if (opts.composer.ImageDepotFolder.Equals("<default.image.depot>")) opts.composer.ImageDepotFolder = SctUtils.defaultImageDepot;
+            }
+            else opts = new Options();
+            opts.composer.QueryStatus = Status.Idle;
+            aboutWin.Init(ref opts);
+            if (opts.general.UpdateCheck) Check4Update(null, null);
+            else
+            {
+                if (opts.general.NewVersion is null) opts.general.NewVersion = "";
+                if (!opts.general.NewVersion.Equals(""))
+                {
+                    aboutWin.lbMessage.Foreground = System.Windows.Media.Brushes.Green; aboutWin.lbMessage.Content = "New release (" + opts.general.NewVersion + ") is available at Scripthea.com !";
+                }
+            }
+            preferencesWindow = new PreferencesWindow(); preferencesWindow.Init(ref opts); preferencesWindow.btnCheck4Update.Click += new RoutedEventHandler(Check4Update);
+
+            ImageDepotConvertor.ClearEntriesImageDepot = opts.iDutilities.MasterClearEntries;
+            // command-line agruments
+            clSwitches = new Dictionary<string, string>(); //opts.sMacro.pythonEnabled = false;
+            List<string> clArgs = new List<string>(Environment.GetCommandLineArgs());
+            foreach (string arg in clArgs)
+            {
+                string arg1 = arg.StartsWith("--") ? arg.Substring(2) : arg;
+                string[] args = arg1.Split('=');
+                if (args.Length == 1) { clSwitches.Add(args[0], ""); continue; }
+                if (args.Length == 2) { clSwitches.Add(args[0], args[1]); continue; }
+                Log("Error[225]: command line argument syntax problem");
+            }
+            Title = "Scripthea - options loaded";
+
+            SettingMainComponents();
+            FocusControl();
+            string penpicFile = Path.Combine(Utils.configPath, "penpic1.png");
+            if (File.Exists(penpicFile)) { penpic = ImgUtils.LoadBitmapImageFromFile(penpicFile); imgAbout.Source = penpic.Clone(); }
+            else throw new Exception(penpicFile + " file is missing");
+            ExplorerPart = opts.general.debug ? 100 : 0;
+            gridSplitLeft_MouseDoubleClick(null, null);
+            Title = "  Scripthea - text-to-image prompt composer v" + Utils.getAppFileVersion;
+            if (opts.layout.Width < 0)
+            {
+                Log("Assuming that you run Scripthea for the first time:", Brushes.Blue);
+                Log("1. Check and modify (if needed) the default preferences (a gear button above).", Brushes.Blue);
+                Log("2. If you have Stable Diffusion (ComfyUI, A1111 or Forge) installed go to SD panel (top/right), open Options and set your Stable Diffusion installation locaton", Brushes.Blue);
+                Log(""); Log("Press F1 for Scripthea online help.", Brushes.Green);
+                Log(""); Log("Enjoy Scripthea, now with access to more than a milion and a half selected and unique prompts!", Brushes.Maroon);
+            }
+            if (opts.general.debug && false) preferencesWindow.ShowWindow(-1, dirTreeUC.history);
+            tabControl.SelectedItem = tiComposer; tabControl_SelectionChanged(tabControl, null);
+        }
         private void SettingMainComponents()
         {
             dirTreeUC.Init(ref opts);
@@ -56,6 +120,9 @@ namespace scripthea
 
             Title = "  Scripthea - loading text files...";
             viewerUC.Init(ref opts);
+            /*if (opts.general.debug) { styleCreatorUC.Init(ref opts); tabControl.SelectedItem = tiStyleCreator; }
+            else*/
+            tiStyleCreator.Visibility = Visibility.Collapsed;
             depotMaster.Init(ref opts);
             importUtilUC.Init(ref opts);
             exportUtilUC.Init(ref opts);
@@ -75,7 +142,7 @@ namespace scripthea
             if (opts.composer.SingleAuto != Options.SingleAutoSet.none) queryUC.Compose(null, false);
 
             // pyCode Init           
-            pyCode.Init(ref opts); 
+            pyCode.Init(ref opts);
             // modules registration in pyCode
             pyCode.Register("qry", queryUC, queryUC.HelpList());
             pyCode.Register("prm", queryUC.sd_params_UC, queryUC.sd_params_UC.HelpList());
@@ -92,85 +159,23 @@ namespace scripthea
             else tiSMacro.Foreground = Brushes.DarkGray;
             if (!opts.sMacro.pythonEnabled && tabControl.SelectedItem == tiSMacro) tabControl.SelectedItem = tiComposer;
         }
+        public FocusControl focusControl;
         private void FocusControl()
         {
             focusControl = new FocusControl();
             focusControl.Register("import", importUtilUC);
             focusControl.Register("export", exportUtilUC.iPicker);
             focusControl.Register("query", queryUC);
+            if (tiStyleCreator.Visibility == Visibility.Visible) focusControl.Register("style", styleCreatorUC.iPicker);
             focusControl.Register("viewer", viewerUC);
             focusControl.Register("idmA", depotMaster.iPickerA);
             focusControl.Register("idmB", depotMaster.iPickerB);
             //focusControl.Register("idfX", queryUC.cuePoolUC.iPickerX);
-        }
-        private void MainWindow1_Loaded(object sender, RoutedEventArgs e)
-        {
-            optionsFile = Path.Combine(Utils.configPath, "Scripthea.cfg"); 
-            if (!Directory.Exists(Utils.configPath))
-            {
-                string msg = "Fatal error: Directory <" + Utils.configPath + "> does not exist.";
-                Title = msg; Utils.Sleep(3000);
-                throw new Exception(msg);
-            }                   
-            if (File.Exists(optionsFile))
-            {
-                string json = System.IO.File.ReadAllText(optionsFile);
-                opts = JsonConvert.DeserializeObject<Options>(json);
-                opts.OnLog += new Utils.LogHandler(Log);
-                if (opts.composer.StartupImageDepotFolder != "") opts.composer.ImageDepotFolder = opts.composer.StartupImageDepotFolder;
-                if (opts.composer.ImageDepotFolder == null) opts.composer.ImageDepotFolder = "";
-                if (opts.composer.ImageDepotFolder.Equals("<default.image.depot>")) opts.composer.ImageDepotFolder = SctUtils.defaultImageDepot;
-            }
-            else opts = new Options();
-            opts.composer.QueryStatus = Status.Idle; 
-            aboutWin.Init(ref opts);
-            if (opts.general.UpdateCheck) Check4Update(null,null);
-            else
-            {
-                if (opts.general.NewVersion == null) opts.general.NewVersion = "";
-                if (!opts.general.NewVersion.Equals(""))
-                {
-                    aboutWin.lbMessage.Foreground = System.Windows.Media.Brushes.Green; aboutWin.lbMessage.Content = "New release (" + opts.general.NewVersion + ") is available at Scripthea.com !";
-                }
-            }
-            preferencesWindow = new PreferencesWindow(); preferencesWindow.Init(ref opts); preferencesWindow.btnCheck4Update.Click += new RoutedEventHandler(Check4Update);    
-
-            ImageDepotConvertor.ClearEntriesImageDepot = opts.iDutilities.MasterClearEntries; 
-            // command-line agruments
-            clSwitches = new Dictionary<string, string>(); //opts.sMacro.pythonEnabled = false;
-            List<string> clArgs = new List<string>(Environment.GetCommandLineArgs());
-            foreach (string arg in clArgs) 
-            {
-                string arg1 = arg.StartsWith("--") ? arg.Substring(2) : arg;
-                string[] args = arg1.Split('=');
-                if (args.Length == 1) { clSwitches.Add(args[0], ""); continue; } 
-                if (args.Length == 2) { clSwitches.Add(args[0], args[1]); continue; }
-                Log("Error[225]: command line argument syntax problem");
-            }
-            Title = "Scripthea - options loaded";
-
-            SettingMainComponents();
-            FocusControl();
-            string penpicFile = Path.Combine(Utils.configPath, "penpic1.png");
-            if (File.Exists(penpicFile)) { penpic = ImgUtils.LoadBitmapImageFromFile(penpicFile); imgAbout.Source = penpic.Clone(); }
-            else throw new Exception(penpicFile + " file is missing");
-            ExplorerPart = 0;
-            gridSplitLeft_MouseDoubleClick(null, null);
-            Title = "  Scripthea - text-to-image prompt composer v" + Utils.getAppFileVersion;
-            if (opts.layout.Width < 0)
-            {
-                Log("Assuming that you run Scripthea for the first time:", Brushes.Blue);
-                Log("1. Check and modify (if needed) the default preferences (a gear button above).", Brushes.Blue);
-                Log("2. If you have Stable Diffusion (ComfyUI, A1111 or Forge) installed go to SD panel (top/right), open Options and set your Stable Diffusion installation locaton", Brushes.Blue);
-                Log(""); Log("Press F1 for Scripthea online help.", Brushes.Green);
-                Log(""); Log("Enjoy Scripthea, now with access to more than a milion and a half selected and unique prompts!", Brushes.Maroon);
-            }    
-            if (opts.general.debug && false) preferencesWindow.ShowWindow(-1, dirTreeUC.history);
-            queryUC.previewUC.previewListUC.LMstudio = preferencesWindow.LMstudio; // crossing a lot !
+            if (opts.general.debug) focusControl.GotTheFocus(styleCreatorUC.iPicker, null);
         }
         public void Check4Update(object sender, RoutedEventArgs e)
         {
-            int k = sender == null ? opts.general.LastUpdateCheck : -1;
+            int k = sender is null ? opts.general.LastUpdateCheck : -1;
             aboutWin.Check4Updates(k);
             if (k == -1)
             {
@@ -180,11 +185,11 @@ namespace scripthea
         }
         public int ExplorerPart // from 0 to 100% directory tree
         {
-            get { return (int)(100 * rowExplorer.Height.Value / (rowLog.Height.Value + rowExplorer.Height.Value)); } 
+            get { return (int)(100 * rowExplorer.Height.Value / (rowLog.Height.Value + rowExplorer.Height.Value)); }
             set
             {
                 int vl = Utils.EnsureRange(value, 0, 100);
- 
+
                 rowLog.Height = new GridLength(100 - vl, GridUnitType.Star);
                 rowExplorer.Height = new GridLength(vl, GridUnitType.Star);
                 if (vl != 100 && vl != 0 && !Utils.isNull(opts))
@@ -195,7 +200,7 @@ namespace scripthea
                     }
                     else
                     {
-                        gridSplitLeft.Visibility = Visibility.Visible; 
+                        gridSplitLeft.Visibility = Visibility.Visible;
                     }
                 }
                 ExplorerPartChanging();
@@ -229,6 +234,7 @@ namespace scripthea
             pyCode.Finish();
             importUtilUC.Finish();
             exportUtilUC.Finish();
+            if (tiStyleCreator.Visibility == Visibility.Visible) styleCreatorUC.Finish();
             queryUC.Finish();
             viewerUC.Finish();
             dirTreeUC.Finish();
@@ -267,14 +273,14 @@ namespace scripthea
                             Log("@StopRun");
                             string fn = msg.Equals("@EndGeneration") ? "" : txt.Substring(15).Trim();
                             if (rowLogImage.Height.Value < 2) rowLogImage.Height = new GridLength(pnlLog.ActualWidth);
-                            if (File.Exists(fn)) imgLast.Source = ImgUtils.UnhookedImageLoad(fn); // success
-                            else { imgLast.Source = SctUtils.file_not_found; Log("Error[486]: file not found " + fn); } 
+                            if (File.Exists(fn)) { imgLast.Source = ImgUtils.UnhookedImageLoad(fn); gridSplitLeft2_DragCompleted(null, null); } // success
+                            else { imgLast.Source = SctUtils.file_not_found; Log("Error[486]: file not found " + fn); }
                             txt = msg.Substring(1);
                             break;
                         case "@StopRun":
                             if (Utils.isNull(dTimer)) { Utils.TimedMessageBox("Error[777]: broken timer", "Warning", 3500); return; }
-                            dTimer.Stop();  lbProcessing.Content = "";
-                            imgAbout.Source = penpic.Clone(); 
+                            dTimer.Stop(); lbProcessing.Content = "";
+                            imgAbout.Source = penpic.Clone();
                             break;
                         case "@CancelR": // CancelRequest 
                             queryUC.Request2Cancel();
@@ -287,7 +293,7 @@ namespace scripthea
                                 tbImageDepot.Text = "working image depot -> " + opts.composer.ImageDepotFolder;
                             }
                             else tbImageDepot.Text = "working image depot -> <NOT THERE>";
-                            break; 
+                            break;
                         case "@Explore":
                             string[] sa = txt.Split('='); if (sa.Length != 2) Utils.TimedMessageBox("Error(#458)");
                             ExplorerPart = Convert.ToInt32(sa[1]); skipLog = true;
@@ -297,23 +303,23 @@ namespace scripthea
                             break;
                         case "@_Header":
                             string[] sb = txt.Split('='); if (sb.Length != 2) Utils.TimedMessageBox("Error(#459)");
-                            Title = "Scripthea - "+sb[1]; skipLog = true;
-                            break; 
+                            Title = "Scripthea - " + sb[1]; skipLog = true;
+                            break;
                     }
                 if (chkLog.IsChecked.Value && !skipLog)
-                {                
+                {
                     if (txt.StartsWith("@") && !opts.general.debug) return; // skips showing internal messages if not debug    
-                    if (ExplorerPart.Equals(100)) 
-                    { 
-                        if (!txt.StartsWith("@") && !txt.StartsWith("StartGe") && !txt.Equals("---")) 
-                            Utils.TimedMessageBox(txt, "Warning", 2500); 
+                    if (ExplorerPart.Equals(100))
+                    {
+                        if (!txt.StartsWith("@") && !txt.StartsWith("StartGe") && !txt.Equals("---"))
+                            Utils.TimedMessageBox(txt, "Warning", 2500);
                     }
                     else Utils.log(tbLogger, txt, clr);
                 }
             }
             finally
             {
-                
+
             }
         }
         /*public void Services(string oper, object prm)
@@ -366,7 +372,7 @@ namespace scripthea
                     Title = "Scripthea - " + sb[1]; skipLog = true;
                     break;
             }
-        }*/    
+        }*/
         int dti;
         private void dTimer_Tick(object sender, EventArgs e)
         {
@@ -397,7 +403,7 @@ namespace scripthea
             dti++;
             lbProcessing.Content = ch;
 
-            imgAbout.Source = ImgUtils.ChangeColor(penpic, ImgUtils.ColorFromHue((dti % 20) * 18));           
+            imgAbout.Source = ImgUtils.ChangeColor(penpic, ImgUtils.ColorFromHue((dti % 20) * 18));
         }
         TabItem oldTab;
         private void tabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -405,8 +411,8 @@ namespace scripthea
             string nextDepotFolder(string firstGuess)
             {
                 if (SctUtils.checkImageDepot(firstGuess) > -1) return firstGuess;
-                if (SctUtils.checkImageDepot(opts.composer.ImageDepotFolder) > -1) return opts.composer.ImageDepotFolder;
-                return SctUtils.defaultImageDepot;
+                if (SctUtils.checkImageDepot(opts.composer.ImageDepotFolder) > -1 && firstGuess.Equals("")) return opts.composer.ImageDepotFolder;
+                return viewerUC.emptyText; // SctUtils.defaultImageDepot;
             }
             if (sender != tabControl) return;
 
@@ -418,18 +424,33 @@ namespace scripthea
                 }
                 else ExplorerPart = 0;
             }
+            if (tabControl.SelectedItem.Equals(tiStyleCreator))
+            {
+                ExplorerPart = 100; styleCreatorUC.UpdateLLMVisuals(); focusControl?.GotTheFocus(styleCreatorUC.iPicker, null);
+                if (!Directory.Exists(styleCreatorUC.iPicker.tbImageDepot.Text))
+                {
+                    string wf = opts.composer.ImageDepotFolder;
+                    if (Directory.Exists(wf))
+                    {
+                        dirTreeUC.CatchAFolder(wf); styleCreatorUC.iPicker.tbImageDepot.Text = wf;
+                    }
+                }
+            }
             if (tabControl.SelectedItem.Equals(tiViewer)) // for now that is the best way I can think of, subject to more poundering...
             {
                 bool bb = false;
                 if (oldTab.Equals(tiComposer))
-                    bb |= viewerUC.ShowImageDepot(nextDepotFolder(queryUC.tbImageDepot.Text));
-                if (oldTab.Equals(tiUtils)) 
-                    bb |= viewerUC.ShowImageDepot(nextDepotFolder(importUtilUC.imageFolder));
-                if (!bb) bb |= viewerUC.ShowImageDepot(nextDepotFolder(""));
-                ExplorerPart = queryUC.status.Equals(Status.Scanning) ? 50 : 100; 
-                dirTreeUC.CatchAFolder(viewerUC.tbImageDepot.Text); 
+                    bb |= viewerUC.ShowImageDepot(nextDepotFolder(queryUC.tbImageDepot.Text)); // auto show generated img
+                if (oldTab.Equals(tiDepotMaster) && (Utils.comparePaths(depotMaster.iPickerA.tbImageDepot.Text, viewerUC.tbImageDepot.Text) || 
+                    Utils.comparePaths(depotMaster.iPickerB.tbImageDepot.Text, viewerUC.tbImageDepot.Text)))
+                    bb |= viewerUC.Refresh(true, viewerUC.tbImageDepot.Text); // auto show updated depot
+                if (oldTab.Equals(tiUtils) && importUtilUC.iDepot != null)
+                    bb |= viewerUC.ShowImageDepot(nextDepotFolder(importUtilUC.tbImageDepot.Text)); // auto show imported img
+                if (!bb) bb |= viewerUC.ShowImageDepot(nextDepotFolder(viewerUC.tbImageDepot.Text));
+                ExplorerPart = queryUC.status.Equals(Status.Scanning) ? 50 : 100;
+                dirTreeUC.CatchAFolder(viewerUC.tbImageDepot.Text);
                 focusControl.GotTheFocus(viewerUC, null); // unknown why it needs to be done from code
-                //viewerUC.activeView.selectedIndex = 0;             
+                viewerUC.activeView.selectedIndex = 0;
             }
             if (tabControl.SelectedItem.Equals(tiDepotMaster))
             {
@@ -441,10 +462,11 @@ namespace scripthea
                 ExplorerPart = queryUC.status.Equals(Status.Scanning) ? 50 : 100;
                 if (focusControl.ifc != null)
                 {
-                    if (focusControl.ifcName.Equals("import")) 
-                        dirTreeUC.CatchAFolder(importUtilUC?.imageFolder);
-                    if (focusControl.ifcName.Equals("export")) 
+                    if (focusControl.ifcName.Equals("import"))
+                        dirTreeUC.CatchAFolder(importUtilUC?.tbImageDepot.Text);
+                    if (focusControl.ifcName.Equals("export"))
                         dirTreeUC.CatchAFolder(exportUtilUC?.iPicker?.tbImageDepot.Text);
+                    Utils.DelayExec(100, () => { exportUtilUC?.iPicker?.tbImageDepot.Focus(); }); 
                 }
                 MarkMask.Value = "";
             }
@@ -452,105 +474,126 @@ namespace scripthea
             {
                 ExplorerPart = 0;
             }
-            if (oldTab == tiViewer) viewerUC.RefreshFileWithChanges(); // refresh the desc. file
+            if (oldTab == tiViewer) viewerUC.RefreshDepotFileWithChanges(); // refresh the desc. file
             oldTab = tabControl.SelectedItem as TabItem;
-            e.Handled = true;
+            if (!(e is null)) e.Handled = true;
         }
-        protected void Active(string path)
-        {
-            focusControl.ifc.textFolder.Text = path; Utils.DoEvents(); Utils.Sleep(100);           
-        }
-        private void imgAbout_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (Utils.isNull(aboutWin)) aboutWin = new AboutWin();
-            aboutWin.ShowDialog();            
-        }
-        private void gridSplitLeft_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            if (!Utils.isNull(sender)) opts.layout.LogColWaveSplit = !opts.layout.LogColWaveSplit;
-            if (opts.layout.LogColWaveSplit)
+            protected void Active(string path)
             {
-                gridSplitLeft.Visibility = Visibility.Visible;
-                gridSplitLeft2.Visibility = Visibility.Collapsed;
-                tabControl.Margin = new Thickness(17, 0, 0, 0);
+                if (focusControl is null) { opts.Log("Error: no focused component"); return; }
+                if (focusControl.ifc is null) { opts.Log("Error: no focused component"); return; }
+                focusControl.ifc.textFolder.Text = path; Utils.DoEvents(); Utils.Sleep(100);
             }
-            else
+            private void imgAbout_MouseDown(object sender, MouseButtonEventArgs e)
             {
-                gridSplitLeft2.Visibility = Visibility.Visible;
-                gridSplitLeft.Visibility = Visibility.Collapsed;               
-                tabControl.Margin = new Thickness(7, 0, 0, 0);
+                if (Utils.isNull(aboutWin)) aboutWin = new AboutWin();
+                aboutWin.ShowDialog();
             }
-        }
-        private void MainWindow1_KeyDown(object sender, KeyEventArgs e)
-        {
-            switch (e.Key)
+            private void gridSplitLeft_MouseDoubleClick(object sender, MouseButtonEventArgs e)
             {
-                case Key.Enter: 
-                    string fld = "";
-                    if (sender.Equals(queryUC.tbImageDepot) && tabControl.SelectedItem.Equals(tiComposer)) fld = queryUC.tbImageDepot.Text;
-                    if (sender.Equals(viewerUC.tbImageDepot) && tabControl.SelectedItem.Equals(tiViewer)) fld = viewerUC.tbImageDepot.Text;
-                    if (sender.Equals(importUtilUC.tbImageDepot) && tabControl.SelectedItem.Equals(tiUtils)) fld = importUtilUC.tbImageDepot.Text;
-                    if (sender.Equals(exportUtilUC.iPicker.tbImageDepot) && tabControl.SelectedItem.Equals(tiUtils)) fld = exportUtilUC.iPicker.tbImageDepot.Text; 
-                    if (SctUtils.checkImageDepot(fld) > 0) dirTreeUC.CatchAFolder(fld);
-                    break;
-            }
-        }
-        private void btnRefresh_Click(object sender, RoutedEventArgs e)
-        {
-            string sPath = dirTreeUC.selectedPath;
-            dirTreeUC.refreshTree(); dirTreeUC.CatchAFolder(sPath);
-        }
-        private void MainWindow1_PreviewKeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key.Equals(Key.F1))
-            {
-                string pg = "";
-                switch (tabControl.SelectedIndex)
+                if (!Utils.isNull(sender)) opts.layout.LogColWaveSplit = !opts.layout.LogColWaveSplit;
+                if (opts.layout.LogColWaveSplit)
                 {
-                    case 0: pg = "composer";
-                        if (queryUC.cuePoolUC.tabControl.SelectedIndex == 2) pg = "ext-collections";
-                        if (queryUC.cuePoolUC.tabControl.SelectedIndex == 4) pg = "cues";
-                        break;
-                    case 1: pg = "viewer";
-                        break;
-                    case 2: pg = "depot-master";
-                        break;
-                    case 3: pg = "import-export";
-                        break;
-                    case 4: pg = "smacro";
+                    gridSplitLeft.Visibility = Visibility.Visible;
+                    gridSplitLeft2.Visibility = Visibility.Collapsed;
+                    tabControl.Margin = new Thickness(17, 0, 0, 0);
+                }
+                else
+                {
+                    gridSplitLeft2.Visibility = Visibility.Visible;
+                    gridSplitLeft.Visibility = Visibility.Collapsed;
+                    tabControl.Margin = new Thickness(7, 0, 0, 0);
+                }
+            }
+            private void MainWindow1_KeyDown(object sender, KeyEventArgs e)
+            {
+                switch (e.Key)
+                {
+                    case Key.Enter:
+                        string fld = "";
+                        if (sender.Equals(queryUC.tbImageDepot) && tabControl.SelectedItem.Equals(tiComposer)) fld = queryUC.tbImageDepot.Text;
+                        if (sender.Equals(viewerUC.tbImageDepot) && tabControl.SelectedItem.Equals(tiViewer)) fld = viewerUC.tbImageDepot.Text;
+                        if (sender.Equals(importUtilUC.tbImageDepot) && tabControl.SelectedItem.Equals(tiUtils)) fld = importUtilUC.tbImageDepot.Text;
+                        if (sender.Equals(exportUtilUC.iPicker.tbImageDepot) && tabControl.SelectedItem.Equals(tiUtils)) fld = exportUtilUC.iPicker.tbImageDepot.Text;
+                        if (SctUtils.checkImageDepot(fld) > 0) dirTreeUC.CatchAFolder(fld);
                         break;
                 }
-                if (pg != "") pg = "?pg=" + pg;
-                if (sender.Equals(MainWindow1)) Utils.CallTheWeb("https://scripthea.com"+pg);
-                e.Handled = true; return;
             }
-            if (tabControl.SelectedItem.Equals(tiViewer))
+            private void btnRefresh_Click(object sender, RoutedEventArgs e)
             {
-                if (viewerUC == null) return;
-                if (e.Key.Equals(Key.F11)) { viewerUC.animation = true; e.Handled = true; }
-                if (e.Key.Equals(Key.Escape)) { viewerUC.animation = false; e.Handled = true; }
+                string sPath = dirTreeUC.selectedPath;
+                dirTreeUC.refreshTree(); dirTreeUC.CatchAFolder(sPath);
             }
-        }
-        private void btnPreferences_Click(object sender, RoutedEventArgs e)
-        {
-            bool scm = opts.composer.ShowCueMeta;
-            preferencesWindow.ShowWindow(tabControl.SelectedIndex, dirTreeUC.history);
-            if (scm != opts.composer.ShowCueMeta) queryUC.cuePoolUC.UpdateShowMeta(opts.composer.ShowCueMeta);
-
-            pythonSwitch();
-        }
-        private void tbImageDepot_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (e.ClickCount == 2)
+            private void MainWindow1_PreviewKeyDown(object sender, KeyEventArgs e)
             {
-                string[] sa = tbImageDepot.Text.Split('>');
-                if (sa.Length != 2) return;
-                dirTreeUC.CatchAFolder(sa[1].Trim());
+                if (e.Key.Equals(Key.F1))
+                {
+                    string pg = "";
+                    switch (tabControl.SelectedIndex)
+                    {
+                        case 0: pg = "composer";
+                            if (queryUC.cuePoolUC.tabControl.SelectedIndex == 2) pg = "ext-collections";
+                            if (queryUC.cuePoolUC.tabControl.SelectedIndex == 4) pg = "cues";
+                            break;
+                        case 1: pg = "viewer";
+                            break;
+                        case 2: pg = "depot-master";
+                            break;
+                        case 3: pg = "import-export";
+                            break;
+                        case 4: pg = "smacro";
+                            break;
+                    }
+                    if (pg != "") pg = "?pg=" + pg;
+                    if (sender.Equals(MainWindow1)) Utils.CallTheWeb("https://scripthea.com" + pg);
+                    e.Handled = true; return;
+                }
+                if (tabControl.SelectedItem.Equals(tiViewer))
+                {
+                    if (viewerUC is null) return;
+                    if (e.Key.Equals(Key.F11)) { viewerUC.animation = true; e.Handled = true; }
+                    if (e.Key.Equals(Key.Escape)) { viewerUC.animation = false; e.Handled = true; }
+                    if (e.Key.Equals(Key.F5))
+                    {
+                        string tbi = viewerUC.tbImageDepot.Text.Trim();
+                        viewerUC.Refresh(true, tbi.Equals("") ? viewerUC.emptyText : tbi); e.Handled = true;                
+                    }
+                }
+                if (tabControl.SelectedItem.Equals(tiDepotMaster))
+                {
+                    if (e.Key.Equals(Key.F5) && depotMaster.activePicker != null) 
+                        { depotMaster.activePicker.Refresh(true, depotMaster.activePicker.tbImageDepot.Text); e.Handled = true; }
+                }
+            }
+            private void btnPreferences_Click(object sender, RoutedEventArgs e)
+            {
+                bool scm = opts.composer.ShowCueMeta;
+                preferencesWindow.ShowWindow(tabControl.SelectedIndex, dirTreeUC.history);
+                if (scm != opts.composer.ShowCueMeta) queryUC.cuePoolUC.UpdateShowMeta(opts.composer.ShowCueMeta);
+                if (tabControl.SelectedItem == tiComposer)
+                    if (queryUC.tcModScanPre.SelectedItem == queryUC.tiScanPreview)
+                        if (queryUC.previewUC.fashionUC.fashionMode == preview.FashioningUC.FashionModeTypes.ask_llm) queryUC.previewUC.UpdateLLMVisuals();
+                if (tabControl.SelectedItem == tiStyleCreator) styleCreatorUC.UpdateLLMVisuals();
+                pythonSwitch();
+            }
+            private void tbImageDepot_MouseDown(object sender, MouseButtonEventArgs e)
+            {
+                if (e.ClickCount == 2)
+                {
+                    string[] sa = tbImageDepot.Text.Split('>');
+                    if (sa.Length != 2) return;
+                    dirTreeUC.CatchAFolder(sa[1].Trim());
+                }
+            }
+            private void depotMaster_SizeChanged(object sender, SizeChangedEventArgs e)
+            {
+                colMasterWidth.MaxWidth = gridIDMaster.ActualWidth - 5;
+            }
+            private void gridSplitLeft2_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
+            {
+                if (ExplorerPart > 50 || imgLast.Source is null) return;
+                double rt = imgLast.Source.Height / imgLast.Source.Width;
+                rowLogImage.Height = new GridLength(pnlLog.ActualWidth * rt);
             }
         }
-        private void depotMaster_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            colMasterWidth.MaxWidth = gridIDMaster.ActualWidth-5; 
-        }
-    }
-}
+    } 

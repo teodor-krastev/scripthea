@@ -31,10 +31,10 @@
         <ScrollViewer x:Name="scrollViewer" Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Visibility="Collapsed">
         </ScrollViewer>
         <Grid x:Name="noscrollGrid" Grid.Row="1" Margin="0,5,0,0">
-            <Image x:Name="image" Margin="5" PreviewMouseLeftButtonDown="image_PreviewMouseLeftButtonDown" SizeChanged="image_SizeChanged" />
+            <Image x:Name="image" Margin="5" PreviewMouseLeftButtonDown="image_PreviewMouseLeftButtonDown" SizeChanged="image_SizeChanged" MouseWheel="image_MouseWheel" MouseLeftButtonDown="image_MouseLeftButtonDown" />
         </Grid>
         <GridSplitter Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" Background="#FFEAE0CE" Height="3"></GridSplitter>
-        <Grid Grid.Row="2" Background="White" Margin="5,4,0,0" >
+        <Grid Grid.Row="2" Background="White" Margin="0,4,0,0" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"/>
                 <ColumnDefinition x:Name="colMeta" Width="100" MinWidth="8"/>

@@ -29,7 +29,7 @@ namespace scripthea.viewer
         public HashSet<statusStates> status;
         public PicItemUC(ref Options _opts, bool __checkable)
         {
-            if (_opts == null) return;
+            if (_opts is null) return;
             if (_opts.general.AppTerminating) return;
             InitializeComponent();
             opts = _opts; checkable = __checkable;
@@ -77,7 +77,7 @@ namespace scripthea.viewer
                 if (value) status.Add(statusStates.Marked);
                 else status.Remove(statusStates.Marked);
                 if (selected) return;      
-                if (value) Background = ImgUtils.ToSolidColorBrush("#FFE6FFF3"); //Brushes.MintCream;
+                if (value) Background = ImgUtils.ToSolidColorBrush("#FFE2EEE8"); //Brushes.MintCream;
                 else Background = Brushes.White;                        
                 tbCue.Foreground = Brushes.Black; 
                 lbNumber.Foreground = Brushes.DarkBlue; tbFile.Foreground = Brushes.Black; lbRate.Foreground = Brushes.Maroon;
@@ -124,7 +124,7 @@ namespace scripthea.viewer
         public bool file_not_found { get; private set; }
         public bool ContentUpdate(int index, string imageDir, ImageInfo ii) // index 0 based 
         {
-            if (ii == null || !Directory.Exists(imageDir)) return false;
+            if (ii is null || !Directory.Exists(imageDir)) return false;
             imageFolder = imageDir; imgInfo = ii.Clone();
             string filePath = Path.Combine(imageDir, ii.filename);
             file_not_found = !File.Exists(filePath);
@@ -135,7 +135,7 @@ namespace scripthea.viewer
                 bitmapImage = ImgUtils.UnhookedImageLoad(filePath);
                 imgPic.Source = bitmapImage;
                 //});
-                if (imgPic.Source == null) return false;
+                if (imgPic.Source is null) return false;
             }
             else
             {

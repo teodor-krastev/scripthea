@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:scripthea" xmlns:viewer="clr-namespace:scripthea.viewer"
         xmlns:composer="clr-namespace:scripthea.composer" xmlns:master="clr-namespace:scripthea.master" 
         xmlns:python="clr-namespace:scripthea.python"
+        xmlns:style="clr-namespace:scripthea.style"
     x:Name="MainWindow1" x:Class="scripthea.MainWindow"
         mc:Ignorable="d"
         Title="Scripthea - text-to-image prompt composer" Height="450" Width="1552.967" Loaded="MainWindow1_Loaded" Closing="MainWindow1_Closing" Icon="Properties/penzy4.png" FontSize="13" KeyDown="MainWindow1_KeyDown" PreviewKeyDown="MainWindow1_PreviewKeyDown">
@@ -55,11 +56,11 @@
                         </Paragraph>
                     </FlowDocument>
                 </RichTextBox>
-                <GridSplitter x:Name="gridSplitLog" Grid.Row="1" HorizontalAlignment="Stretch" Height="5" Margin="0" VerticalAlignment="Top"/>
+                <GridSplitter x:Name="gridSplitLog" Grid.Row="1" HorizontalAlignment="Stretch" Height="3" Margin="0" VerticalAlignment="Top"/>
                 <Image x:Name="imgLast" Grid.Row="1" Margin="2,7,2,2"/>
             </Grid>
-            <GridSplitter x:Name="gridSplitLog2" Grid.Row="2" HorizontalAlignment="Stretch" Height="5" Margin="0" VerticalAlignment="Top" Background="#FFE0EFFB" DragCompleted="gridSplitLog2_DragCompleted"/>
-            <master:DirTreeUC x:Name="dirTreeUC" Margin="2,5,0,2" Grid.Row="2" BorderBrush="#FF0A16E9" BorderThickness="1,1.5,0,1"/>
+            <GridSplitter x:Name="gridSplitLog2" Grid.Row="2" HorizontalAlignment="Stretch" Height="3" Margin="0" VerticalAlignment="Top" Background="#FFE0EFFB" DragCompleted="gridSplitLog2_DragCompleted"/>
+            <master:DirTreeUC x:Name="dirTreeUC" Margin="2,3,0,2" Grid.Row="2" BorderBrush="#FF0A16E9" BorderThickness="1,1.5,0,1"/>
         </Grid>
         <TabControl x:Name="tabControl" Margin="17,0" Grid.Column="1" SelectionChanged="tabControl_SelectionChanged" BorderBrush="{x:Null}" >
             <TabItem x:Name="tiComposer"  Header=" Prompt  composer " Width="150" Height="33" HorizontalAlignment="Left" Margin="2,0,-2,0" Background="#FFF1F0F0" BorderBrush="#FF03911F" Style="{StaticResource RoundedTopTabItemStyle}">
@@ -70,6 +71,11 @@
             <TabItem x:Name="tiViewer" Header=" Image Depot Viewer " Width="150" Height="33" Background="#FFECECEC" HorizontalAlignment="Left"  Margin="5,0,-5,0" BorderBrush="#FF053EE9" Style="{StaticResource RoundedTopTabItemStyle}">
                 <Grid >
                     <viewer:ViewerUC x:Name="viewerUC" Margin="0"/>
+                </Grid>
+            </TabItem>
+            <TabItem x:Name="tiStyleCreator" Header="Style Creator (exp)" Width="130" Height="33" Style="{StaticResource RoundedTopTabItemStyle}" BorderBrush="#FF7D4AFC" Margin="8,0,-8,0">
+                <Grid>
+                    <style:StyleCreatorUC x:Name="styleCreatorUC" Margin="0"/>
                 </Grid>
             </TabItem>
             <TabItem x:Name="tiDepotMaster" Header=" Image Depot Master " Width="150" Height="33" Background="#FFECECEC" HorizontalAlignment="Left"  Margin="12,0,-12,0" BorderBrush="#FFB95C57" Style="{StaticResource RoundedTopTabItemStyle}">
@@ -100,15 +106,16 @@
                     <python:PythonUC x:Name="pyCode"/>
                 </Grid>
             </TabItem>
+
         </TabControl>
 
-        <GridSplitter x:Name="gridSplitLeft" Grid.Column="1" HorizontalAlignment="Left" Margin="2,0" Width="12" ResizeDirection="Columns" MouseDoubleClick="gridSplitLeft_MouseDoubleClick" Visibility="Hidden">
+        <GridSplitter x:Name="gridSplitLeft" Grid.Column="1" HorizontalAlignment="Left" Margin="2,0" Width="12" ResizeDirection="Columns" MouseDoubleClick="gridSplitLeft_MouseDoubleClick"  DragCompleted="gridSplitLeft2_DragCompleted" Visibility="Hidden">
             <GridSplitter.Background>
                 <ImageBrush TileMode="Tile" ImageSource="Properties/v3line-6.png"/>
             </GridSplitter.Background>
         </GridSplitter>
         <GridSplitter x:Name="gridSplitLeft2" Grid.Column="1" HorizontalAlignment="Left" Margin="2,0" Width="5" Background="#FFECFBF0" ResizeDirection="Columns" 
-                      MouseDoubleClick="gridSplitLeft_MouseDoubleClick"/>
+                      MouseDoubleClick="gridSplitLeft_MouseDoubleClick" DragCompleted="gridSplitLeft2_DragCompleted"/>
         <TextBlock x:Name="tbImageDepot" Grid.Column="1" Height="23" TextWrapping="Wrap" Text="" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,10,0" Foreground="#FF377C5D" FontFamily="Segoe UI Semibold" MouseDown="tbImageDepot_MouseDown"/>
     </Grid>
 </Window>

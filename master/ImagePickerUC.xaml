@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:scripthea.master"
-             xmlns:viewer="clr-namespace:scripthea.viewer" x:Class="scripthea.master.ImagePickerUC"
+             xmlns:viewer="clr-namespace:scripthea.viewer" x:Name="imagePickerUC" x:Class="scripthea.master.ImagePickerUC"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="613.671" Focusable="True" >
     <Grid Margin="5,0,0,0">
@@ -69,7 +69,6 @@
                     </ScrollViewer>
                 </Grid>
             </TabItem>
-
         </TabControl>
         <GridSplitter Grid.Row="3" VerticalAlignment="Top" HorizontalAlignment="Stretch" Height="3"/>
         <Grid x:Name="gridImage" Grid.Row="3" Margin="5" >

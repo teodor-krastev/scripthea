@@ -57,7 +57,7 @@ namespace scripthea.composer
             ModifiersFolder = System.IO.Path.Combine(Utils.basePath, "modifiers");
             opts = _opts;
             numSample.Maximum = 9; numSample.Minimum = 1;
-            chkMSetsEnabled.IsChecked = opts.composer.mSetsEnabled; chkMSetsEnabled_Checked(null, null);
+            chkMSetsEnabled.IsChecked = true; opts.composer.mSetsEnabled = true; 
             chkAddEmpty.IsChecked = opts.composer.AddEmptyModif; 
             numSample.Value = Utils.EnsureRange(opts.composer.ModifSample, 1,9);
             chkConfirmGoogle.IsChecked = opts.composer.ConfirmGoogling; 
@@ -145,7 +145,7 @@ namespace scripthea.composer
         }
         public string Composite() // for single mode
         {
-            if (opts == null) return "";
+            if (opts is null) return "";
             string ss = "";
             foreach (string sc in ModifItemsByType(ModifStatus.Scannable))
                 ss += sc.Equals("") ? "" : opts.composer.ModifPrefix + sc + " ";
@@ -218,7 +218,7 @@ namespace scripthea.composer
             {
                 int k = ml.markWithWildcard(tbSearch.Text);
                 if (k == 0) continue;
-                ListBoxItem lbi = new ListBoxItem();
+                ListBoxItem lbi = new ListBoxItem() { Foreground = ml.isVisible ? Brushes.Navy : Brushes.DarkSlateGray };
                 lbi.Content = ml.CategoryName + " ("+k+")";
                 lbCategories.Items.Add(lbi);
             }
@@ -253,7 +253,7 @@ namespace scripthea.composer
 
         private void chkMSetsEnabled_Checked(object sender, RoutedEventArgs e)
         {
-            if (opts == null) return;
+            if (opts is null) return;
             if (sender != null) opts.composer.mSetsEnabled = chkMSetsEnabled.IsChecked.Value;
             if (opts.composer.mSetsEnabled) mSetStack.Visibility = Visibility.Visible;
             else mSetStack.Visibility = Visibility.Collapsed;

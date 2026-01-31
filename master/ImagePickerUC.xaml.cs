@@ -35,6 +35,7 @@ namespace scripthea.master
         }
         private Options opts;
         private bool _checkable;
+        public bool HasTheFocus { get; set; }
         public bool checkable 
         { 
             get { return _checkable; }
@@ -104,33 +105,35 @@ namespace scripthea.master
             if (!Utils.InRange(idx, 0, iDepot.items.Count-1, true)) { opts.Log("Error[485]: index out of range"); return false; }
             if (inclFile)
             {
-                string filepath = Path.Combine(imageDepot, iDepot.items[idx].filename);
+                string filepath = Path.Combine(imageFolder, iDepot.items[idx].filename);
                 if (File.Exists(filepath)) File.Delete(filepath);
                 else opts.Log("Error[365]: file <" + filepath + " not found");
             }
             iDepot.items.RemoveAt(idx);
             return true;
         }
-        public void ReloadDepot()
+        public void ReloadDepot() // from folder in tbImageDepot; after files operation
         {
-            iDepot = null; listView.loadedDepot = ""; gridView.loadedDepot = "";
-            tbImageDepot_TextChanged(null, null);
+            //listView.loadedDepot = ""; gridView.loadedDepot = "";
+            Refresh(true, imageFolder);
+            activeView.SetChecked(true); CountChecked();
+            ChangeDepot(iDepot, null);
         }
         public ImageInfo selectedImageInfo
         {
             get 
             {
-                if (activeView.selectedIndex == -1 || iDepot == null) return null;
+                if (activeView.selectedIndex == -1 || iDepot is null) return null;
                 if (!iDepot.isEnabled) return null;
                 return iDepot.items[activeView.selectedIndex];
             }
         }
         public List<ImageInfo> imageInfos(bool check, bool uncheck)
         {
-            if (activeView == null || iDepot == null) return null;
+            if (activeView is null || iDepot is null) return null;
             if (!iDepot.isEnabled || !checkable) return null;
             List<ImageInfo> lii = new List<ImageInfo>();
-            List<Tuple<int, string, int, string>> lt = activeView.GetItems(check, uncheck);
+            List<Tuple<int, string, int, string>> lt = ListOfTuples(check, uncheck);
             foreach (var ii in lt)
             {
                 int i = ii.Item1;
@@ -141,8 +144,8 @@ namespace scripthea.master
         }
         public List<Tuple<int, string, int, string>> ListOfTuples(bool check, bool uncheck)
         {
-            if (iDepot == null) return null;
-            if (!iDepot.isEnabled || activeView == null || !checkable) return null;
+            if (iDepot is null) return null;
+            if (!iDepot.isEnabled || activeView is null || !checkable) return null;
             return activeView?.GetItems(check, uncheck);
         }
         public void SelectItem(int idx)
@@ -151,21 +154,21 @@ namespace scripthea.master
         }
         private List<iPicList> views;
         iPicList activeView { get { int idx = tcMain.SelectedIndex == 2 ? 0 : tcMain.SelectedIndex; return views[idx]; } }
-        public string imageDepot // save shortcut to iDepot.depotFolder
+        public string imageFolder // save shortcut to iDepot.depotFolder
         {
             get
             {
-                string _imageDepot;
-                if (iDepot == null) _imageDepot = SctUtils.defaultImageDepot;
-                else _imageDepot = iDepot.path;
-                return _imageDepot.EndsWith("\\") ? _imageDepot : _imageDepot + "\\";
+                string _imageFolder;
+                if (Directory.Exists(tbImageDepot.Text)) _imageFolder = tbImageDepot.Text;
+                else _imageFolder = SctUtils.defaultImageDepot;
+                return _imageFolder.EndsWith("\\") ? _imageFolder : _imageFolder + "\\";
             }
         }
         public bool isEnabled // valid iDepot
         { 
             get 
             {   
-                if (iDepot == null) return false;
+                if (iDepot is null) return false;
                 return iDepot.isEnabled;
             } 
         }
@@ -179,8 +182,7 @@ namespace scripthea.master
                 return bb;
             }
         }
-        private bool _isChanging = false;
-        
+        private bool _isChanging = false;        
         public bool isChanging
         {
             get { return _isChanging; }
@@ -189,14 +191,14 @@ namespace scripthea.master
                 try
                 {
                     if (value) Mouse.OverrideCursor = Cursors.Wait;
-                    if (!value && _isChanging) // end of chaging/editing in iDepot
+                    /*if (!value && _isChanging) // end of chaging/editing in iDepot
                     {
                         iDepot.Save(!IsReadOnly); // save the changes on disk
                         activeView.Clear();
-                        if (!activeView.FeedList(ref iDepot))  // update from iDepot
-                            { opts.Log("Error[256]: fail to update image depot"); return; }                        
-                        GetChecked();
-                    }
+                        if (!activeView.FeedList(ref iDepot, false))  // update from iDepot
+                            { opts.Log("Error[256]: fail to update image depot"); return; }
+                        CountChecked();
+                    }*/
                 }
                 finally { Mouse.OverrideCursor = null; }
                 _isChanging = value;
@@ -204,10 +206,10 @@ namespace scripthea.master
         }
         public void Clear()
         {            
-            activeView.Clear(); 
+            listView.Clear(); gridView.Clear(); 
             iDepot = null; 
             isValidFolder = false;
-            GetChecked();
+            CountChecked();
         }
         public event RoutedEventHandler OnChangeDepot;
         protected void ChangeDepot(object sender, RoutedEventArgs e)
@@ -217,63 +219,144 @@ namespace scripthea.master
             {
                 string path = ((ImageDepot)sender).path;
                 if (iDepotStats.iDepot != null)
-                    if (!iDepotStats.iDepot.SameAs(path)) 
+                    if (!iDepotStats.iDepot.IsSameAs(path)) 
                         image.Source = null;
                 iDepotStats.OnChangeDepot(path); 
                 return;
             }
-            if (e != null) activeView.SetChecked(true);
             tbImageDepot.Foreground = Brushes.Black;
         }
         protected void ChangeContent(object sender, RoutedEventArgs e)
         {
-            GetChecked();
+            CountChecked();
         }       
         public void SetCheckLabel(string txt)
         {
-            Utils.DelayExec(300, () => { lbChecked.Content = txt; }); //lbChecked.UpdateLayout(); //Utils.DoEvents();
+            Utils.DelayExec(300, () => { lbChecked.Content = txt; }); 
         }
-        private int GetChecked(bool print = true) // returns numb. of checked
+        private int Count(bool actView) // active view or desc.idf fro imageFolder
         {
-            //if (print) SetCheckLabel("---");
-            if (!isEnabled || activeView == null) { /*opts.Log("Error[]: No active image depot found.");*/ return -1; }
-            List<Tuple<int, string, int, string>> itms = activeView.GetItems(true, false);
+            int cnt = 0;
+            if (activeView != null && actView) cnt = activeView.Count;
+            else cnt = SctUtils.checkImageDepot(imageFolder, true);
+            return cnt;
+        }
+        private int CountChecked(bool print = true) // returns numb. of checked
+        {
+            if (print) SetCheckLabel(Count(false).ToString()+" images");
+            if (!isEnabled || activeView is null || tcMain.SelectedItem == tiStats) { /*opts.Log("Error[]: No active image depot found.");*/ return -1; }
+            int cnt = activeView.CountChecked;
             if (print)
-                SetCheckLabel(itms.Count.ToString() + " out of " + activeView.Count.ToString());
-            if (activeView.Count == 0) image.Source = null;
-            return itms.Count; 
+                SetCheckLabel(cnt.ToString() + " out of " + Count(true).ToString());
+            if (Count(true) == 0) image.Source = null;
+            return cnt; 
         }
         public bool converting = false; public ImageDepot iDepot = null;
-        private void tbImageDepot_TextChanged(object sender, TextChangedEventArgs e)
-        {            
-            if (tbImageDepot.Text.Trim().Equals("")) { Clear(); ChangeDepot(null, e); return; }            
-            if (opts != null)
-                if (opts.composer.ImageDepotFolder.Equals(tbImageDepot.Text, StringComparison.InvariantCultureIgnoreCase) && opts.composer.QueryStatus == Status.Scanning)
-                { opts.Log("Error[1279]: the working image folder is in process of updating.", Brushes.Red); tbImageDepot.Text = ""; return; }
-            if (SctUtils.checkImageDepot(tbImageDepot.Text, false) > 0) tbImageDepot.Foreground = Brushes.Black;
-            else tbImageDepot.Foreground = Brushes.Red;
-            int iCount = SctUtils.checkImageDepot(tbImageDepot.Text, true); Utils.DoEvents(); 
+
+        public (ImageDepot, bool?)  LoadImageDepot(string path) // from desc. file 
+        {
+            ImageDepot wid; bool? ivf; //isValidFolder -> false - invalid; true - valid and not empty; null - valid and empty 
+            int iCount = SctUtils.checkImageDepot(path, true); Utils.DoEvents();
             if (iCount > -1)
             {
-                iDepot = new ImageDepot(tbImageDepot.Text, ImageInfo.ImageGenerator.FromDescFile, ImageDepot.SD_WebUI.NA, IsReadOnly);
-                if (iCount == 0) isValidFolder = null;
-                else { isValidFolder = true; SetCheckLabel("processing..."); }
+                wid = new ImageDepot(path, ImageInfo.ImageGenerator.FromDescFile, ImageDepot.SD_WebUI.NA, IsReadOnly);
+                if (iCount == 0) ivf = null;
+                else ivf = true; 
             }
-            else 
+            else
             {
-                if (Directory.Exists(tbImageDepot.Text))
+                if (Directory.Exists(path))
                 {
                     ImageDepot.SD_WebUI sdw = ImageDepot.SD_WebUI.NA; // default
                     if (opts.composer.API.StartsWith("SD"))
                     {
                         sdw = (opts.composer.A1111) ? ImageDepot.SD_WebUI.A1111 : ImageDepot.SD_WebUI.ComfyUI;
                     }
-                    iDepot = new ImageDepot(tbImageDepot.Text, SctUtils.DefaultImageGenerator, sdw, IsReadOnly);
-                }               
-                else iDepot = null;
-                isValidFolder = false;
+                    wid = new ImageDepot(path, SctUtils.DefaultImageGenerator, sdw, IsReadOnly);
+                }
+                else wid = null;
+                ivf = false;
             }
-            if (!chkCustom1.IsChecked.Value && Convert.ToString(chkCustom1.Content).Equals("Including modifiers") && iDepot != null)
+            return (wid, ivf);
+        }
+
+        public bool Refresh(bool forced, string iFolder = "")
+        // if forced -> just unconditionally refresh from iDepot, but recreate iDepot if iFolder exists or iDepot is null
+        // if forced == false -> compare iDepotFromFile.SameAs(items from visual) and refresh from iDepot if they are NOT the same
+        {
+            try
+            {
+                if (forced)
+                {
+                    if (iFolder.Equals(opts?.viewer.emptyText))
+                    {
+                        if (tcMain.SelectedIndex == 2) iDepotStats.Clear();
+                        else activeView?.Clear();
+                        image.Source = null; CountChecked(true); return true;
+                    }
+                    if (Directory.Exists(iFolder)) iDepot = new ImageDepot(iFolder);
+                    else { if (iFolder != "") { opts.Log("Error[873]: Missing directory > " + iFolder); return false; } }
+                    if (iDepot is null && Directory.Exists(imageFolder)) iDepot = new ImageDepot(imageFolder);
+                    if (iDepot is null || !iDepot.isEnabled) { opts.Log("Error[874]: Wrong image-depot"); return false; }
+
+                    if (tcMain.SelectedItem == tiStats)
+                    {
+                        iDepotStats.Clear();
+                        iDepotStats.OnChangeDepot(iDepot.path);
+                        CountChecked(); 
+                        return true;
+                    }
+                    List<Tuple<int, string, int, string>> decompImageDepot = iDepot.Export2Viewer();
+                    if (!Utils.isNull(decompImageDepot))
+                    {
+                        SetCheckLabel("loading... "+ iDepot.items.Count);
+                        activeView.FeedList(ref iDepot, forced); 
+                        if (activeView == listView) listView.focusFirstRow();
+                        CountChecked(true);
+                    }
+                    else Refresh(true, opts?.viewer.emptyText);
+                    return true;
+                }
+                else // it needs Directory.Exists(iFolder) and activeView.iDepot is not null to compare; otherwise it will go forced
+                {
+                    if (iDepot is null) return Refresh(true);
+                    if (!Directory.Exists(iFolder)) { opts.Log("Error[873]: Missing directory > " + iFolder); return false; }
+
+                    if (activeView.iDepot is null) return Refresh(true);
+                    ImageDepot iDepotFromFile = new ImageDepot(iFolder);
+                    List<Tuple<int, string, int, string>> lst = activeView.GetItems(true, true);
+                    if (!iDepotFromFile.IsSameAs(lst)) return Refresh(true);
+                }
+                return true;
+            }
+            finally {  }
+        }
+        public void tbImageDepot_TextChanged(object sender, TextChangedEventArgs e)
+        {            
+            if (tbImageDepot.Text.Trim().Equals("")) { Clear(); ChangeDepot(null, e); return; }            
+            if (opts != null)
+                if (opts.composer.ImageDepotFolder.Equals(tbImageDepot.Text, StringComparison.InvariantCultureIgnoreCase) && opts.composer.QueryStatus == Status.Scanning)
+                { opts.Log("Error[1279]: the working image folder is in process of updating.", Brushes.Red); tbImageDepot.Text = ""; return; }
+            if (SctUtils.checkImageDepot(tbImageDepot.Text, true) > 0) tbImageDepot.Foreground = Brushes.Black;
+            else { tbImageDepot.Foreground = Brushes.Red; return; }
+
+            (iDepot, isValidFolder) = LoadImageDepot(tbImageDepot.Text);
+
+            if (tcMain.SelectedItem.Equals(tiStats))
+            {
+                iDepotStats.Clear();
+                if (iDepot != null)
+                {
+                    string path = iDepot.path;
+                    if (iDepotStats.iDepot != null)
+                        if (!iDepotStats.iDepot.IsSameAs(path))
+                            image.Source = null;
+                    iDepotStats.OnChangeDepot(path);
+                    CountChecked();
+                }
+                return;
+            }
+            if (!chkCustom1.IsChecked.Value && Convert.ToString(chkCustom1.Content).Equals("Including modifiers") && iDepot != null) // optional correction for modifiers
             {
                 string[] stringSeparators = new string[] { opts.composer.ModifPrefix };
                 foreach (ImageInfo ii in iDepot.items)
@@ -282,11 +365,9 @@ namespace scripthea.master
                     if (pa.Length < 2) continue;
                     ii.prompt = pa[0];
                 }
-            }            
-            lastTab = null;
-            tcMain_SelectionChanged(null, null);
-            activeView.SetChecked(true);
-            GetChecked();
+            }
+            Refresh(true); // update from iDepot
+            activeView.SetChecked(true);  CountChecked();
             ChangeDepot(iDepot, null);
         }
         private void mi_Click(object sender, RoutedEventArgs e)
@@ -327,11 +408,11 @@ namespace scripthea.master
                 case "Clear": tbImageDepot.Text = ""; ReloadDepot();
                     break;
             }
-            GetChecked();
+            CountChecked();
         }
         private void MCheckUncheck(object sender, MouseButtonEventArgs e)
         {
-            GetChecked();
+            CountChecked();
         }
         public event RoutedEventHandler OnPicSelect;
         //public delegate void PicViewerHandler(int idx, string imageDir, ImageInfo ii);
@@ -354,49 +435,71 @@ namespace scripthea.master
             else { image.Source = SctUtils.file_not_found; lastLoadedPic = ""; }
             if (OnPicSelect != null) OnPicSelect(ii.prompt, null);
             if (OnSelectEvent != null) OnSelectEvent(idx, iDepot);
-            GetChecked();
         }
-        TabItem lastTab = null;
+        
  /*       private void rbList_Checked(object sender, RoutedEventArgs e)
         {
-            if (tcMain == null || iDepot == null) return;
+            if (tcMain is null || iDepot is null) return;
             if (rbList.IsChecked.Value) tcMain.SelectedIndex = 0;            
             if (rbGrid.IsChecked.Value) tcMain.SelectedIndex = 1;
         }*/
         private void tcMain_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (tcMain is null) return;
+            TabControl tab = (sender is TabControl) ? sender as TabControl : null;
+            if (tab is null || !ReferenceEquals(e.OriginalSource, tab)) return;
+
+            int prevIndex = e.RemovedItems.Count > 0 ? tab.Items.IndexOf(e.RemovedItems[0]) : -1;
+            int newIndex = e.AddedItems.Count > 0 ? tab.Items.IndexOf(e.AddedItems[0]) : -1;
+            if (prevIndex == -1 || newIndex == -1) return;
+
             try
             {            
-                if (tcMain == null || iDepot == null) return;            
-                if (activeView.iDepot != null)
+                if ((prevIndex == 1) && (newIndex == 0 || newIndex == 2)) // out of grid
                 {
-                    if (!Utils.comparePaths(iDepot.path, activeView.loadedDepot)) // avoid reload already loaded depot
-                        activeView.FeedList(ref iDepot); //if (!) opts.Log("Error[]: fail to create grid image depot(1)");
-                }
-                else
-                    activeView.FeedList(ref iDepot); // if (!) opts.Log("Error[]: fail to create grid image depot(2)");
-                if (lastTab == null) { lastTab = (TabItem)tcMain.SelectedItem; return; } // first load
-                if (tcMain.SelectedItem.Equals(tiGrid))            
-                    gridView.SynchroChecked(listView.GetItems(true, false));
-                if (tcMain.SelectedItem.Equals(tiList))
-                {
-                    listView.SynchroChecked(gridView.GetItems(true, false));
-                    if (lastTab.Equals(tiStats)) { listView.focusFirstRow(); listView.dGrid_SelectionChanged(null, null); }
+                    if (gridView.OutOfResources) gridView.Clear();
+                    else gridView.CancelLoading();
                 }
                 if (tcMain.SelectedItem.Equals(tiStats)) 
                 {
-                    iDepotStats.Clear();
+                    iDepotStats.Clear(); 
                     if (iDepot != null)
                     {
                         string path = iDepot.path;
                         if (iDepotStats.iDepot != null)
-                            if (!iDepotStats.iDepot.SameAs(path)) 
+                            if (!iDepotStats.iDepot.IsSameAs(path)) 
                                 image.Source = null;
-                        iDepotStats.OnChangeDepot(path);                
+                        iDepotStats.OnChangeDepot(path);
+                        iDepot = null;
                     }
+                    return;
                 }
-                lastTab = (TabItem)tcMain.SelectedItem;
-                GetChecked();
+                ImageDepot wid; bool? ivf;
+                (wid, ivf) = LoadImageDepot(tbImageDepot.Text); // wid from disk
+                if (wid != null && (bool)ivf)
+                {
+                    if (!wid.IsSameAs(activeView.iDepot)) activeView.FeedList(ref wid, true);
+                }
+                if (tcMain.SelectedItem.Equals(tiList))
+                {
+                    switch (prevIndex) 
+                    {
+                        case 1: listView.SynchroChecked(gridView.GetItems(true, false)); listView.selectedIndex = gridView.selectedIndex;
+                            break;
+                        case 2: Refresh(true);/*listView.focusFirstRow(); listView.dGrid_SelectionChanged(null, null);*/ 
+                            break;
+                    }                    
+                }
+                if (tcMain.SelectedItem.Equals(tiGrid))
+                {
+                    switch (prevIndex)
+                    {
+                        case 0: gridView.SynchroChecked(listView.GetItems(true, false)); gridView.selectedIndex = listView.selectedIndex;
+                            break;
+                        case 2: Refresh(true);/*listView.focusFirstRow(); listView.dGrid_SelectionChanged(null, null);*/
+                            break;
+                    }
+                }           
             }
             finally { if (views != null) ChangeDepot(iDepot, null); }
         }
@@ -428,9 +531,14 @@ namespace scripthea.master
                     activeView.SetChecked(null);
                 }
             }
-            GetChecked();
+            CountChecked();
         }
-     }
+
+        private void imagePickerUC_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            
+        }
+    }
 }
 
 /* Single Tree in a Sparse Landscape: A lone tree in an otherwise empty field or desert, emphasizing simplicity and isolation.; Henri Matisse

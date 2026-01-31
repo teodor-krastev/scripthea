@@ -38,7 +38,7 @@ namespace scripthea.composer
             opts = _opts;
             mSets = new List<mSetUC>();
             mSets.Clear();
-            mSets.Add(new mSetUC(resetName, new List<Tuple<string, string, ModifStatus>>()) { Height = 23, Width = mSetListBox.ActualWidth, ReadOnly = true, BorderBrush = Brushes.Silver, BorderThickness = new Thickness(1), Margin = new Thickness(0,0,0,0) }); ; VisualUpdate();
+            mSets.Add(new mSetUC(resetName, new List<Tuple<string, string, ModifStatus>>()) { Height = 23, Width = mSetListBox.ActualWidth-3, ReadOnly = true, BorderBrush = Brushes.Silver, BorderThickness = new Thickness(1), Margin = new Thickness(-2,0,0,0), ToolTip = "Reset all modifiers to unchecked state" }); ; VisualUpdate();
 
             modifLists = _modifLists;
             if (!Directory.Exists(ModifiersFolder)) { Utils.TimedMessageBox("No modifiers directory: "+ ModifiersFolder); return; } 
@@ -60,7 +60,7 @@ namespace scripthea.composer
         }
         public int ModifCount()
         {
-            if (modifLists == null) return 0;
+            if (modifLists is null) return 0;
             int cnt = GetModifs().Count;
             lbModifCount.Content = "#" + cnt.ToString();
             return cnt;
@@ -99,7 +99,7 @@ namespace scripthea.composer
         }
         public bool mSetApply(string mSetName, bool append)
         {
-            mSetUC ms = mSetByName(mSetName); if (ms == null) return false;
+            mSetUC ms = mSetByName(mSetName); if (ms is null) return false;
             if (ms.isReset()) { foreach (ModifListUC sm in modifLists) sm.Reset(); }
             else { if (!SetModifs(ms.mSet, append)) return false; }
             return true;
@@ -116,10 +116,10 @@ namespace scripthea.composer
                 {
                     if (sm.CategoryName.Equals(mdf.Item1)) { wsm = sm; break; } 
                 }
-                if (wsm == null) { bb = false; continue; }
+                if (wsm is null) { bb = false; continue; }
                 wsm.isVisible = true; wsm.isChecked = true;
                 ModifItemUC mi = wsm.modifByName(mdf.Item2);
-                if (mi == null) { bb = false; continue; }
+                if (mi is null) { bb = false; continue; }
                 mi.modifStatus = mdf.Item3;
             }
             return bb;
@@ -137,7 +137,7 @@ namespace scripthea.composer
         private void btnAdd_Click(object sender, RoutedEventArgs e)
         {
             List<Tuple<string, string, ModifStatus>> mSet = GetModifs();
-            if (mSet.Count == 0) { Utils.TimedMessageBox("No checked modifiers to be saved."); return; }
+            if (mSet.Count == 0) { Utils.TimedMessageBox("No checked modifiers to be saved.","Warning !", 5000); return; }
             string newItem = new InputBox("New mSet name", "", "Text input").ShowDialog();
             if (newItem == "") return;
             if (mSetByName(newItem) != null) { Utils.TimedMessageBox("Error[156]: <"+newItem+"> already exits."); return; }
@@ -149,7 +149,7 @@ namespace scripthea.composer
             int k = mSetListBox.SelectedIndex;
             if (!Utils.InRange(k, 0, mSets.Count - 1))
             {
-                Utils.TimedMessageBox("Error[156]: No mSet is selected."); return;
+                Utils.TimedMessageBox("Error[156]: No mSet is selected.", "Warning !", 5000); return;
             }
             if (mSets[k].ReadOnly)
             {
@@ -164,16 +164,16 @@ namespace scripthea.composer
             int k = mSetListBox.SelectedIndex;
             if (!Utils.InRange(k, 0, mSets.Count - 1))
             {
-                Utils.TimedMessageBox("Error[748]: No mSet is selected."); return;
+                Utils.TimedMessageBox("Error[748]: No mSet is selected.", "Warning !", 5000); return;
             }
             if (mSets[k].ReadOnly)
             {
-                Utils.TimedMessageBox("Error[354]: <" + mSets[k].title + "> mSet is read-only."); return;
+                Utils.TimedMessageBox("Error[354]: <" + mSets[k].title + "> mSet is read-only.", "Warning !", 5000); return;
             }
             List<Tuple<string, string, ModifStatus>> mSet = GetModifs();
             if (mSet.Count == 0)
             {
-                Utils.TimedMessageBox("Error[45]: No modifiers checked."); return;
+                Utils.TimedMessageBox("Error[45]: No modifiers checked.", "Warning !", 5000); return;
             }
             mSets[k].mSet = mSet;
             _ = new PopupText(btnUpdate,"<" +mSets[k].title + "> mSet has been updated.");
@@ -190,7 +190,7 @@ namespace scripthea.composer
                 int k = mSetListBox.SelectedIndex;
                 if (!Utils.InRange(k, 0, mSets.Count - 1))
                 {
-                    Utils.TimedMessageBox("Error[369]: No mSet is selected."); return;
+                    Utils.TimedMessageBox("Error[369]: No mSet is selected.", "Warning !", 5000); return;
                 }
                 SetModifs_Click(mSets[k], null);
                 e.Handled = true;

@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:scripthea.external"
              x:Class="scripthea.external.SD_params_UC"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="900" BorderBrush="#FFC3C3C3" BorderThickness="0,0,0,2">
+             d:DesignHeight="600" d:DesignWidth="900" BorderBrush="#FFC3C3C3" BorderThickness="0,0,0,2">
     <Grid Background="White" Margin="0,9,0,0">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="590"/>
@@ -15,7 +15,7 @@
         <StackPanel Margin="0,0,3.333,0">
             <GroupBox Height="120" Header="Negative prompt" Margin="5,0">
                 <Grid>
-                    <TextBox x:Name="tbNegativePrompt" BorderBrush="{x:Null}" Margin="0,7,0,0" TextChanged="tbNegativePrompt_TextChanged"/>
+                    <TextBox x:Name="tbNegativePrompt" BorderBrush="{x:Null}" Margin="0,7,0,0" TextChanged="tbNegativePrompt_TextChanged" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" AcceptsReturn="True"/>
                 </Grid>
             </GroupBox>
             <local:NumericSliderUC x:Name="nsWidth" Height="28" Margin="0,5"/>
@@ -40,6 +40,12 @@
                 <CheckBox x:Name="chkDefaultModel" VerticalAlignment="Center" Content="Default" Margin="10,0,0,0" FontSize="13" IsChecked="True" Checked="chkDefaultModel_Checked" Unchecked="chkDefaultModel_Checked" Visibility="Collapsed"></CheckBox>
                 <TextBox x:Name="tbModel" HorizontalAlignment="Left" VerticalAlignment="Center" Text="enter your model here (filename.ext only)" Margin="10,12,0,12" FontSize="13" Width="390" Height="26" TextChanged="tbModel_TextChanged"></TextBox>
             </StackPanel>
+            <GroupBox Height="120" Header="Comment" Margin="5,0">
+                <Grid>
+                    <TextBox x:Name="tbComment" BorderBrush="{x:Null}" Margin="0,7,0,0" TextChanged="tbNegativePrompt_TextChanged" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" AcceptsReturn="True"/>
+                </Grid>
+            </GroupBox>
+
         </StackPanel>
         <StackPanel Grid.Column="1">
             <GroupBox x:Name="grpSDsettings" Header="SD parameters settings" HorizontalAlignment="Left" Margin="3,0,-8,0" VerticalAlignment="Top" Width="300" Height="78">

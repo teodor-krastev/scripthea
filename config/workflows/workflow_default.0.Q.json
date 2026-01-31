@@ -2,11 +2,11 @@
   "3": {
     "inputs": {
       "seed": 0,
-      "steps": 31,
-      "cfg": 6.6,
+      "steps": 20,
+      "cfg": 8.18,
       "sampler_name": "euler_ancestral",
       "scheduler": "karras",
-      "denoise": 1,
+      "denoise": 0.9,
       "model": [
         "4",
         0
@@ -40,8 +40,8 @@
   },
   "5": {
     "inputs": {
-      "width": 1173,
-      "height": 924,
+      "width": 1086,
+      "height": 792,
       "batch_size": 1
     },
     "class_type": "EmptyLatentImage",
@@ -51,7 +51,7 @@
   },
   "6": {
     "inputs": {
-      "text": "Impressionism : Luminous, broken color and swift brushstrokes capturing fleeting light, weather, and everyday life; favors outdoor scenes, visible paint, and the sensory impression of a moment over precise detail or narrative. A giggle of water travelled the brook, a bright and bonny stream. ",
+      "text": "If there were cobwebs in my heart and soul before the thunderstorm, it is safe to say that I was all clear by the time the blue sky and sun returned.  ; surrealism ; simple ; Vladimir Kush",
       "clip": [
         "4",
         1

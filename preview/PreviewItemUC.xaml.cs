@@ -93,8 +93,20 @@ namespace scripthea.preview
             set
             {
                 if (value) SelectionChanged(this, null); // clear all
-                if (value) gridFullFrame.Background = Brushes.LightSkyBlue; else gridFullFrame.Background = Brushes.White;
+                if (value) gridFullFrame.Background = questioned ? Brushes.DeepSkyBlue: Brushes.PowderBlue; 
+                else gridFullFrame.Background = Brushes.White;
                 _selected = value;
+            }
+        }
+        private bool _questioned = false;
+        public bool questioned
+        {
+            get => _questioned;
+            set
+            {
+                if (value) gridFullFrame.Background = Brushes.DeepSkyBlue;
+                else gridFullFrame.Background = selected ? Brushes.PowderBlue : Brushes.White;
+                _questioned = value;
             }
         }
         public string cueText
@@ -108,7 +120,7 @@ namespace scripthea.preview
             get => tbLLMCue.Text.Trim().Trim('\"').Trim();
             set 
             { 
-                if (value == null) { tbLLMCue.Text = ""; return; }
+                if (value is null) { tbLLMCue.Text = ""; return; }
                 string resp = value.Trim().Trim('\"').Trim().Replace("\n\n", "\n");
                 foreach(string extra in extras) resp = resp.Replace(extra, "");
                 tbLLMCue.Text = resp; 

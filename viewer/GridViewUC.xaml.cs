@@ -49,7 +49,9 @@ namespace scripthea.viewer
         {
             ShuttingDown = true; 
         }
-        public ImageDepot iDepot { get; set; }
+        public ImageDepot iDepot 
+        { get; 
+            set; } // local to Grid clone
         public bool IsAvailable 
         { 
             get 
@@ -83,7 +85,7 @@ namespace scripthea.viewer
             if (iDepot != null)
                 if (iDepot.isEnabled && Utils.InRange(idx, 0, iDepot.items.Count - 1))
                     ii = iDepot.items[idx];
-            if (ii == null && SelectedPicItem() != null) ii = iDepot.items[SelectedPicItem().idx];
+            if (ii is null && SelectedPicItem() != null) ii = iDepot.items[SelectedPicItem().idx];
             return ii;
         }
         private bool _Loading;
@@ -99,7 +101,7 @@ namespace scripthea.viewer
             }
         }
         private bool _unfinishedLot = true;
-        public bool unfinishedLot { get => _unfinishedLot; }
+        public bool unfinishedLot { get => _unfinishedLot; } // loading in progress
         public void UpdateVis()
         {
             try
@@ -142,13 +144,13 @@ namespace scripthea.viewer
         }
         public void UpdateVisRecord(int idx, ImageInfo ii) // update visual record from ii
         {
-            if (iDepot == null || ii == null) return;
+            if (iDepot is null || ii is null) return;
             if (!Utils.InRange(idx, 0, iDepot.items.Count - 1) || !Utils.InRange(idx, 0, picItems.Count - 1) ) return;
             picItems[idx].ContentUpdate(idx, iDepot.path, ii); selectedIndex = idx;
         }
         public void SynchroChecked(List<Tuple<int, string, int, string>> chks)
         {
-            if (!checkable) return;
+            if (!checkable || picItems.Count == 0) return;
             SetChecked(false);
             foreach (Tuple<int, string, int, string> chk in chks)
             {
@@ -161,11 +163,11 @@ namespace scripthea.viewer
             if (!checkable) return;
             foreach (PicItemUC piUC in picItems)
             {
-                 if (check == null) piUC.IsChecked = !piUC.IsChecked;
+                 if (check is null) piUC.IsChecked = !piUC.IsChecked;
                 else piUC.IsChecked = Convert.ToBoolean(check);
             }
         }        
-        public struct UndoRec // undo buffer
+        private struct UndoRec // undo buffer
         { 
             public int idx0; public PicItemUC piUC; public ImageInfo ii; public bool inclFile; 
             public void Clear() { idx0 = -1; piUC = null; ii = null; inclFile = false; } // clear buffer
@@ -177,8 +179,8 @@ namespace scripthea.viewer
                 if (File.Exists(fn)) { File.Delete(fn); return true; }
                 else return false;
             }
-        } 
-        UndoRec undoRec;
+        }
+        private UndoRec undoRec;
         public void RemoveAt(bool inclFile, int idx = -1) // default selected
         {
             if (undoRec.full)
@@ -228,7 +230,7 @@ namespace scripthea.viewer
             }            
             picItems.Clear(); GC.Collect(); wrapPics.Children.Clear(); wrapPics.UpdateLayout();
         }
-        public string imageFolder { get { return iDepot == null ? "":iDepot.path; } }
+        public string imageFolder { get { return iDepot is null ? "":iDepot.path; } }
         public void CheckRange(int first, int last)
         {
             foreach (PicItemUC piUC in picItems)
@@ -241,36 +243,38 @@ namespace scripthea.viewer
         }
         private string _markMask = "";
         public string markMask { get { return _markMask; } }
-        public void MarkWithMask(string mask)
+        public int MarkWithMask(string mask)
         {            
-            _markMask = mask;
+            _markMask = mask; int k = 0;
             foreach (PicItemUC piUC in picItems)
             {
                 bool bb = mask.Equals("") ? false : Utils.IsWildCardMatch(piUC.imgInfo.prompt, mask);
+                if (bb) k++;
                 if (checkable) piUC.IsChecked = bb;
                 else piUC.marked = bb;
             }
+            return k;
         }
         public void Clear(bool inclDepotItems = false)
         {            
             picItemsClear(); 
             if (inclDepotItems) iDepot?.items.Clear();                       
         }
-        public bool FeedList(string imageDepot) 
+        public bool FeedList(string imageDepot, bool force = false) 
         {
             Clear();
             if (!Directory.Exists(imageDepot)) { opts.Log("Error[986]: no such folder -> " + imageDepot); return false; }
             //if (ImgUtils.checkImageDepot(imageDepot) == 0) { opts.Log("Error[]: not image depot folder -> " + imageDepot); return false; }
             ImageDepot _iDepot = new ImageDepot(imageDepot, ImageInfo.ImageGenerator.FromDescFile);
-            return FeedList(ref _iDepot);
+            return FeedList(ref _iDepot, force);
         }
-        public bool FeedList(ref ImageDepot _iDepot) // external iDepot; regular use
+        public bool FeedList(ref ImageDepot _iDepot, bool force) // external iDepot; regular use
         {
-            if (_iDepot == null) return false;
+            if (_iDepot is null) return false;
             if (!Directory.Exists(_iDepot.path)) { opts.Log("Error[785]: no such folder -> " + _iDepot.path); return false; }
-            bool bb = !Utils.comparePaths(loadedDepot, _iDepot.path); // new path
+            bool bb = !Utils.comparePaths(loadedDepot, _iDepot.path); // if new iDepot path
             iDepot = _iDepot; loadedDepot = iDepot.path;
-            if (unfinishedLot || bb) UpdateVis();
+            if (unfinishedLot || bb || force) UpdateVis();
             return true;
         }
         public int selectedIndex // 0 based index
@@ -291,7 +295,7 @@ namespace scripthea.viewer
                     piUC.selected = piUC.idx.Equals(idxS);                    
                     if (piUC.selected) { piUC.focused = true; piUC2 = piUC; }
                 } 
-                if (piUC2 == null) 
+                if (piUC2 is null) 
                     { opts.Log("Error[352]: internal selected index"); return; }
                 scrollToIdx(value);
                 if (piUC2 != null)
@@ -299,26 +303,42 @@ namespace scripthea.viewer
             }
         }
         public int Count { get { return picItems.Count; } }
-        public List<Tuple<int, string, int, string>> GetItems(bool check, bool uncheck)
+        public int CountChecked
         {
-            if (!checkable && iDepot.isEnabled) { return iDepot.Export2Viewer(); }
+            get
+            {
+                int cnt = 0;
+                if (!checkable) return 0;
+                foreach (PicItemUC piUC in picItems)
+                {
+                    if (piUC.IsChecked is null) continue;
+                    if ((bool)piUC.IsChecked) cnt++;
+                }
+                return cnt;
+            }
+        }
+        public List<Tuple<int, string, int, string>> GetItems(bool check, bool uncheck) // from visual comp
+        {
             List<Tuple<int, string, int, string>> itms = new List<Tuple<int, string, int, string>>();
             foreach (PicItemUC piUC in picItems)
             {
-                if (piUC.imgInfo == null) continue;
-                if (piUC.IsChecked == null) continue;
-                if ((bool)piUC.IsChecked)
+                if (piUC.imgInfo is null) continue;
+                if (checkable)
                 {
-                    if (check) itms.Add(new Tuple<int, string, int, string>(piUC.idx, piUC.imgInfo.prompt, piUC.imgInfo.rate, piUC.imgInfo.filename));
+                    if (piUC.IsChecked is null) continue;
+                    if ((bool)piUC.IsChecked)
+                    {
+                        if (check) itms.Add(new Tuple<int, string, int, string>(piUC.idx, piUC.imgInfo.prompt, piUC.imgInfo.rate, piUC.imgInfo.filename));
+                    }
+                    else
+                    {
+                        if (uncheck) itms.Add(new Tuple<int, string, int, string>(piUC.idx, piUC.imgInfo.prompt, piUC.imgInfo.rate, piUC.imgInfo.filename));
+                    }
                 }
-                else
-                {
-                    if (uncheck) itms.Add(new Tuple<int, string, int, string>(piUC.idx, piUC.imgInfo.prompt, piUC.imgInfo.rate, piUC.imgInfo.filename));
-                }
+                else itms.Add(new Tuple<int, string, int, string>(piUC.idx, piUC.imgInfo.prompt, piUC.imgInfo.rate, piUC.imgInfo.filename));
             }
             return itms;            
-        }
-        
+        }       
         public delegate void PicViewerHandler(int idx, ImageDepot _iDepot); // 0 based
         public event PicViewerHandler SelectEvent;
         protected void OnSelect(int idx, ImageDepot _iDepot)

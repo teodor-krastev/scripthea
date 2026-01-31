@@ -40,7 +40,7 @@ namespace scripthea.preview
             {
                 foreach (PreviewItemUC pvi in pvItems)
                     pvi.UpdateShowing(value);
-                if (opts == null) return;
+                if (opts is null) return;
                 opts.llm.ShowBoth = value;
             }
         }
@@ -50,7 +50,7 @@ namespace scripthea.preview
             set { if (value) Mouse.OverrideCursor = Cursors.Wait; else Mouse.OverrideCursor = null; }
         }
         public bool scanningFlag { get; set; }
-        public LMstudioUC LMstudio;
+        public LMstudioUC LMstudio { get => opts.llm.LMstudio; }
         private List<string> extraFile;
         public void Init(ref Options _opts)
         {
@@ -123,7 +123,7 @@ namespace scripthea.preview
             if (idx == -1) 
             { 
                 PreviewItemUC si = selectedItem;
-                if (si == null) { opts.Log("Error: no selected prompt is detected"); return ""; }
+                if (si is null) { opts.Log("Error: no selected prompt is detected"); return ""; }
                 else k = si.index;
             }
             else
@@ -154,7 +154,7 @@ namespace scripthea.preview
         { 
             get 
             {
-                if (selectedItem == null) return new Tuple<string, string>("","");
+                if (selectedItem is null) return new Tuple<string, string>("","");
                 return new Tuple<string, string>(selectedItem.cueLLMText, selectedItem.modifsText);  
             } 
         }
@@ -222,7 +222,7 @@ namespace scripthea.preview
         public bool IsValid(int idx) // if checked and with LLM cue
         {
             PreviewItemUC pi = getByIndex(idx);
-            if (pi == null) return false;
+            if (pi is null) return false;
             return pi.IsBoxChecked && !pi.IsCueLLMEmpty;
         }
         public List<int> GetValidList() // 0 based indexes
@@ -232,7 +232,7 @@ namespace scripthea.preview
                 if (pi.checkBox.IsChecked.Value && !pi.IsCueLLMEmpty) ls.Add(pi.index);
             return ls;
         }
-        public int selectedIdx { get => _selectedItem == null ? -1 : _selectedItem.index; }
+        public int selectedIdx { get => _selectedItem is null ? -1 : _selectedItem.index; }
         private PreviewItemUC _selectedItem = null; 
         public PreviewItemUC selectedItem
         {

@@ -96,8 +96,8 @@ namespace scripthea.preview
         {
             if (onlyChecked) return checkedPrompts();
             List<Tuple<string, string>> ls = new List<Tuple<string, string>>();
-            if (dTable == null) return ls;
-            if (dTable.Rows == null) return ls;
+            if (dTable is null) return ls;
+            if (dTable.Rows is null) return ls;
             foreach (DataRow row in dTable.Rows)
                 ls.Add(decompPrompt(Convert.ToString(row["Prompt"])));
             return ls;
@@ -223,7 +223,7 @@ namespace scripthea.preview
         public List<Tuple<string, string>> checkedPrompts()
         {            
             List<Tuple<string, string>> ls = new List<Tuple<string, string>>();
-            if (dTable == null) return ls;
+            if (dTable is null) return ls;
             if (dTable.Rows.Count == 0) return ls;
             int sr = lastSelectedRow;
             if (Utils.InRange(sr, 0, dTable.Rows.Count - 1))
@@ -241,8 +241,8 @@ namespace scripthea.preview
 
         public bool IsValid(int idx)
         {
-            if (dTable == null) return false;
-            if (dTable.Rows == null) return false;
+            if (dTable is null) return false;
+            if (dTable.Rows is null) return false;
             if (!Utils.InRange(idx, 0, dTable.Rows.Count-1)) return false;
             DataRow row = dTable.Rows[idx];
             return Convert.ToBoolean(row["On"]);
@@ -266,7 +266,7 @@ namespace scripthea.preview
                 k = dGrid.SelectedIndex + 1;
                 if (!IsValid(k)) selectByIndex(-1);
             }
-            if (DataGridHelper.SetFocusOnRow(dGrid, Utils.EnsureRange(k, 0, dTable.Rows.Count - 1)) == null) return -1;
+            if (DataGridHelper.SetFocusOnRow(dGrid, Utils.EnsureRange(k, 0, dTable.Rows.Count - 1)) is null) return -1;
             if (!dGrid.IsFocused) dGrid.Focus();
             if (dGrid.SelectedItem != null) dGrid.ScrollIntoView(dGrid.SelectedItem); 
             return k;            

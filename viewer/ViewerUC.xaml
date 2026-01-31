@@ -22,7 +22,7 @@
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
-                        <ColumnDefinition x:Name="colRefresh"  Width="40"/>
+                        <ColumnDefinition x:Name="colRefresh" Width="40"/>
                         <ColumnDefinition Width="100"/>
                     </Grid.ColumnDefinitions>
                     <TextBox x:Name="tbImageDepot" Background="{x:Null}" TextChanged="tbImageDepot_TextChanged" Margin="3,1,2.962,-2" BorderThickness="0" FontSize="14"/>
@@ -37,13 +37,14 @@
             <Grid Grid.Row="2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="140"/>
+                    <ColumnDefinition x:Name="colMark" Width="145"/>
                 </Grid.ColumnDefinitions>
                 <Label Content="Find" HorizontalAlignment="Left" FontFamily="Segoe UI Semibold" VerticalAlignment="Center"/>
-                <TextBox x:Name="tbFind" Margin="34,3,5,3"/>
+                <TextBox x:Name="tbFind" Margin="34,3,5,3" KeyDown="tbSearch_KeyDown"/>
                 <StackPanel Grid.Column="1" Orientation="Horizontal">
                     <Image x:Name="btnFindUp"  Width="25" Source="/Scripthea;component/Properties/find_up.png" Margin="0,0,0,0" Cursor="Hand" ToolTip="Find Up" MouseDown="btnFindUp_MouseDown" Height="25"/>
                     <Image x:Name="btnFindDown"  Width="25" Source="/Scripthea;component/Properties/find_down.png" Margin="0,0,0,0" Cursor="Hand" ToolTip="Find Down" MouseDown="btnFindUp_MouseDown" Height="25"/>
+                    <TextBlock x:Name="tbMarkCount" VerticalAlignment="Center" HorizontalAlignment="Left" Text="#123" Margin="0" FontSize="13" Visibility="Collapsed" Foreground="Navy"></TextBlock>           
                     <Button x:Name="btnMark" FontWeight="Bold" Content=" Mark " Background="MintCream" Margin="5,0,5,0" Foreground="#FF058402" Click="btnMark_Click" FontSize="13" FontFamily="Segoe UI Semibold" ToolTip="Mark all prompts containing the find text" Width="45" Style="{StaticResource RoundedSmallButtonStyle}"/>
                     <Button x:Name="btnClearMark" FontWeight="Bold" Content="Rst" Background="White" Margin="0,0,0,0" Foreground="#FFA80303" Click="btnMark_Click" Width="32" ToolTip="Clear (reset) the marking" Style="{StaticResource RoundedSmallButtonStyle}"/>
                 </StackPanel>
@@ -84,8 +85,8 @@
             </TabControl>
         </Grid>
         <Grid Grid.Column="1" Margin="0" />
-        <GridSplitter x:Name="gridSplitter" HorizontalAlignment="Left" Grid.Column="1" Margin="0" Width="5"/>
+        <GridSplitter x:Name="gridSplitter" HorizontalAlignment="Left" Grid.Column="1" Margin="0" Width="4"/>
         
-        <local:PicViewerUC x:Name="picViewerUC" Grid.Column="1" Margin="0" />
+        <local:PicViewerUC x:Name="picViewerUC" Grid.Column="1" Margin="4,0,0,0" />
     </Grid>
 </UserControl>

@@ -40,7 +40,7 @@ namespace scripthea.external
         public Dictionary<string, string> opts { get; set; } // interfaceAPI: main (non API specific) options 
         public void Init(ref SDoptionsWindow _SDopts) // init and update visuals from opts
         {
-            if (_SDopts == null) _SDopts = new SDoptionsWindow(true);
+            if (_SDopts is null) _SDopts = new SDoptionsWindow(true);
             SDopts = _SDopts;
             if (!SDopts.IsSDloc1111(SDopts.opts.SDloc1111, false)) { Utils.DelayExec(3000, () => { Utils.TimedMessageBox("Go to SD Options and select your webUI SD instalation folder.", "Solution", 6000); }); return; }
             reStartServers();
@@ -86,7 +86,7 @@ namespace scripthea.external
         {
             get
             {
-                if (server2s == null || server2c == null) return false;
+                if (server2s is null || server2c is null) return false;
                 return server2s.IsConnected && server2c.IsConnected;  // connected and working (depends on the comm. type)
             } 
         }
@@ -172,7 +172,7 @@ namespace scripthea.external
         protected void inLog(String txt, SolidColorBrush clr = null)
         {
             if (txt.Length.Equals(0)) return;
-            if (Application.Current == null) return;
+            if (Application.Current is null) return;
             Utils.log(rtbSDlog, txt.Trim(), clr);
         }
         private void Server_TextReceived(object sender, string txt)
@@ -246,7 +246,7 @@ namespace scripthea.external
         {
             get
             {
-                if (pipeServer == null) _status = Status.closed;
+                if (pipeServer is null) _status = Status.closed;
                 return _status;
             }
             set { Status previous = _status; _status = value; StatusChange(previous, value); }
@@ -259,7 +259,7 @@ namespace scripthea.external
         }
         protected void Receive(string txt)
         {
-            if (txt == null) return;
+            if (txt is null) return;
             switch (txt.Trim())
             {
                 case "@next.prompt":
@@ -285,7 +285,7 @@ namespace scripthea.external
             while (IsConnected && !cts.IsCancellationRequested)
             {
                 string message = reader.ReadLine();
-                if (message == null)
+                if (message is null)
                 {
                     log("session close by client(SD)");
                     status = Status.closed;
@@ -313,7 +313,7 @@ namespace scripthea.external
             try
             {
                 if (!IsConnected) return false; ;
-                if (writer == null) { writer = new StreamWriter(pipeServer); }
+                if (writer is null) { writer = new StreamWriter(pipeServer); }
                 writer.Write(message);
                 if (IsConnected) writer.Flush();
             }
@@ -341,7 +341,7 @@ namespace scripthea.external
             imageReady,     // image has been generated
             imageFailed     // image has failed to be generated
         }
-        public bool IsConnected { get { if (pipeServer == null) return false; return pipeServer.IsConnected; } }
+        public bool IsConnected { get { if (pipeServer is null) return false; return pipeServer.IsConnected; } }
         protected string pipeName;
         protected NamedPipeServerStream pipeServer;
         public Task task;

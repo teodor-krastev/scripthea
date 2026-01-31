@@ -30,9 +30,9 @@ namespace scripthea.cuestuff
     public partial class CueEditorUC : UserControl
     {
         ObservableCollection<CueItemUC> cues;
-        public enum Mode { open, append, remove, clear, save, saveFlat}
+        public enum Mode { open, append, removeDupl, removeChk, clear, save, saveFlat}
         Mode mode { get { int k = Utils.EnsureRange(cbCommand.SelectedIndex, 0, cbCommand.Items.Count - 1);  return (Mode)k; } }
-        public bool radioMode { get { return !mode.Equals(Mode.remove); } }
+        public bool radioMode { get { return !mode.Equals(Mode.removeChk); } }
         public CueEditorUC()
         {
             InitializeComponent();
@@ -113,7 +113,7 @@ namespace scripthea.cuestuff
         }
         private int AddCue(List<string> cuesIn) // multiline cue / internal
         {
-            if (cuesIn == null) { AddCue(new CueItemUC("",radioMode)); return cues.Count - 1; }
+            if (cuesIn is null) { AddCue(new CueItemUC("",radioMode)); return cues.Count - 1; }
             return AddCue(new CueItemUC(cuesIn, radioMode));
         }
         private void RemoveAt(int idx)
@@ -131,7 +131,7 @@ namespace scripthea.cuestuff
         }
         private void cbCommand_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (cues == null) return;
+            if (cues is null) return;
             foreach (var cue in cues)
                 cue.radioMode = radioMode;
             if (mode.Equals(Mode.open) || mode.Equals(Mode.append)) cbOption.Visibility = Visibility.Visible;
@@ -207,7 +207,19 @@ namespace scripthea.cuestuff
             }
             if (selected == -1) selected = 0; TextChanged(null, null);
         }  
-        private void Remove()
+        private void RemoveDupl()
+        {
+            var seen = new HashSet<string>(StringComparer.Ordinal);
+
+            for (int read = 0; read < cues.Count; read++)
+                seen.Add(cues[read].cueText);
+            Clear(false);
+            foreach (string s in seen)
+                AddCue(s);
+            RemoveAt(0); selected = 0;
+            cbCommand.SelectedIndex = 0;
+        }
+        private void RemoveChk()
         {
             if (radioMode) return; int idx = 0;
             while (idx > -1)
@@ -234,12 +246,12 @@ namespace scripthea.cuestuff
                 ls.Add("---");
             }
             string fn = Path.GetFileName(Path.ChangeExtension(filename, null)); 
-            filename = new InputBox("Cues filename in the active cues pool", fn, "").ShowDialog(); // name only
+            filename = new InputBox("Filename of cues in the active cues pool", fn, "Save as...").ShowDialog().Replace('.','-').Replace('_','-'); // name only
             if (filename.Equals("")) return;
             string folder = Directory.Exists(opts.composer.WorkCuesFolder) ? opts.composer.WorkCuesFolder : Path.Combine(Utils.basePath, "cues");
             filename = Path.Combine(folder, filename);
             Utils.writeList(Path.ChangeExtension(filename, ".cues"), ls);
-            opts.Log("Saved cue file as <" + filename+">", Brushes.Tomato); newCues = true;
+            opts.Log("Saved cue file as <" + filename+">", Brushes.Blue); newCues = true;
         }
         private void SaveFlatAs(bool oneline = true) // flat is one line cue
         {
@@ -255,9 +267,9 @@ namespace scripthea.cuestuff
             dialog.Filters.Add(new CommonFileDialogFilter("Text file", "txt"));
             dialog.InitialDirectory = Path.Combine(Utils.basePath, "cues");
             if (dialog.ShowDialog() != CommonFileDialogResult.Ok) return;
-            string filename = Path.ChangeExtension(dialog.FileName, ".txt");
+            string filename = Path.ChangeExtension(dialog.FileName.Replace('.', '-').Replace('_', '-'), ".txt");
             Utils.writeList(filename, ls);
-            opts.Log("Saved flat text in " + filename, Brushes.Tomato);  
+            opts.Log("Saved flat text in " + filename, Brushes.Blue);  
         }
         private void btnAddCue_Click(object sender, RoutedEventArgs e)
         {
@@ -286,7 +298,9 @@ namespace scripthea.cuestuff
                     break;
                 case Mode.clear: Clear(false); selected = 0;
                     break;
-                case Mode.remove: Remove(); selected = 0;
+                case Mode.removeDupl: RemoveDupl(); selected = 0;
+                    break;
+                case Mode.removeChk: RemoveChk(); selected = 0;
                     break;
                 case Mode.save: SaveAs();
                     break;

@@ -43,11 +43,11 @@ namespace scripthea.python
         {
             if (!(rtb is RichTextBox) || !(details is CheckBox)) return;
             if (!details.IsChecked.Value) return;
-            if (txt == null) Utils.log(rtb, "> NULL", Brushes.Red);
+            if (txt is null) Utils.log(rtb, "> NULL", Brushes.Red);
             else
             {
                 SolidColorBrush clr = (SolidColorBrush)new BrushConverter().ConvertFromString((string)color);
-                if (clr == null) { Utils.log(rtb, "Error: wrong color", Brushes.Red); clr = Brushes.Black; }
+                if (clr is null) { Utils.log(rtb, "Error: wrong color", Brushes.Red); clr = Brushes.Black; }
                 Utils.log(rtb,txt.ToString(),clr); 
             }                                 
         }
@@ -60,7 +60,7 @@ namespace scripthea.python
         { 
             get
             {
-                if (cts == null) return false;
+                if (cts is null) return false;
                 return cts.IsCancellationRequested;
             } 
         }
@@ -143,7 +143,7 @@ namespace scripthea.python
         public bool Register(string moduleName, object moduleObject, List<Tuple<string,string>> help) // method help -> <syntax,description> 
         {
             helpTree.SetModuleHelp(moduleName, help);
-            if (!opts.sMacro.pythonOn || moduleName.Equals("") || moduleObject == null) return false;
+            if (!opts.sMacro.pythonOn || moduleName.Equals("") || moduleObject is null) return false;
             scripted.Add(moduleName, moduleObject);
             return true;
         }

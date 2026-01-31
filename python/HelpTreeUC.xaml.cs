@@ -28,7 +28,7 @@ namespace scripthea.python
         {
             if (moduleName.Equals("")) return;
             TreeViewItem moduleNode = new TreeViewItem() { Header = moduleName , Foreground = Brushes.Maroon };
-            if (help == null) return;
+            if (help is null) return;
             moduleNode.IsExpanded = true;
             foreach (Tuple<string, string> tp in help)
             {

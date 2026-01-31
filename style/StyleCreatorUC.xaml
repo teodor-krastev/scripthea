@@ -1,0 +1,83 @@
+﻿<UserControl
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:scripthea.style" xmlns:external="clr-namespace:scripthea.external"
+             xmlns:master="clr-namespace:scripthea.master" x:Class="scripthea.style.StyleCreatorUC" 
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="1400">
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition x:Name="col_0" Width="800" MinWidth="300" MaxWidth="1000"/>
+            <ColumnDefinition x:Name="col_1" Width="500" MaxWidth="700" MinWidth="300"/>
+            <ColumnDefinition Width="3*"/>
+        </Grid.ColumnDefinitions>
+        <master:ImagePickerUC x:Name="iPicker" Margin="5"/>
+        
+        <GridSplitter HorizontalAlignment="Left" Width="3" Grid.Column="1" Background="#FFE4FBF5"></GridSplitter>
+
+        <Grid Grid.Column="1" Margin="5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="32"/>
+                <RowDefinition x:Name="row_1" Height="200" MaxHeight="600" MinHeight="150"/>
+                <RowDefinition x:Name="row_2" Height="200" MaxHeight="700" MinHeight="150"/>
+                <RowDefinition Height="2*"/>
+            </Grid.RowDefinitions>
+            <StackPanel>
+                <StackPanel Background="White" Orientation="Horizontal" Margin="0" Height="32">
+                    <Label Content="Temperature [0..1]" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="#FF860202" Margin="5,0,0,0"/>
+                    <external:DoubleBox x:Name="dblTemperature" Height="26" Width="50" Margin="0,3,0,0" OnValueChanged="dblTemperature_OnValueChanged" Foreground="Black" Background="Tomato"/>
+                    <Label Content="Max Tokens:" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="DarkGreen" Margin="5,0,0,0"/>
+                    <external:IntegerBox x:Name="intMaxTokens" Height="26" Width="50" Margin="0,3,0,0" OnValueChanged="dblTemperature_OnValueChanged" Foreground="Black"/>
+                    <Button x:Name="btnRunLLMServer" Content="Run LLM server" HorizontalAlignment="Center" Margin="20,0,0,0" VerticalAlignment="Center" FontSize="14" Height="25" Cursor="Hand" Foreground="DarkRed" ToolTip="Open local LLM server"  Width="134" Background="{x:Null}" BorderBrush="DarkRed"  Style="{StaticResource RoundedButtonStyle}" Click="btnRunLLMServer_Click"/>
+                </StackPanel>
+            </StackPanel>
+            <GroupBox Margin="3" Grid.Row="1" >
+                <Grid Margin="3,6,3,3">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="36"/>
+                        <RowDefinition Height="11*"/>
+                        <RowDefinition Height="30*"/>
+                    </Grid.RowDefinitions>
+                    <StackPanel Background="White" Orientation="Horizontal" Margin="0" Height="32">
+                        <Button x:Name="btnAskLLM" Content="Ask LLM about the selected image" Width="220" Background="#FFF2FCDD" Margin="10,0,0,0" Style="{StaticResource RoundedButtonStyle}"  FontSize="12.5" Height="25" Click="btnAskLLM_Click"/>
+                        <Button x:Name="btnCopy" Margin="10,0,3,3" VerticalAlignment="Bottom" HorizontalAlignment="Right" Background="{x:Null}" ToolTip="Copy current prompt to clipboard" Cursor="Hand" Width="28" Height="27" BorderBrush="#FFCECECE" Click="btnCopy_Click" Style="{StaticResource RoundedSmallButtonStyle}">
+                            <ContentControl>
+                                <Image x:Name="imgCopy" Margin="0,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" Height="20" Width="25" ToolTip="Copy to clipboard" Cursor="Hand" Source="/Scripthea;component/Properties/copy1a.png"/>
+                            </ContentControl>
+                        </Button>
+                        <TextBlock x:Name="tbStatus" Foreground="Black" VerticalAlignment="Center" HorizontalAlignment="Left" FontFamily="Segoe UI Semibold" Margin="10,0,0,0" Text="Status: idle"/>
+                    </StackPanel>
+                    <TextBox x:Name="tbQuestion" Grid.Row="1" Margin="0" Text="Describe this image style." TextChanged="tbQuestion_TextChanged" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" AcceptsReturn="True"/>
+                    <TextBox x:Name="tbReply" Grid.Row="2" TextWrapping="Wrap" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" BorderBrush="{x:Null}" Foreground="Navy"/>
+                </Grid>
+            </GroupBox>
+            <GridSplitter HorizontalAlignment="Stretch" VerticalAlignment="Top" Background="#FFE4FBF5" Height="3" Grid.Row="2"></GridSplitter>
+            <GroupBox Margin="3" Grid.Row="2" >
+                <Grid Margin="3,6,3,3">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="36"/>
+                        <RowDefinition Height="11*"/>
+                        <RowDefinition Height="30*"/>
+                    </Grid.RowDefinitions>
+                    <StackPanel Background="White" Orientation="Horizontal" Margin="0" Height="32">
+                        <Button x:Name="btnMAskLLM" Content="Ask LLM about all the checked images" Width="240" Background="#FFF2FCDD" Margin="10,0,0,0" Style="{StaticResource RoundedButtonStyle}"  FontSize="12.5" Height="25" Click="btnAskLLM_Click"/>
+                        <Button x:Name="btnMCopy" Margin="10,0,3,3" VerticalAlignment="Bottom" HorizontalAlignment="Right" Background="{x:Null}" ToolTip="Copy current prompt to clipboard" Cursor="Hand" Width="28" Height="27" BorderBrush="#FFCECECE" Click="btnCopy_Click" Style="{StaticResource RoundedSmallButtonStyle}">
+                            <ContentControl>
+                                <Image x:Name="imgMCopy" Margin="0,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" Height="20" Width="25" ToolTip="Copy to clipboard" Cursor="Hand" Source="/Scripthea;component/Properties/copy1a.png"/>
+                            </ContentControl>
+                        </Button>
+                        <TextBlock x:Name="tbMStatus" Foreground="Black" VerticalAlignment="Center" HorizontalAlignment="Left" FontFamily="Segoe UI Semibold" Margin="10,0,0,0" Text="Status: idle"/>
+                    </StackPanel>
+                    <TextBox x:Name="tbMQuestion" Grid.Row="1" Margin="0" Text="Describe the common of these images style." TextChanged="tbQuestion_TextChanged" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" AcceptsReturn="True"/>
+                    <TextBox x:Name="tbMReply" Grid.Row="2" TextWrapping="Wrap" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" BorderBrush="{x:Null}" Foreground="Navy"/>
+                </Grid>
+            </GroupBox>
+            <GridSplitter HorizontalAlignment="Stretch" VerticalAlignment="Top" Background="#FFE4FBF5" Height="3" Grid.Row="3"></GridSplitter>
+        </Grid>
+        <GridSplitter HorizontalAlignment="Left" Width="3" Grid.Column="2" Background="#FFE4FBF5"/>
+    </Grid>
+
+</UserControl>

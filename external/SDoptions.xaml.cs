@@ -32,7 +32,7 @@ namespace scripthea.external
         public bool autoCloseCmd;
         // A1111/ComfyUI
         public string SDloc1111;
-        public bool APIcomm1111; // if A1111 then API vs pyScript switch 
+        public bool APIcommSD; // if APIcommSD then API vs pyScript switch 
         public bool closeAtEndOfScan;
         public bool measureGPUtemp;
         public bool ValidateScript;
@@ -54,6 +54,7 @@ namespace scripthea.external
     /// </summary>
     public partial class SDoptionsWindow : Window
     {
+        protected string configFilename = Path.Combine(Utils.configPath, "StableDiffusion.cfg");  
         public bool keepOpen = true;
         public bool? ValidScript { get; private set; } = null; // unvalidated
         public bool? ValidAPI { get; private set; } = null; // unvalidated
@@ -75,8 +76,8 @@ namespace scripthea.external
             A1111 = _A1111;
             if (A1111)
             {
-                if (opts.ValidateAPI && opts.APIcomm1111) ValidateAPI1111();
-                if (opts.ValidateScript && !opts.APIcomm1111) ValidatePyScript();
+                if (opts.ValidateAPI && opts.APIcommSD) ValidateAPI1111();
+                if (opts.ValidateScript && !opts.APIcommSD) ValidatePyScript();
                 Title += "  (A1111/Forge mode)";
                 tiForge.IsEnabled = true; tabCtrl.SelectedItem = tiForge;
             }
@@ -95,7 +96,6 @@ namespace scripthea.external
         }
         public bool nVidiaHwAvailable { get; set; }
         
-        protected string configFilename = Path.Combine(Utils.configPath, "StableDiffusion.cfg");  
         /// <summary>
         /// the point of the dialog, readable everywhere
         /// </summary>
@@ -105,7 +105,7 @@ namespace scripthea.external
             opts.SDloc1111 = tbSDloc1111.Text;
             opts.ValidateScript = chkValidateScript.IsChecked.Value;
             opts.ValidateAPI = chkValidateAPI.IsChecked.Value;
-            opts.APIcomm1111 = rbAPIcomm.IsChecked.Value;
+            opts.APIcommSD = rbAPIcomm.IsChecked.Value;
             opts.closeAtEndOfScan = chkAutoCloseSession.IsChecked.Value;
 
             opts.SDlocComfy = tbSDlocComfy.Text;
@@ -125,7 +125,7 @@ namespace scripthea.external
             chkValidateScript.IsChecked = opts.ValidateScript || !ValidatePyScript();
             chkValidateAPI.IsChecked = opts.ValidateAPI || !ValidateAPI1111();
             chkAutoCloseSession.IsChecked = opts.closeAtEndOfScan;
-            rbAPIcomm.IsChecked = opts.APIcomm1111;
+            rbAPIcomm.IsChecked = opts.APIcommSD;
 
             if (IsSDlocComfy(opts.SDlocComfy)) tbSDlocComfy.Text = opts.SDlocComfy;
 
@@ -184,7 +184,7 @@ namespace scripthea.external
         }
         public bool ValidatePyScript()
         {            
-            if (!A1111 || opts.APIcomm1111) return true;
+            if (!A1111 || opts.APIcommSD) return true;
             ValidScript = false;
             string pyScript = "prompts_from_scripthea_1_5.py";
             string orgLoc = Path.Combine(Utils.configPath, pyScript);
@@ -200,7 +200,7 @@ namespace scripthea.external
         }
         public bool ValidateAPI1111()
         {
-            if (!A1111 || !opts.APIcomm1111) return true;
+            if (!A1111 || !opts.APIcommSD) return true;
             ValidAPI = false;
             if (!IsSDloc1111(opts.SDloc1111)) return false;
             string batLoc = opts.SDloc1111;

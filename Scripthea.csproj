@@ -292,6 +292,9 @@
       <DependentUpon>PyCodeUC.xaml</DependentUpon>
     </Compile>
     <Compile Include="sOptions.cs" />
+    <Compile Include="style\StyleCreatorUC.xaml.cs">
+      <DependentUpon>StyleCreatorUC.xaml</DependentUpon>
+    </Compile>
     <Compile Include="viewer\GridViewUC.xaml.cs">
       <DependentUpon>GridViewUC.xaml</DependentUpon>
     </Compile>
@@ -487,6 +490,10 @@
     <Page Include="python\PyCodeUC.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="style\StyleCreatorUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="viewer\GridViewUC.xaml">
       <SubType>Designer</SubType>
@@ -705,6 +712,9 @@
   <ItemGroup>
     <Resource Include="Properties\gear-1.png" />
     <Resource Include="Properties\gear-2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Properties\gear-3.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="packages\Microsoft.ML.OnnxRuntime.Managed.1.22.1\build\netstandard2.0\Microsoft.ML.OnnxRuntime.Managed.targets" Condition="Exists('packages\Microsoft.ML.OnnxRuntime.Managed.1.22.1\build\netstandard2.0\Microsoft.ML.OnnxRuntime.Managed.targets')" />

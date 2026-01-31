@@ -37,7 +37,7 @@ namespace AvalEditLib.Properties {
       /*  [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
-                if ((resourceMan == null)) {
+                if ((resourceMan is null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("AvalEditLib.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }

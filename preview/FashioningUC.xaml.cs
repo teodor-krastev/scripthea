@@ -13,6 +13,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+
+using scripthea.options;
 using UtilsNS;
 using Path = System.IO.Path;
 
@@ -27,11 +29,13 @@ namespace scripthea.preview
         {
             InitializeComponent();
         }        
-        List<List<string>> cons, llms; const string consClr = "#FFF6FFF7"; const string llmClr = "#FFFFFEF4"; 
-        public void Init()
+        List<List<string>> cons, llms; const string consClr = "#FFF6FFF7"; const string llmClr = "#FFFFFEF4";
+        protected Options opts;
+        public void Init(ref Options _opts)
         {
+            opts = _opts;
             ReadCons(ref cons, Path.Combine(Utils.configPath,"context.btx")); ReadCons(ref llms, Path.Combine(Utils.configPath, "ask_llm.btx"));
-            ConfigureComboForWrapping(cbCons); //rbNone.IsChecked = true;
+            ConfigureComboForWrapping(cbCons);
         }
         public void Finish()
         {
@@ -57,10 +61,10 @@ namespace scripthea.preview
             switch (fashionMode)
             {
                 case FashionModeTypes.context:
-                    UpdateCombo(cons, consClr);
+                    UpdateCombo(cons, consClr, opts.llm.SelectedPretext);
                     break;
                 case FashionModeTypes.ask_llm:
-                    UpdateCombo(llms, llmClr);
+                    UpdateCombo(llms, llmClr, opts.llm.SelectedQuestion);                    
                     break;
             }
             rowText.Height = fashionMode == FashionModeTypes.none ? new GridLength(0) : new GridLength(100);
@@ -86,24 +90,24 @@ namespace scripthea.preview
             var cbi = new ComboBoxItem { Content = tb };
             combo.Items.Add(cbi);
         }
-        private void UpdateCombo(List<List<string>> allCons, string clr)
+        private void UpdateCombo(List<List<string>> allCons, string clr, int selectedItem)
         {
             cbCons.Items.Clear();
             foreach (List<string> ls in allCons)
                 AddWrappedTextItem(cbCons, ls, clr);
-            cbCons.SelectedIndex = 0;
+            cbCons.SelectedIndex = selectedItem;
         }
         public List<string> getContext() { if (fashionMode == FashionModeTypes.context) return listFlatTextBox(tbEditor); else return null; }
         public List<string> getAskLLM() { if (fashionMode == FashionModeTypes.ask_llm) return listFlatTextBox(tbEditor); else return null; }
         public string joinStrList(List<string> ls) { return String.Join("\n", ls.ToArray()); }
         public List<string> listFlatTextBox(TextBox textBox, bool skipComment = true)
         {
-            string[] sa = textBox.Text.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+            string[] sa = textBox.Text.Split(new[] { '\n' }, StringSplitOptions.None); //Environment.NewLine
             List<string> lt = new List<string>();
             foreach (string ss in sa)
             {
                 if (skipComment && ss.Trim().StartsWith("#")) continue;
-                lt.Add(ss);
+                lt.Add(ss.Trim());
             }               
             return lt;
         }
@@ -135,8 +139,17 @@ namespace scripthea.preview
             btnUpdate.IsEnabled = cbi != null; btnUpdate.BorderBrush = btnUpdate.IsEnabled ? Brushes.Black : Brushes.Gray;
             if (!btnUpdate.IsEnabled) return;
             TextBlock tb = cbi.Content as TextBlock;
-            if (tb == null) return;
+            if (tb is null) return;
             tbEditor.Text = tb.Text;
+            switch (fashionMode)
+            {
+                case FashionModeTypes.context:
+                    opts.llm.SelectedPretext = cbCons.SelectedIndex;
+                    break;
+                case FashionModeTypes.ask_llm:
+                    opts.llm.SelectedQuestion = cbCons.SelectedIndex;
+                    break;
+            }
         }
         private void btnUpdate_Click(object sender, RoutedEventArgs e)
         {
@@ -146,10 +159,10 @@ namespace scripthea.preview
             switch (fashionMode)
             {
                 case FashionModeTypes.context:
-                    cons[cbCons.SelectedIndex] = ls; UpdateCombo(cons, consClr); 
+                    cons[cbCons.SelectedIndex] = ls; UpdateCombo(cons, consClr, opts.llm.SelectedPretext); 
                     break;
                 case FashionModeTypes.ask_llm:
-                    llms[cbCons.SelectedIndex] = ls; UpdateCombo(llms, llmClr);
+                    llms[cbCons.SelectedIndex] = ls; UpdateCombo(llms, llmClr, opts.llm.SelectedQuestion);
                     break;
             }
             cbCons.SelectedIndex = idx;
@@ -163,10 +176,10 @@ namespace scripthea.preview
             switch (fashionMode)
             {
                 case FashionModeTypes.context:
-                    cons.Insert(0, ls); UpdateCombo(cons,consClr);
+                    cons.Insert(0, ls); UpdateCombo(cons, consClr, opts.llm.SelectedPretext);
                     break;
                 case FashionModeTypes.ask_llm:
-                    llms.Insert(0, ls); UpdateCombo(llms, llmClr);
+                    llms.Insert(0, ls); UpdateCombo(llms, llmClr, opts.llm.SelectedQuestion);
                     break;
             }
             cbCons.SelectedIndex = 0;
@@ -177,10 +190,10 @@ namespace scripthea.preview
             switch (fashionMode)
             {
                 case FashionModeTypes.context: 
-                    cons.RemoveAt(cbCons.SelectedIndex); UpdateCombo(cons, consClr);
+                    cons.RemoveAt(cbCons.SelectedIndex); UpdateCombo(cons, consClr, opts.llm.SelectedPretext);
                     break;
                 case FashionModeTypes.ask_llm:
-                    llms.RemoveAt(cbCons.SelectedIndex);  UpdateCombo(llms, llmClr);
+                    llms.RemoveAt(cbCons.SelectedIndex);  UpdateCombo(llms, llmClr, opts.llm.SelectedQuestion);
                     break;
             }
             _ = new PopupText(btnMinus, "Removed");
@@ -199,7 +212,7 @@ namespace scripthea.preview
             if (!File.Exists(fn)) { MessageBox.Show("Error[22]: no <" + fn + "> file found"); return; }
             List<string> conLines = new List<string>(File.ReadAllLines(fn));
             
-            if (allCons == null) allCons = new List<List<string>>();
+            if (allCons is null) allCons = new List<List<string>>();
             List<string> ls = new List<string>();
             foreach (string ss in conLines)
             {

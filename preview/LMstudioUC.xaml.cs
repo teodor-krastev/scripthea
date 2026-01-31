@@ -77,8 +77,8 @@ namespace scripthea.preview
         public string connStatus { get; private set; }
         //private readonly HttpClient _httpClient;
         private readonly string strBaseAddress = "http://localhost:1234";
-        private string _prefix = "### Instruction:\n";
-        private string _suffix = "\n### Response:";
+        private string _prefix = ""; // ### Instruction:\n";
+        private string _suffix = ""; // \n### Response:";
         private readonly int ttl = 7200; 
         public OpenAIApi()
         {
@@ -88,7 +88,7 @@ namespace scripthea.preview
         {
             opts = _opts;
         }
-        public bool Muted { get; set; } = false;
+        public bool Muted { get; set; } = false; // future use
         public bool Connected { get; private set; } = false;
         public string localModel { get; private set; } = "local model";
         public string LoadedModel { get; private set; }        
@@ -135,7 +135,7 @@ namespace scripthea.preview
                         // Response: { "data": [ { "id": "model-id", ... }, ... ] }
                         if (!root.ContainsKey("data")) throw new Exception("No data availble");
                         var data = (JArray)root["data"];
-                        if (data == null)
+                        if (data is null)
                         {
                             Console.WriteLine("No models found in response.");
                             throw new Exception("No data");
@@ -245,7 +245,7 @@ namespace scripthea.preview
                     .GetAwaiter()
                     .GetResult();
                 var json = JObject.Parse(body);
-                if (json == null) return false; if (!json.ContainsKey("state")) return false;
+                if (json is null) return false; if (!json.ContainsKey("state")) return false;
                 bool bb = string.Equals((string)json["state"], "loaded", StringComparison.OrdinalIgnoreCase);
                 if (bb) LoadedModel = modelId;
                 return bb;
@@ -260,7 +260,7 @@ namespace scripthea.preview
                 var resp = await httpClient.GetAsync($"{strBaseAddress}/api/v0/models/{modelId}"); //{Uri.EscapeDataString(
                 resp.EnsureSuccessStatusCode();
                 var json = JObject.Parse(await resp.Content.ReadAsStringAsync());
-                if (json == null) return false; if (!json.ContainsKey("state")) return false;
+                if (json is null) return false; if (!json.ContainsKey("state")) return false;
                 bool bb = string.Equals((string)json["state"], "loaded", StringComparison.OrdinalIgnoreCase);
                 if (bb) LoadedModel = modelId;
                 return bb;
@@ -325,6 +325,55 @@ namespace scripthea.preview
             LoadedModel = modelId;
             return true;
         }
+        public class LmStudioModelsResponse
+        {
+            [JsonProperty("data")]
+            public LmStudioModel[] Data { get; set; } = Array.Empty<LmStudioModel>();
+        }
+        public class LmStudioModel
+        {
+            [JsonProperty("id")]
+            public string Id { get; set; } = "";
+
+            // "vlm" (vision-language), "llm" (text), "embeddings", etc.
+            [JsonProperty("type")]
+            public string Type { get; set; } = "";
+
+            // "loaded" / "not-loaded"
+            [JsonProperty("state")]
+            public string State { get; set; } = "";
+        }
+        public async Task<bool> IsLoadedModelVisionCapableAsync(string modelId)
+        {
+            using (var http = new HttpClient())
+            {
+                try
+                {
+                    var url = $"{strBaseAddress}/api/v0/models";
+                    var json = await http.GetStringAsync(url);
+
+                    var parsed = JsonConvert.DeserializeObject<LmStudioModelsResponse>(json)
+                                 ?? new LmStudioModelsResponse();
+
+                    var model = parsed.Data.FirstOrDefault(m =>
+                        string.Equals(m.Id, modelId, StringComparison.OrdinalIgnoreCase));
+
+                    if (model is null)
+                        throw new InvalidOperationException($"Model '{modelId}' not found.");
+
+                    // “loaded” ensures you’re checking the currently loaded model instance
+                    var isLoaded = string.Equals(model.State, "loaded", StringComparison.OrdinalIgnoreCase);
+                    var isVlm = string.Equals(model.Type, "vlm", StringComparison.OrdinalIgnoreCase);
+
+                    return isLoaded && isVlm;
+                }
+                catch (HttpRequestException e)
+                {
+                    // Handle any network-related error.
+                    connStatus = $"Request exception: {e.Message}"; Connected = false; return false;
+                }
+            }
+        }
         #endregion
         public async Task<string> SimilarityEvaluateAsync(string prompt, double _temperature = 0.0)
         {
@@ -339,28 +388,13 @@ namespace scripthea.preview
                 Connected = false; return null;
             }
             Connected = true; return rep;
-        }
-        /*public async Task<string> CategoryClassifyAsync(string prompt, double _temperature = 0.0)
-        {
-            if (Muted) return "muted"; string rep = "";
-            try
-            {
-                ChatCompletionResponse responseObject = await ComplexCompletionAsync(prompt, categiryContext, _temperature);
-                rep = responseObject.choices[0].message.content;
-            }
-            catch (Exception e)
-            {
-                Connected = false; return null;
-            }
-            Connected = true; return rep;
-        }*/
-
+        }        
         public async Task<string> SimpleCompletionAsync(string prompt, string context = "", double _temperature = 0.0, int _max_tokens = 30)
         {
             if (Muted) return "muted"; string rep = "";
             try
             {
-                ChatCompletionResponse responseObject = await ComplexCompletionAsync(prompt, context, _temperature);
+                ChatCompletionResponse responseObject = await ComplexCompletionAsync(prompt, context, _temperature, _max_tokens);
                 rep = responseObject.choices[0].message.content;
             }
             catch (Exception e)
@@ -371,10 +405,9 @@ namespace scripthea.preview
         }
         public async Task<ChatCompletionResponse> ComplexCompletionAsync(string prp, string context = "", double _temperature = 0.0, int _max_tokens = 30)
         {
-            string contextPlus = "You are a helpful assistant. " + opts.llm.LMScontext.Replace('\r', ' ');            
+            string contextPlus = "You are a helpful assistant. " + context.Trim();            
             string formattedPrompt = $"{_prefix}{prp}{_suffix}";
-            //Console.WriteLine($"\nYour prompt: {prompt}\n");
-            
+            //Console.WriteLine($"\nYour prompt: {prompt}\n");            
             using (var httpClient = new HttpClient())
             {
                 try
@@ -388,7 +421,7 @@ namespace scripthea.preview
                             new { role = "user", content = formattedPrompt }
                         },
                         temperature = _temperature,
-                        max_tokes = _max_tokens
+                        max_tokens = _max_tokens
                     };
 
                     var response = await httpClient.PostAsync($"{strBaseAddress}/v1/chat/completions",
@@ -406,6 +439,107 @@ namespace scripthea.preview
                 }
             }
         }
+        public async Task<string> SimpleImageQueryAsync(string prompt, BitmapImage bitmap, string context = "", double _temperature = 0.0, int _max_tokens = 30)
+        {
+            if (Muted) return "Error: the engine is muted"; string rep = "";
+            if (String.IsNullOrEmpty(prompt) || bitmap is null) return "Error: wrong parameters";
+            List<BitmapImage> lbm = new List<BitmapImage>(); lbm.Add(bitmap);
+            try
+            {
+                ChatCompletionResponse responseObject = await ImageQueryAsync(prompt, lbm, context, _temperature, _max_tokens);
+                rep = responseObject.choices[0].message.content;
+            }
+            catch (Exception e)
+            {
+                Connected = false; return null;
+            }
+            Connected = true; return rep;
+        }
+        public async Task<string> MultiImageQueryAsync(string prompt, List<BitmapImage> bitmaps, string context = "", double _temperature = 0.0, int _max_tokens = 30)
+        {
+            if (Muted) return "Error: the engine is muted"; string rep = "";
+            if (String.IsNullOrEmpty(prompt) || bitmaps.Count == 0) return "Error: wrong parameters";
+            try
+            {
+                ChatCompletionResponse responseObject = await ImageQueryAsync(prompt, bitmaps, context, _temperature, _max_tokens);
+                rep = responseObject.choices[0].message.content;
+            }
+            catch (Exception e)
+            {
+                Connected = false; return null;
+            }
+            Connected = true; return rep;
+        }
+        public static byte[] BitmapImageToBytes(BitmapImage bitmap)
+        {
+            if (bitmap is null)
+                throw new ArgumentNullException(nameof(bitmap));
+
+            // Pick encoder: PngBitmapEncoder, JpegBitmapEncoder, etc.
+            var encoder = new PngBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(bitmap));
+
+            using (var ms = new MemoryStream())
+            {
+                encoder.Save(ms);
+                return ms.ToArray();   // like File.ReadAllBytes(imagePath)
+            }
+        }
+        public async Task<ChatCompletionResponse> ImageQueryAsync(string query, List<BitmapImage> bitmaps, string context = "", double _temperature = 0.0, int _max_tokens = 30)
+        {
+            string contextPlus = "You are a helpful assistant. " + opts.llm.LMScontext.Replace('\r', ' ');
+            string formattedQuery = $"{_prefix}{query}{_suffix}";
+            object[] contentExt = new object[bitmaps.Count + 1];
+            contentExt[0] = new { type = "text", text = formattedQuery };
+            for (int i = 0; i < bitmaps.Count; i++)
+            {
+                byte[] imageBytes = BitmapImageToBytes(bitmaps[i]);
+                string base64image = Convert.ToBase64String(imageBytes);
+                contentExt[i + 1] = new
+                {
+                    type = "image_url",
+                    image_url = new
+                    {
+                        url = $"data:image/png;base64,{base64image}"
+                        // change to image/png if needed
+                    }
+                };
+            }
+            using (var httpClient = new HttpClient())
+            {
+                try
+                {
+                    var payload = new
+                    {
+                        model = localModel,
+                        messages = new object[]
+                        {
+                            new { role = "system", content = contextPlus },
+                            new
+                            {
+                                role = "user",
+                                content = contentExt
+                            }
+                        },
+                        temperature = _temperature,
+                        max_tokens = _max_tokens
+                    };
+                    var response = await httpClient.PostAsync($"{strBaseAddress}/v1/chat/completions",
+                        new StringContent(JsonConvert.SerializeObject(payload), System.Text.Encoding.UTF8, "application/json")
+                    );
+                    response.EnsureSuccessStatusCode();
+
+                    var responseContent = await response.Content.ReadAsStringAsync();
+                    return JsonConvert.DeserializeObject<ChatCompletionResponse>(responseContent);
+                }
+                catch (HttpRequestException e)
+                {
+                    // Handle any network-related error.
+                    connStatus = $"Request exception: {e.Message}"; Connected = false; return null;
+                }
+            }
+        }
+
     }
     /// <summary>
     /// Interaction logic for LMstudioUC.xaml
@@ -447,19 +581,32 @@ namespace scripthea.preview
         {
             get
             {
-                gbLMSLoc.Header = LocationHeader + (LMSclient.Connected ? "<-> Connected" : "-X- Disconnected") + "  ";
+                gbLMSLoc.Header = LocationHeader + (LMSclient.Connected ? "Connected <->" : "Disconnected -X-") + "  ";
                 return LMSclient.Connected;
             }
             private set
             {
                 if (value) LMSclient.CheckConnection();
                 else LMSclient.Disconnect();
-                gbLMSLoc.Header = LocationHeader + (LMSclient.Connected ? "<-> Connected" : "-X- Disconnected") + "  ";
+                gbLMSLoc.Header = LocationHeader + (LMSclient.Connected ? "Connected <->" : "Disconnected -X-") + "  ";
             } 
         }
-        private string LocationHeader { get => "Location of LM Studio executable  Status: "; }
-        private string ModelHeader { get => "LM Studio model  Status: "; }
-        public bool IsModelLoaded { get => !LMSclient.LoadedModel.Equals(""); }
+        private string LocationHeader { get => "Location of LM Studio executable   Status:  "; }
+        private string ModelHeader { get => "LM Studio model   Status:  "; }
+        public bool IsModelLoaded 
+        {
+            get
+            {
+                if (LMSclient.LoadedModel is null) return false;                
+                return LMSclient.IsModelLoaded(opts.llm.LMSmodel);
+            }
+        }
+        public string CheclLMSerror() // return status when no proper reply
+        {
+            if (!LMSclient.CheckConnection()) { return "Error: connection to LM Studio is lost."; }
+            if (!IsModelLoaded) { return "Error: LM Studio model is missing."; }
+            return "Error: unspecified LM Studio problem.";
+        }
         public bool IsReady(bool forced = false)
         {
             if (!forced) return Connected && IsModelLoaded;
@@ -469,12 +616,12 @@ namespace scripthea.preview
         }
         public bool FullLaunch(bool incModel = true) // main LM studio launch
         {
-            if (LMSclient == null || opts == null) return false;
+            if (LMSclient is null || opts is null) return false;
             // launch           
             if (!LMSclient.CheckConnection())
             {
                 opts.Log("Launching LM Studio...");
-                if (!LaunchExe(opts.llm.LMSlocation)) { opts.Log("Error: unable to launch LM Studio. You may try again."); return false; }
+                if (!LaunchExe(opts.llm.LMSlocation)) { opts.Log("Error: unable to launch LM Studio. You may check the executable path and try again."); return false; }
                 else { LMSclient.CheckConnection(); if (Connected) opts.Log("LM Studio is launched."); }
             }
             else if (Connected) opts.Log("LM Studio is running.");
@@ -489,32 +636,32 @@ namespace scripthea.preview
             else opts.Log("Loaded LM Studio model: " + opts.llm.LMSmodel);
             return Connected && IsModelLoaded;
         }
-        public async Task<bool> FullLaunchAsync(bool incModel = true) // main LM studio ASYNC launch
+        public async Task<bool> FullLaunchAsync(bool incModel = true, bool quiet = false) // main LM studio ASYNC launch
         {
-            if (LMSclient == null || opts == null) return false;
+            if (LMSclient is null || opts is null) return false;
             // launch            
             bool bb = await LMSclient.CheckConnectionAsync();
             if (!bb)
-            {   
-                opts.Log("Launching LM Studio ..."); Utils.DoEvents();
-                if (!LaunchExe(opts.llm.LMSlocation)) { opts.Log("Error: unable to launch LM Studio. You may try again."); return false; }
+            {
+                if (!quiet) { opts.Log("Launching LM Studio ..."); Utils.DoEvents(); }
+                if (!LaunchExe(opts.llm.LMSlocation)) { opts.Log("Error: unable to launch LM Studio. You check exe path and may try again."); return false; }
                 else
                 {
-                    await LMSclient.CheckConnectionAsync(); if (Connected) opts.Log("> LM Studio is launched.");
+                    await LMSclient.CheckConnectionAsync(); if (Connected && !quiet) opts.Log("> LM Studio is launched.");
                 }
             }
-            else if (Connected) opts.Log("> LM Studio is launched.");
+            else if (Connected && !quiet) opts.Log("> LM Studio is launched.");
             if (!incModel) return Connected;
             // model
             bb = await LMSclient.IsModelLoadedAsync(opts.llm.LMSmodel);
             if (!bb)
             {
-                opts.Log("Loading LM Studio model: " + opts.llm.LMSmodel +" ...");
+                if (!quiet) opts.Log("Loading LM Studio model: " + opts.llm.LMSmodel +" ...");
                 bb = await LMSclient.LoadModelAsync(opts.llm.LMSmodel);
                 if (!bb) { opts.Log("Error: unable to load LM Studio model: "+ opts.llm.LMSmodel); return false; }
-                else opts.Log("> "+opts.llm.LMSmodel + " model has been loaded");
+                else if (!quiet) opts.Log("> "+opts.llm.LMSmodel + " model has been loaded");
             }
-            else if (IsModelLoaded) opts.Log("> " + opts.llm.LMSmodel + " model has been loaded");
+            else if (IsModelLoaded && !quiet) opts.Log("> " + opts.llm.LMSmodel + " model has been loaded");
 
             return Connected && IsModelLoaded;
         }
@@ -538,7 +685,7 @@ namespace scripthea.preview
                 WindowStyle = ProcessWindowStyle.Minimized
             };
             var proc = Process.Start(psi);
-            if (proc == null) return false;
+            if (proc is null) return false;
             for (int i = 0; i < 50; i++)       // ~5 seconds total @ 100ms
             {
                 proc.Refresh();
@@ -642,7 +789,7 @@ namespace scripthea.preview
         private void btnLMSlocation_Click(object sender, RoutedEventArgs e)
         {
             CommonOpenFileDialog dialog = new CommonOpenFileDialog();
-            if (opts.llm.LMSlocation == null) opts.llm.LMSlocation = "";
+            if (opts.llm.LMSlocation is null) opts.llm.LMSlocation = "";
             string folder = opts.llm.LMSlocation.Equals("") ? "" : Path.GetDirectoryName(opts.llm.LMSlocation);
             if (Directory.Exists(folder)) dialog.InitialDirectory = folder;
             dialog.Title = "Select LM Studio executable (e.g. LM Studio.exe)";
@@ -691,13 +838,13 @@ namespace scripthea.preview
             if (!IsModelLoaded) opts.Log("Error: model not loaded"); return; }
         private void tbLMScontext_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (opts == null) return;            
+            if (opts is null) return;            
         }
         private async void btnLMStest_Click(object sender, RoutedEventArgs e) //
         {            
             string prt = tbLMStest.Text;
             string rep = await LMSclient.SimpleCompletionAsync(prt);
-            if (rep == null) { tbReply.Text = "Error: server problem"; return; }
+            if (rep is null) { tbReply.Text = "Error: server problem"; return; }
             tbReply.Text = rep.Trim();
         }
         public void LmProcess_Exited()
@@ -705,6 +852,5 @@ namespace scripthea.preview
             opts.Log("LM Studio has closed!");            
         }
         #endregion
-
     }
 }

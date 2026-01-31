@@ -668,7 +668,7 @@ namespace UtilsNS
             get { return getAsString(); }
             set
             {
-                if (value == null) return;
+                if (value is null) return;
                 if (value == "")
                 {
                     TestInit(); return;
@@ -712,7 +712,7 @@ namespace UtilsNS
         /// <param name="dict"></param>
         public void ToDictionary(ref Dictionary<string, object> dict)
         {
-            if (dict == null) dict = new Dictionary<string, object>();
+            if (dict is null) dict = new Dictionary<string, object>();
             dict["groupID"] = groupID;
             dict["site"] = sSite;
             dict["param"] = sParam;

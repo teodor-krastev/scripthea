@@ -52,7 +52,7 @@ namespace ExtCollMng
             get
             {
                 List<string> ls = new List<string>();
-                if (filename == null) return ls;
+                if (filename is null) return ls;
                 if (filename.Contains("*") || filename.Contains("?"))
                 {
                     List<string> lt = new List<string>(Directory.GetFiles(folderPath, filename));
@@ -74,7 +74,7 @@ namespace ExtCollMng
         }
         public bool Validate()
         {
-            if ((coreName == null) || (coreName == "")) return false;
+            if ((coreName is null) || (coreName == "")) return false;
             if (rowCount < 1) return false;
 
             if (Filenames.Count == 0) return false;
@@ -109,7 +109,7 @@ namespace ExtCollMng
     public enum Categories
     {
         classical = 1,      // 1. Fine Art, Classical & Historical Art
-        impressionism = 2,  // 2. Impressionism & Post-impressionism
+        impressionism = 2,  // 2. Impressionism, Post-impressionism & Expressionism
         abstract_art = 3,   // 3. Abstract, Post-modern & Psychedelic
         surrealism = 4,     // 4. Surrealism & Dadaism
         fantasy = 5,        // 5. Futuristic, Mythical & Historical Fantasy
@@ -192,7 +192,7 @@ namespace ExtCollMng
         public List<int> wordsCount = new List<int>();
         public int AverWordsCount()
         {
-            if (wordsCount == null) return -1;
+            if (wordsCount is null) return -1;
             if (wordsCount.Count == 0) return -1;
             return (int)wordsCount.ToArray().Average();
         }
@@ -205,7 +205,7 @@ namespace ExtCollMng
             else { prompt = new ECprompt(); prompt.ID = Guid.NewGuid().ToString(); prompt.prompt = prt; }
             string aprt = prompt.prompt; //actual prompt
             if (aprt == string.Empty) return false;
-            if (ecq == null) { prompt = null; return true; }
+            if (ecq is null) { prompt = null; return true; }
 
             // actual filter
             if (ecq.SegmentFlag)
@@ -243,7 +243,7 @@ namespace ExtCollMng
             if (ecq.Way2Match == 2) // semantic
             {
                 if (ecq.SemanticBest == 0) return lECp;
-                if (!ecq.sjlFlag || !semanticActive || clip == null) { Log("Error: semantic search is not available"); return null; }
+                if (!ecq.sjlFlag || !semanticActive || clip is null) { Log("Error: semantic search is not available"); return null; }
                 float[] refEmbed = clip.TextEmbeds(ecq.Pattern.Trim());
                 Dictionary<string, double> unsorted = new Dictionary<string, double>();
                 foreach (ECprompt ecp in lECp)
@@ -355,7 +355,7 @@ namespace ExtCollMng
             if (!ecq.Pattern.Trim().Equals(string.Empty))
             {
                 lst = TextMatching(ecq, lst);
-                if (lst == null) { Log("Warning: the extraction has been canceled by user request"); return null; }
+                if (lst is null) { Log("Warning: the extraction has been canceled by user request"); return null; }
                 ss2 = "matching: " + eCnt["regex"] + "; ";
             }            
             if (ss1 + ss2 != "") Log(ss1 + " " + ss2);

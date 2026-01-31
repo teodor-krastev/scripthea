@@ -62,7 +62,7 @@ namespace scripthea.cuestuff
         private Options opts; Button btnSDparams; Courier.CueSelectionHandler ChangeCue;
         public void Init(ref Options _opts, ref Courier.CueSelectionHandler _ChangeCue)
         {
-            if (opts == null) { extCollUC.NewCuesEvent += new EventHandler(ExtCuesAdded); }
+            if (opts is null) { extCollUC.NewCuesEvent += new EventHandler(ExtCuesAdded); }
             opts = _opts; ChangeCue = _ChangeCue;
             if (Directory.Exists(opts.composer.WorkCuesFolder)) cuesFolder = opts.composer.WorkCuesFolder;
             else 
@@ -205,9 +205,9 @@ namespace scripthea.cuestuff
         public event Utils.LogHandler OnSDparams;
         protected void btnSDparams_Click(object sender, RoutedEventArgs e) 
         {
-            if (OnSDparams == null) return;
+            if (OnSDparams is null) return;
             ImageInfo ii = iPickerX.selectedImageInfo;
-            if (ii == null) return; 
+            if (ii is null) return; 
             OnSDparams(ii.To_String(), null);
         }
         protected void Log(string txt, SolidColorBrush clr = null)
@@ -313,7 +313,7 @@ namespace scripthea.cuestuff
         { 
             get 
             {
-                if (couriers == null) return null;
+                if (couriers is null) return null;
                 if (couriers.Count != (poolCount + 1)) return null;
                 if (tabControl.SelectedIndex <= poolCount) return couriers[tabControl.SelectedIndex];
                 if (tabControl.SelectedIndex == (poolCount + 1)) return couriers[couriers.Count - 1];
@@ -322,7 +322,7 @@ namespace scripthea.cuestuff
         }
         private void Modifiers_Checked(object sender, RoutedEventArgs e)
         {
-            iPickerX.ReloadDepot();
+            iPickerX.tbImageDepot_TextChanged(sender, null);
         }
         // multi-folder for cues
         public string cuesFolderPathByName(string nm)
@@ -360,7 +360,7 @@ namespace scripthea.cuestuff
         }       
         private void cbCuesFolders_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (cbCuesFolders.SelectedItem == null) return;
+            if (cbCuesFolders.SelectedItem is null) return;
             cbCuesFolders.ToolTip = cuesFolderPathByName(Convert.ToString(((ComboBoxItem)cbCuesFolders.SelectedItem).Content));
             VisualHelper.SetButtonEnabled(btnLoad, !Utils.comparePaths(Convert.ToString(cbCuesFolders.ToolTip), cuesFolder));           
         }
@@ -393,7 +393,7 @@ namespace scripthea.cuestuff
             if (!ListboxReady(lBoxApool))
                 { Log("Error: No item has been selected to be moved."); return; }
             CheckBox chk = lBoxApool.SelectedItem as CheckBox;
-            if (chk == null)
+            if (chk is null)
                 { Log("Error: No item has been selected to be moved. 2"); return; }
             CheckBox newChk = new CheckBox()
                 { Content = chk.Content, IsChecked = chk.IsChecked.Value, Margin = new Thickness(3) };
@@ -405,7 +405,7 @@ namespace scripthea.cuestuff
             if (!ListboxReady(lBoxBpool))
                 { Log("Error: No item has been selected to be moved."); return; }
             CheckBox chk = lBoxBpool.SelectedItem as CheckBox;
-             if (chk == null)
+             if (chk is null)
                 { Log("Error: No item has been selected to be moved. 2"); return; }
             CheckBox newChk = new CheckBox()
                 { Content = chk.Content, IsChecked = chk.IsChecked.Value, Margin = new Thickness(3) };
@@ -555,23 +555,30 @@ namespace scripthea.cuestuff
         {           
             if (OnCueSelection != null) OnCueSelection(SelectedCue());
         }
-        public List<List<string>> GetCues()
+        public List<Tuple<List<string>,string>> GetCues(string separator = "") // multiline cue and extracted modif
         {
-            List<List<string>> lls = new List<List<string>>();
+            List<Tuple<List<string>, string>> lls = new List<Tuple<List<string>, string>>();
             if (cueSrc)
             {
                 if (cueList.radioMode) return lls;
                 foreach (CueItemUC ci in cueList.selectedCues())
-                    lls.Add(new List<string>(ci.cueTextAsList(true)));
+                {
+                    lls.Add(new Tuple<List<string>, string> (ci.cueTextAsList(true), ""));
+                }                    
             }
             else
             {
                 //if (iPicker.checkable) return lls;
                 List<Tuple<int, string, int, string>> lt = iPicker.ListOfTuples(true, false);
-                if (lt == null) return lls; 
+                if (lt is null) return lls; 
                 foreach (Tuple<int, string, int, string> tpl in lt)
                 {
-                    string[] pa = { tpl.Item2 }; lls.Add(new List<string>(pa));
+                    int idx = tpl.Item2.IndexOf(separator);
+                    string sp = ""; string sm = "";
+                    if (idx == -1) sp = tpl.Item2;
+                    else { sp = tpl.Item2.Substring(0, idx); sm = tpl.Item2.Substring(idx); }
+                    string[] pa = { sp }; var ls = new List<string>(pa);
+                    lls.Add(new Tuple<List<string>, string>(ls, sm));
                 }
             }
             return lls;

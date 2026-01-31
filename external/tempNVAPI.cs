@@ -556,7 +556,7 @@ namespace OpenHWMonitor
               new Pair<DllImportAttribute, Type>(dllImportAttribute, typeof(T));
             wrapperTypes.TryGetValue(key, out wrapperType);
 
-            if (wrapperType == null)
+            if (wrapperType is null)
             {
                 wrapperType = CreateWrapperType(typeof(T), dllImportAttribute, dllImportSearchPath);
                 wrapperTypes.Add(key, wrapperType);

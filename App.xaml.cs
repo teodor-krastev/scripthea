@@ -17,8 +17,9 @@ namespace scripthea
 		private static System.Threading.Mutex _mutex = null;
 
 		protected override void OnStartup(StartupEventArgs e)
-		{			
-			_mutex = new System.Threading.Mutex(true, "{8F6F0AC4-B9A1-45fd-A8CF-73F04E6BDE8F}", out bool createdNew);
+		{
+			char k = Utils.isInVisualStudio ? 'E' : 'F';
+			_mutex = new System.Threading.Mutex(true, "{8F6F0AC4-B9A1-45fd-A8CF-73F04E6BDE8"+k+"}", out bool createdNew);
 			if (!createdNew) // another instance already running
 			{
 				if (Utils.isInVisualStudio) // if under development

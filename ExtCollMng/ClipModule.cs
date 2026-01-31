@@ -271,7 +271,7 @@ namespace ExtCollMng
         // Cosine similarity: assumes both vectors are already normalized
         public float CosineSimilarity(float[] vecA, float[] vecB)
         {
-            if (vecA == null || vecB == null) return -1;
+            if (vecA is null || vecB is null) return -1;
             if (vecA.Length != vecB.Length || vecA.Length != vectorLenght) return -1;
             float dot = 0f;
             for (int i = 0; i < vecA.Length; i++)
@@ -281,7 +281,7 @@ namespace ExtCollMng
         // Cosine similarity with auto-normalization
         public float CosineSimilarityNormalized(float[] vecA, float[] vecB)
         {
-            if (vecA == null || vecB == null) return -1;
+            if (vecA is null || vecB is null) return -1;
             if (vecA.Length != vecB.Length || vecA.Length != vectorLenght) return -1;
             var normA = Normalize(vecA);
             var normB = Normalize(vecB);
@@ -289,7 +289,7 @@ namespace ExtCollMng
         }
         public float ArcCosineSimilarityNormalized(float[] vecA, float[] vecB)
         {
-            if (vecA == null || vecB == null) return -1;
+            if (vecA is null || vecB is null) return -1;
             if (vecA.Length != vecB.Length || vecA.Length != vectorLenght) return -1;
             var normA = Normalize(vecA);
             var normB = Normalize(vecB);

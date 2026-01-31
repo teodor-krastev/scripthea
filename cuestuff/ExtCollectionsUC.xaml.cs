@@ -55,7 +55,7 @@ namespace scripthea.cuestuff
         public void Finish()
         {
             if (!Directory.Exists(folderPath)) return;
-            ECquery ecq = GetQueryFromVisuals(); if (ecq == null) return;
+            ECquery ecq = GetQueryFromVisuals(); if (ecq is null) return;
             File.WriteAllText(Path.Combine(folderPath, lastQuery), JsonConvert.SerializeObject(ecq));
         }
         public bool CoverOn 
@@ -177,7 +177,7 @@ namespace scripthea.cuestuff
         } 
         public bool Validate()
         {
-            if (ecdesc == null) return false;
+            if (ecdesc is null) return false;
             return ecdesc.Validate();
         }
         public bool IsCollectionFolder(string _folderPath)
@@ -186,7 +186,7 @@ namespace scripthea.cuestuff
             string dfn = Path.Combine(_folderPath, ECdesc.descName);
             if (!File.Exists(dfn)) return false;
             ECdesc ecd = ECdesc.OpenECdesc(_folderPath);
-            if (ecd == null) return false;
+            if (ecd is null) return false;
             return ecd.Validate();
         }
         public bool SetFolder(string _folderPath)
@@ -233,12 +233,12 @@ namespace scripthea.cuestuff
                 Mouse.OverrideCursor = Cursors.Wait; eCollection.cancelRequest = MessageBoxResult.No; 
 
                 eCollection.OpenEColl(folderPath); 
-                ECquery ecq = GetQueryFromVisuals(); if (ecq == null) return;
+                ECquery ecq = GetQueryFromVisuals(); if (ecq is null) return;
                 semanticMatching = ecq.Way2Match.Equals(2); VisualHelper.SetButtonEnabled(btnSemStop, semanticMatching);
                 ecq.SemanticProgress = tbSemProgress;
 
                 List<ECprompt> cues = eCollection.ExtractCueList(folderPath, ecq);
-                if (cues == null) return; // user cancelation
+                if (cues is null) return; // user cancelation
                 if (cues.Count == 0) { opts.Log("Warnning: No cues have been extracted."); return; }
 
                 string fn = NextIdxFilePath();
@@ -266,7 +266,7 @@ namespace scripthea.cuestuff
         }
         private void cbWay2Match_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (lbBest == null) return;
+            if (lbBest is null) return;
             if (cbWay2Match.SelectedIndex == 2 && cbiSemantic.IsEnabled) spSemantic.Visibility = Visibility.Visible;  
             else spSemantic.Visibility = Visibility.Hidden;
             semanticMatching = cbWay2Match.SelectedIndex == 2 && cbiSemantic.IsEnabled;

@@ -52,10 +52,10 @@ namespace scripthea.preview
         public void Init(ref Options _opts) // ■▬►
         {
             opts = _opts;
-            scanPreviewUC.Init(ref opts); previewListUC.Init(ref opts);
+            scanPreviewUC.Init(ref opts); previewListUC.Init(ref opts); 
             scanPreviewUC.OnSelectionChanged += new RoutedEventHandler(SelectionChanged); scanPreviewUC.OnItemChanged += new RoutedEventHandler(ItemChanged);
             previewListUC.OnSelectionChanged += new RoutedEventHandler(SelectionChanged); previewListUC.OnItemChanged += new RoutedEventHandler(ItemChanged);
-            fashionUC.Init();
+            fashionUC.Init(ref opts);
             fashionUC.rbNone.Checked += new RoutedEventHandler(rbNone_Checked);
             fashionUC.rbContext.Checked += new RoutedEventHandler(rbNone_Checked);
             fashionUC.rbAskLLM.Checked += new RoutedEventHandler(rbNone_Checked);           
@@ -65,7 +65,7 @@ namespace scripthea.preview
             dblTemperature.IsEnabled = false;
             dblTemperature.Minimum = 0; dblTemperature.Maximum = 1; dblTemperature.Interval = 0.1; dblTemperature.DoubleFormat = "F1"; dblTemperature.Value = opts.llm.LMStemperature;
             dblTemperature.IsEnabled = true;
-            intMaxTokens.Minimum = 3; intMaxTokens.Maximum = 300; intMaxTokens.Value = opts.llm.LMSmax_tokens;
+            intMaxTokens.Minimum = 5; intMaxTokens.Maximum = 500; intMaxTokens.Value = opts.llm.LMSmax_tokens;
             promptsBuffer = new List<Tuple<string, string>>();
         }
         public void Finish()
@@ -84,7 +84,7 @@ namespace scripthea.preview
         public int LoadPrompts(List<Tuple<string, string>> prompts)
         {
             Clear(); promptsBuffer.Clear();
-            return AppendPrompts(TrimSeparator(prompts));
+            return AppendPrompts(prompts); //TrimSeparator()
         }
         public int AppendPrompts(List<Tuple<string, string>> prompts)
         {
@@ -128,10 +128,12 @@ namespace scripthea.preview
             opts.composer.FashionMode = (int)fashionUC.fashionMode;
             rowFashion.Height = opts.composer.FashionMode == 0 ? new GridLength(30) : new GridLength(130);
             tcPreviews.SelectedIndex = opts.composer.FashionMode == 2 ? 1 : 0;
-            if (promptsBuffer == null) return;
+            if (opts.composer.FashionMode == 2) UpdateLLMVisuals();
+            if (promptsBuffer is null) return;
             if ((k < 2 && tcPreviews.SelectedIndex == 1) || (k == 2 && tcPreviews.SelectedIndex == 0) && promptsBuffer.Count > 0)
                 LoadPrompts(lst);
             UpdateCounter();
+
         }
         public int selectByIndex(int idx) // idx -1 for the next valid item, if none return -1
         {
@@ -157,7 +159,7 @@ namespace scripthea.preview
 
                     case FashioningUC.FashionModeTypes.ask_llm:
                         cntx = new List<string>(); 
-                        if (previewListUC.selectedItem == null) return cntx; 
+                        if (previewListUC.selectedItem is null) return cntx; 
                         cntx.AddRange(previewListUC.selectedItem.cueLLMTextAsList(true));
                         cntx.Add(previewListUC.selectedItem.modifsText);
                         return cntx;
@@ -168,7 +170,7 @@ namespace scripthea.preview
         }
         public string selectedStringPrompt // selected prompt as string for generation
         {
-            get => selectedListPrompt == null ? "" : String.Join(" ", selectedListPrompt.ToArray());
+            get => selectedListPrompt is null ? "" : String.Join(" ", selectedListPrompt.ToArray());
         }
         private bool _scanningFlag = false;
         public bool scanningFlag
@@ -200,7 +202,7 @@ namespace scripthea.preview
         }
         private void mi_Click(object sender, RoutedEventArgs e)
         {
-            MenuItem mi = sender as MenuItem; if (mi == null) return;
+            MenuItem mi = sender as MenuItem; if (mi is null) return;
             string header = Convert.ToString(mi.Header);
             if (header.Equals("Read Only")) active.IsReadOnly = mi.IsChecked;
             active.MenuCommand(header); UpdateCounter();
@@ -262,13 +264,19 @@ namespace scripthea.preview
             UpdateCounter();
         }
         #region LLM components
+        public void UpdateLLMVisuals()
+        {
+            if (opts is null) { IsLLMEnabled = false; return; }
+            IsLLMEnabled = LMstudio != null && LMstudio.IsReady();
+        }
+        public LMstudioUC LMstudio { get => opts.llm.LMstudio; }
         private async void btnRunLLMServer_Click(object sender, RoutedEventArgs e)
         {
             _ = new PopupText(btnRunLLMServer, "Launching...", 1);
-            bool bb = await previewListUC.LMstudio.FullLaunchAsync(true);
+            bool bb = await LMstudio.FullLaunchAsync(true);
             if (bb)
             {
-                previewListUC.LMstudio.LmStudioCloseMonitor(ref LmProcess);
+                LMstudio.LmStudioCloseMonitor(ref LmProcess);
                 if (LmProcess != null) LmProcess.Exited += new EventHandler(LmProcess_Exited);
             }
             IsLLMEnabled = bb;
@@ -282,11 +290,11 @@ namespace scripthea.preview
                 new Action(() =>
                 {
                     IsLLMEnabled = false;
-                    previewListUC.LMstudio.LmProcess_Exited();
+                    LMstudio.LmProcess_Exited();
                 }));
         }
         protected bool _IsLLMEnabled = false;
-        public bool IsLLMEnabled { get => _IsLLMEnabled && previewListUC.LMstudio != null && previewListUC.LMstudio.Connected; 
+        public bool IsLLMEnabled { get => _IsLLMEnabled && LMstudio != null && LMstudio.Connected; 
             set
             {
                 btnRunLLMServer.Foreground = value ? Brushes.Gray : Brushes.Maroon; btnRunLLMServer.BorderBrush = value ? Brushes.Gray : Brushes.Maroon;
@@ -331,22 +339,24 @@ namespace scripthea.preview
         public async Task<string> AskLLM(string prompt, double _temperature = 0.0, int _max_tokens = 30)
         {
             if (!IsLLMEnabled) { opts.Log("Error: LM Studio is not currently active."); return ""; }
-            return await previewListUC.LMstudio.LMSclient.SimpleCompletionAsync(prompt, opts.llm.LMScontext.Replace('\r',' '), _temperature, _max_tokens);
+            string rep = await previewListUC.LMstudio.LMSclient.SimpleCompletionAsync(prompt, opts.llm.LMScontext.Replace('\r',' '), _temperature, _max_tokens);
+            if (rep is null) opts.Log(previewListUC.LMstudio.CheclLMSerror());            
+            return rep;
         }
         private readonly string promptStr = "$prompt$";
         public async Task<string> ProcessPVI(PreviewItemUC pvi)
         {
             string prt = fashionUC.joinStrList(fashionUC.getAskLLM());
             if (pvi.cueText.Contains(promptStr)) prt = prt.Replace(promptStr, pvi.cueText);
-            else prt += "\n" + pvi.cueText;             
+            else prt += "\n" + pvi.cueText; pvi.questioned = true;          
             string reply = await AskLLM(prt, opts.llm.LMStemperature, opts.llm.LMSmax_tokens);
-            pvi.cueLLMText = reply;
+            pvi.cueLLMText = reply; pvi.questioned = false;
             return reply;
         }
         private async void btnAskLLM_Click(object sender, RoutedEventArgs e)
         {            
             PreviewItemUC pvi = previewListUC.selectedItem;
-            if (pvi == null) { opts.Log("Error: no selected prompt is detected"); return; }
+            if (pvi is null) { opts.Log("Error: no selected prompt is detected"); return; }
             await ProcessPVI(pvi);
             SelectionChanged(pvi, null);
             UpdateCounter();
@@ -370,7 +380,6 @@ namespace scripthea.preview
             foreach (PreviewItemUC pvi in previewListUC.pvItems) if (pvi.IsBoxChecked && !pvi.IsCueLLMEmpty) c++;
             return c;
         }
-
         private async Task<bool> LMMScan()
         {
             if (scanningFlag) { opts.Log("Error: no asking LLM while generating images."); return false; }

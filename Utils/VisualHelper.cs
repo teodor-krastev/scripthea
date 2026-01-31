@@ -22,7 +22,7 @@ namespace UtilsNS
             if (!element.IsVisible)
                 return false;
             var container = VisualTreeHelper.GetParent(element) as FrameworkElement;
-            if (container == null) throw new ArgumentNullException("container");
+            if (container is null) throw new ArgumentNullException("container");
 
             Rect bounds = element.TransformToAncestor(container).TransformBounds(new Rect(0.0, 0.0, element.RenderSize.Width, element.RenderSize.Height));
             Rect rect = new Rect(0.0, 0.0, container.ActualWidth, container.ActualHeight);
@@ -52,13 +52,13 @@ namespace UtilsNS
         private static T GetVisualChild<T>(this Visual parent, bool getOnlyOnechild, ref List<T> list, bool findByName = false, string childName = "") where T : Visual
         {
             T child = default(T);
-            if (parent == null) return child;
+            if (parent is null) return child;
             for (int index = 0; index < VisualTreeHelper.GetChildrenCount(parent); index++)
             {
                 Visual visualChild = (Visual)VisualTreeHelper.GetChild(parent, index);
                 child = visualChild as T;
 
-                if (child == null)
+                if (child is null)
                     child = GetVisualChild<T>(visualChild, getOnlyOnechild, ref list);//Find Recursively
 
                 if (child != null)
@@ -86,7 +86,7 @@ namespace UtilsNS
             {
                 DataGridCellsPresenter presenter = GetVisualChild<DataGridCellsPresenter>(row);
 
-                if (presenter == null)
+                if (presenter is null)
                 {
                     grid.ScrollIntoView(row, grid.Columns[column]);
                     presenter = GetVisualChild<DataGridCellsPresenter>(row);
@@ -118,7 +118,7 @@ namespace UtilsNS
         }
         public static void SetButtonEnabled(Button btn, bool enabled)
         {
-            if (btn == null) return;
+            if (btn is null) return;
             btn.IsEnabled = enabled;
             btn.Foreground = enabled ? Brushes.Black : Brushes.Gray;
         }
@@ -150,7 +150,7 @@ namespace UtilsNS
                 DataGridRow row = GetRowByIndex(dataGrid, rowIndex);
 
                 // If the row is not yet generated, scroll into view and wait for it to be generated
-                if (row == null)
+                if (row is null)
                 {
                     dataGrid.ScrollIntoView(dataGrid.Items[rowIndex]);
                     dataGrid.UpdateLayout();
@@ -167,7 +167,7 @@ namespace UtilsNS
         }
         public static DataGridColumn GetColumnByIndices(this DataGrid dataGrid, int rowIndex, int columnIndex)
         {
-            if (dataGrid == null)
+            if (dataGrid is null)
                 return null;
 
             //Validate Indices
@@ -183,7 +183,7 @@ namespace UtilsNS
         }
         public static DataGridCell GetCellByIndices(this DataGrid dataGrid, int rowIndex, int columnIndex)
         {
-            if (dataGrid == null)
+            if (dataGrid is null)
                 return null;
 
             //Validate Indices
@@ -192,7 +192,7 @@ namespace UtilsNS
 
             var row = dataGrid.GetRowByIndex(rowIndex);
 
-            if (row == null)
+            if (row is null)
             {
                 object item = dataGrid.Items[rowIndex]; //dataGrid.UpdateLayout();
                 dataGrid.ScrollIntoView(item); //dataGrid.UpdateLayout(); 
@@ -206,12 +206,12 @@ namespace UtilsNS
         }
         public static DataGridRow GetRowByIndex(this DataGrid dataGrid, int rowIndex)
         {
-            if (dataGrid == null)
+            if (dataGrid is null)
                 return null;
             ValidateRowIndex(dataGrid, rowIndex);
 
             DataGridRow row =(DataGridRow)dataGrid.ItemContainerGenerator.ContainerFromIndex(rowIndex);
-            if (row == null)
+            if (row is null)
             {
                 // If row is not yet generated (virtualization), force its generation
                 dataGrid.UpdateLayout();
@@ -223,7 +223,7 @@ namespace UtilsNS
         public static DataGridColumn GetRowColumnByIndex(this DataGridRow row, DataGrid dataGrid, int columnIndex)
         {
 
-            if (row == null || dataGrid == null)
+            if (row is null || dataGrid is null)
                 return null;
 
             ValidateColumnIndex(dataGrid, columnIndex);
@@ -237,7 +237,7 @@ namespace UtilsNS
         }
         public static DataGridCell GetCellByColumnIndex(this DataGridRow row, DataGrid dataGrid, int columnIndex)
         {
-            if (row == null || dataGrid == null)
+            if (row is null || dataGrid is null)
                 return null;
 
             ValidateColumnIndex(dataGrid, columnIndex);
@@ -269,9 +269,7 @@ namespace UtilsNS
         }
         public static T GetUIElementOfCell<T>(this DataGridCell dataGridCell) where T : Visual
         {
-            if (dataGridCell == null)
-                return null;
-
+            if (dataGridCell is null) return null;
             return dataGridCell.FindVisualChild<T>();
         }
         private static void ValidateColumnIndex(DataGrid dataGrid, int columnIndex)

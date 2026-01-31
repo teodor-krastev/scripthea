@@ -68,7 +68,7 @@
     /// <param name="query">initally null, used in recursive calls to get the child data</param>
     public static void GetMetaDataItems(BitmapMetadata bitmapMetadata , ref Dictionary<string, string> itemMap, string filter= null, string query = null )
     {
-        if (query == null)
+        if (query is null)
             query = string.Empty;
 
         if (bitmapMetadata != null)
@@ -84,7 +84,7 @@
                 var metadata = bitmapMetadata.GetQuery(relativeQuery);
                 var innerBitmapMetadata = metadata as BitmapMetadata;
 
-                if (innerBitmapMetadata == null)
+                if (innerBitmapMetadata is null)
                     AddToMap(ref key, fullQuery, metadata?.ToString(), ref itemMap, filter);    // Not a metadata structure so it is data - therefore check and Add to map
                 else
                     GetMetaDataItems(innerBitmapMetadata, ref itemMap, filter, fullQuery);      // Recursive call
@@ -107,7 +107,7 @@
         {
             if (!fullQuery.Contains("Translated"))
             {
-                if ((filter == null) || ((fullQuery.Contains(filter))))
+                if ((filter is null) || ((fullQuery.Contains(filter))))
                 {
                     if (fullQuery.Contains("Keyword"))
                         key = metadata;

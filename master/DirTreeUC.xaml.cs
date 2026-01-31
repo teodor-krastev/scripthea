@@ -79,7 +79,7 @@ namespace scripthea.master
                     string fn = Path.Combine(idepot, descriptionFile);
                     if (!File.Exists(fn)) return 0; // no desc file                   
                     List<string> ls = Utils.readList(fn, true);
-                    if (ls == null) return -1;
+                    if (ls is null) return -1;
                     return ls.Count;
                 }
                 else
@@ -150,12 +150,12 @@ namespace scripthea.master
         { 
             get 
             {
-                if (opts == null) return false;
+                if (opts is null) return false;
                 return opts.iDutilities.IDFlocked; 
             } 
             set 
             {
-                if (opts == null) return;
+                if (opts is null) return;
                 opts.iDutilities.IDFlocked = value; 
                 if (value) imgHistory.Source = (ImageSource)FindResource("/Scripthea;component/Properties/history.png"); // TO BE FIXED !!!
                 else imgHistory.Source = (ImageSource)FindResource("/Scripthea;component/Properties/yellow-lock.png");
@@ -297,7 +297,7 @@ namespace scripthea.master
         public bool CatchAFolder(string pth)
         {
             bool bb = false;
-            if (pth == null) return bb;
+            if (pth is null) return bb;
             if (!Directory.Exists(pth)) return bb;
 
             List<string> fld = new List<string>(pth.Split('\\'));
@@ -341,7 +341,7 @@ namespace scripthea.master
         { 
             get 
             {
-                if (tvFolders.SelectedItem == null) return "";
+                if (tvFolders.SelectedItem is null) return "";
                 else return (tvFolders.SelectedItem as TreeViewItem).Tag.ToString();
             } 
         }

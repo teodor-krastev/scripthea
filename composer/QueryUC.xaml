@@ -101,14 +101,14 @@
             <cuestuff:CuePoolUC x:Name="cuePoolUC"  Margin="0,6,0,0" Grid.Row="3"/>
         </Grid>
 
-        <GridSplitter x:Name="gridSplitRight" Grid.Column="1" HorizontalAlignment="Left" Margin="0" Width="5" />
-        <Grid Grid.Column="1" >
+        <GridSplitter x:Name="gridSplitRight" Grid.Column="1" HorizontalAlignment="Left" Margin="3,0,0,0" Width="4" />
+        <Grid Grid.Column="1" Margin="2,0,0,0" >
             <Grid.RowDefinitions>
                 <RowDefinition x:Name="rowAPI" Height="80"/>
                 <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
-            <Grid x:Name="gridAPI" Margin="7,0,0,0"/>
-            <TabControl Grid.Row="1"  x:Name="tcModScanPre" Margin="5,-3,0,0" BorderBrush="#FF19B995" BorderThickness="0,1,0,0" TabStripPlacement="Bottom" SelectionChanged="tcModScanPre_SelectionChanged"  >
+            <Grid x:Name="gridAPI" Margin="8,0,3,0"/>
+            <TabControl Grid.Row="1"  x:Name="tcModScanPre" Margin="8,-3,0,0" BorderBrush="#FF19B995" BorderThickness="0,1,0,0" TabStripPlacement="Bottom" SelectionChanged="tcModScanPre_SelectionChanged"  >
                 <TabItem x:Name="tiModifiers" Header="Modifiers" Background="#FFE8F8FC"  Height="30" Width="150" Margin="5,-3,-5,0" BorderBrush="#FF1377A3" FontFamily="Lucida Sans" FontSize="14" Style="{StaticResource RoundedBottomTabItemStyle}">
                     <Grid>
                         <ScrollViewer Margin="0" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto" FontFamily="Segoe UI" FontSize="13">

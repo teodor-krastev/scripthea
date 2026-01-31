@@ -34,7 +34,6 @@
                     <ListBox x:Name="lbCommonParams" BorderBrush="{x:Null}" FontFamily="Segoe UI"></ListBox>
                 </Grid>
             </GroupBox>
-
         </StackPanel>
     </Grid>
 </UserControl>
