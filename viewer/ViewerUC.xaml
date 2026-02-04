@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:scripthea.viewer" xmlns:external="clr-namespace:scripthea.external" 
+             xmlns:local="clr-namespace:scripthea.viewer" xmlns:external="clr-namespace:scripthea.engineAPI" xmlns:visualComps="clr-namespace:scripthea.visualComps" 
              xmlns:master="clr-namespace:scripthea.master" x:Name="ucViewer" x:Class="scripthea.viewer.ViewerUC"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800" PreviewKeyDown="ucViewer_PreviewKeyDown" Focusable="True">
@@ -60,7 +60,7 @@
                         <Image Source="/Scripthea;component/Properties/stop.png"  Cursor="Hand"/>
                     </ContentControl>
                 </Button>
-                <external:IntegerBox x:Name="numDly" HorizontalAlignment="Left" Height="25" Margin="0,0,8,0" VerticalAlignment="Center" Width="47" OnValueChanged="numDly_ValueChanged" ToolTip="Delay to next image in slide show [s]"/>
+                <visualComps:IntegerBox x:Name="numDly" HorizontalAlignment="Left" Height="25" Margin="0,0,8,0" VerticalAlignment="Center" Width="47" OnValueChanged="numDly_ValueChanged" ToolTip="Delay to next image in slide show [s]"/>
                 <Label x:Name="lbDepotInfo" Content="" VerticalAlignment="Top" Margin="0,0,5,0" HorizontalAlignment="Left" />
             </StackPanel>
             <TabControl x:Name="tabCtrlViews" Grid.Row="1" SelectedIndex="0" BorderBrush="{x:Null}" Panel.ZIndex="10" SelectionChanged="tabCtrlViews_SelectionChanged">

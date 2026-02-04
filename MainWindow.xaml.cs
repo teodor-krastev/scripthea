@@ -19,7 +19,7 @@ using Path = System.IO.Path;
 using scripthea.python;
 using scripthea.viewer;
 using scripthea.composer;
-using scripthea.external;
+using scripthea.engineAPI;
 using scripthea.master;
 using scripthea.options;
 using UtilsNS;
@@ -63,6 +63,7 @@ namespace scripthea
                 if (opts.composer.ImageDepotFolder.Equals("<default.image.depot>")) opts.composer.ImageDepotFolder = SctUtils.defaultImageDepot;
             }
             else opts = new Options();
+            if (opts.general.installStage == InstallStages.first) opts.composer.API = "Simulation";
             opts.composer.QueryStatus = Status.Idle;
             aboutWin.Init(ref opts);
             if (opts.general.UpdateCheck) Check4Update(null, null);
@@ -97,17 +98,27 @@ namespace scripthea
             else throw new Exception(penpicFile + " file is missing");
             ExplorerPart = opts.general.debug ? 100 : 0;
             gridSplitLeft_MouseDoubleClick(null, null);
+            if (opts.general.debug && false) preferencesWindow.ShowWindow(-1, dirTreeUC.history);
+            tabControl.SelectedItem = tiComposer; tabControl_SelectionChanged(tabControl, null);
             Title = "  Scripthea - text-to-image prompt composer v" + Utils.getAppFileVersion;
-            if (opts.layout.Width < 0)
+            if (opts.general.installStage == InstallStages.first)
             {
                 Log("Assuming that you run Scripthea for the first time:", Brushes.Blue);
                 Log("1. Check and modify (if needed) the default preferences (a gear button above).", Brushes.Blue);
-                Log("2. If you have Stable Diffusion (ComfyUI, A1111 or Forge) installed go to SD panel (top/right), open Options and set your Stable Diffusion installation locaton", Brushes.Blue);
-                Log(""); Log("Press F1 for Scripthea online help.", Brushes.Green);
-                Log(""); Log("Enjoy Scripthea, now with access to more than a milion and a half selected and unique prompts!", Brushes.Maroon);
+                Log("2. If you have Stable Diffusion (ComfyUI, A1111 or Forge) installed, switch to your choisen image gen. from Options tab (next to Single and Scan).", Brushes.Blue); 
+                Log("3. Go to SD panel (top/right), open SD Options (teal gear) and set your Stable Diffusion installation locaton", Brushes.Blue);
+                Log("At the moment Scripthea is set in Simulation mode (not real image generation).", Brushes.Green);
+                Log("Press F1 for Scripthea online help.", Brushes.Green);
+                Log(""); Log("Enjoy Scripthea, now with access to LLM for fashioning your promts, and more than 1.5 milion selected and unique prompts !", Brushes.Maroon);               
             }
-            if (opts.general.debug && false) preferencesWindow.ShowWindow(-1, dirTreeUC.history);
-            tabControl.SelectedItem = tiComposer; tabControl_SelectionChanged(tabControl, null);
+            if (opts.general.installStage == InstallStages.second)
+            {
+                Log("Assuming that you have reinstalled Scripthea over a previous installation:", Brushes.Blue);
+                Log("1. Check and modify (if needed) the your preferences (a gear button above).", Brushes.Blue);
+                Log("2. Check and modify (if needed) Stable Diffusion (ComfyUI, A1111 or Forge) installation configuration by going to SD Options dialog.", Brushes.Blue);
+                Log("Press F1 for Scripthea online help.", Brushes.Green);
+                Log(""); Log("Enjoy Scripthea, now with access to LLM for fashioning your promts, and more than 1.5 milion selected and unique prompts !", Brushes.Maroon);
+            }
         }
         private void SettingMainComponents()
         {

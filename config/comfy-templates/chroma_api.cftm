@@ -1,0 +1,194 @@
+{
+  "67": {
+    "inputs": {
+      "noise": [
+        "68",
+        0
+      ],
+      "guider": [
+        "73",
+        0
+      ],
+      "sampler": [
+        "72",
+        0
+      ],
+      "sigmas": [
+        "84",
+        0
+      ],
+      "latent_image": [
+        "69",
+        0
+      ]
+    },
+    "class_type": "SamplerCustomAdvanced",
+    "_meta": {
+      "title": "SamplerCustomAdvanced"
+    }
+  },
+  "68": {
+    "inputs": {
+      "noise_seed": 666
+    },
+    "class_type": "RandomNoise",
+    "_meta": {
+      "title": "RandomNoise"
+    }
+  },
+  "69": {
+    "inputs": {
+      "width": $width$,
+      "height": $height$,
+      "batch_size": 1
+    },
+    "class_type": "EmptySD3LatentImage",
+    "_meta": {
+      "title": "EmptySD3LatentImage"
+    }
+  },
+  "72": {
+    "inputs": {
+      "sampler_name": $sampler_name$
+    },
+    "class_type": "KSamplerSelect",
+    "_meta": {
+      "title": "KSamplerSelect"
+    }
+  },
+  "73": {
+    "inputs": {
+      "cfg": 4,
+      "model": [
+        "76",
+        0
+      ],
+      "positive": [
+        "74",
+        0
+      ],
+      "negative": [
+        "75",
+        0
+      ]
+    },
+    "class_type": "CFGGuider",
+    "_meta": {
+      "title": "CFGGuider"
+    }
+  },
+  "74": {
+    "inputs": {
+      "text": $positive$,
+      "clip": [
+        "82",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Prompt)"
+    }
+  },
+  "75": {
+    "inputs": {
+      "text": $negative$,
+      "clip": [
+        "82",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Prompt)"
+    }
+  },
+  "76": {
+    "inputs": {
+      "unet_name": $model$,
+      "weight_dtype": "default"
+    },
+    "class_type": "UNETLoader",
+    "_meta": {
+      "title": "Load Diffusion Model"
+    }
+  },
+  "78": {
+    "inputs": {
+      "clip_name": "t5xxl_fp16.safetensors",
+      "type": "chroma",
+      "device": "default"
+    },
+    "class_type": "CLIPLoader",
+    "_meta": {
+      "title": "Load CLIP"
+    }
+  },
+  "79": {
+    "inputs": {
+      "samples": [
+        "67",
+        0
+      ],
+      "vae": [
+        "80",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  },
+  "80": {
+    "inputs": {
+      "vae_name": "ae.safetensors"
+    },
+    "class_type": "VAELoader",
+    "_meta": {
+      "title": "Load VAE"
+    }
+  },
+  "81": {
+    "inputs": {
+      "filename_prefix": "Comfy",
+      "images": [
+        "79",
+        0
+      ]
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "Save Image"
+    }
+  },
+  "82": {
+    "inputs": {
+      "min_padding": 1,
+      "min_length": 0,
+      "clip": [
+        "78",
+        0
+      ]
+    },
+    "class_type": "T5TokenizerOptions",
+    "_meta": {
+      "title": "T5TokenizerOptions"
+    }
+  },
+  "84": {
+    "inputs": {
+      "scheduler": "beta",
+      "steps": $steps$,
+      "denoise": $denoise$,
+      "model": [
+        "76",
+        0
+      ]
+    },
+    "class_type": "BasicScheduler",
+    "_meta": {
+      "title": "BasicScheduler"
+    }
+  }
+}

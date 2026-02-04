@@ -198,6 +198,9 @@
     <Compile Include="cuestuff\CueListUC.xaml.cs">
       <DependentUpon>CueListUC.xaml</DependentUpon>
     </Compile>
+    <Compile Include="engineAPI\SDscriptUC.xaml.cs">
+      <DependentUpon>SDscriptUC.xaml</DependentUpon>
+    </Compile>
     <Compile Include="preview\FashioningUC.xaml.cs">
       <DependentUpon>FashioningUC.xaml</DependentUpon>
     </Compile>
@@ -216,35 +219,32 @@
     <Compile Include="preview\ScanPreviewUC.xaml.cs">
       <DependentUpon>ScanPreviewUC.xaml</DependentUpon>
     </Compile>
-    <Compile Include="external\ComfyUI.cs" />
-    <Compile Include="external\CraiyonAPIUC.xaml.cs">
+    <Compile Include="engineAPI\ComfyUI.cs" />
+    <Compile Include="engineAPI\CraiyonAPIUC.xaml.cs">
       <DependentUpon>CraiyonAPIUC.xaml</DependentUpon>
     </Compile>
-    <Compile Include="external\DoubleSliderUC.xaml.cs">
+    <Compile Include="visualComps\DoubleSliderUC.xaml.cs">
       <DependentUpon>DoubleSliderUC.xaml</DependentUpon>
     </Compile>
-    <Compile Include="external\DoubleUpDownControl.xaml.cs">
+    <Compile Include="visualComps\DoubleUpDownControl.xaml.cs">
       <DependentUpon>DoubleUpDownControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="external\IntegerUpDownControl.xaml.cs">
+    <Compile Include="visualComps\IntegerUpDownControl.xaml.cs">
       <DependentUpon>IntegerUpDownControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="external\NumericSliderUC.xaml.cs">
+    <Compile Include="visualComps\NumericSliderUC.xaml.cs">
       <DependentUpon>NumericSliderUC.xaml</DependentUpon>
     </Compile>
-    <Compile Include="external\SDscriptUC.xaml.cs">
-      <DependentUpon>SDscriptUC.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="external\SD_API_UC.xaml.cs">
+    <Compile Include="engineAPI\SD_API_UC.xaml.cs">
       <DependentUpon>SD_API_UC.xaml</DependentUpon>
     </Compile>
-    <Compile Include="external\SD_params_UC.xaml.cs">
+    <Compile Include="engineAPI\SD_params_UC.xaml.cs">
       <DependentUpon>SD_params_UC.xaml</DependentUpon>
     </Compile>
-    <Compile Include="external\AddonGenUC.xaml.cs">
+    <Compile Include="engineAPI\AddonGenUC.xaml.cs">
       <DependentUpon>AddonGenUC.xaml</DependentUpon>
     </Compile>
-    <Compile Include="external\tempRegulatorUC.xaml.cs">
+    <Compile Include="engineAPI\tempRegulatorUC.xaml.cs">
       <DependentUpon>tempRegulatorUC.xaml</DependentUpon>
     </Compile>
     <Compile Include="master\IDepotStatsUC.xaml.cs">
@@ -253,7 +253,7 @@
     <Compile Include="Preferences.xaml.cs">
       <DependentUpon>Preferences.xaml</DependentUpon>
     </Compile>
-    <Compile Include="external\ControlAPI.xaml.cs">
+    <Compile Include="engineAPI\ControlAPI.xaml.cs">
       <DependentUpon>ControlAPI.xaml</DependentUpon>
     </Compile>
     <Compile Include="master\DepotMasterUC.xaml.cs">
@@ -269,22 +269,22 @@
     <Compile Include="master\ImportUtilUC.xaml.cs">
       <DependentUpon>ImportUtilUC.xaml</DependentUpon>
     </Compile>
-    <Compile Include="external\CraiyonWebUC.xaml.cs">
+    <Compile Include="engineAPI\CraiyonWebUC.xaml.cs">
       <DependentUpon>CraiyonWebUC.xaml</DependentUpon>
     </Compile>
-    <Compile Include="external\SDiffusionUC.xaml.cs">
+    <Compile Include="engineAPI\SDiffusionUC.xaml.cs">
       <DependentUpon>SDiffusionUC.xaml</DependentUpon>
     </Compile>
     <Compile Include="master\DirTreeUC.xaml.cs">
       <DependentUpon>DirTreeUC.xaml</DependentUpon>
     </Compile>
-    <Compile Include="external\SDoptions.xaml.cs">
+    <Compile Include="engineAPI\SDoptions.xaml.cs">
       <DependentUpon>SDoptions.xaml</DependentUpon>
     </Compile>
-    <Compile Include="external\SimulatorUC.xaml.cs">
+    <Compile Include="engineAPI\SimulatorUC.xaml.cs">
       <DependentUpon>SimulatorUC.xaml</DependentUpon>
     </Compile>
-    <Compile Include="external\tempNVAPI.cs" />
+    <Compile Include="engineAPI\tempNVAPI.cs" />
     <Compile Include="python\HelpTreeUC.xaml.cs">
       <DependentUpon>HelpTreeUC.xaml</DependentUpon>
     </Compile>
@@ -359,6 +359,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="engineAPI\SDscriptUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="preview\FashioningUC.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -383,43 +387,39 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="external\CraiyonAPIUC.xaml">
+    <Page Include="engineAPI\CraiyonAPIUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="external\DoubleSliderUC.xaml">
+    <Page Include="visualComps\DoubleSliderUC.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="external\DoubleUpDownControl.xaml">
+    <Page Include="visualComps\DoubleUpDownControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="external\IntegerUpDownControl.xaml">
+    <Page Include="visualComps\IntegerUpDownControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="external\NumericSliderUC.xaml">
+    <Page Include="visualComps\NumericSliderUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="external\SDscriptUC.xaml">
+    <Page Include="engineAPI\SD_API_UC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="external\SD_API_UC.xaml">
+    <Page Include="engineAPI\SD_params_UC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="external\SD_params_UC.xaml">
+    <Page Include="engineAPI\AddonGenUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="external\AddonGenUC.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="external\tempRegulatorUC.xaml">
+    <Page Include="engineAPI\tempRegulatorUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -431,7 +431,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="external\ControlAPI.xaml">
+    <Page Include="engineAPI\ControlAPI.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -451,11 +451,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="external\CraiyonWebUC.xaml">
+    <Page Include="engineAPI\CraiyonWebUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="external\SDiffusionUC.xaml">
+    <Page Include="engineAPI\SDiffusionUC.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -463,11 +463,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="external\SDoptions.xaml">
+    <Page Include="engineAPI\SDoptions.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="external\SimulatorUC.xaml">
+    <Page Include="engineAPI\SimulatorUC.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

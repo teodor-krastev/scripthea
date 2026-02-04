@@ -4,7 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:scripthea.preview"             
-             xmlns:external="clr-namespace:scripthea.external" x:Class="scripthea.preview.PreviewUC"             
+             xmlns:visualComps="clr-namespace:scripthea.visualComps"
+             xmlns:external="clr-namespace:scripthea.engineAPI"  x:Class="scripthea.preview.PreviewUC"             
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
@@ -61,9 +62,9 @@
                             <StackPanel Background="White" Orientation="Horizontal" Margin="0" Height="32">
                                 <CheckBox x:Name="chkShowBoth"  Content="Show Both" Margin="10,2,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Checked="chkShowBoth_Checked" Unchecked="chkShowBoth_Checked"/>
                                 <Label Content="Temper:" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="#FF860202" Margin="5,0,0,0"/>
-                                <external:DoubleBox x:Name="dblTemperature" Height="26" Width="50" Margin="0,3,0,0" OnValueChanged="dblTemperature_OnValueChanged" Foreground="Black" Background="Tomato"/>
+                                <visualComps:DoubleBox x:Name="dblTemperature" Height="26" Width="50" Margin="0,3,0,0" OnValueChanged="dblTemperature_OnValueChanged" Foreground="Black" Background="Tomato"/>
                                 <Label Content="Max Tokens:" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="DarkGreen" Margin="5,0,0,0"/>
-                                <external:IntegerBox x:Name="intMaxTokens" Height="26" Width="50" Margin="0,3,0,0" OnValueChanged="dblTemperature_OnValueChanged" Foreground="Black"/>
+                                <visualComps:IntegerBox x:Name="intMaxTokens" Height="26" Width="50" Margin="0,3,0,0" OnValueChanged="dblTemperature_OnValueChanged" Foreground="Black"/>
                                 <TextBlock x:Name="tbLLMcounter" Foreground="Navy" VerticalAlignment="Center" HorizontalAlignment="Left" FontFamily="Segoe UI Semibold" Margin="10,0,0,0" Text="LLM processed:"/>
                             </StackPanel>
                         </StackPanel>

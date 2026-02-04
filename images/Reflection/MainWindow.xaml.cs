@@ -78,7 +78,7 @@ namespace Reflection
         {
             //if (!running) return;
             if (!Directory.Exists(dir)) { Utils.TimedMessageBox("Error: wrong dir <" + dir + ">"); return; }
-            if (Utils.isNull(watcher))
+            if (watcher is null)
             {
                 watcher = new FileSystemWatcher(dir);
                 watcher.NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite

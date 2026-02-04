@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -15,6 +15,7 @@ using UtilsNS;
 namespace scripthea.options
 {
     public enum TripleReply { yes, ask, no }
+    public enum InstallStages { unknown, first, second, regular }
     public class Options
     {
         public delegate bool SemanticHandler();
@@ -49,6 +50,22 @@ namespace scripthea.options
             public bool debug { get { return Utils.isInVisualStudio && Utils.localConfig; } }
             [JsonIgnore]
             public bool AppTerminating = false;
+            [JsonIgnore]
+            private InstallStages _installStage = InstallStages.unknown;
+            [JsonIgnore]
+            public InstallStages installStage 
+            { 
+                get
+                {    
+                    if (_installStage != InstallStages.unknown) return _installStage; // to be executed once per session
+                    string f = Path.Combine(Utils.configPath, "first.install");
+                    string s = Path.Combine(Utils.configPath, "second.install");
+                    if (File.Exists(f) && !File.Exists(s)) { File.Move(f, s); _installStage = InstallStages.first; return _installStage; }
+                    if (File.Exists(f) && File.Exists(s)) { File.Delete(f); _installStage = InstallStages.second; return _installStage;  }
+                    if (!File.Exists(f) && File.Exists(s)) { _installStage = InstallStages.regular; return _installStage; }
+                    return _installStage; 
+                }             
+            }
         }
         public Layout layout;
         public class Layout
@@ -85,7 +102,7 @@ namespace scripthea.options
             [JsonIgnore]
             public bool A1111 { get { return API.StartsWith("SD-A1111"); } }
             [JsonIgnore]
-            public bool Comfy { get { return API.Equals("SD-Comfy"); } }
+            public bool Comfy { get { return API.StartsWith("SD-Comfy"); } }
             public int SessionSpan; // in min
             public int TotalImageCount;
             public int TotalRatingCount;

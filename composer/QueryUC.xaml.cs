@@ -17,7 +17,7 @@ using System.Windows.Shapes;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using scripthea.external;
+using scripthea.engineAPI;
 using scripthea.master;
 using scripthea.options;
 using scripthea.cuestuff;
@@ -67,8 +67,6 @@ namespace scripthea.composer
             previewUC.btnScanChecked.Click += new RoutedEventHandler(btnScanPreviewProcs_Click);
             previewUC.btnQuerySelected.Click += new RoutedEventHandler(btnScanPreviewProcs_Click);
 
-            //tiMiodifiers.Visibility = Visibility.Collapsed; tiScanPreview.Visibility = Visibility.Collapsed;
-
             API = new ControlAPI(ref opts); 
             if (API.interfaceAPIs.ContainsKey("SDiffusion"))             
                 API.interfaceAPIs["SDiffusion"].APIparamsEvent += new APIparamsHandler(OnAPIparams);
@@ -83,7 +81,6 @@ namespace scripthea.composer
             if (opts.general.debug) 
             { 
                 btnTest.Visibility = Visibility.Visible;
-                cbActiveAPI.Items.Add(new ComboBoxItem() { Name = "cbiSimulation", Content = "Simulation" }); 
                 //cbActiveAPI.SelectedIndex = 3;
             }
             else { btnTest.Visibility = Visibility.Collapsed; }

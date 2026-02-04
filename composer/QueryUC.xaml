@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:scripthea.composer"
              xmlns:cuestuff ="clr-namespace:scripthea.cuestuff"
-             xmlns:external="clr-namespace:scripthea.external" 
+             xmlns:external="clr-namespace:scripthea.engineAPI" 
              xmlns:preview="clr-namespace:scripthea.preview"
              xmlns:extcoll="clr-namespace:ExtCollMng;assembly=ExtCollMng" 
              mc:Ignorable="d" d:DesignHeight="850" FontSize="13" d:DesignWidth="1698.667">
@@ -89,6 +89,7 @@
                                 <ComboBoxItem x:Name="cbiSD_Forge" Content="SD-A1111/Forge"/>
                                 <ComboBoxItem x:Name="cbiSD_ComfyUI" Content="SD-ComfyUI"/>
                                 <ComboBoxItem x:Name="cbiCraiyon" Content="Craiyon"/>
+                                <ComboBoxItem x:Name="cbiSimulation" Content="Simulation"/>
                             </ComboBox>
                             <Image x:Name="imgAPIdialog"  Width="25" Height="25" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="6,3,0,0" Cursor="Hand" MouseDown="imgAPIdialog_MouseDown" Source="/Scripthea;component/Properties/gears1.png"/>
                             <Label x:Name="lbSessionSpan" Margin="10,0,0,0"></Label>

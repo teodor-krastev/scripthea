@@ -6,7 +6,7 @@
       "cfg": 8.18,
       "sampler_name": "euler_ancestral",
       "scheduler": "karras",
-      "denoise": 0.9,
+      "denoise": 1,
       "model": [
         "4",
         0
@@ -51,7 +51,7 @@
   },
   "6": {
     "inputs": {
-      "text": "If there were cobwebs in my heart and soul before the thunderstorm, it is safe to say that I was all clear by the time the blue sky and sun returned.  ; surrealism ; simple ; Vladimir Kush",
+      "text": "Cobalt blue is my most favourite hue. It is the kind of blue that is neither light nor dark, yet at the sweet spot in the middle. ",
       "clip": [
         "4",
         1
