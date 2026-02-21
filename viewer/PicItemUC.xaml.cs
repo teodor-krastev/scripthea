@@ -117,25 +117,32 @@ namespace scripthea.viewer
         
         public void Clear()
         {
-            imgPic.Source = null;   
+            lbNumber.Content = ""; tbFile.Text = ""; lbRate.Content = ""; tbCue.Text = "";
+            imgPic.Source = null; imgInfo = null; 
         }
+        public bool IsImgInfo { get => !(imgInfo is null); }
         public ImageInfo imgInfo { get; private set; }
         public BitmapImage bitmapImage { get; private set; }
         public bool file_not_found { get; private set; }
+        public bool ImageUpdate(BitmapImage bitmapImg) // naked alternative of ContentUpdate
+        {
+            Clear(); bitmapImage = bitmapImg;
+            imgPic.Source = bitmapImage; 
+            return !(imgPic.Source is null);
+        }
         public bool ContentUpdate(int index, string imageDir, ImageInfo ii) // index 0 based 
         {
             if (ii is null || !Directory.Exists(imageDir)) return false;
-            imageFolder = imageDir; imgInfo = ii.Clone();
+            imageFolder = imageDir; imgInfo = ii.Clone(); 
             string filePath = Path.Combine(imageDir, ii.filename);
             file_not_found = !File.Exists(filePath);
             if (!file_not_found)
             {
-                //imgPic.Dispatcher.InvokeAsync(() => // slower for some reason !
-                //{
                 bitmapImage = ImgUtils.UnhookedImageLoad(filePath);
                 imgPic.Source = bitmapImage;
-                //});
                 if (imgPic.Source is null) return false;
+                //imgPic.Dispatcher.InvokeAsync(() => // slower for some reason !
+                //{});
             }
             else
             {
@@ -155,10 +162,19 @@ namespace scripthea.viewer
         const int baseWidth = 100;
        
         const int baseHeight = 100;
-        public void VisualUpdate() // by opts
+        public void VisualUpdate(int forcedWidth = -1) // by opts
         {
             opts.viewer.ThumbZoom = Utils.EnsureRange(opts.viewer.ThumbZoom, 30, 300);
-            this.Width = baseWidth * opts.viewer.ThumbZoom / 100; this.Height = baseHeight * opts.viewer.ThumbZoom / 100;
+            if (forcedWidth < 0)
+            {
+                this.Width = baseWidth * opts.viewer.ThumbZoom / 100; this.Height = baseHeight * opts.viewer.ThumbZoom / 100;
+            }
+            else
+            {
+                this.Width = forcedWidth;
+                if (imgPic.Source is null) this.Height = this.Width;
+                else this.Height = this.Width * imgPic.Source.Height / imgPic.Source.Width;
+            }
             // top
             if (checkable || opts.viewer.ThumbCue)
             {

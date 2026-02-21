@@ -513,7 +513,7 @@ namespace scripthea.engineAPI
         }
         private List<string> GetTemplates()
         {
-            List<string> tmpl = new List<string>(); string[] arr = Directory.GetFiles(Path.Combine(Utils.configPath, "comfy-templates"), "*.cftm");
+            List<string> tmpl = new List<string>(); string[] arr = Directory.GetFiles(opts.composer.ComfyTemplates, "*.cftm");
             foreach (string tm in arr)
                 tmpl.Add(Path.GetFileName(tm));
             return tmpl;

@@ -100,9 +100,11 @@ namespace scripthea.options
             // API
             public string API; // from combo-box items
             [JsonIgnore]
-            public bool A1111 { get { return API.StartsWith("SD-A1111"); } }
+            public bool A1111 { get => API.StartsWith("SD-A1111"); } 
             [JsonIgnore]
-            public bool Comfy { get { return API.StartsWith("SD-Comfy"); } }
+            public bool Comfy { get => API.StartsWith("SD-Comfy"); }
+            [JsonIgnore]
+            public string ComfyTemplates { get => Path.Combine(Utils.configPath, "comfy-templates"); }
             public int SessionSpan; // in min
             public int TotalImageCount;
             public int TotalRatingCount;

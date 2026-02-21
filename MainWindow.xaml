@@ -73,7 +73,7 @@
                     <viewer:ViewerUC x:Name="viewerUC" Margin="0"/>
                 </Grid>
             </TabItem>
-            <TabItem x:Name="tiStyleCreator" Header="Style Creator (exp)" Width="130" Height="33" Style="{StaticResource RoundedTopTabItemStyle}" BorderBrush="#FF7D4AFC" Margin="8,0,-8,0">
+            <TabItem x:Name="tiStyleCreator" Header="Style Creator (trial)" Width="140" Height="33" Style="{StaticResource RoundedTopTabItemStyle}" BorderBrush="#FF7D4AFC" Margin="8,0,-8,0">
                 <Grid>
                     <style:StyleCreatorUC x:Name="styleCreatorUC" Margin="0"/>
                 </Grid>

@@ -10,14 +10,14 @@
         <Grid.RowDefinitions>
             <RowDefinition  x:Name="rowTumbs" Height="1*"/>
             <RowDefinition x:Name="rowTumbOpt" Height="1"/>
-            <RowDefinition Height="27"/>
+            <RowDefinition x:Name="rowNavigation" Height="27"/>
         </Grid.RowDefinitions>
         <Grid x:Name="gridScroll" PreviewKeyDown="scroller_KeyDown">
             <ScrollViewer x:Name="scroller" CanContentScroll="True">
                 <WrapPanel x:Name="wrapPics"  Focusable="True"></WrapPanel>
             </ScrollViewer>
         </Grid>
-        <Rectangle VerticalAlignment="Top" Grid.Row="1" Fill="#FFC7FFF6" Height="2"></Rectangle>
+        <Rectangle x:Name="rectBottom" VerticalAlignment="Top" Grid.Row="1" Fill="#FFC7FFF6" Height="2"></Rectangle>
         <StackPanel Margin="0,3,0,0" Grid.Row="1" Orientation="Horizontal" Background="#FFF9FEFC" >
             <Label Content="Zoom:"></Label>
             <Button x:Name="btnZoomIn" FontSize="13" Content="in" Width="25" Background="{x:Null}" VerticalAlignment="Center" Margin="0,2,0,0" FontFamily="Microsoft Sans Serif" Click="btnZoomIn_Click" BorderThickness="0.7" Style="{StaticResource RoundedSmallButtonStyle}"/>

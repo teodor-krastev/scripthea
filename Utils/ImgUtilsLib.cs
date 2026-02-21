@@ -503,18 +503,59 @@ namespace UtilsNS
                 default: return null;
             }
         }
-        public static string SaveImage(BitmapSource bitmapSource, string imagePath) // untested
+        public static bool SaveImage(BitmapSource bitmapSource, string imagePath) // untested
         {
-            string FN = Path.ChangeExtension(Utils.timeName(), ".png");
             MemoryStream imageStream = BitmapSourceToStream(bitmapSource);
-
             // Now you can use 'imageStream' as needed, for example, to save the image to a file:
             using (var fileStream = new FileStream(imagePath, FileMode.Create, FileAccess.Write))
             {
                 imageStream.CopyTo(fileStream);
             }
-            return FN;
-        }        
+            return File.Exists(imagePath);
+        }
+
+        public static bool PixelEquals(BitmapSource a, BitmapSource b)
+        {
+            if (ReferenceEquals(a, b)) return true;
+            if (a is null || b is null) return false;
+
+            // Quick rejects
+            if (a.PixelWidth != b.PixelWidth ||
+                a.PixelHeight != b.PixelHeight)
+                return false;
+
+            // Normalize to a known format so stride/pixel layout is consistent
+            var a32 = EnsureBgra32(a);
+            var b32 = EnsureBgra32(b);
+
+            if (a32.PixelWidth != b32.PixelWidth || a32.PixelHeight != b32.PixelHeight)
+                return false;
+
+            int bytesPerPixel = (a32.Format.BitsPerPixel + 7) / 8; // BGRA32 => 4
+            int stride = a32.PixelWidth * bytesPerPixel;
+            int size = stride * a32.PixelHeight;
+
+            var abuf = new byte[size];
+            var bbuf = new byte[size];
+
+            a32.CopyPixels(abuf, stride, 0);
+            b32.CopyPixels(bbuf, stride, 0);
+
+            return abuf.SequenceEqual(bbuf); 
+        }
+        private static BitmapSource EnsureBgra32(BitmapSource src)
+        {
+            if (src.Format == PixelFormats.Bgra32)
+                return src;
+
+            var conv = new FormatConvertedBitmap();
+            conv.BeginInit();
+            conv.Source = src;
+            conv.DestinationFormat = PixelFormats.Bgra32;
+            conv.EndInit();
+            conv.Freeze();
+            return conv;
+        }
     }
 }
 

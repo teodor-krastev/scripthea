@@ -49,9 +49,7 @@ namespace scripthea.viewer
         {
             ShuttingDown = true; 
         }
-        public ImageDepot iDepot 
-        { get; 
-            set; } // local to Grid clone
+        public ImageDepot iDepot { get; set; } // local to Grid clone
         public bool IsAvailable 
         { 
             get 

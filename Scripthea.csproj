@@ -18,6 +18,7 @@
     <Deterministic>true</Deterministic>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -223,6 +224,9 @@
     <Compile Include="engineAPI\CraiyonAPIUC.xaml.cs">
       <DependentUpon>CraiyonAPIUC.xaml</DependentUpon>
     </Compile>
+    <Compile Include="style\ReferenceSetUC.xaml.cs">
+      <DependentUpon>ReferenceSetUC.xaml</DependentUpon>
+    </Compile>
     <Compile Include="visualComps\DoubleSliderUC.xaml.cs">
       <DependentUpon>DoubleSliderUC.xaml</DependentUpon>
     </Compile>
@@ -388,6 +392,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="engineAPI\CraiyonAPIUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="style\ReferenceSetUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -715,6 +723,11 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Properties\gear-3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Properties\paste-blue.png" />
+    <Resource Include="Properties\paste-green.png" />
+    <Resource Include="Properties\remove-red.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="packages\Microsoft.ML.OnnxRuntime.Managed.1.22.1\build\netstandard2.0\Microsoft.ML.OnnxRuntime.Managed.targets" Condition="Exists('packages\Microsoft.ML.OnnxRuntime.Managed.1.22.1\build\netstandard2.0\Microsoft.ML.OnnxRuntime.Managed.targets')" />

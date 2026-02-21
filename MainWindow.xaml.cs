@@ -131,9 +131,8 @@ namespace scripthea
 
             Title = "  Scripthea - loading text files...";
             viewerUC.Init(ref opts);
-            /*if (opts.general.debug) { styleCreatorUC.Init(ref opts); tabControl.SelectedItem = tiStyleCreator; }
-            else*/
-            tiStyleCreator.Visibility = Visibility.Collapsed;
+            if (opts.general.debug) { styleCreatorUC.Init(ref opts); tabControl.SelectedItem = tiStyleCreator; }
+            else tiStyleCreator.Visibility = Visibility.Collapsed;
             depotMaster.Init(ref opts);
             importUtilUC.Init(ref opts);
             exportUtilUC.Init(ref opts);

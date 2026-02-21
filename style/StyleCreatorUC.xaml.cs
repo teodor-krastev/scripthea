@@ -50,15 +50,36 @@ namespace scripthea.style
             dblTemperature.Minimum = 0; dblTemperature.Maximum = 1; dblTemperature.Interval = 0.1; dblTemperature.DoubleFormat = "F1"; dblTemperature.Value = opts.style.LMStemperature;
             tbQuestion.Text = opts.style.StyleQuery; tbMQuestion.Text = opts.style.StyleMQuery;
             dblTemperature.IsEnabled = true;
-            intMaxTokens.Minimum = 5; intMaxTokens.Maximum = 500; intMaxTokens.Value = opts.style.LMSmax_tokens;            
+            intMaxTokens.Minimum = 5; intMaxTokens.Maximum = 500; intMaxTokens.Value = opts.style.LMSmax_tokens;
+
+            refSet.Init(ref _opts);
+            refSet.btnCopySelected.Click += new RoutedEventHandler(CopySelected); refSet.btnCopyChecked.Click += new RoutedEventHandler(CopySelected);
         }
-        BitmapImage activeBitmap = null;
+        protected BitmapImage activeBitmap = null; protected int activeIdx = -1; protected ImageDepot activeIDepot = null;
         protected void ChangeDepot(object sender, RoutedEventArgs e) // allow button access by iPicker states
         {
         }
         protected void PicSelect(int idx, ImageDepot iDepot)
         {           
             activeBitmap = iPicker.image.Source as BitmapImage;
+            activeIdx = idx; activeIDepot = iDepot;
+        }
+        protected void CopySelected(object sender, RoutedEventArgs e)
+        {
+            if (iPicker is null) return; if (iPicker.iDepot is null) return;
+            if (!iPicker.iDepot.isEnabled) return;
+            if (!Directory.Exists(iPicker.imageFolder)) { opts.Log("Error: directory <" + iPicker.imageFolder + "> is not there."); return; }
+            PicItemUC ps = null;
+            if (sender == refSet.btnCopySelected)
+            {
+                ps = refSet.AddImageInfo(iPicker.imageFolder, iPicker.iDepot.items[activeIdx]);
+                if (ps is null) return;
+                refSet.AddPicItem(ps);
+            }
+            if (sender == refSet.btnCopyChecked)
+            {
+
+            }
         }
         public void Finish()
         {

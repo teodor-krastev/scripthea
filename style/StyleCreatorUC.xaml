@@ -7,16 +7,22 @@
              xmlns:master="clr-namespace:scripthea.master" x:Class="scripthea.style.StyleCreatorUC" 
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="1400">
-    
+
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition x:Name="col_0" Width="800" MinWidth="300" MaxWidth="1000"/>
-            <ColumnDefinition x:Name="col_1" Width="500" MaxWidth="700" MinWidth="300"/>
+            <ColumnDefinition x:Name="col_0" Width="900" MinWidth="600" MaxWidth="1300"/>
+            <ColumnDefinition x:Name="col_1" Width="500" MinWidth="300" MaxWidth="700" />
             <ColumnDefinition Width="3*"/>
         </Grid.ColumnDefinitions>
-        <master:ImagePickerUC x:Name="iPicker" Margin="5"/>
-        
-        <GridSplitter HorizontalAlignment="Left" Width="3" Grid.Column="1" Background="#FFE4FBF5"></GridSplitter>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="6*"/>
+                <ColumnDefinition Width="215"/>
+            </Grid.ColumnDefinitions>
+            <master:ImagePickerUC x:Name="iPicker" Margin="5" />
+            <local:ReferenceSetUC x:Name="refSet" Grid.Column="1" Margin="3"/>
+        </Grid>
+        <GridSplitter x:Name="gridSplitBottom" HorizontalAlignment="Left" Width="3" Grid.Column="1" Background="#FFE4FBF5"></GridSplitter>
 
         <Grid Grid.Column="1" Margin="5">
             <Grid.RowDefinitions>
@@ -63,7 +69,7 @@
                         <RowDefinition Height="30*"/>
                     </Grid.RowDefinitions>
                     <StackPanel Background="White" Orientation="Horizontal" Margin="0" Height="32">
-                        <Button x:Name="btnMAskLLM" Content="Ask LLM about all the checked images" Width="240" Background="#FFF2FCDD" Margin="10,0,0,0" Style="{StaticResource RoundedButtonStyle}"  FontSize="12.5" Height="25" Click="btnAskLLM_Click"/>
+                        <Button x:Name="btnMAskLLM" Content="Ask LLM about all the reference set" Width="240" Background="#FFF2FCDD" Margin="10,0,0,0" Style="{StaticResource RoundedButtonStyle}"  FontSize="12.5" Height="25" Click="btnAskLLM_Click"/>
                         <Button x:Name="btnMCopy" Margin="10,0,3,3" VerticalAlignment="Bottom" HorizontalAlignment="Right" Background="{x:Null}" ToolTip="Copy current prompt to clipboard" Cursor="Hand" Width="28" Height="27" BorderBrush="#FFCECECE" Click="btnCopy_Click" Style="{StaticResource RoundedSmallButtonStyle}">
                             <ContentControl>
                                 <Image x:Name="imgMCopy" Margin="0,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" Height="20" Width="25" ToolTip="Copy to clipboard" Cursor="Hand" Source="/Scripthea;component/Properties/copy1a.png"/>
