@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+	<meta name="description" content="Scripthea slideshow html utilility is free to use for any aim as long as you keep author/copyright as they are">
+	<meta name="keywords" content="Scripthea, slideshow,  images, utility, vibe-coding">
+	<meta name="author" content="Teodor Krastev">
+	<meta name="copyright" content="This page and all its contents are copyright of Teodor Krastev (2026). All Rights Reserved.">
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Scripthea slideshow</title>
+  <style>
+    :root{--bg:#0b0f16;--panel:#121a26;--text:#e7edf6;--muted:#a7b2c3;--border:#223049;--danger:#ff6b6b;}
+    html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;}
+    .app{height:100%;display:grid;grid-template-rows:auto 1fr auto;gap:10px;padding:12px;box-sizing:border-box;}
+    .topbar{display:grid;grid-template-columns:1fr auto auto auto;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:var(--panel);}
+    .title{font-size:18px;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    button{border:1px solid var(--border);background:#0f1724;color:var(--text);padding:8px 12px;border-radius:10px;cursor:pointer;font-weight:600;}
+    button:hover{filter:brightness(1.06);} button:disabled{opacity:.55;cursor:not-allowed;}
+    .toggle.playing{border-color:rgba(47,214,122,.5);} .toggle.paused{border-color:rgba(255,107,107,.5);}
+    .field{display:grid;grid-template-columns:auto 120px;gap:8px;align-items:center;color:var(--muted);font-size:12px;}
+    input[type="number"]{width:120px;border:1px solid var(--border);background:#0f1724;color:var(--text);padding:8px 10px;border-radius:10px;outline:none;box-sizing:border-box;}
+    .meta{color:var(--muted);font-size:12px;justify-self:end;white-space:nowrap;}
+
+    .stage{border:1px solid var(--border);border-radius:10px;background:#0a0f18;display:grid;place-items:center;overflow:hidden;position:relative;}
+    .stage img{max-width:100%;max-height:100%;object-fit:contain;display:none;}
+    .stage .placeholder{padding:18px;color:var(--muted);text-align:center;max-width:900px;line-height:1.4;}
+    .stage .error{color:var(--danger);margin-top:8px;font-size:12px;white-space:pre-wrap;}
+
+    .bottom{border:1px solid var(--border);border-radius:10px;background:var(--panel);padding:12px;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start;}
+    .text{font-size:18px;line-height:1.35;white-space:pre-wrap;word-break:break-word;}
+    .nav{display:grid;gap:8px;justify-items:end;}
+    .hint{color:var(--muted);font-size:12px;margin-top:4px;text-align:right;}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Top row -->
+    <div class="topbar">
+      <div class="title" id="deckTitle">
+		<p align="center">Scripthea slideshow</div>
+
+      <button id="btnToggle" class="toggle paused" disabled>Start</button>
+
+      <div class="field" title="Time-hold per slide (seconds)">
+        <span>Time-hold (s)</span>
+        <input id="holdSeconds" type="number" min="0.1" step="0.1" value="5" />
+      </div>
+
+      <div class="meta" id="meta">Loading DESCRIPTION.idff…</div>
+    </div>
+
+    <!-- Middle row (image) -->
+    <div class="stage">
+      <div class="placeholder" id="placeholder">
+        Expected files in the same folder:
+        <div style="text-align:left;max-width:900px;margin:10px auto 0;">
+          • <b>scripthea-slideshow.html</b><br/>
+          • <b>DESCRIPTION.idf</b> (JSONL: comment lines start with <b>#</b>)<br/>
+          • image files referenced by <b>filename</b><br/>
+        </div>
+        <div style="margin-top:10px;color:var(--muted);font-size:12px;">
+          Start at a specific image: <code>slide_show.html?img=24-08-16_12-16-35.jpg</code>
+        </div>
+        <div class="error" id="err"></div>
+      </div>
+      <img id="img" alt="slide image" />
+    </div>
+
+    <!-- Bottom row (text) -->
+    <div class="bottom">
+      <div style="text-align: center;font-size:15px;" class="text" id="slideText">—</div>
+      <div class="nav">
+        <button id="btnPrev" disabled>Prev</button>
+        <button id="btnNext" disabled>Next</button>
+        
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Fixed JSONL file name (same folder as HTML and images)
+    const JSONL_FILE = "DESCRIPTION.idf";
+
+    // JSONL format:
+    // # comment line (ignored)
+    // {"prompt":"...","filename":"24-08-16_12-16-19.jpg", ...}
+
+    let slides = [];
+    let index = 0;
+    let timerId = null;
+    let isPlaying = false;
+
+    const deckTitleEl = document.getElementById("deckTitle");
+    const metaEl = document.getElementById("meta");
+    const btnToggle = document.getElementById("btnToggle");
+    const holdSecondsInput = document.getElementById("holdSeconds");
+
+    const imgEl = document.getElementById("img");
+    const placeholderEl = document.getElementById("placeholder");
+    const errEl = document.getElementById("err");
+    const slideTextEl = document.getElementById("slideText");
+    const btnPrev = document.getElementById("btnPrev");
+    const btnNext = document.getElementById("btnNext");
+
+    function setError(msg) { errEl.textContent = msg ? String(msg) : ""; }
+
+    function clampHoldSeconds() {
+      let v = Number(holdSecondsInput.value);
+      if (!Number.isFinite(v)) v = 5;
+      v = Math.max(0.1, v);
+      holdSecondsInput.value = String(v);
+      return v;
+    }
+
+    function updateMeta() {
+      metaEl.textContent = slides.length ? `Slide ${index + 1} of ${slides.length}` : "No deck loaded";
+    }
+
+    function updateControlsEnabled() {
+      const hasDeck = slides.length > 0;
+      btnToggle.disabled = !hasDeck;
+      btnPrev.disabled = !hasDeck;
+      btnNext.disabled = !hasDeck;
+    }
+
+    function getImageSrc(slide) {
+      // Images are in the same folder as this HTML file:
+      return (slide && typeof slide.filename === "string") ? slide.filename.trim() : "";
+    }
+
+    function getPromptText(slide) {
+      return (slide && typeof slide.prompt === "string") ? slide.prompt : "";
+    }
+
+    function showSlide(i) {
+      if (!slides.length) return;
+
+      // Circular sequence (wrap)
+      index = (i + slides.length) % slides.length;
+
+      const s = slides[index];
+      deckTitleEl.textContent = "Scripthea Slideshow"; // fixed title per your layout requirement
+      slideTextEl.textContent = getPromptText(s) || "—";
+
+      setError("");
+
+      const src = getImageSrc(s);
+      if (!src) {
+        imgEl.style.display = "none";
+        placeholderEl.style.display = "block";
+        setError("This slide has no 'filename' field (or it is empty).");
+      } else {
+        placeholderEl.style.display = "none";
+        imgEl.style.display = "block";
+
+        imgEl.onerror = () => {
+          imgEl.style.display = "none";
+          placeholderEl.style.display = "block";
+          setError("Image failed to load. Ensure the image file exists in the same folder as the HTML and the JSONL references the exact filename.");
+        };
+        imgEl.src = src;
+      }
+
+      updateMeta();
+    }
+
+    function stop() {
+      if (timerId) { clearInterval(timerId); timerId = null; }
+      isPlaying = false;
+      btnToggle.textContent = "Start";
+      btnToggle.classList.remove("playing");
+      btnToggle.classList.add("paused");
+    }
+
+    function start() {
+      if (!slides.length) return;
+      stop();
+      isPlaying = true;
+      btnToggle.textContent = "Pause";
+      btnToggle.classList.remove("paused");
+      btnToggle.classList.add("playing");
+
+      const stepMs = 100;
+      let remaining = clampHoldSeconds();
+
+      timerId = setInterval(() => {
+        remaining -= stepMs / 1000;
+        if (remaining <= 0) {
+          showSlide(index + 1);          // next slide, wraps automatically
+          remaining = clampHoldSeconds();
+        }
+      }, stepMs);
+    }
+
+    function togglePlay() { isPlaying ? stop() : start(); }
+
+    function parseJsonl(text) {
+      const lines = text.split(/\r?\n/);
+      const out = [];
+      const errors = [];
+
+      for (let i = 0; i < lines.length; i++) {
+        const raw = lines[i];
+        const line = raw.trim();
+        if (!line) continue;
+        if (line.startsWith("#")) continue;
+
+        try {
+          const obj = JSON.parse(line);
+          if (!obj || typeof obj !== "object") {
+            errors.push(`Line ${i + 1}: not a JSON object`);
+            continue;
+          }
+          out.push(obj);
+        } catch (e) {
+          errors.push(`Line ${i + 1}: ${e.message}`);
+        }
+      }
+
+      return { slides: out, errors };
+    }
+
+    function getStartIndexFromQuery(slidesArr) {
+      const qs = new URLSearchParams(window.location.search);
+      const img = qs.get("img");
+      if (!img) return 0;
+
+      const wanted = img.trim().toLowerCase();
+      const idx = slidesArr.findIndex(s => (s?.filename ?? "").trim().toLowerCase() === wanted);
+
+      if (idx >= 0) return idx;
+
+      // If not found, show a warning but still start at 0
+      setError(`Query parameter img="${img}" not found in DESCRIPTION.idf. Starting from first slide.`);
+      return 0;
+    }
+
+    async function loadFixedJsonl() {
+      stop();
+      slides = [];
+      index = 0;
+
+      setError("");
+      slideTextEl.textContent = "—";
+      imgEl.style.display = "none";
+      placeholderEl.style.display = "block";
+      metaEl.textContent = `Loading ${JSONL_FILE}…`;
+
+      try {
+        // NOTE: fetch usually requires serving over http(s); file:// often blocks it.
+        const resp = await fetch(JSONL_FILE, { cache: "no-store" });
+        if (!resp.ok) {
+          throw new Error(`HTTP ${resp.status} ${resp.statusText}`);
+        }
+        const text = await resp.text();
+        const parsed = parseJsonl(text);
+
+        if (parsed.errors.length) {
+          setError(parsed.errors.slice(0, 8).join("\n") + (parsed.errors.length > 8 ? `\n…(${parsed.errors.length - 8} more)` : ""));
+        }
+
+        slides = parsed.slides;
+
+        updateControlsEnabled();
+        updateMeta();
+
+        if (slides.length) {
+          const startIdx = getStartIndexFromQuery(slides);
+          showSlide(startIdx);
+        } else {
+          metaEl.textContent = `Loaded ${JSONL_FILE}, but found 0 slides`;
+        }
+      } catch (e) {
+        updateControlsEnabled();
+        updateMeta();
+        setError(
+          `Failed to load "${JSONL_FILE}".\n` +
+          `If you opened the HTML via file://, your browser will likely block fetch.\n` +
+          `Run a local server in this folder (e.g., "python -m http.server 8000") and open http://localhost:8000/slide_show.html\n\n` +
+          `Details: ${e.message}`
+        );
+        metaEl.textContent = "Load failed";
+      }
+    }
+
+    // UI events
+    btnToggle.addEventListener("click", togglePlay);
+
+    btnPrev.addEventListener("click", () => { stop(); showSlide(index - 1); }); // wraps
+    btnNext.addEventListener("click", () => { stop(); showSlide(index + 1); }); // wraps
+
+    window.addEventListener("keydown", (e) => {
+      if (e.code === "Space") { e.preventDefault(); togglePlay(); }
+      else if (e.code === "ArrowLeft") { e.preventDefault(); stop(); showSlide(index - 1); }
+      else if (e.code === "ArrowRight") { e.preventDefault(); stop(); showSlide(index + 1); }
+    });
+
+    holdSecondsInput.addEventListener("change", clampHoldSeconds);
+
+    // Init: auto-load DESCRIPTION.idf
+    updateControlsEnabled();
+    loadFixedJsonl();
+  </script>
+</body>
+</html>

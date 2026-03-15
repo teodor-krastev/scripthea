@@ -151,7 +151,7 @@ namespace scripthea.viewer
         } 
         public void Clear() 
         {
-            activeView?.Clear(); picViewerUC?.Clear(); activeView?.MarkWithMask(""); 
+            activeView?.Clear(); picViewerUC?.Clear(); activeView?.MarkWithMask(""); UpdateCounter(true);
         }
         private bool updating = false; private bool showing = false;
         public bool ShowImageDepot(string iFolder)
@@ -225,7 +225,11 @@ namespace scripthea.viewer
                         else activeView?.Clear(); 
                         picViewerUC.Clear(); UpdateCounter(true); return true;  
                     }
-                    if (Directory.Exists(iFolder)) iDepot = new ImageDepot(iFolder);
+                    if (Directory.Exists(iFolder))
+                    {
+                        if (SctUtils.checkImageDepot(iFolder, true) == 0) { iDepot?.items.Clear(); Clear(); return true; }   
+                        iDepot = new ImageDepot(iFolder);
+                    }
                     else { if (iFolder != "") { Log("Warning[873]: Non-valid directory > " + iFolder); return false; } }
                     if (iDepot is null && Directory.Exists(imageFolder)) iDepot = new ImageDepot(imageFolder);
                     if (iDepot is null || !iDepot.isEnabled) { Log("Error[874]: Wrong image-depot"); return false; }

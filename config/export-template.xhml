@@ -61,15 +61,15 @@
       var table = document.getElementById("image-table");
 
       // Loop through the filenames and add a new row to the table for each image
-      for (var i = 0; i < images.length; i++) {
+      for (let i = 0; i < images.length; i++) {
         var filename = images[i].filename;
 
         if ((i % imgPerRow) == 0) var newRow = table.insertRow();
         var newCell = newRow.insertCell(-1); newCell.style.textAlign = "center"; newCell.style.verticalAlign = "bottom"; newCell.style.width = (100/imgPerRow).toString()+"%";
 	var imgID = "image-"+i.toString();
         newCell.innerHTML = (showPrompt ? images[i].prompt : "")+"<br><img src='" + filename + "' width='$imgWidth$' align='center' id='"+imgID+"' class='image'>" + (showFilename ? ("<br>"+filename) : "");
-	imgList.push(document.getElementById(imgID)); 
-	imgList[i].addEventListener("click", function() { window.open(this.src, "_blank"); } ) 	
+	var k = imgList.push(document.getElementById(imgID)) - 1; 
+	imgList[k].addEventListener("click", function() { window.open("scripthea-slideshow.html?img="+images[i].filename, "_blank"); } ) 	
       }
 
       function getImages(){

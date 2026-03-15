@@ -40,8 +40,8 @@
   },
   "5": {
     "inputs": {
-      "width": 1086,
-      "height": 792,
+      "width": 1146,
+      "height": 902,
       "batch_size": 1
     },
     "class_type": "EmptyLatentImage",
@@ -51,7 +51,7 @@
   },
   "6": {
     "inputs": {
-      "text": "Cobalt blue is my most favourite hue. It is the kind of blue that is neither light nor dark, yet at the sweet spot in the middle. ",
+      "text": "I have always loved the wind, for it comes to me so boldly, touches my skin. In coldness it rouses me to wakefulness, an alertness that lets me savour the moments in dryness and rain just the same. In soft breezes it is finer than silk, smoother than water. In the gales it sings through the trees, sending loose leaves on a dancing funfair ride, hypnotic, beautiful. In the summertime wind is cooling, allowing the warmth to gently enter muscle and bone while my skin feels so at ease with the world. ; David Hockney ; modern art",
       "clip": [
         "4",
         1
