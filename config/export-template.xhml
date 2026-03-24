@@ -67,7 +67,7 @@
         if ((i % imgPerRow) == 0) var newRow = table.insertRow();
         var newCell = newRow.insertCell(-1); newCell.style.textAlign = "center"; newCell.style.verticalAlign = "bottom"; newCell.style.width = (100/imgPerRow).toString()+"%";
 	var imgID = "image-"+i.toString();
-        newCell.innerHTML = (showPrompt ? images[i].prompt : "")+"<br><img src='" + filename + "' width='$imgWidth$' align='center' id='"+imgID+"' class='image'>" + (showFilename ? ("<br>"+filename) : "");
+        newCell.innerHTML = (showPrompt ? images[i].prompt : "")+"<br><img src='" + filename + "' width='$imgWidth$' align='center' style='cursor: pointer;' id='"+imgID+"'+' >'" + (showFilename ? ("<br>"+filename) : "");
 	var k = imgList.push(document.getElementById(imgID)) - 1; 
 	imgList[k].addEventListener("click", function() { window.open("scripthea-slideshow.html?img="+images[i].filename, "_blank"); } ) 	
       }

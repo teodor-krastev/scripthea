@@ -38,7 +38,7 @@ namespace scripthea.master
             opts = _opts;
             iPicker.Init(ref _opts); iPicker.chkCustom2.Foreground = Brushes.DarkGreen; 
             List<string> ls = new List<string>(new string[] { "keep image types", "export all as .PNG", "export all as .JPG" });
-            Button btnExport = iPicker.Configure(' ', ls, "Rename files to prompts", "Webpage options", "Export", true);
+            Button btnExport = iPicker.Configure(' ', ls, "Rename files to prompts", "Create webpage", "Export", true);
             btnExport.Click += new RoutedEventHandler(Export); btnExport.ToolTip = "Export image depot to another folder with optional web-page viewer";
             OnChangeDepot(null, null);             
             iPicker.chkCustom2.IsChecked = false; iPicker.chkCustom2.Checked += chkCustom2Checked_Checked; iPicker.chkCustom2.Unchecked += chkCustom2Checked_Checked;
@@ -51,8 +51,7 @@ namespace scripthea.master
         }          
         public void Finish()
         {
-            Visuals2Wopts(false);
-            Utils.writeDict(exportOptions, wopts);
+            
         }
         private void OnChangeDepot(object sender, RoutedEventArgs e)
         {
@@ -63,7 +62,7 @@ namespace scripthea.master
         private void FileType_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (iPicker.comboCustom.SelectedIndex == 2) chkCreateJson.Visibility = Visibility.Visible;
-            else chkCreateJson.Visibility = Visibility.Collapsed;
+            else chkCreateJson.Visibility = Visibility.Hidden;
         }
         public bool SaveJpgWfAware(string imagePng, string imageJpg, ImageInfo ii) 
         {
@@ -203,7 +202,7 @@ namespace scripthea.master
             if (wopts is null) return;
             if (wopts.ContainsKey("showPrompt")) chkShowPrompt.IsChecked = wopts["showPrompt"] == "1";
             if (wopts.ContainsKey("showFilename")) chkShowFilename.IsChecked = wopts["showFilename"] == "1";
-            if (wopts.ContainsKey("createWebpage")) chkCreateWebpage.IsChecked = wopts["createWebpage"] == "1";
+            if (wopts.ContainsKey("createWebpage")) iPicker.chkCustom2.IsChecked = wopts["createWebpage"] == "1";
             if (wopts.ContainsKey("exportType")) iPicker.comboCustom.SelectedIndex = Convert.ToInt32(wopts["exportType"]);
             if (wopts.ContainsKey("exportJson")) chkCreateJson.IsChecked = wopts["exportJson"] == "1";
 
@@ -226,7 +225,7 @@ namespace scripthea.master
             if (wopts is null) wopts = new Dictionary<string, string>();
             wopts["showPrompt"] = chkShowPrompt.IsChecked.Value ? "1" : "0";
             wopts["showFilename"] = chkShowFilename.IsChecked.Value ? "1" : "0";
-            wopts["createWebpage"] = chkCreateWebpage.IsChecked.Value ? "1" : "0";
+            wopts["createWebpage"] = iPicker.chkCustom2.IsChecked.Value ? "1" : "0";
             wopts["exportType"] = iPicker.comboCustom.SelectedIndex.ToString();
             wopts["exportJson"] = chkCreateJson.IsChecked.Value ? "1" : "0"; 
 
@@ -255,10 +254,11 @@ namespace scripthea.master
             wopts["imgPerRow"] = ir.ToString();
             return true;
         }
-
-        private void iPicker_Loaded()
+        private void btnSetDefaults_Click(object sender, RoutedEventArgs e)
         {
-
+            Visuals2Wopts(false);
+            Utils.writeDict(exportOptions, wopts);
+            _ = new PopupText(btnSetDefaults, "Saved as default");
         }
     }
 }

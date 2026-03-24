@@ -28,16 +28,17 @@
                     <TextBox x:Name="tbImgPerRow" HorizontalAlignment="Left" VerticalAlignment="Center" Width="60"></TextBox>
                 </StackPanel>
             </StackPanel>
-            <StackPanel Margin="13,10,0,0" Width="375">
-                <StackPanel Orientation="Horizontal" Width="375">
-                    <CheckBox x:Name="chkCreateWebpage" Content="Create webpage at export location" HorizontalAlignment="Left" Margin="3,3,0,0" VerticalAlignment="Center"/>
-                    <CheckBox x:Name="chkCreateJson" Content="Create json workflows" Margin="5,3,0,0" VerticalAlignment="Center"></CheckBox>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="0,3,0,0" Width="375">
+            <StackPanel Margin="13,7,0,0" Width="375">
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,0" Width="375">
                     <Label Content="Webpage title" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0"></Label>
                     <TextBox x:Name="tbWebpageTitle" HorizontalAlignment="Left" VerticalAlignment="Center" Width="280"></TextBox>
                 </StackPanel>
+                <StackPanel Orientation="Horizontal" Width="375">
+                    <CheckBox x:Name="chkCreateJson" Content="Create json workflows" Margin="5,3,0,0" VerticalAlignment="Center"></CheckBox>
+                    <Button x:Name="btnSetDefaults" Content="Set as default" Width="100" Height="24" Style="{StaticResource RoundedButtonStyle}"  Background="White" FontFamily="Segoe UI Semibold"                 Click="btnSetDefaults_Click" Margin="30,0,0,0" Cursor="Hand"></Button>
+                </StackPanel>
             </StackPanel>
+            
         </StackPanel>
     </Grid>
 </UserControl>
